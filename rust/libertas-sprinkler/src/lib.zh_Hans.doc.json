@@ -1,0 +1,325 @@
+{
+  "DisplayName": "灌溉控制",
+  "Description": "This is a sample to demonstrate Libertas SDK.",
+  "List": [
+    {
+      "Locale": "zh_Hans",
+      "Name": "libertas_sprinkler",
+      "DisplayName": "Libertas Sprinkler Agent",
+      "Description": "The user configures the information about each zone.\nIt automatically calculate the optimal watering schedule for each zone based on onfomration such as\nwatering history, weather forescast, etc.\nDuring runtime, the user can maintain a list of \"hold-off\" periods on each zone when watering shall be prevented.\nThe hold-off period list will affect the watring schedule acting as a constraint.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Notification List",
+          "Description": "A list of users and groups that receive notifications when hold-off periods are updated.",
+          "Extras": []
+        },
+        {
+          "Type": 1,
+          "Name": "User",
+          "Description": "The list of users or groups that the notifications are delivered.",
+          "Extras": []
+        },
+        {
+          "Type": 2,
+          "Name": "Zones",
+          "Description": "List of sprinkler zones (watering areas).",
+          "Extras": []
+        },
+        {
+          "Type": 3,
+          "Name": "Sprinkler zone",
+          "Description": "Configuration of one sprinkler zone.",
+          "Extras": []
+        }
+      ],
+      "Strings": {
+        "A_RESOURCE_NAME": "A printf style template",
+        "HOLD_OFF_UPDATED": "The hold-off list for %1$s has been updated."
+      }
+    }
+  ],
+  "Types": [
+    {
+      "Locale": "zh_Hans",
+      "Name": "SoilType",
+      "DisplayName": "SoilType",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "SoilType",
+          "Description": "The soil type.",
+          "Extras": [],
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Loam",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Clay",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "ClayLoam",
+              "Description": ""
+            },
+            {
+              "Type": 4,
+              "Name": "SiltyClay",
+              "Description": ""
+            },
+            {
+              "Type": 5,
+              "Name": "SandyLoam",
+              "Description": ""
+            },
+            {
+              "Type": 6,
+              "Name": "LoamySand",
+              "Description": ""
+            },
+            {
+              "Type": 7,
+              "Name": "Sand",
+              "Description": ""
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Locale": "zh_Hans",
+      "Name": "TimeSlot",
+      "DisplayName": "TimeSlot",
+      "Description": "Including a start time and a duration.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "时间段",
+          "Description": "包含一个开始时间和时长的时间段。",
+          "Extras": []
+        },
+        {
+          "Type": 1,
+          "Name": "开始时间",
+          "Description": "The start time.",
+          "Extras": []
+        },
+        {
+          "Type": 2,
+          "Name": "时长",
+          "Description": "The duration in seconds."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Locale": "zh_Hans",
+      "Name": "PlantType",
+      "DisplayName": "PlantType",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "PlantType",
+          "Description": "The type of plant to be watered.",
+          "Extras": [],
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Lawn",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "FruitTrees",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "Flowers",
+              "Description": ""
+            },
+            {
+              "Type": 4,
+              "Name": "Vegetables",
+              "Description": ""
+            },
+            {
+              "Type": 5,
+              "Name": "Citrus",
+              "Description": ""
+            },
+            {
+              "Type": 6,
+              "Name": "TreesBushes",
+              "Description": ""
+            },
+            {
+              "Type": 7,
+              "Name": "Xeriscape",
+              "Description": ""
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Locale": "zh_Hans",
+      "Name": "ZoneDataProtocol",
+      "DisplayName": "灌溉区域数据协议",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "获取灌溉区域信息",
+          "Description": "得到本灌溉区域的运行信息。",
+          "Extras": []
+        },
+        {
+          "Type": 1,
+          "Name": "获取灌溉区域信息",
+          "Description": "得到本灌溉区域的运行信息。",
+          "Extras": []
+        },
+        {
+          "Type": 2,
+          "Name": "灌溉区域信息",
+          "Description": "包括本区域下次灌溉计划时间和时长，以及暂停期列表。",
+          "Extras": []
+        },
+        {
+          "Type": 3,
+          "Name": "下一次浇水时刻",
+          "Description": "下一次计划浇水时间和时长。这个计划是动态计算得出，而且可能随时动态改变。  计划的动态计算必须避开用户设置的暂停期列表。",
+          "Extras": []
+        },
+        {
+          "Type": 4,
+          "Name": "暂停期列表",
+          "Description": "一系列用户输入的暂停期。暂停期间禁止浇水灌溉。洒水器阀门也禁止启动。浇水计划的动态计算也要避开暂停期！"
+        },
+        {
+          "Type": 5,
+          "Name": "暂停期",
+          "Description": "包括开始时间和暂停时长。"
+        },
+        {
+          "Type": 6,
+          "Name": "更新暂停期列表请求",
+          "Description": "请求更新暂停期列表。暂停期确保灌溉程序不会浇水，而且动态浇水计划的计算也会避开暂停期。因此用户的暂停期请求具有更高优先级。"
+        },
+        {
+          "Type": 7,
+          "Name": "暂停期列表",
+          "Description": "一系列用户输入的暂停期。"
+        },
+        {
+          "Type": 8,
+          "Name": "暂停期",
+          "Description": "包括开始时间和暂停时长。"
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Locale": "zh_Hans",
+      "Name": "SprinklerZone",
+      "DisplayName": "SprinklerZone",
+      "Description": "Configuration of a zone.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "SprinklerZone",
+          "Description": "In an irrigation system, a sprinkler zone is a specific group of sprinklers that are controlled by a single dedicated valve and operate simultaneously to water an area of plants.",
+          "Extras": []
+        },
+        {
+          "Type": 1,
+          "Name": "灌溉区域",
+          "Description": "一个由遥控洒水器阀门覆盖的灌溉区域。",
+          "Extras": []
+        },
+        {
+          "Type": 2,
+          "Name": "field_capacity",
+          "Description": "",
+          "Extras": []
+        },
+        {
+          "Type": 3,
+          "Name": "soil_type",
+          "Description": "",
+          "Extras": []
+        },
+        {
+          "Type": 4,
+          "Name": "plant_type",
+          "Description": "",
+          "Extras": []
+        },
+        {
+          "Type": 5,
+          "Name": "head",
+          "Description": "",
+          "Extras": []
+        },
+        {
+          "Type": 6,
+          "Name": "zone_info",
+          "Description": ""
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Locale": "zh_Hans",
+      "Name": "SprinklerHead",
+      "DisplayName": "SprinklerHead",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "SprinklerHead",
+          "Description": "",
+          "Extras": [],
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "SurfaceDrip",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Bubblers",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "PopupSpray",
+              "Description": ""
+            },
+            {
+              "Type": 4,
+              "Name": "RotorsLowRate",
+              "Description": ""
+            },
+            {
+              "Type": 5,
+              "Name": "RotorsHighRate",
+              "Description": ""
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    }
+  ],
+  "Locale": "zh_Hans"
+}
