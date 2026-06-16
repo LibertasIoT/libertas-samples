@@ -1,0 +1,299 @@
+{
+  "Locale": "en",
+  "DisplayName": "Libertas Sprinkler Agent",
+  "Description": "This is a sample to demonstrate Libertas Rust SDK.",
+  "List": [
+    {
+      "Name": "libertas_sprinkler",
+      "DisplayName": "Libertas sprinkler agent",
+      "Description": "The user configures the information about each zone.\nIt automatically calculate the optimal watering schedule for each zone based on onfomration such as\nwatering history, weather forecast, etc.\nDuring runtime, the user can maintain a list of \"hold-off\" periods on each zone when watering shall be prevented.\nThe hold-off period list will affect the watring schedule acting as a constraint.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Notification list",
+          "Description": "A list of users and groups that receive notifications when hold-off periods are updated."
+        },
+        {
+          "Type": 1,
+          "Name": "A user or group",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Zones",
+          "Description": "List of sprinkler zones (watering areas)."
+        },
+        {
+          "Type": 3,
+          "Name": "Zone config",
+          "Description": "Configuration of one sprinkler zone."
+        }
+      ],
+      "Strings": {
+        "HOLD_OFF_UPDATED": "The hold-off list for %1$s has been updated.",
+        "A_RESOURCE_NAME": "A printf style template"
+      }
+    }
+  ],
+  "Types": [
+    {
+      "Name": "ZoneDataProtocol",
+      "DisplayName": "ZoneDataProtocol",
+      "Description": "The runtime protocol of the sprinkler agent",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "ZoneDataProtocol",
+          "Description": "The runtime protocol of the sprinkler agent"
+        },
+        {
+          "Type": 1,
+          "Name": "Get zone information",
+          "Description": "Get the sprinkler runtime information for the zone"
+        },
+        {
+          "Type": 2,
+          "Name": "Zone information",
+          "Description": "Information about the sprinkler zone's next watering schedule and hold-off period list. A hold-off ensures the zone won't be watered during the period."
+        },
+        {
+          "Type": 3,
+          "Name": "Next watering schedule",
+          "Description": "The next scheduled watering time and duration. This schedule is dynamically calculated and may change later. The calculation must avoid the hold-off periods."
+        },
+        {
+          "Type": 4,
+          "Name": "Hold off periods",
+          "Description": "The list of sprinkler's hold-off period that the dynamic calculation of watering schedule must avoid. A hold-off ensures a sprinkler zone (area) won't be watered during the period."
+        },
+        {
+          "Type": 5,
+          "Name": "Hold off period",
+          "Description": "A start time and duration of a watering hold-off."
+        },
+        {
+          "Type": 6,
+          "Name": "Update hold off periods",
+          "Description": "A request to update the entire list of \"hold off\" periods of the sprinkler zone. The system ensures the zone won't be watered during each hold off period."
+        },
+        {
+          "Type": 7,
+          "Name": "Hold off periods",
+          "Description": "The list of sprinkler's hold-off period that the dynamic calculation of watering schedule must avoid. A hold-off ensures a sprinkler zone (area) won't be watered during the period."
+        },
+        {
+          "Type": 8,
+          "Name": "Hold off period",
+          "Description": "A start time and duration of a watering hold-off."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerHead",
+      "DisplayName": "SprinklerHead",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "SprinklerHead",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "SurfaceDrip",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Bubblers",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "PopupSpray",
+              "Description": ""
+            },
+            {
+              "Type": 4,
+              "Name": "RotorsLowRate",
+              "Description": ""
+            },
+            {
+              "Type": 5,
+              "Name": "RotorsHighRate",
+              "Description": ""
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "TimeSlot",
+      "DisplayName": "A time period",
+      "Description": "Including a start time and a duration.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "A time period",
+          "Description": "Including a start time and a duration."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "The start time"
+        },
+        {
+          "Type": 2,
+          "Name": "Duration",
+          "Description": "The duration in seconds."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "PlantType",
+      "DisplayName": "PlantType",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "PlantType",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Lawn",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "FruitTrees",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "Flowers",
+              "Description": ""
+            },
+            {
+              "Type": 4,
+              "Name": "Vegetables",
+              "Description": ""
+            },
+            {
+              "Type": 5,
+              "Name": "Citrus",
+              "Description": ""
+            },
+            {
+              "Type": 6,
+              "Name": "TreesBushes",
+              "Description": ""
+            },
+            {
+              "Type": 7,
+              "Name": "Xeriscape",
+              "Description": ""
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SoilType",
+      "DisplayName": "SoilType",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "SoilType",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Loam",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Clay",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "ClayLoam",
+              "Description": ""
+            },
+            {
+              "Type": 4,
+              "Name": "SiltyClay",
+              "Description": ""
+            },
+            {
+              "Type": 5,
+              "Name": "SandyLoam",
+              "Description": ""
+            },
+            {
+              "Type": 6,
+              "Name": "LoamySand",
+              "Description": ""
+            },
+            {
+              "Type": 7,
+              "Name": "Sand",
+              "Description": ""
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerZone",
+      "DisplayName": "Sprinkler zone config",
+      "Description": "Configuration of a zone",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler zone config",
+          "Description": "Configuration of a zone"
+        },
+        {
+          "Type": 1,
+          "Name": "Zone",
+          "Description": "In an irrigation system, a sprinkler zone is a specific group of sprinklers that are controlled by a single dedicated valve and operate simultaneously to water an area of plants."
+        },
+        {
+          "Type": 2,
+          "Name": "Field_capacity",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Soil type",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "plant_type",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "head",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "zone_info",
+          "Description": ""
+        }
+      ],
+      "Strings": {}
+    }
+  ]
+}
