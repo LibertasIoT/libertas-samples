@@ -37,122 +37,6 @@
   ],
   "Types": [
     {
-      "Name": "ZoneDataProtocol",
-      "DisplayName": "ZoneDataProtocol",
-      "Description": "The runtime protocol of the sprinkler agent",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "ZoneDataProtocol",
-          "Description": "The runtime protocol of the sprinkler agent"
-        },
-        {
-          "Type": 1,
-          "Name": "Get zone information",
-          "Description": "Get the sprinkler runtime information for the zone"
-        },
-        {
-          "Type": 2,
-          "Name": "Zone information",
-          "Description": "Information about the sprinkler zone's next watering schedule and hold-off period list. A hold-off ensures the zone won't be watered during the period."
-        },
-        {
-          "Type": 3,
-          "Name": "Next watering schedule",
-          "Description": "The next scheduled watering time and duration. This schedule is dynamically calculated and may change later. The calculation must avoid the hold-off periods."
-        },
-        {
-          "Type": 4,
-          "Name": "Hold off periods",
-          "Description": "The list of sprinkler's hold-off period that the dynamic calculation of watering schedule must avoid. A hold-off ensures a sprinkler zone (area) won't be watered during the period."
-        },
-        {
-          "Type": 5,
-          "Name": "Hold off period",
-          "Description": "A start time and duration of a watering hold-off."
-        },
-        {
-          "Type": 6,
-          "Name": "Update hold off periods",
-          "Description": "A request to update the entire list of \"hold off\" periods of the sprinkler zone. The system ensures the zone won't be watered during each hold off period."
-        },
-        {
-          "Type": 7,
-          "Name": "Hold off periods",
-          "Description": "The list of sprinkler's hold-off period that the dynamic calculation of watering schedule must avoid. A hold-off ensures a sprinkler zone (area) won't be watered during the period."
-        },
-        {
-          "Type": 8,
-          "Name": "Hold off period",
-          "Description": "A start time and duration of a watering hold-off."
-        }
-      ],
-      "Strings": {}
-    },
-    {
-      "Name": "SprinklerHead",
-      "DisplayName": "SprinklerHead",
-      "Description": "",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "SprinklerHead",
-          "Description": "",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "SurfaceDrip",
-              "Description": ""
-            },
-            {
-              "Type": 2,
-              "Name": "Bubblers",
-              "Description": ""
-            },
-            {
-              "Type": 3,
-              "Name": "PopupSpray",
-              "Description": ""
-            },
-            {
-              "Type": 4,
-              "Name": "RotorsLowRate",
-              "Description": ""
-            },
-            {
-              "Type": 5,
-              "Name": "RotorsHighRate",
-              "Description": ""
-            }
-          ]
-        }
-      ],
-      "Strings": {}
-    },
-    {
-      "Name": "TimeSlot",
-      "DisplayName": "A time period",
-      "Description": "Including a start time and a duration.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "A time period",
-          "Description": "Including a start time and a duration."
-        },
-        {
-          "Type": 1,
-          "Name": "Start time",
-          "Description": "The start time"
-        },
-        {
-          "Type": 2,
-          "Name": "Duration",
-          "Description": "The duration in seconds."
-        }
-      ],
-      "Strings": {}
-    },
-    {
       "Name": "PlantType",
       "DisplayName": "PlantType",
       "Description": "",
@@ -253,6 +137,46 @@
       "Strings": {}
     },
     {
+      "Name": "SprinklerHead",
+      "DisplayName": "SprinklerHead",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "SprinklerHead",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "SurfaceDrip",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Bubblers",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "PopupSpray",
+              "Description": ""
+            },
+            {
+              "Type": 4,
+              "Name": "RotorsLowRate",
+              "Description": ""
+            },
+            {
+              "Type": 5,
+              "Name": "RotorsHighRate",
+              "Description": ""
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
       "Name": "SprinklerZone",
       "DisplayName": "Sprinkler zone config",
       "Description": "Configuration of a zone",
@@ -291,6 +215,82 @@
           "Type": 6,
           "Name": "zone_info",
           "Description": ""
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "TimeSlot",
+      "DisplayName": "A time period",
+      "Description": "Including a start time and a duration.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "A time period",
+          "Description": "Including a start time and a duration."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "The start time"
+        },
+        {
+          "Type": 2,
+          "Name": "Duration",
+          "Description": "The duration in seconds."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "ZoneDataProtocol",
+      "DisplayName": "ZoneDataProtocol",
+      "Description": "The runtime protocol of the sprinkler agent",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "ZoneDataProtocol",
+          "Description": "The runtime protocol of the sprinkler agent"
+        },
+        {
+          "Type": 1,
+          "Name": "Get zone information",
+          "Description": "Get the sprinkler runtime information for the zone"
+        },
+        {
+          "Type": 2,
+          "Name": "Zone information",
+          "Description": "Information about the sprinkler zone's next watering schedule and hold-off period list. A hold-off ensures the zone won't be watered during the period."
+        },
+        {
+          "Type": 3,
+          "Name": "Next watering schedule",
+          "Description": "The next scheduled watering time and duration. This schedule is dynamically calculated and may change later. The calculation must avoid the hold-off periods."
+        },
+        {
+          "Type": 4,
+          "Name": "Hold off periods",
+          "Description": "The list of sprinkler's hold-off period that the dynamic calculation of watering schedule must avoid. A hold-off ensures a sprinkler zone (area) won't be watered during the period."
+        },
+        {
+          "Type": 5,
+          "Name": "Hold off period",
+          "Description": "A start time and duration of a watering hold-off."
+        },
+        {
+          "Type": 6,
+          "Name": "Update hold off periods",
+          "Description": "A request to update the entire list of \"hold off\" periods of the sprinkler zone. The system ensures the zone won't be watered during each hold off period."
+        },
+        {
+          "Type": 7,
+          "Name": "Hold off periods",
+          "Description": "The list of sprinkler's hold-off period that the dynamic calculation of watering schedule must avoid. A hold-off ensures a sprinkler zone (area) won't be watered during the period."
+        },
+        {
+          "Type": 8,
+          "Name": "Hold off period",
+          "Description": "A start time and duration of a watering hold-off."
         }
       ],
       "Strings": {}
