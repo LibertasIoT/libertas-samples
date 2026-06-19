@@ -8,6 +8,7 @@ use alloc::rc::Rc;
 use core::cell::RefCell;
 use libertas::*;
 use libertas_macros::*;
+use libertas_types::*;
 //use libertas_matter::*;
 
 pub static APP_STRINGS: [(&str, &str); 2] = [
@@ -108,6 +109,8 @@ pub struct SprinklerZone {
     #[libertas_endpoint_server]
     #[libertas_endpoint_base_objects("^.zone_valve")]
     pub zone_info: LibertasEndpoint,
+    #[libertas_foreign_type("libertas-types:DayOfWeek")]
+    pub dow: DayOfWeek,
 }
 
 /// Libertas sprinkler agent

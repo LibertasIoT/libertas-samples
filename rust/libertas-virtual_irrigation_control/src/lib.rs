@@ -152,7 +152,7 @@ fn handle_read_request(
     }
 
     libertas_virtual_device_attributes_rsp_finalize(&mut wb)?;
-    libertas_virtual_device_attributes_rsp(device, trans_id, wb.as_slice(), peer);
+    libertas_virtual_device_attributes_rsp_send(device, trans_id, wb.as_slice(), peer);
     Ok(())
 }
 
@@ -164,31 +164,31 @@ fn handle_invoke_request(
     shared: &Rc<RefCell<IrrigationContext>>,
     peer: u32,
 ) -> Result<(), Error> {
-    let root = TLVElement::new(data);
-    let root_struct = root.structure()?;
-    let path_list = root_struct.ctx(0)?.list()?;
-    let cluster_id = path_list.ctx(1)?.u32()?;
-    let command_id = path_list.ctx(2)?.u32()?;
+    let (cluster_id, command_id, fields) = libertas_virtual_device_invoke_req_parse(data)?;
+
+    let mut status = IMStatusCode::Success;
 
     if cluster_id == CLUSTER_ON_OFF {
         if command_id == CMD_ON {
             turn_on_valve(valve, shared, DEFAULT_TIMEOUT_MS);
-            libertas_virtual_device_status_rsp(device, trans_id, IMStatusCode::Success, peer);
         } else if command_id == CMD_OFF {
             turn_off_valve(valve);
-            libertas_virtual_device_status_rsp(device, trans_id, IMStatusCode::Success, peer);
         } else if command_id == CMD_ON_WITH_TIMED_OFF {
-            let fields = root_struct.ctx(1)?.structure()?;
-            let on_time_tenths = fields.ctx(1)?.u16()?;
+            let fields_struct = fields.structure()?;
+            let on_time_tenths = fields_struct.ctx(1)?.u16()?;
             let on_time_ms = (on_time_tenths as u32) * 100;
             turn_on_valve(valve, shared, on_time_ms);
-            libertas_virtual_device_status_rsp(device, trans_id, IMStatusCode::Success, peer);
         } else {
-            libertas_virtual_device_status_rsp(device, trans_id, IMStatusCode::UnsupportedCommand, peer);
+            status = IMStatusCode::UnsupportedCommand;
         }
     } else {
-        libertas_virtual_device_status_rsp(device, trans_id, IMStatusCode::UnsupportedCluster, peer);
+        status = IMStatusCode::UnsupportedCluster;
     }
+
+    let mut buf = LibertasUninitStackbuf::new();
+    let mut wb = WriteBuf::new(buf.as_mut_slice());
+    libertas_virtual_device_invoke_rsp_status(&mut wb, cluster_id, command_id, status as u32)?;
+    libertas_virtual_device_invoke_rsp_send(device, trans_id, wb.as_slice(), peer);
     Ok(())
 }
 
@@ -234,7 +234,7 @@ pub fn virtual_irrigation_controller(
                         let _ = handle_invoke_request(device, trans_id_val, data, &ctx.valve, &ctx.shared, peer);
                     }
                     _ => {
-                        libertas_virtual_device_status_rsp(device, trans_id_val, IMStatusCode::InvalidAction, peer);
+                        libertas_virtual_device_status_rsp_send(device, trans_id_val, IMStatusCode::InvalidAction, peer);
                     }
                 }
             },
