@@ -554,6 +554,43 @@ endpoint operation as another protocol field.
 - The remaining Libertas API limitation is the lack of a persistence completion
   result when confirmed durability before reporting is required.
 
+## Building HVAC weather definitions (`libertas-weather`)
+
+The `BuildingHvacWeatherV1` family is tailored to whole-house and
+whole-building HVAC supervisory control. It supplies outdoor inputs for thermal
+load prediction, heat-pump operation, economizer decisions, infiltration
+estimation, preheating or precooling, and controlled outdoor-air ventilation.
+It is not a general weather display schema and does not replace local sensors
+used for freeze, equipment, smoke, or life-safety protection.
+
+- Carry dry-bulb and dew-point temperature, relative humidity, surface pressure,
+  wind speed, wind gust, wind direction, precipitation amount and phase, and
+  global-horizontal, direct-normal, and diffuse-horizontal solar irradiance.
+  Derive humidity ratio, moist-air enthalpy, and wet-bulb temperature instead of
+  storing redundant values that can disagree.
+- Keep modeled outdoor air quality independently optional and independently
+  cached from physical weather. V1 includes PM2.5, PM10, ozone, and nitrogen
+  dioxide concentrations. Stale or missing model data is never proof that
+  outdoor air is safe.
+- Refresh current physical weather every 15 minutes and treat it as stale after
+  30 minutes. Refresh physical history and forecast hourly; retain 72 hours of
+  each. Forecast periods may use 15-minute resolution for the first six hours
+  and hourly resolution later. Refresh air quality hourly, treat it as stale
+  after two hours, and retain a 48-hour horizon.
+- Keep history, current conditions, forecast, and outdoor air quality
+  independently optional in runtime snapshots and independently writable in
+  persistent data. A provider failure must leave every last valid section
+  unchanged.
+- Use the same epoch-timestamp-and-sequence reset detection, exact contiguous
+  incremental ranges, 24-hour transient replay window, range-limited snapshot
+  recovery, and empty heartbeat behavior as the sprinkler family. Neither
+  family shares its public types or Avro union because they evolve for different
+  consuming applications.
+- Keep indoor temperature, indoor humidity, indoor air quality, occupancy,
+  equipment state, energy prices, recent energy use, and recently delivered
+  heating or cooling out of this weather family. They are HVAC application
+  state and persistence inputs.
+
 ## Weather-aware sprinkler controller (`libertas-sprinkler`)
 
 `libertas-sprinkler` is a `no_std` Libertas application library that calculates,
