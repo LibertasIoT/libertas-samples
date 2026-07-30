@@ -111,6 +111,7 @@ Common schema attributes:
 
 - `#[libertas_default(...)]`, `#[libertas_number(min=..., max=..., step=...)]`
 - `#[libertas_size(min=..., max=...)]`, `#[libertas_time_interval]`
+- `#[libertas_formatted_text]` on a runtime `String` or `Vec<u8>`
 - `#[libertas_ui_header]`, `#[libertas_read_only]`, `#[libertas_hidden]`
 - `#[libertas_unordered]`, `#[libertas_unique]`
 - `#[libertas_device_type("...")]`,
@@ -681,3 +682,150 @@ protocol variants, sidecar schema files, or migration code for compatibility.
   `LibertasExport` helper attributes and to function-argument attribute
   consumption. Keep this SDK support when bounded list schema attributes are
   used.
+
+## Smart building HVAC controller (`libertas-smart_building_hvac`)
+
+`libertas-smart_building_hvac` is a `no_std` Matter application library for
+room-aware supervisory control of a whole house or building. Treat its V1
+configuration, runtime protocol, and database layout as unpublished design-time
+contracts. Reshape V1 directly while the design is under review; do not add
+legacy fields or migrations.
+
+- Keep rooms and thermostats inside one `BuildingHvacBuildingV1` configuration
+  argument. Define `rooms` first, then use
+  `#[libertas_enum_source("$.rooms")]` on each thermostat room reference so the
+  UI presents the room-name header while storing its zero-based list index.
+- Give every room one stable Libertas server endpoint for its runtime contract.
+  A configured room must be assigned to exactly one Matter thermostat and have
+  at least one `BuildingHvacIndoorSensorV1` station. Each indoor station contains
+  a required standard Matter Temperature Sensor and may add standard Matter
+  Humidity and Air Quality Sensor logical devices from the same physical
+  station. An optional local outdoor station follows the same required
+  temperature and optional humidity/air-quality shape. Do not assign one
+  thermostat, logical sensor device, or room endpoint more than once.
+- Discover optional standard concentration-measurement clusters on every indoor
+  or outdoor Matter Air Quality Sensor at runtime rather than adding
+  configuration flags for PM2.5, carbon dioxide, or individual pollutants.
+  Expose only accepted finite nonnegative measurements whose Matter medium is
+  air, preserve each sensor-reported unit, bound each list to the ten V1
+  measurement kinds, and keep missing or stale measurements explicitly unknown.
+  Supervisory air-quality data never replaces certified smoke,
+  carbon-monoxide, or other life-safety protection.
+- A thermostat may serve multiple rooms. Room setpoints are supervisory comfort
+  demands that must later be reconciled into the shared physical thermostat;
+  never represent shared equipment as independently actuated room equipment.
+- Define every externally visible room runtime transaction as a variant of
+  `BuildingHvacRoomProtocolV1`. `RoomDataV1` is both the complete response and
+  subscription report and carries writable room intent beside read-only state,
+  per-station indoor data, local outdoor station data, statistics, learned
+  cross-zone influences, and calculated plan. Include each configured indoor
+  station's optional capabilities in its room state and the same building-level
+  outdoor station state on each room endpoint so `GetRoomV1` can query
+  discovered measurements. Replace writable intent atomically with an expected
+  control revision; sensor-only changes do not increment that revision.
+- Put `#[libertas_formatted_text]` on the bounded byte-array summaries in room
+  data, calculated plans, and rejected writes. Encode each byte array with
+  `libertas_formatted_text` as a string-resource identifier followed by the same
+  typed printf-style argument array used by Libertas notifications. Do not
+  Base64-wrap the bytes, persist these derived summaries, or use them as
+  authoritative control data; structured protocol fields remain authoritative.
+- Configure one or more unique `LibertasUser` recipients for urgent HVAC
+  notifications. These are supervisory temperature, equipment-recovery, and
+  data-availability warnings; the application must never label or present them
+  as certified fire, smoke, carbon-monoxide, medical, or other life-safety
+  alarms. Air Quality Sensor concentration data remains informational even when
+  it includes carbon monoxide.
+- Confirm freeze risk at or below 5 degrees Celsius and excessive heat at or
+  above 35 degrees Celsius for five continuous minutes. Require ten continuous
+  minutes at or above 7 degrees Celsius or at or below 32 degrees Celsius,
+  respectively, before reporting recovery. Confirm missing trustworthy room
+  temperature or thermostat state for ten minutes. Report ineffective heating
+  or cooling only for a room still at or below 15 degrees Celsius or at or above
+  30 degrees Celsius, respectively, after a one-hour observation with at least
+  80 percent fresh temperature and equipment-runtime coverage and less than 0.5
+  degrees Celsius movement toward recovery.
+- Persist each urgent condition's activation, recovery, last-evidence, and
+  last-notification state before notification submission. Send one localized
+  notification on activation, no more than one reminder every 30 minutes while
+  unchanged, an immediate notification on severity escalation, and one
+  informational recovery notification after confirmed hysteresis. A restart
+  must resume these timers without replaying an avoidable notification burst.
+  Never infer recovery from missing or stale sensor data.
+- Expose active urgent conditions as structured read-only room runtime data and
+  report their changes to room subscribers. Localized notification and
+  `FormattedText` output is derived presentation only. The current Libertas
+  notification API can submit typed localized messages but cannot confirm
+  delivery, retract or replace a prior notification, or represent user
+  acknowledgement; do not claim those guarantees.
+- Run `BuildingHvacAnalyticsEngine` before notification or control evaluation.
+  Discard future-dated, expired, malformed, or nonfinite Matter readings from
+  current state without erasing their independent last-valid persistent
+  records. Fuse fresh temperature around the median while excluding readings
+  more than 2 degrees Celsius from it; fuse humidity the same way with a
+  15-percentage-point distance. Treat an ambiguous two-sensor disagreement as
+  unavailable instead of choosing a sensor arbitrarily. Air-quality sections
+  remain station-level data and do not affect temperature-control readiness.
+- Derive outdoor humidity ratio, moist-air enthalpy, and wet-bulb temperature
+  only from fresh current weather. Use one consistent dew-point and surface-
+  pressure input set, reject dew point above dry bulb, and use provider relative
+  humidity only as a consistency check with a 15-percentage-point tolerance.
+  Expose the derived values in room runtime data but do not persist them; the
+  independently persisted current-weather section remains authoritative.
+- Build room statistics only from ordered, non-overlapping, nonzero condition
+  periods. Use duration-weighted means and degree-minutes, preserve explicit
+  missing coverage, and reject the entire calculation on invalid or overlapping
+  input rather than partially mixing it with accepted periods.
+- Use `BuildingHvacControlEngine` to produce at most one setpoint decision per
+  physical thermostat before making typed Matter writes. Skip unavailable,
+  malformed, wrong-thermostat, or nonfinite room candidates; never override an
+  explicit room `Off`. Shift heating upward and cooling downward by at most 1
+  degree Celsius for the normalized comfort preference, with the inverse shift
+  for savings, and apply learned cross-zone temperature change before
+  calculating demand.
+- Select the highest enabled heating target and lowest enabled cooling target
+  across rooms, clamp both to reported thermostat bounds, and enforce the
+  reported deadband. When these targets conflict, preserve the side with the
+  larger temperature deviation after weighting degraded data at one half.
+  Avoid a Matter write when calculated targets are already applied within 0.05
+  degrees Celsius. Calculation types are implementation APIs, not additional
+  endpoint runtime schema; user-visible state remains in
+  `BuildingHvacRoomProtocolV1`.
+- Define every database value as a variant of
+  `BuildingHvacPersistentDataV1`. Persist room control, statistics with bounded
+  recent condition periods, cross-zone learning state, each room's last accepted
+  indoor station sections, each local outdoor temperature, humidity, and
+  air-quality section, and each cached weather section independently. A partial
+  sensor or provider failure must not erase a different valid section. Key room
+  records by the stable room endpoint. Do not persist calculated plans, endpoint
+  transactions, subscribers, weather cursors, or transient Matter command
+  state.
+- Model central-HVAC spillover as a directional matrix from each source
+  thermostat-zone to every room served by another thermostat. Learn heating
+  temperature rise and cooling temperature drop separately. Accept a learning
+  period only when the affected room's thermostat is idle, exactly one other
+  source thermostat is active, room and weather coverage are trustworthy, and a
+  passive temperature-change estimate can be removed from the observation.
+  Learn that passive outdoor coupling separately from periods in which every
+  thermostat-zone is inactive.
+- Persist decayed online-regression sufficient statistics for every learned
+  matrix edge, not only the current coefficient. Halve completed old observation
+  weight every 30 days, continue updating after restarts, and persist an
+  accepted update before exposing it. Use low-confidence estimates only for
+  prediction; never weaken thermostat, equipment, freeze, smoke, or life-safety
+  constraints.
+- Keep `BuildingHvacWeatherClientV1` as a client endpoint using
+  `BuildingHvacWeatherProtocolV1`. The HVAC controller must not perform provider
+  HTTP requests. When runtime integration is added, subscribe at startup, use
+  exact cursor continuity and reset rules, and treat stale or missing outdoor
+  air quality as unknown rather than safe.
+- Keep utility price schedules, occupancy, indoor air quality, equipment
+  topology, and optimization policy out of this initial room-topology contract
+  until their application-specific runtime requirements are designed.
+- `libertas_macros` revision `b10d43ab` registers both `libertas_size` and
+  `libertas_enum_source` as accepted `LibertasExport` helper attributes. Keep
+  all direct and transitive Libertas dependencies aligned to that revision or a
+  later revision containing the same support.
+- The Rust schema parser must resolve `EnumSource` from each actual application
+  argument tree. Do not revalidate a nested reusable type as an independent
+  root after its `EnumSource` has been validated in the configured building
+  tree, because doing so discards the surrounding `rooms` list.
