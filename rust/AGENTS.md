@@ -685,11 +685,34 @@ protocol variants, sidecar schema files, or migration code for compatibility.
 
 ## Smart building HVAC controller (`libertas-smart_building_hvac`)
 
-`libertas-smart_building_hvac` is a `no_std` Matter application library for
-room-aware supervisory control of a whole house or building. Treat its V1
+`libertas-smart_building_hvac` is a `std` Matter application library for
+room-aware supervisory control of a whole house or building on the Libertas Hub
+Linux runtime. Treat its V1
 configuration, runtime protocol, and database layout as unpublished design-time
 contracts. Reshape V1 directly while the design is under review; do not add
 legacy fields or migrations.
+
+- Package the CPU-only XGBoost implementation into the application artifact as
+  a position-independent static library. Build with CUDA and OpenMP disabled so
+  the deployed application has no XGBoost, CUDA, or OpenMP runtime-package
+  dependency. Keep XGBoost's unsafe C API behind a safe dependency wrapper;
+  application source remains free of unsafe code.
+- Own every XGBoost booster on one bounded `std` worker thread. Libertas
+  callbacks may only submit owned work through bounded nonblocking channels;
+  the worker may call only `libertas_wake_up` until shutdown, then
+  `libertas_shutdown_complete` as its final Libertas operation. Never train and
+  predict concurrently against one booster.
+- Train thermal models from ordered, validated, indexed room samples using a
+  time-ordered holdout. Promote a candidate only when it improves on the
+  deterministic no-change baseline by the V1 promotion margin. Persist the
+  candidate UBJSON model, feature manifest, checksum, training range, and
+  validation metrics before activating it. Retain the previous accepted model
+  for rollback and use deterministic control whenever no validated model is
+  available.
+- XGBoost predicts bounded near-term room temperature movement only. The
+  deterministic control engine remains authoritative for thermostat limits,
+  deadband, user `Off`, command suppression, urgent conditions, and all
+  supervisory or life-safety boundaries.
 
 - Keep rooms and thermostats inside one `BuildingHvacBuildingV1` configuration
   argument. Define `rooms` first, then use

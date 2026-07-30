@@ -9,7 +9,13 @@ libertas = { git = "https://github.com/LibertasIoT/libertas-rs.git", branch = "m
 libertas_macros = { git = "https://github.com/LibertasIoT/libertas-rs.git", branch = "main", package = "libertas_macros" }
 libertas-matter = { git = "https://github.com/LibertasIoT/libertas-matter", package = "libertas-matter", default-features = false, features = ["alloc"] }
 libertas-weather = { path = "../libertas-weather", package = "libertas-weather" }
-libm = "0.2"
+sha2 = "0.10"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+xgb = { version = "3.0.5", default-features = false, features = ["local_build"] }
+
+[patch.crates-io]
+xgboost_lib-sys = { path = "vendor/xgboost_lib-sys" }
 
 [patch."https://github.com/LibertasIoT/libertas-rs.git"]
 libertas = { path = "../../../rust/libertas-rs/crates/libertas" }

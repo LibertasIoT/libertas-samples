@@ -2,23 +2,29 @@
 //! Configures rooms, their Matter thermostats and environmental sensors, and a
 //! building-HVAC weather client. Every room exposes a Libertas endpoint that
 //! separates writable comfort intent from read-only observed state, statistics,
-//! and the controller's calculated schedule.
-#![no_std]
+//! and the controller's calculated schedule. The Hub build uses `std` and
+//! statically links a bounded CPU-only XGBoost thermal-prediction worker.
 #![forbid(unsafe_code)]
 
 extern crate alloc;
 
 use alloc::{boxed::Box, string::String, vec::Vec};
+use core::any::Any;
+use std::sync::mpsc::Receiver;
 
 use libertas::{
     LibertasDateTime, LibertasDevice, LibertasEndpoint, LibertasUser, LogLevel,
-    NotificationArgument, NotificationImportance, libertas_data_write, libertas_log,
-    libertas_notification_send,
+    NotificationArgument, NotificationImportance, libertas_data_read, libertas_data_write,
+    libertas_log, libertas_notification_send, libertas_register_shutdown_handler,
+    libertas_register_wakeup_callback, libertas_shutdown_complete, libertas_wake_up,
 };
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
     libertas_string_resources,
 };
+
+mod machine_learning;
+pub use machine_learning::*;
 
 pub use libertas_weather::{
     BuildingHvacCurrentWeatherV1, BuildingHvacOutdoorAirQualityPeriodV1,
@@ -194,7 +200,7 @@ pub const BUILDING_HVAC_EXCESSIVE_HEAT_RECOVERY_TEMPERATURE_CELSIUS: f32 = 32.0;
 /// `UnitUnsigned("duration-seconds")`; not-recovering resources receive room,
 /// duration, and temperature in that order. Recovery receives room,
 /// condition-name `ResourceText`, and current temperature.
-pub static APP_STRINGS: [(&str, &str); 15] = [
+pub static APP_STRINGS: [(&str, &str); 17] = [
     (
         "HVAC_ROOM_STATUS",
         "Room status: %1$s. HVAC: %2$s. Air quality: %3$s.",
@@ -245,6 +251,14 @@ pub static APP_STRINGS: [(&str, &str); 15] = [
     (
         "HVAC_ROOM_URGENT_NOTIFICATION_STATE",
         "Urgent HVAC notification state for %1$s.",
+    ),
+    (
+        "HVAC_ML_MODELS",
+        "Accepted smart building HVAC thermal prediction models for %1$s.",
+    ),
+    (
+        "HVAC_ML_SAMPLE",
+        "Thermal learning sample history for %1$s.",
     ),
 ];
 
@@ -1507,6 +1521,13 @@ pub enum BuildingHvacRoomProtocolV1 {
         #[libertas_size(max = 16)]
         #[libertas_read_only]
         cross_zone_influences: Vec<BuildingHvacCrossZoneInfluenceV1>,
+        /// Machine-learning predictions
+        /// Read-only bounded near-term room temperature changes. Each result
+        /// names XGBoost or deterministic fallback as its source. These values
+        /// inform planning but never replace thermostat, deadband, explicit
+        /// `Off`, urgent-condition, or life-safety constraints.
+        #[libertas_read_only]
+        machine_learning: BuildingHvacRoomMachineLearningV1,
         /// Calculated plan
         /// The read-only room schedule when the optimizer has sufficient data
         /// to calculate one.
@@ -2270,6 +2291,25 @@ pub enum BuildingHvacPersistentDataV1 {
         /// One condition's persisted debounce and last-notification state.
         #[libertas_size(max = 5)]
         conditions: Vec<BuildingHvacPersistedUrgentConditionV1>,
+    },
+    /// Machine-learning models V1
+    /// Stores every accepted thermal model together with one rollback artifact
+    /// per horizon. A candidate is persisted here before it is activated on the
+    /// XGBoost worker.
+    MachineLearningModelsV1 {
+        /// Model set
+        /// Complete bounded active and rollback model state.
+        models: BuildingHvacMachineLearningModelSetV1,
+    },
+    /// Machine-learning sample V1
+    /// One record in a room-keyed indexed history. Its database index is
+    /// `sample.observed_at`; the value repeats the timestamp and stable room
+    /// endpoint so a mismatched or corrupt record can be rejected.
+    MachineLearningSampleV1 {
+        /// Training sample
+        /// Validated features and any temperature-change labels that have
+        /// become available for this observation.
+        sample: BuildingHvacMachineLearningSampleV1,
     },
 }
 
@@ -3313,7 +3353,7 @@ fn saturation_vapor_pressure_pascals(temperature_celsius: f32) -> Option<f32> {
     } else {
         22.587 * temperature_celsius / (temperature_celsius + 273.86)
     };
-    let pressure = 610.94 * libm::expf(exponent);
+    let pressure = 610.94 * exponent.exp();
     (pressure.is_finite() && pressure > 0.0).then_some(pressure)
 }
 
@@ -3443,6 +3483,11 @@ pub struct BuildingHvacRoomControlCandidate<'a> {
     /// other zones. Positive values predict warming; negative values predict
     /// cooling.
     pub predicted_cross_zone_temperature_change_celsius: f32,
+    /// Predicted machine-learning temperature change
+    /// Optional bounded XGBoost prediction for the control horizon. `None`
+    /// selects deterministic fallback while retaining the independently
+    /// learned cross-zone contribution.
+    pub predicted_machine_learning_temperature_change_celsius: Option<f32>,
 }
 
 /// Matter thermostat control limits
@@ -3553,10 +3598,10 @@ impl BuildingHvacControlEngine {
     }
 
     /// Arbitrate thermostat
-    /// Applies comfort-or-savings adjustment, learned cross-zone prediction,
-    /// physical setpoint limits, and deadband. Ready rooms receive full demand
-    /// weight; degraded-but-trustworthy rooms receive half weight when resolving
-    /// a heating/cooling conflict.
+    /// Applies comfort-or-savings adjustment, learned cross-zone and bounded
+    /// machine-learning predictions, physical setpoint limits, and deadband.
+    /// Ready rooms receive full demand weight; degraded-but-trustworthy rooms
+    /// receive half weight when resolving a heating/cooling conflict.
     pub fn arbitrate_thermostat(
         &self,
         thermostat: LibertasDevice,
@@ -3581,6 +3626,12 @@ impl BuildingHvacControlEngine {
                 || !room
                     .predicted_cross_zone_temperature_change_celsius
                     .is_finite()
+                || room
+                    .predicted_machine_learning_temperature_change_celsius
+                    .is_some_and(|prediction| {
+                        !prediction.is_finite()
+                            || prediction.abs() > BUILDING_HVAC_ML_MAXIMUM_PREDICTED_CHANGE_CELSIUS
+                    })
             {
                 continue;
             }
@@ -3590,8 +3641,11 @@ impl BuildingHvacControlEngine {
             if !current_temperature_celsius.is_finite() {
                 continue;
             }
-            let predicted_temperature_celsius =
-                current_temperature_celsius + room.predicted_cross_zone_temperature_change_celsius;
+            let predicted_temperature_celsius = current_temperature_celsius
+                + room.predicted_cross_zone_temperature_change_celsius
+                + room
+                    .predicted_machine_learning_temperature_change_celsius
+                    .unwrap_or(0.0);
             if !predicted_temperature_celsius.is_finite() {
                 continue;
             }
@@ -3888,6 +3942,117 @@ fn validate_building_configuration(
     Ok(())
 }
 
+const BUILDING_HVAC_ML_MODELS_RESOURCE: &str = "HVAC_ML_MODELS";
+
+struct BuildingHvacMachineLearningWakeupContext {
+    client: BuildingHvacMachineLearningClient,
+    results: Receiver<BuildingHvacMachineLearningResult>,
+    model_sets: Vec<BuildingHvacMachineLearningModelSetV1>,
+}
+
+struct BuildingHvacMachineLearningShutdownContext {
+    client: BuildingHvacMachineLearningClient,
+}
+
+fn restore_machine_learning_models(
+    building: &BuildingHvacBuildingV1,
+) -> Vec<BuildingHvacMachineLearningModelSetV1> {
+    building
+        .rooms
+        .iter()
+        .map(|room| {
+            let key = [NotificationArgument::Object(room.control_endpoint)];
+            if let Some(BuildingHvacPersistentDataV1::MachineLearningModelsV1 { models }) =
+                libertas_data_read(BUILDING_HVAC_ML_MODELS_RESOURCE, &key)
+                && models.room_endpoint == room.control_endpoint
+                && models.is_well_formed()
+            {
+                return models;
+            }
+
+            let models = BuildingHvacMachineLearningModelSetV1::empty(room.control_endpoint);
+            let value = BuildingHvacPersistentDataV1::MachineLearningModelsV1 {
+                models: models.clone(),
+            };
+            libertas_data_write(BUILDING_HVAC_ML_MODELS_RESOURCE, &key, &value);
+            models
+        })
+        .collect()
+}
+
+fn handle_machine_learning_wakeup(context: &mut Box<dyn Any>) {
+    let context = context
+        .downcast_mut::<BuildingHvacMachineLearningWakeupContext>()
+        .expect("invalid smart building HVAC machine-learning wake-up context");
+    while let Ok(result) = context.results.try_recv() {
+        match result {
+            BuildingHvacMachineLearningResult::Candidate(candidate) => {
+                let Some(current) = context
+                    .model_sets
+                    .iter()
+                    .find(|models| models.room_endpoint == candidate.room_endpoint)
+                else {
+                    libertas_log(
+                        LogLevel::Warn,
+                        "Smart building HVAC rejected an XGBoost candidate for an unknown room",
+                    );
+                    continue;
+                };
+                let mut updated = current.clone();
+                if !updated.promote(candidate.clone()) {
+                    libertas_log(
+                        LogLevel::Warn,
+                        "Smart building HVAC rejected an invalid XGBoost candidate",
+                    );
+                    continue;
+                }
+
+                let value = BuildingHvacPersistentDataV1::MachineLearningModelsV1 {
+                    models: updated.clone(),
+                };
+                let key = [NotificationArgument::Object(updated.room_endpoint)];
+                libertas_data_write(BUILDING_HVAC_ML_MODELS_RESOURCE, &key, &value);
+                if let Some(current) = context
+                    .model_sets
+                    .iter_mut()
+                    .find(|models| models.room_endpoint == updated.room_endpoint)
+                {
+                    *current = updated;
+                }
+                if context.client.try_activate(candidate).is_err() {
+                    libertas_log(
+                        LogLevel::Warn,
+                        "Smart building HVAC persisted an XGBoost model but could not activate it; it will be restored after restart",
+                    );
+                }
+            }
+            BuildingHvacMachineLearningResult::TrainingRejected { horizon, reason } => {
+                let message = format!(
+                    "Smart building HVAC XGBoost training rejected for {horizon:?}: {reason:?}"
+                );
+                libertas_log(LogLevel::Warn, &message);
+            }
+            BuildingHvacMachineLearningResult::Prediction { .. } => {
+                // The live Matter/weather runtime will correlate predictions
+                // when it submits work. The worker remains independently
+                // usable and deterministic fallback is explicit in the result.
+            }
+        }
+    }
+}
+
+fn handle_machine_learning_shutdown(context: &mut Box<dyn Any>) {
+    let context = context
+        .downcast_mut::<BuildingHvacMachineLearningShutdownContext>()
+        .expect("invalid smart building HVAC machine-learning shutdown context");
+    if matches!(
+        context.client.request_shutdown(),
+        Err(BuildingHvacMachineLearningQueueError::Disconnected)
+    ) {
+        libertas_shutdown_complete();
+    }
+}
+
 /// Libertas smart building HVAC
 /// Configures a room-first building topology and its dedicated building-HVAC
 /// weather client. Room endpoints expose writable comfort intent and read-only
@@ -3897,8 +4062,9 @@ fn validate_building_configuration(
 /// does not generate certified life-safety alarms. The runtime protocol and
 /// persistent union are design contracts. Pure analytics, shared-thermostat
 /// control, learning, and urgent-notification algorithms are implemented; this
-/// entry function currently validates configuration without starting Matter or
-/// weather listeners.
+/// entry function validates configuration and starts the bounded statically
+/// linked XGBoost worker with persisted accepted models. Matter and weather
+/// listeners remain separate runtime integration work.
 #[libertas_data_schema(BuildingHvacPersistentDataV1)]
 #[libertas_string_resources(APP_STRINGS)]
 pub fn libertas_smart_building_hvac(
@@ -3926,6 +4092,44 @@ pub fn libertas_smart_building_hvac(
             "Smart building HVAC configuration is invalid",
         );
         return;
+    }
+
+    let model_sets = restore_machine_learning_models(&building);
+    let active_models: Vec<_> = model_sets
+        .iter()
+        .flat_map(BuildingHvacMachineLearningModelSetV1::active_models)
+        .cloned()
+        .collect();
+    let (machine_learning, machine_learning_results) =
+        match start_machine_learning_worker(libertas_wake_up, libertas_shutdown_complete) {
+            Ok(runtime) => runtime,
+            Err(error) => {
+                libertas_log(LogLevel::Error, &error);
+                let _ = weather;
+                return;
+            }
+        };
+    libertas_register_wakeup_callback(
+        handle_machine_learning_wakeup,
+        Box::new(BuildingHvacMachineLearningWakeupContext {
+            client: machine_learning.clone(),
+            results: machine_learning_results,
+            model_sets,
+        }),
+    );
+    libertas_register_shutdown_handler(
+        handle_machine_learning_shutdown,
+        Box::new(BuildingHvacMachineLearningShutdownContext {
+            client: machine_learning.clone(),
+        }),
+    );
+    for model in active_models {
+        if machine_learning.try_activate(model).is_err() {
+            libertas_log(
+                LogLevel::Warn,
+                "Smart building HVAC could not queue an accepted XGBoost model for activation",
+            );
+        }
     }
 
     let _ = weather;
@@ -4205,6 +4409,7 @@ mod tests {
                 cooling_confidence_normalized: 0.5,
                 learned_at: Some(1_785_059_200),
             }],
+            machine_learning: BuildingHvacRoomMachineLearningV1::default(),
             plan: Some(Box::new(plan())),
         }
     }
@@ -4312,7 +4517,41 @@ mod tests {
         learning
     }
 
-    fn persistent_values() -> [BuildingHvacPersistentDataV1; 12] {
+    fn machine_learning_features(
+        room_temperature_celsius: f32,
+    ) -> BuildingHvacMachineLearningFeaturesV1 {
+        BuildingHvacMachineLearningFeaturesV1 {
+            room_temperature_celsius,
+            room_relative_humidity_percent: Some(45.0),
+            outdoor_temperature_celsius: Some(5.0),
+            outdoor_humidity_ratio_kilograms_per_kilogram: Some(0.004),
+            outdoor_wind_speed_meters_per_second: Some(3.0),
+            global_horizontal_solar_irradiance_watts_per_square_meter: Some(150.0),
+            hour_of_day_sine: 0.0,
+            hour_of_day_cosine: 1.0,
+            day_of_year_sine: 0.0,
+            day_of_year_cosine: 1.0,
+            own_heating_runtime_fraction: 0.5,
+            own_cooling_runtime_fraction: 0.0,
+            other_zone_heating_runtime_fraction: 0.0,
+            other_zone_cooling_runtime_fraction: 0.0,
+            heating_setpoint_offset_celsius: Some(2.0),
+            cooling_setpoint_offset_celsius: Some(6.0),
+        }
+    }
+
+    fn machine_learning_sample() -> BuildingHvacMachineLearningSampleV1 {
+        BuildingHvacMachineLearningSampleV1 {
+            observed_at: 1_785_059_200,
+            room_endpoint: 100,
+            features: machine_learning_features(20.0),
+            temperature_change_15_minutes_celsius: Some(0.2),
+            temperature_change_30_minutes_celsius: Some(0.35),
+            temperature_change_60_minutes_celsius: Some(0.6),
+        }
+    }
+
+    fn persistent_values() -> [BuildingHvacPersistentDataV1; 14] {
         [
             BuildingHvacPersistentDataV1::RoomControlV1 {
                 control_revision: 3,
@@ -4351,6 +4590,12 @@ mod tests {
             },
             BuildingHvacPersistentDataV1::RoomUrgentNotificationStateV1 {
                 conditions: vec![persisted_urgent_condition()],
+            },
+            BuildingHvacPersistentDataV1::MachineLearningModelsV1 {
+                models: BuildingHvacMachineLearningModelSetV1::empty(100),
+            },
+            BuildingHvacPersistentDataV1::MachineLearningSampleV1 {
+                sample: machine_learning_sample(),
             },
         ]
     }
@@ -5098,12 +5343,14 @@ mod tests {
                 control: &cold_control,
                 state: &cold_state,
                 predicted_cross_zone_temperature_change_celsius: 0.0,
+                predicted_machine_learning_temperature_change_celsius: None,
             },
             BuildingHvacRoomControlCandidate {
                 room_endpoint: 101,
                 control: &hot_control,
                 state: &hot_state,
                 predicted_cross_zone_temperature_change_celsius: 0.0,
+                predicted_machine_learning_temperature_change_celsius: None,
             },
         ];
         assert_eq!(
@@ -5126,6 +5373,7 @@ mod tests {
             control: &comfort_control,
             state: &cold_state,
             predicted_cross_zone_temperature_change_celsius: 1.0,
+            predicted_machine_learning_temperature_change_celsius: None,
         }];
         assert_eq!(
             BuildingHvacControlEngine::new().arbitrate_thermostat(200, limits, &comfort_candidate),
@@ -5158,12 +5406,14 @@ mod tests {
                 control: &conflict_heat,
                 state: &cold_state,
                 predicted_cross_zone_temperature_change_celsius: 0.0,
+                predicted_machine_learning_temperature_change_celsius: None,
             },
             BuildingHvacRoomControlCandidate {
                 room_endpoint: 101,
                 control: &conflict_cool,
                 state: &hot_state,
                 predicted_cross_zone_temperature_change_celsius: 0.0,
+                predicted_machine_learning_temperature_change_celsius: None,
             },
         ];
         let decision = BuildingHvacControlEngine::new().arbitrate_thermostat(
@@ -5185,13 +5435,15 @@ mod tests {
                 room_endpoint: 100,
                 control: &conflict_heat,
                 state: &cold_state,
-                predicted_cross_zone_temperature_change_celsius: 20.0,
+                predicted_cross_zone_temperature_change_celsius: 10.0,
+                predicted_machine_learning_temperature_change_celsius: Some(10.0),
             },
             BuildingHvacRoomControlCandidate {
                 room_endpoint: 101,
                 control: &conflict_cool,
                 state: &hot_state,
                 predicted_cross_zone_temperature_change_celsius: 0.0,
+                predicted_machine_learning_temperature_change_celsius: None,
             },
         ];
         assert!(matches!(
@@ -5226,6 +5478,7 @@ mod tests {
             control: &control,
             state: &state,
             predicted_cross_zone_temperature_change_celsius: 0.0,
+            predicted_machine_learning_temperature_change_celsius: None,
         }];
         assert_eq!(
             BuildingHvacControlEngine::new().arbitrate_thermostat(200, limits, &candidate),
@@ -5243,6 +5496,7 @@ mod tests {
             control: &off,
             state: &state,
             predicted_cross_zone_temperature_change_celsius: 0.0,
+            predicted_machine_learning_temperature_change_celsius: None,
         }];
         assert_eq!(
             BuildingHvacControlEngine::new().arbitrate_thermostat(200, limits, &off_candidate),
@@ -5257,6 +5511,7 @@ mod tests {
             control: &control,
             state: &state,
             predicted_cross_zone_temperature_change_celsius: 0.0,
+            predicted_machine_learning_temperature_change_celsius: None,
         }];
         assert_eq!(
             BuildingHvacControlEngine::new().arbitrate_thermostat(
@@ -5399,6 +5654,203 @@ mod tests {
         assert!(!learner.observe(started_at, 0.25, 0.2, 1.0));
     }
 
+    fn structurally_valid_machine_learning_model(
+        room_endpoint: LibertasEndpoint,
+        horizon: BuildingHvacThermalPredictionHorizonV1,
+        trained_at: LibertasDateTime,
+        model_ubjson: Vec<u8>,
+    ) -> BuildingHvacMachineLearningModelV1 {
+        use sha2::{Digest, Sha256};
+
+        BuildingHvacMachineLearningModelV1 {
+            room_endpoint,
+            horizon,
+            feature_schema_version: BUILDING_HVAC_ML_FEATURE_SCHEMA_VERSION,
+            feature_names: BUILDING_HVAC_ML_FEATURE_NAMES
+                .iter()
+                .map(|name| String::from(*name))
+                .collect(),
+            xgboost_version: String::from(BUILDING_HVAC_XGBOOST_VERSION),
+            trained_at,
+            training_range_starts_at: trained_at - 14 * 24 * 60 * 60,
+            training_range_ends_at: trained_at - 24 * 60 * 60,
+            boost_rounds: BUILDING_HVAC_ML_BOOST_ROUNDS,
+            maximum_tree_depth: BUILDING_HVAC_ML_MAXIMUM_TREE_DEPTH,
+            learning_rate: 0.05,
+            validation: BuildingHvacMachineLearningValidationV1 {
+                training_sample_count: 1_076,
+                validation_sample_count: 268,
+                candidate_rmse_celsius: 0.1,
+                deterministic_baseline_rmse_celsius: 0.2,
+                improvement_normalized: 0.5,
+            },
+            model_sha256: Sha256::digest(&model_ubjson).to_vec(),
+            model_ubjson,
+        }
+    }
+
+    #[test]
+    fn machine_learning_features_and_samples_reject_invalid_values() {
+        let features = machine_learning_features(20.0);
+        assert!(features.is_well_formed());
+        assert!(machine_learning_sample().is_well_formed());
+
+        let mut invalid = features;
+        invalid.own_heating_runtime_fraction = 0.75;
+        invalid.own_cooling_runtime_fraction = 0.5;
+        assert!(!invalid.is_well_formed());
+
+        let mut missing_targets = machine_learning_sample();
+        missing_targets.temperature_change_15_minutes_celsius = None;
+        missing_targets.temperature_change_30_minutes_celsius = None;
+        missing_targets.temperature_change_60_minutes_celsius = None;
+        assert!(!missing_targets.is_well_formed());
+    }
+
+    #[test]
+    fn machine_learning_model_manifest_checksum_and_rollback_are_validated() {
+        let first = structurally_valid_machine_learning_model(
+            100,
+            BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+            1_786_000_000,
+            vec![1, 2, 3],
+        );
+        assert!(first.is_well_formed());
+
+        let mut corrupt = first.clone();
+        corrupt.model_ubjson.push(4);
+        assert!(!corrupt.is_well_formed());
+
+        let mut models = BuildingHvacMachineLearningModelSetV1::empty(100);
+        assert!(models.promote(first.clone()));
+        let second = structurally_valid_machine_learning_model(
+            100,
+            BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+            1_786_086_400,
+            vec![4, 5, 6],
+        );
+        assert!(models.promote(second.clone()));
+        assert!(models.is_well_formed());
+        assert_eq!(models.models[0].active_model, second);
+        assert_eq!(models.models[0].previous_model, Some(first));
+
+        let wrong_room = structurally_valid_machine_learning_model(
+            101,
+            BuildingHvacThermalPredictionHorizonV1::ThirtyMinutes,
+            1_786_086_400,
+            vec![7, 8, 9],
+        );
+        assert!(!models.promote(wrong_room));
+    }
+
+    #[test]
+    fn machine_learning_public_values_round_trip() {
+        let model = structurally_valid_machine_learning_model(
+            100,
+            BuildingHvacThermalPredictionHorizonV1::SixtyMinutes,
+            1_786_000_000,
+            vec![1, 2, 3],
+        );
+        let mut models = BuildingHvacMachineLearningModelSetV1::empty(100);
+        assert!(models.promote(model.clone()));
+        let runtime = BuildingHvacRoomMachineLearningV1 {
+            predictions: vec![BuildingHvacThermalPredictionV1 {
+                horizon: BuildingHvacThermalPredictionHorizonV1::SixtyMinutes,
+                temperature_change_celsius: -0.5,
+                source: BuildingHvacThermalPredictionSourceV1::Xgboost,
+                model_trained_at: Some(model.trained_at),
+            }],
+        };
+
+        assert_round_trip!(
+            BuildingHvacMachineLearningFeaturesV1,
+            machine_learning_features(20.0)
+        );
+        assert_round_trip!(
+            BuildingHvacMachineLearningSampleV1,
+            machine_learning_sample()
+        );
+        assert_round_trip!(BuildingHvacMachineLearningModelV1, model);
+        assert_round_trip!(BuildingHvacMachineLearningModelSetV1, models);
+        assert_round_trip!(BuildingHvacRoomMachineLearningV1, runtime);
+    }
+
+    fn no_op_worker_callback() {}
+
+    #[test]
+    fn machine_learning_worker_returns_explicit_fallback_without_a_model() {
+        let (client, results) =
+            start_machine_learning_worker(no_op_worker_callback, no_op_worker_callback).unwrap();
+        client
+            .try_predict(
+                7,
+                100,
+                BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+                machine_learning_features(20.0),
+            )
+            .unwrap();
+        let result = results
+            .recv_timeout(std::time::Duration::from_secs(2))
+            .unwrap();
+        assert_eq!(
+            result,
+            BuildingHvacMachineLearningResult::Prediction {
+                request_id: 7,
+                room_endpoint: 100,
+                prediction: BuildingHvacThermalPredictionV1 {
+                    horizon: BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+                    temperature_change_celsius: 0.0,
+                    source: BuildingHvacThermalPredictionSourceV1::DeterministicFallback,
+                    model_trained_at: None,
+                },
+            }
+        );
+        client.request_shutdown().unwrap();
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn statically_linked_xgboost_trains_serializes_and_predicts() {
+        let starts_at = 1_785_000_000;
+        let samples: Vec<_> = (0..BUILDING_HVAC_ML_MINIMUM_TRAINING_SAMPLES)
+            .map(|index| {
+                let heating = if index % 4 < 2 { 0.75 } else { 0.0 };
+                let cooling = if index % 4 == 3 { 0.5 } else { 0.0 };
+                let room_temperature = 18.0 + (index % 40) as f32 * 0.1;
+                let mut features = machine_learning_features(room_temperature);
+                features.own_heating_runtime_fraction = heating;
+                features.own_cooling_runtime_fraction = cooling;
+                features.outdoor_temperature_celsius = Some(2.0 + (index % 24) as f32 * 0.5);
+                let target = 0.7 * heating - 0.8 * cooling + (20.0 - room_temperature) * 0.03;
+                BuildingHvacMachineLearningSampleV1 {
+                    observed_at: starts_at + index as u64 * 900,
+                    room_endpoint: 100,
+                    features,
+                    temperature_change_15_minutes_celsius: Some(target),
+                    temperature_change_30_minutes_celsius: None,
+                    temperature_change_60_minutes_celsius: None,
+                }
+            })
+            .collect();
+        let trained_at = samples.last().unwrap().observed_at + 900;
+        let model = BuildingHvacMachineLearningEngine::train_candidate(
+            BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+            trained_at,
+            &samples,
+        )
+        .unwrap();
+        assert!(model.is_well_formed());
+        assert!(
+            model.validation.candidate_rmse_celsius
+                < model.validation.deterministic_baseline_rmse_celsius
+        );
+        let prediction =
+            BuildingHvacMachineLearningEngine::predict(&model, machine_learning_features(19.0))
+                .unwrap();
+        assert!(prediction.is_finite());
+        assert!(prediction.abs() <= BUILDING_HVAC_ML_MAXIMUM_PREDICTED_CHANGE_CELSIUS);
+    }
+
     #[test]
     fn enum_and_union_discriminants_are_stable() {
         let preferences = [
@@ -5488,6 +5940,15 @@ mod tests {
             BuildingHvacRoomControlErrorV1::UnsupportedOperatingPreference,
             BuildingHvacRoomControlErrorV1::TemporarilyUnavailable,
         ];
+        let machine_learning_horizons = [
+            BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+            BuildingHvacThermalPredictionHorizonV1::ThirtyMinutes,
+            BuildingHvacThermalPredictionHorizonV1::SixtyMinutes,
+        ];
+        let machine_learning_sources = [
+            BuildingHvacThermalPredictionSourceV1::Xgboost,
+            BuildingHvacThermalPredictionSourceV1::DeterministicFallback,
+        ];
 
         for values in [
             preferences
@@ -5535,6 +5996,14 @@ mod tests {
                 .map(|value| value.to_avro())
                 .collect::<Vec<_>>(),
             errors
+                .iter()
+                .map(|value| value.to_avro())
+                .collect::<Vec<_>>(),
+            machine_learning_horizons
+                .iter()
+                .map(|value| value.to_avro())
+                .collect::<Vec<_>>(),
+            machine_learning_sources
                 .iter()
                 .map(|value| value.to_avro())
                 .collect::<Vec<_>>(),
@@ -5616,6 +6085,14 @@ mod tests {
             BUILDING_HVAC_CROSS_ZONE_LEARNING_HALF_LIFE_SECONDS,
             30 * 24 * 60 * 60
         );
+        assert_eq!(BUILDING_HVAC_ML_FEATURE_COUNT, 16);
+        assert_eq!(BUILDING_HVAC_ML_MINIMUM_TRAINING_SAMPLES, 14 * 24 * 4);
+        assert_eq!(
+            BUILDING_HVAC_ML_MAXIMUM_TRAINING_SAMPLES_PER_ROOM,
+            91 * 24 * 4
+        );
+        assert_eq!(BUILDING_HVAC_ML_COMMAND_CAPACITY, 8);
+        assert_eq!(BUILDING_HVAC_ML_RESULT_CAPACITY, 16);
     }
 
     #[test]
