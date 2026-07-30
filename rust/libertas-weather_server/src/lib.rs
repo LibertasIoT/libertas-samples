@@ -10,10 +10,13 @@
 //! provider results, advances cursor state, and publishes reports on the single
 //! Libertas application thread.
 //!
-//! Startup uses the persisted retrieval timestamp of each valid weather section
-//! to preserve its refresh schedule across restarts. Missing, overdue, or
-//! future-dated cache entries refresh immediately; otherwise the first request
-//! waits only for the remainder of the normal refresh interval.
+//! Startup subscribes to the built-in Libertas Hub location endpoint. A valid
+//! persisted location is used while that subscription is recovering; without a
+//! cached location, the worker remains idle. Persisted retrieval timestamps
+//! preserve each valid weather section's refresh schedule across restarts.
+//! Missing, overdue, or future-dated cache entries refresh immediately;
+//! otherwise the first request waits only for the remainder of the normal
+//! refresh interval.
 //!
 //! The Libertas shutdown handler signals the HTTP worker without blocking the
 //! application thread. After any bounded in-flight request returns, the worker
@@ -26,7 +29,7 @@ extern crate alloc;
 
 use std::{
     any::Any,
-    cell::RefCell,
+    cell::{Cell, RefCell},
     io::Read,
     rc::Rc,
     sync::{
@@ -39,15 +42,18 @@ use std::{
 };
 
 use libertas::{
-    LibertasDateTime, LibertasEndpoint, LibertasEndpointStatus, LogLevel, NotificationArgument,
-    OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_TIMEOUT, OP_ENDPOINT_REQ, OP_ENDPOINT_SUB_REQ,
-    libertas_data_read, libertas_data_write, libertas_endpoint_remove_subscriber,
-    libertas_endpoint_report, libertas_endpoint_response, libertas_get_sys_ticks,
+    LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasEndpoint, LibertasEndpointHandlerResult,
+    LibertasEndpointMessage, LibertasEndpointStatus, LogLevel, NotificationArgument,
+    OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_TIMEOUT, OP_ENDPOINT_REQ,
+    OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_data_read, libertas_data_remove,
+    libertas_data_write, libertas_endpoint_remove_subscriber, libertas_endpoint_report,
+    libertas_endpoint_response, libertas_endpoint_subscribe_request, libertas_get_sys_ticks,
     libertas_get_utc_time, libertas_log, libertas_register_endpoint_listener,
-    libertas_register_shutdown_handler, libertas_register_wakeup_callback,
-    libertas_shutdown_complete, libertas_timer_cancel, libertas_timer_new_interval,
-    libertas_timer_update_interval, libertas_wake_up,
+    libertas_register_endpoint_status_listener, libertas_register_shutdown_handler,
+    libertas_register_wakeup_callback, libertas_shutdown_complete, libertas_timer_cancel,
+    libertas_timer_new_interval, libertas_timer_update_interval, libertas_wake_up,
 };
+use libertas_hub::HubProtocol;
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
     libertas_string_resources,
@@ -61,9 +67,10 @@ use libertas_weather::{
     SPRINKLER_SUBSCRIPTION_REPLAY_WINDOW_SECONDS, SprinklerCurrentWeatherV1,
     SprinklerWeatherChangeV1, SprinklerWeatherCursorV1, SprinklerWeatherForecastPeriodV1,
     SprinklerWeatherForecastV1, SprinklerWeatherHistoryPeriodV1, SprinklerWeatherHistoryV1,
-    SprinklerWeatherIncrementalReportV1, SprinklerWeatherPersistentDataV1,
-    SprinklerWeatherProtocolV1, SprinklerWeatherRecoveryErrorV1, SprinklerWeatherRecoveryV1,
-    SprinklerWeatherResetReasonV1, SprinklerWeatherSnapshotV1, SprinklerWeatherTimeRangeV1,
+    SprinklerWeatherIncrementalReportV1, SprinklerWeatherLocationV1,
+    SprinklerWeatherPersistentDataV1, SprinklerWeatherProtocolV1, SprinklerWeatherRecoveryErrorV1,
+    SprinklerWeatherRecoveryV1, SprinklerWeatherResetReasonV1, SprinklerWeatherSectionV1,
+    SprinklerWeatherSnapshotV1, SprinklerWeatherTimeRangeV1,
 };
 use reqwest::{blocking::Client, redirect::Policy};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
@@ -78,14 +85,18 @@ const PROVIDER_RESULT_CAPACITY: usize = 4;
 const MAX_RECOVERY_PERIODS: usize = 7 * 24;
 const MAX_REPLAY_CHANGES: usize = 512;
 const RETRY_WITHOUT_UTC_SECONDS: u32 = 60;
+const HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS: u32 = 60 * 60;
+const HUB_LOCATION_RETRY_SECONDS: u32 = 60;
+const LOCATION_EQUALITY_TOLERANCE_DEGREES: f64 = 0.000_001;
 
 const HISTORY_RESOURCE: &str = "SPRINKLER_WEATHER_HISTORY_V1";
 const CURRENT_RESOURCE: &str = "SPRINKLER_CURRENT_WEATHER_V1";
 const FORECAST_RESOURCE: &str = "SPRINKLER_WEATHER_FORECAST_V1";
+const LOCATION_RESOURCE: &str = "SPRINKLER_WEATHER_LOCATION_V1";
 
 /// Weather server database names
 /// Stable resource identifiers and their user-facing descriptions.
-pub static APP_STRINGS: [(&str, &str); 3] = [
+pub static APP_STRINGS: [(&str, &str); 4] = [
     (
         HISTORY_RESOURCE,
         "Persisted sprinkler weather history for %1$s.",
@@ -97,6 +108,10 @@ pub static APP_STRINGS: [(&str, &str); 3] = [
     (
         FORECAST_RESOURCE,
         "Persisted sprinkler weather forecast for %1$s.",
+    ),
+    (
+        LOCATION_RESOURCE,
+        "Persisted sprinkler weather location for %1$s.",
     ),
 ];
 
@@ -112,33 +127,28 @@ pub struct SprinklerWeatherEndpointServerV1 {
     #[libertas_endpoint_server]
     #[libertas_ui_header]
     pub endpoint: LibertasEndpoint,
-    /// Latitude
-    /// WGS84 latitude of the sprinkler site in decimal degrees.
-    #[libertas_number(min = -90, max = 90)]
-    pub latitude_degrees: f32,
-    /// Longitude
-    /// WGS84 longitude of the sprinkler site in decimal degrees. Locations west
-    /// of Greenwich use negative values.
-    #[libertas_number(min = -180, max = 180)]
-    pub longitude_degrees: f32,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 struct ProviderLocation {
-    latitude_degrees: f32,
-    longitude_degrees: f32,
+    latitude_degrees: f64,
+    longitude_degrees: f64,
 }
 
 #[derive(Clone, Copy)]
 enum ProviderCommand {
-    RefreshCurrent,
-    RefreshHourly,
+    RefreshCurrent { location: ProviderLocation },
+    RefreshHourly { location: ProviderLocation },
     Shutdown,
 }
 
 enum ProviderMessage {
-    Current(Result<SprinklerCurrentWeatherV1, String>),
+    Current {
+        location: ProviderLocation,
+        result: Result<SprinklerCurrentWeatherV1, String>,
+    },
     Hourly {
+        location: ProviderLocation,
         history: Result<SprinklerWeatherHistoryV1, String>,
         forecast: Result<SprinklerWeatherForecastV1, String>,
     },
@@ -146,6 +156,7 @@ enum ProviderMessage {
 
 struct ProviderWakeupContext {
     shared: Rc<RefCell<WeatherServerState>>,
+    location: Rc<Cell<Option<ProviderLocation>>>,
     results: Receiver<ProviderMessage>,
 }
 
@@ -160,16 +171,38 @@ struct ProviderRuntime {
     stop_requested: Arc<AtomicBool>,
 }
 
+#[derive(Clone, Copy)]
+enum ProviderRefreshKind {
+    Current,
+    Hourly,
+}
+
 struct RefreshTimerContext {
     commands: SyncSender<ProviderCommand>,
-    command: ProviderCommand,
+    location: Rc<Cell<Option<ProviderLocation>>>,
+    refresh_kind: ProviderRefreshKind,
     interval_seconds: u32,
+}
+
+#[derive(Clone)]
+struct ProviderControl {
+    commands: SyncSender<ProviderCommand>,
+    location: Rc<Cell<Option<ProviderLocation>>>,
+    current_timer: u32,
+    hourly_timer: u32,
+}
+
+struct LocationSubscriptionState {
+    weather: Rc<RefCell<WeatherServerState>>,
+    provider: Option<ProviderControl>,
+    location: Option<SprinklerWeatherLocationV1>,
+    retry_timer: u32,
 }
 
 #[derive(Serialize)]
 struct OpenMeteoCurrentQuery {
-    latitude: f32,
-    longitude: f32,
+    latitude: f64,
+    longitude: f64,
     current: &'static str,
     timeformat: &'static str,
     wind_speed_unit: &'static str,
@@ -178,8 +211,8 @@ struct OpenMeteoCurrentQuery {
 
 #[derive(Serialize)]
 struct OpenMeteoHourlyQuery {
-    latitude: f32,
-    longitude: f32,
+    latitude: f64,
+    longitude: f64,
     hourly: &'static str,
     past_hours: u16,
     forecast_hours: u16,
@@ -563,7 +596,6 @@ fn send_provider_message(results: &SyncSender<ProviderMessage>, message: Provide
 }
 
 fn provider_worker(
-    location: ProviderLocation,
     commands: Receiver<ProviderCommand>,
     results: SyncSender<ProviderMessage>,
     stop_requested: Arc<AtomicBool>,
@@ -574,17 +606,28 @@ fn provider_worker(
             return libertas_shutdown_complete();
         }
         let message = match (&client, command) {
-            (Ok(client), ProviderCommand::RefreshCurrent) => {
-                ProviderMessage::Current(fetch_current_weather(client, location))
+            (Ok(client), ProviderCommand::RefreshCurrent { location }) => {
+                ProviderMessage::Current {
+                    location,
+                    result: fetch_current_weather(client, location),
+                }
             }
-            (Ok(client), ProviderCommand::RefreshHourly) => {
+            (Ok(client), ProviderCommand::RefreshHourly { location }) => {
                 let (history, forecast) = fetch_hourly_weather(client, location);
-                ProviderMessage::Hourly { history, forecast }
+                ProviderMessage::Hourly {
+                    location,
+                    history,
+                    forecast,
+                }
             }
-            (Err(error), ProviderCommand::RefreshCurrent) => {
-                ProviderMessage::Current(Err(error.clone()))
+            (Err(error), ProviderCommand::RefreshCurrent { location }) => {
+                ProviderMessage::Current {
+                    location,
+                    result: Err(error.clone()),
+                }
             }
-            (Err(error), ProviderCommand::RefreshHourly) => ProviderMessage::Hourly {
+            (Err(error), ProviderCommand::RefreshHourly { location }) => ProviderMessage::Hourly {
+                location,
                 history: Err(error.clone()),
                 forecast: Err(error.clone()),
             },
@@ -599,21 +642,14 @@ fn provider_worker(
     }
 }
 
-fn start_provider_worker(location: ProviderLocation) -> Result<ProviderRuntime, String> {
+fn start_provider_worker() -> Result<ProviderRuntime, String> {
     let (command_sender, command_receiver) = sync_channel(PROVIDER_COMMAND_CAPACITY);
     let (result_sender, result_receiver) = sync_channel(PROVIDER_RESULT_CAPACITY);
     let stop_requested = Arc::new(AtomicBool::new(false));
     let worker_stop_requested = Arc::clone(&stop_requested);
     thread::Builder::new()
         .name(String::from("libertas-weather-http"))
-        .spawn(move || {
-            provider_worker(
-                location,
-                command_receiver,
-                result_sender,
-                worker_stop_requested,
-            )
-        })
+        .spawn(move || provider_worker(command_receiver, result_sender, worker_stop_requested))
         .map_err(|error| format!("failed to start weather HTTP worker: {error}"))?;
     Ok(ProviderRuntime {
         commands: command_sender,
@@ -880,6 +916,11 @@ impl WeatherServerState {
             SprinklerWeatherChangeV1::ForecastReplaceV1 { forecast } => {
                 self.snapshot.forecast = Some(forecast.clone());
             }
+            SprinklerWeatherChangeV1::SectionClearV1 { section } => match section {
+                SprinklerWeatherSectionV1::History => self.snapshot.history = None,
+                SprinklerWeatherSectionV1::Current => self.snapshot.current = None,
+                SprinklerWeatherSectionV1::Forecast => self.snapshot.forecast = None,
+            },
             _ => {
                 return ChangePublication {
                     reports: Vec::new(),
@@ -1009,6 +1050,26 @@ fn persistent_key(endpoint: LibertasEndpoint) -> [NotificationArgument<'static>;
     [NotificationArgument::Object(endpoint)]
 }
 
+fn load_location(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherLocationV1> {
+    let key = persistent_key(endpoint);
+    match libertas_data_read(LOCATION_RESOURCE, &key) {
+        Some(SprinklerWeatherPersistentDataV1::LocationV1 { location })
+            if valid_weather_location(location) =>
+        {
+            Some(location)
+        }
+        Some(_) => {
+            libertas_log(
+                LogLevel::Warn,
+                "Discarding an invalid persisted sprinkler weather location",
+            );
+            libertas_data_remove(LOCATION_RESOURCE, &key);
+            None
+        }
+        None => None,
+    }
+}
+
 fn load_snapshot(endpoint: LibertasEndpoint) -> SprinklerWeatherSnapshotV1 {
     let key = persistent_key(endpoint);
     let history = match libertas_data_read(HISTORY_RESOURCE, &key) {
@@ -1043,17 +1104,12 @@ fn load_snapshot(endpoint: LibertasEndpoint) -> SprinklerWeatherSnapshotV1 {
     }
 }
 
-fn publish_persisted_change(
+fn publish_change(
     shared: &Rc<RefCell<WeatherServerState>>,
-    resource: &'static str,
-    persistent: SprinklerWeatherPersistentDataV1,
     change: SprinklerWeatherChangeV1,
     now_utc: LibertasDateTime,
 ) {
     let endpoint = shared.borrow().endpoint;
-    let key = persistent_key(endpoint);
-    libertas_data_write(resource, &key, &persistent);
-
     let publication = shared
         .borrow_mut()
         .apply_change(change, libertas_get_sys_ticks(), now_utc);
@@ -1066,6 +1122,20 @@ fn publish_persisted_change(
     update_heartbeat_timer(shared);
 }
 
+fn publish_persisted_change(
+    shared: &Rc<RefCell<WeatherServerState>>,
+    resource: &'static str,
+    persistent: SprinklerWeatherPersistentDataV1,
+    change: SprinklerWeatherChangeV1,
+    now_utc: LibertasDateTime,
+) {
+    let endpoint = shared.borrow().endpoint;
+    let key = persistent_key(endpoint);
+    libertas_data_write(resource, &key, &persistent);
+
+    publish_change(shared, change, now_utc);
+}
+
 fn log_provider_error(section: &str, error: &str) {
     libertas_log(
         LogLevel::Warn,
@@ -1075,7 +1145,10 @@ fn log_provider_error(section: &str, error: &str) {
 
 fn handle_provider_message(shared: &Rc<RefCell<WeatherServerState>>, message: ProviderMessage) {
     match message {
-        ProviderMessage::Current(Ok(current)) => {
+        ProviderMessage::Current {
+            result: Ok(current),
+            ..
+        } => {
             let now_utc = current.retrieved_at;
             publish_persisted_change(
                 shared,
@@ -1085,8 +1158,12 @@ fn handle_provider_message(shared: &Rc<RefCell<WeatherServerState>>, message: Pr
                 now_utc,
             );
         }
-        ProviderMessage::Current(Err(error)) => log_provider_error("current", &error),
-        ProviderMessage::Hourly { history, forecast } => {
+        ProviderMessage::Current {
+            result: Err(error), ..
+        } => log_provider_error("current", &error),
+        ProviderMessage::Hourly {
+            history, forecast, ..
+        } => {
             match history {
                 Ok(history) => {
                     let now_utc = history.retrieved_at;
@@ -1121,9 +1198,20 @@ fn handle_provider_message(shared: &Rc<RefCell<WeatherServerState>>, message: Pr
     }
 }
 
+fn provider_message_location(message: &ProviderMessage) -> ProviderLocation {
+    match message {
+        ProviderMessage::Current { location, .. } | ProviderMessage::Hourly { location, .. } => {
+            *location
+        }
+    }
+}
+
 fn handle_provider_wakeup(context: &mut Box<dyn Any>) {
     let context = context.downcast_mut::<ProviderWakeupContext>().unwrap();
     while let Ok(message) = context.results.try_recv() {
+        if context.location.get() != Some(provider_message_location(&message)) {
+            continue;
+        }
         handle_provider_message(&context.shared, message);
     }
 }
@@ -1141,39 +1229,156 @@ fn handle_provider_shutdown(context: &mut Box<dyn Any>) {
 
 fn refresh_timer_fired(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
     let context = context.downcast_mut::<RefreshTimerContext>().unwrap();
-    let _ = context.commands.try_send(context.command);
+    if let Some(location) = context.location.get() {
+        let command = match context.refresh_kind {
+            ProviderRefreshKind::Current => ProviderCommand::RefreshCurrent { location },
+            ProviderRefreshKind::Hourly => ProviderCommand::RefreshHourly { location },
+        };
+        let _ = context.commands.try_send(command);
+    }
     let next_ticks = now_ticks.saturating_add(
         u64::from(context.interval_seconds).saturating_mul(MICROSECONDS_PER_SECOND),
     );
     libertas_timer_update_interval(timer, next_ticks);
 }
 
-fn start_refresh_timer(
+fn new_refresh_timer(
     commands: SyncSender<ProviderCommand>,
-    command: ProviderCommand,
+    location: Rc<Cell<Option<ProviderLocation>>>,
+    refresh_kind: ProviderRefreshKind,
     interval_seconds: u32,
-    initial_delay_seconds: u32,
-    now_ticks: u64,
-) {
-    let timer_delay_seconds = if initial_delay_seconds == 0 {
-        interval_seconds
-    } else {
-        initial_delay_seconds
-    };
-    let expiration = now_ticks
-        .saturating_add(u64::from(timer_delay_seconds).saturating_mul(MICROSECONDS_PER_SECOND));
+) -> u32 {
     libertas_timer_new_interval(
-        expiration,
+        0,
         refresh_timer_fired,
         Box::new(RefreshTimerContext {
-            commands: commands.clone(),
-            command,
+            commands,
+            location,
+            refresh_kind,
             interval_seconds,
         }),
+    )
+}
+
+fn rearm_refresh_timer(timer: u32, delay_seconds: u32, now_ticks: u64) {
+    libertas_timer_update_interval(
+        timer,
+        now_ticks.saturating_add(u64::from(delay_seconds).saturating_mul(MICROSECONDS_PER_SECOND)),
     );
-    if initial_delay_seconds == 0 {
-        let _ = commands.try_send(command);
+}
+
+impl ProviderControl {
+    fn schedule_from_cache(
+        &self,
+        location: ProviderLocation,
+        snapshot: &SprinklerWeatherSnapshotV1,
+        now_utc: Option<LibertasDateTime>,
+        now_ticks: u64,
+    ) {
+        self.location.set(Some(location));
+        let (current_delay, hourly_delay) = startup_refresh_delays(snapshot, now_utc);
+        self.schedule_one(
+            ProviderRefreshKind::Current,
+            self.current_timer,
+            SPRINKLER_CURRENT_REFRESH_INTERVAL_SECONDS,
+            current_delay,
+            now_ticks,
+        );
+        self.schedule_one(
+            ProviderRefreshKind::Hourly,
+            self.hourly_timer,
+            SPRINKLER_HISTORY_REFRESH_INTERVAL_SECONDS
+                .min(SPRINKLER_FORECAST_REFRESH_INTERVAL_SECONDS),
+            hourly_delay,
+            now_ticks,
+        );
     }
+
+    fn refresh_for_location(&self, location: ProviderLocation, now_ticks: u64) {
+        self.location.set(Some(location));
+        let _ = self
+            .commands
+            .try_send(ProviderCommand::RefreshCurrent { location });
+        let _ = self
+            .commands
+            .try_send(ProviderCommand::RefreshHourly { location });
+        rearm_refresh_timer(
+            self.current_timer,
+            SPRINKLER_CURRENT_REFRESH_INTERVAL_SECONDS,
+            now_ticks,
+        );
+        rearm_refresh_timer(
+            self.hourly_timer,
+            SPRINKLER_HISTORY_REFRESH_INTERVAL_SECONDS
+                .min(SPRINKLER_FORECAST_REFRESH_INTERVAL_SECONDS),
+            now_ticks,
+        );
+    }
+
+    fn schedule_one(
+        &self,
+        refresh_kind: ProviderRefreshKind,
+        timer: u32,
+        interval_seconds: u32,
+        initial_delay_seconds: u32,
+        now_ticks: u64,
+    ) {
+        if initial_delay_seconds == 0 {
+            let location = self.location.get().unwrap();
+            let command = match refresh_kind {
+                ProviderRefreshKind::Current => ProviderCommand::RefreshCurrent { location },
+                ProviderRefreshKind::Hourly => ProviderCommand::RefreshHourly { location },
+            };
+            let _ = self.commands.try_send(command);
+        }
+        let timer_delay_seconds = if initial_delay_seconds == 0 {
+            interval_seconds
+        } else {
+            initial_delay_seconds
+        };
+        rearm_refresh_timer(timer, timer_delay_seconds, now_ticks);
+    }
+}
+
+fn start_provider_control(
+    shared: Rc<RefCell<WeatherServerState>>,
+) -> Result<ProviderControl, String> {
+    let provider = start_provider_worker()?;
+    let commands = provider.commands;
+    let location = Rc::new(Cell::new(None));
+    libertas_register_wakeup_callback(
+        handle_provider_wakeup,
+        Box::new(ProviderWakeupContext {
+            shared,
+            location: Rc::clone(&location),
+            results: provider.results,
+        }),
+    );
+    libertas_register_shutdown_handler(
+        handle_provider_shutdown,
+        Box::new(ProviderShutdownContext {
+            commands: commands.clone(),
+            stop_requested: provider.stop_requested,
+        }),
+    );
+    let current_timer = new_refresh_timer(
+        commands.clone(),
+        Rc::clone(&location),
+        ProviderRefreshKind::Current,
+        SPRINKLER_CURRENT_REFRESH_INTERVAL_SECONDS,
+    );
+    let hourly_timer = new_refresh_timer(
+        commands.clone(),
+        Rc::clone(&location),
+        ProviderRefreshKind::Hourly,
+        SPRINKLER_HISTORY_REFRESH_INTERVAL_SECONDS.min(SPRINKLER_FORECAST_REFRESH_INTERVAL_SECONDS),
+    );
+    Ok(ProviderControl {
+        commands,
+        location,
+        current_timer,
+        hourly_timer,
+    })
 }
 
 fn remaining_refresh_delay_seconds(
@@ -1226,11 +1431,33 @@ fn valid_nonnegative(value: f32) -> bool {
     value.is_finite() && value >= 0.0
 }
 
+impl From<SprinklerWeatherLocationV1> for ProviderLocation {
+    fn from(location: SprinklerWeatherLocationV1) -> Self {
+        Self {
+            latitude_degrees: location.latitude_degrees,
+            longitude_degrees: location.longitude_degrees,
+        }
+    }
+}
+
 fn valid_location(location: ProviderLocation) -> bool {
     location.latitude_degrees.is_finite()
         && (-90.0..=90.0).contains(&location.latitude_degrees)
         && location.longitude_degrees.is_finite()
         && (-180.0..=180.0).contains(&location.longitude_degrees)
+}
+
+fn valid_weather_location(location: SprinklerWeatherLocationV1) -> bool {
+    valid_location(location.into())
+}
+
+fn same_weather_location(
+    left: SprinklerWeatherLocationV1,
+    right: SprinklerWeatherLocationV1,
+) -> bool {
+    (left.latitude_degrees - right.latitude_degrees).abs() <= LOCATION_EQUALITY_TOLERANCE_DEGREES
+        && (left.longitude_degrees - right.longitude_degrees).abs()
+            <= LOCATION_EQUALITY_TOLERANCE_DEGREES
 }
 
 fn valid_history(history: &SprinklerWeatherHistoryV1) -> bool {
@@ -1271,6 +1498,170 @@ fn valid_forecast(forecast: &SprinklerWeatherForecastV1) -> bool {
             .periods
             .windows(2)
             .all(|pair| pair[0].starts_at < pair[1].starts_at)
+}
+
+fn weather_change_timestamp(shared: &Rc<RefCell<WeatherServerState>>) -> LibertasDateTime {
+    libertas_get_utc_time()
+        .map(|microseconds| microseconds / MICROSECONDS_PER_SECOND)
+        .or_else(|| shared.borrow().cursor.map(|cursor| cursor.epoch_timestamp))
+        .unwrap_or_default()
+}
+
+fn clear_weather_for_location_change(shared: &Rc<RefCell<WeatherServerState>>) {
+    let (endpoint, sections) = {
+        let state = shared.borrow();
+        let mut sections = Vec::new();
+        if state.snapshot.history.is_some() {
+            sections.push(SprinklerWeatherSectionV1::History);
+        }
+        if state.snapshot.current.is_some() {
+            sections.push(SprinklerWeatherSectionV1::Current);
+        }
+        if state.snapshot.forecast.is_some() {
+            sections.push(SprinklerWeatherSectionV1::Forecast);
+        }
+        (state.endpoint, sections)
+    };
+    let key = persistent_key(endpoint);
+    libertas_data_remove(HISTORY_RESOURCE, &key);
+    libertas_data_remove(CURRENT_RESOURCE, &key);
+    libertas_data_remove(FORECAST_RESOURCE, &key);
+
+    let now_utc = weather_change_timestamp(shared);
+    for section in sections {
+        publish_change(
+            shared,
+            SprinklerWeatherChangeV1::SectionClearV1 { section },
+            now_utc,
+        );
+    }
+}
+
+fn accept_hub_location(
+    state: &Rc<RefCell<LocationSubscriptionState>>,
+    location: SprinklerWeatherLocationV1,
+) -> bool {
+    if !valid_weather_location(location) {
+        libertas_log(
+            LogLevel::Warn,
+            "Libertas Hub reported an invalid sprinkler weather location",
+        );
+        return false;
+    }
+
+    let (previous, endpoint, weather, provider) = {
+        let state = state.borrow();
+        (
+            state.location,
+            state.weather.borrow().endpoint,
+            Rc::clone(&state.weather),
+            state.provider.clone(),
+        )
+    };
+    if previous.is_some_and(|previous| same_weather_location(previous, location)) {
+        return true;
+    }
+
+    let key = persistent_key(endpoint);
+    libertas_data_write(
+        LOCATION_RESOURCE,
+        &key,
+        &SprinklerWeatherPersistentDataV1::LocationV1 { location },
+    );
+    state.borrow_mut().location = Some(location);
+
+    if let Some(provider) = &provider {
+        provider.location.set(Some(location.into()));
+    }
+    if previous.is_some() {
+        clear_weather_for_location_change(&weather);
+    }
+    if let Some(provider) = provider {
+        provider.refresh_for_location(location.into(), libertas_get_sys_ticks());
+    }
+    true
+}
+
+fn arm_location_watchdog(state: &Rc<RefCell<LocationSubscriptionState>>, delay_seconds: u32) {
+    let timer = state.borrow().retry_timer;
+    if timer != 0 {
+        rearm_refresh_timer(timer, delay_seconds, libertas_get_sys_ticks());
+    }
+}
+
+fn subscribe_to_hub_location(state: &Rc<RefCell<LocationSubscriptionState>>) {
+    libertas_endpoint_subscribe_request(
+        LIBERTAS_HUB_ENDPOINT,
+        &HubProtocol::LocationReq {
+            max_report_interval_seconds: HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS,
+        },
+    );
+    arm_location_watchdog(state, HUB_LOCATION_RETRY_SECONDS);
+}
+
+fn location_watchdog_fired(timer: u32, now_ticks: u64, _context: &mut Box<dyn core::any::Any>) {
+    libertas_endpoint_subscribe_request(
+        LIBERTAS_HUB_ENDPOINT,
+        &HubProtocol::LocationReq {
+            max_report_interval_seconds: HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS,
+        },
+    );
+    libertas_timer_update_interval(
+        timer,
+        now_ticks.saturating_add(
+            u64::from(HUB_LOCATION_RETRY_SECONDS).saturating_mul(MICROSECONDS_PER_SECOND),
+        ),
+    );
+}
+
+fn handle_hub_location_event(
+    _endpoint: LibertasEndpoint,
+    opcode: u8,
+    message: LibertasEndpointMessage<HubProtocol>,
+    context: &mut Box<dyn core::any::Any>,
+    _transaction_id: u32,
+    _peer: u32,
+) -> LibertasEndpointHandlerResult {
+    let state = context
+        .downcast_mut::<Rc<RefCell<LocationSubscriptionState>>>()
+        .unwrap();
+
+    if opcode == OP_ENDPOINT_RSP || opcode == OP_ENDPOINT_DATA {
+        if let LibertasEndpointMessage::Data(HubProtocol::LocationRsp {
+            longitude,
+            latitude,
+        }) = message
+        {
+            let accepted = accept_hub_location(
+                state,
+                SprinklerWeatherLocationV1 {
+                    longitude_degrees: longitude,
+                    latitude_degrees: latitude,
+                },
+            );
+            arm_location_watchdog(
+                state,
+                if accepted {
+                    HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS
+                } else {
+                    HUB_LOCATION_RETRY_SECONDS
+                },
+            );
+            return LibertasEndpointHandlerResult::Handled;
+        }
+        libertas_log(
+            LogLevel::Warn,
+            "Libertas Hub location subscription returned an unexpected message",
+        );
+    } else if opcode == OP_ENDPOINT_PEER_DOWN || opcode == OP_ENDPOINT_PEER_TIMEOUT {
+        libertas_log(
+            LogLevel::Warn,
+            "Libertas Hub location subscription became unavailable",
+        );
+    }
+
+    arm_location_watchdog(state, HUB_LOCATION_RETRY_SECONDS);
+    LibertasEndpointHandlerResult::Handled
 }
 
 fn update_heartbeat_timer(shared: &Rc<RefCell<WeatherServerState>>) {
@@ -1338,25 +1729,48 @@ fn handle_endpoint_event(
 /// Libertas sprinkler weather server
 /// Exposes exactly one sprinkler-weather server endpoint. On startup it
 /// validates and restores independently persisted history, current conditions,
-/// and forecast data, then starts bounded Open-Meteo refreshes for the configured
-/// WGS84 location. HTTPS runs on a dedicated worker; all persistence, cursor,
-/// endpoint, timer, and subscription operations run on the Libertas application
-/// thread. Persisted retrieval timestamps preserve refresh schedules across
-/// restarts, avoiding immediate rewrites while cached sections are not yet due.
-/// The transient cursor and replay journal intentionally restart at sequence
-/// zero; accepted subscriptions receive periodic heartbeat reports and can
-/// recover with epoch-timestamp-and-sequence reset detection.
+/// forecast, and Hub location data. It subscribes to the built-in Libertas Hub
+/// location endpoint at every startup. A valid cached location keeps weather
+/// refreshes available during a temporary Hub outage; without one, Open-Meteo
+/// requests wait for the first valid Hub report. A changed Hub location is
+/// persisted before weather for the old site is cleared and replacement
+/// refreshes begin.
+///
+/// HTTPS runs on a dedicated worker; all persistence, cursor, endpoint, timer,
+/// and subscription operations run on the Libertas application thread.
+/// Persisted retrieval timestamps preserve refresh schedules across restarts,
+/// avoiding immediate rewrites while cached sections are not yet due. The
+/// transient cursor and replay journal intentionally restart at sequence zero;
+/// accepted subscriptions receive periodic heartbeat reports and can recover
+/// with epoch-timestamp-and-sequence reset detection.
 #[libertas_data_schema(SprinklerWeatherPersistentDataV1)]
 #[libertas_string_resources(APP_STRINGS)]
 pub fn libertas_weather_server(server: SprinklerWeatherEndpointServerV1) {
     let endpoint = server.endpoint;
-    let snapshot = load_snapshot(endpoint);
+    let cached_location = load_location(endpoint);
+    let mut snapshot = load_snapshot(endpoint);
+    if cached_location.is_none()
+        && (snapshot.history.is_some() || snapshot.current.is_some() || snapshot.forecast.is_some())
+    {
+        libertas_log(
+            LogLevel::Warn,
+            "Discarding persisted sprinkler weather that has no associated location",
+        );
+        let key = persistent_key(endpoint);
+        libertas_data_remove(HISTORY_RESOURCE, &key);
+        libertas_data_remove(CURRENT_RESOURCE, &key);
+        libertas_data_remove(FORECAST_RESOURCE, &key);
+        snapshot = SprinklerWeatherSnapshotV1 {
+            history: None,
+            current: None,
+            forecast: None,
+        };
+    }
     let utc_microseconds = libertas_get_utc_time();
     let now_utc = utc_microseconds.map(|microseconds| microseconds / MICROSECONDS_PER_SECOND);
     let epoch_timestamp = utc_microseconds.map(|microseconds| {
         microseconds.saturating_add(MICROSECONDS_PER_SECOND - 1) / MICROSECONDS_PER_SECOND
     });
-    let (current_startup_delay, hourly_startup_delay) = startup_refresh_delays(&snapshot, now_utc);
     let shared = Rc::new(RefCell::new(WeatherServerState::new(
         endpoint,
         epoch_timestamp,
@@ -1392,55 +1806,42 @@ pub fn libertas_weather_server(server: SprinklerWeatherEndpointServerV1) {
         Box::new(Rc::clone(&shared)),
     );
 
-    let location = ProviderLocation {
-        latitude_degrees: server.latitude_degrees,
-        longitude_degrees: server.longitude_degrees,
-    };
-    if !valid_location(location) {
-        libertas_log(
-            LogLevel::Error,
-            "Open-Meteo worker not started because coordinates are invalid",
-        );
-        return;
-    }
-
-    match start_provider_worker(location) {
-        Ok(provider) => {
-            let commands = provider.commands;
-            libertas_register_wakeup_callback(
-                handle_provider_wakeup,
-                Box::new(ProviderWakeupContext {
-                    shared: Rc::clone(&shared),
-                    results: provider.results,
-                }),
-            );
-            libertas_register_shutdown_handler(
-                handle_provider_shutdown,
-                Box::new(ProviderShutdownContext {
-                    commands: commands.clone(),
-                    stop_requested: provider.stop_requested,
-                }),
-            );
-            let now_ticks = libertas_get_sys_ticks();
-            start_refresh_timer(
-                commands.clone(),
-                ProviderCommand::RefreshCurrent,
-                SPRINKLER_CURRENT_REFRESH_INTERVAL_SECONDS,
-                current_startup_delay,
-                now_ticks,
-            );
-            start_refresh_timer(
-                commands.clone(),
-                ProviderCommand::RefreshHourly,
-                SPRINKLER_HISTORY_REFRESH_INTERVAL_SECONDS
-                    .min(SPRINKLER_FORECAST_REFRESH_INTERVAL_SECONDS),
-                hourly_startup_delay,
-                now_ticks,
-            );
-        }
+    let provider = match start_provider_control(Rc::clone(&shared)) {
+        Ok(provider) => Some(provider),
         Err(error) => {
             libertas_log(LogLevel::Error, &error);
+            None
         }
+    };
+    let location_state = Rc::new(RefCell::new(LocationSubscriptionState {
+        weather: Rc::clone(&shared),
+        provider: provider.clone(),
+        location: cached_location,
+        retry_timer: 0,
+    }));
+    let location_retry_timer = libertas_timer_new_interval(
+        0,
+        location_watchdog_fired,
+        Box::new(Rc::clone(&location_state)),
+    );
+    location_state.borrow_mut().retry_timer = location_retry_timer;
+    libertas_register_endpoint_status_listener::<HubProtocol, _>(
+        LIBERTAS_HUB_ENDPOINT,
+        handle_hub_location_event,
+        Box::new(Rc::clone(&location_state)),
+    );
+    subscribe_to_hub_location(&location_state);
+
+    if let (Some(provider), Some(location)) = (provider, cached_location)
+        && provider.location.get().is_none()
+    {
+        let restored_snapshot = shared.borrow().snapshot.clone();
+        provider.schedule_from_cache(
+            location.into(),
+            &restored_snapshot,
+            now_utc,
+            libertas_get_sys_ticks(),
+        );
     }
 }
 
@@ -1532,6 +1933,13 @@ mod tests {
             history: Some(history()),
             current: Some(current()),
             forecast: Some(forecast()),
+        }
+    }
+
+    fn location() -> SprinklerWeatherLocationV1 {
+        SprinklerWeatherLocationV1 {
+            longitude_degrees: -74.006,
+            latitude_degrees: 40.7128,
         }
     }
 
@@ -1648,13 +2056,32 @@ mod tests {
             longitude_degrees: -74.0060,
         }));
         assert!(!valid_location(ProviderLocation {
-            latitude_degrees: f32::NAN,
+            latitude_degrees: f64::NAN,
             longitude_degrees: 0.0,
         }));
         assert!(!valid_location(ProviderLocation {
             latitude_degrees: 0.0,
             longitude_degrees: 181.0,
         }));
+    }
+
+    #[test]
+    fn insignificant_hub_location_noise_does_not_change_the_provider_site() {
+        let original = location();
+        let close = SprinklerWeatherLocationV1 {
+            longitude_degrees: original.longitude_degrees
+                + LOCATION_EQUALITY_TOLERANCE_DEGREES / 2.0,
+            latitude_degrees: original.latitude_degrees - LOCATION_EQUALITY_TOLERANCE_DEGREES / 2.0,
+        };
+        let changed = SprinklerWeatherLocationV1 {
+            longitude_degrees: original.longitude_degrees
+                + LOCATION_EQUALITY_TOLERANCE_DEGREES * 2.0,
+            ..original
+        };
+
+        assert!(valid_weather_location(original));
+        assert!(same_weather_location(original, close));
+        assert!(!same_weather_location(original, changed));
     }
 
     #[test]
@@ -1770,12 +2197,38 @@ mod tests {
     }
 
     #[test]
-    fn endpoint_configuration_round_trips_through_avro() {
-        let value = SprinklerWeatherEndpointServerV1 {
-            endpoint: ENDPOINT,
-            latitude_degrees: 40.7128,
-            longitude_degrees: -74.0060,
+    fn location_change_clear_is_an_incremental_weather_change() {
+        let mut state = WeatherServerState::new(ENDPOINT, Some(NEW_EPOCH), snapshot());
+        state.add_or_replace_subscriber(7, 0);
+
+        let publication = state.apply_change(
+            SprinklerWeatherChangeV1::SectionClearV1 {
+                section: SprinklerWeatherSectionV1::Current,
+            },
+            100,
+            NEW_EPOCH,
+        );
+
+        assert!(state.snapshot.history.is_some());
+        assert!(state.snapshot.current.is_none());
+        assert!(state.snapshot.forecast.is_some());
+        assert_eq!(state.cursor, Some(cursor(NEW_EPOCH, 1)));
+        assert_eq!(publication.reports.len(), 1);
+        let SprinklerWeatherProtocolV1::WeatherIncrementV1 { report } = &publication.reports[0].1
+        else {
+            panic!("expected incremental clear report");
         };
+        assert_eq!(
+            report.changes,
+            vec![SprinklerWeatherChangeV1::SectionClearV1 {
+                section: SprinklerWeatherSectionV1::Current,
+            }]
+        );
+    }
+
+    #[test]
+    fn endpoint_configuration_round_trips_through_avro() {
+        let value = SprinklerWeatherEndpointServerV1 { endpoint: ENDPOINT };
         let encoded = value.to_avro();
         let mut offset = 0;
         let decoded = SprinklerWeatherEndpointServerV1::avro_decode(&encoded, &mut offset).unwrap();

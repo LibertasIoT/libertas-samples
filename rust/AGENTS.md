@@ -475,6 +475,28 @@ serves `SprinklerWeatherProtocolV1`. Its application configuration exposes
 exactly one endpoint marked with `#[libertas_endpoint_server]`; do not model the
 endpoint operation as another protocol field.
 
+- Treat the server's V1 schema and database layout as unpublished design-time
+  contracts. Reshape V1 directly when needed; do not keep superseded
+  configuration fields, union ordering, or migration code for compatibility.
+- Obtain the sprinkler site from `HubProtocol::LocationRsp` on the built-in
+  `LIBERTAS_HUB_ENDPOINT`; do not expose latitude or longitude as application
+  configuration. Keep `libertas-hub`, `libertas`, and `libertas_macros` on the
+  same source revision.
+- Subscribe to Hub location at every startup with a nonzero maximum report
+  interval. Retry after 60 seconds until the first valid response and whenever
+  the Hub fails to report within its requested one-hour maximum interval.
+  Handle typed endpoint statuses explicitly with
+  `libertas_register_endpoint_status_listener`.
+- Persist the last valid Hub location independently under a stable database
+  resource. A valid cached location may start provider refreshes while the Hub
+  subscription recovers. If no valid cached location exists, leave the HTTP
+  worker idle and do not expose weather records that cannot be associated with
+  a known site.
+- Persist a changed Hub location before clearing history, current conditions,
+  and forecast for the old site. Publish one `SectionClearV1` change for each
+  section that existed, then request replacement current and hourly data
+  immediately. Tag provider commands and results with their location and
+  discard any in-flight result for an older site.
 - Use the current typed endpoint callback contract. Transaction IDs are always
   present. Send exactly one `WeatherRecoveryV1` response for each
   `OP_ENDPOINT_REQ` or `OP_ENDPOINT_SUB_REQ`, preserving the callback's
