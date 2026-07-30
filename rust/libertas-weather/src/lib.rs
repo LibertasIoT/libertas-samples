@@ -2,14 +2,15 @@
 //! Defines versioned weather data tailored to the decisions made by Libertas
 //! applications.
 //!
-//! The sprinkler schema separates recent history, current conditions, and
-//! forecast data because each section has a different refresh interval and may
-//! succeed or fail independently. Runtime snapshots may contain any combination
-//! of sections. Applications persist each successful section separately and
-//! retain older sections when a weather-data refresh fails. Incremental
-//! subscriptions use epoch-timestamp-and-sequence cursors so clients can
-//! distinguish a server cursor reset from stale or out-of-order data, replay
-//! retained changes, or recover selected time ranges from cached data.
+//! The sprinkler schema persists its Hub-provided site location separately from
+//! recent history, current conditions, and forecast data. Each weather section
+//! has a different refresh interval and may succeed or fail independently.
+//! Runtime snapshots may contain any combination of sections. Applications
+//! persist each successful section separately and retain older sections when a
+//! weather-data refresh fails. Incremental subscriptions use
+//! epoch-timestamp-and-sequence cursors so clients can distinguish a server
+//! cursor reset from stale or out-of-order data, replay retained changes, or
+//! recover selected time ranges from cached data.
 #![no_std]
 #![forbid(unsafe_code)]
 
@@ -706,15 +707,42 @@ pub enum SprinklerWeatherProtocolV1 {
     },
 }
 
+/// Sprinkler weather location V1
+/// Stores the Libertas Hub location used to obtain weather for one sprinkler
+/// site. It is cached independently from provider data so the weather server can
+/// continue refreshing during a temporary Hub outage.
+#[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+pub struct SprinklerWeatherLocationV1 {
+    /// Longitude
+    /// WGS84 longitude in decimal degrees. Locations west of Greenwich use
+    /// negative values.
+    #[libertas_number(min = -180, max = 180)]
+    pub longitude_degrees: f64,
+    /// Latitude
+    /// WGS84 latitude in decimal degrees.
+    #[libertas_number(min = -90, max = 90)]
+    pub latitude_degrees: f64,
+}
+
 /// Sprinkler weather persistent data V1
-/// Defines the complete set of weather values that a sprinkler application may
+/// Defines the complete set of values that the sprinkler weather server may
 /// write to the Libertas database. The consuming application links this union
 /// with `#[libertas_data_schema(SprinklerWeatherPersistentDataV1)]` and stores
-/// each variant under its own stable resource identifier so sections can be
-/// updated independently. Subscription cursors and replay journals are
-/// intentionally absent: resetting them must not erase these weather records.
+/// each variant under its own stable resource identifier so the location and
+/// weather sections can be updated independently. Subscription cursors and
+/// replay journals are intentionally absent: resetting them must not erase
+/// these records.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerWeatherPersistentDataV1 {
+    /// Sprinkler site location V1
+    /// Stores the last valid location reported by the Libertas Hub. The cached
+    /// value lets provider refreshes continue while the Hub is temporarily
+    /// unavailable.
+    LocationV1 {
+        /// Location
+        /// The WGS84 coordinates used for provider requests.
+        location: SprinklerWeatherLocationV1,
+    },
     /// Recent history V1
     /// Stores the last successfully retrieved and validated recent-history
     /// section. A failed refresh leaves the existing database record unchanged.
@@ -794,6 +822,13 @@ mod tests {
                 wind_speed_meters_per_second: 4.0,
                 wind_gust_meters_per_second: 7.5,
             }],
+        }
+    }
+
+    fn location() -> SprinklerWeatherLocationV1 {
+        SprinklerWeatherLocationV1 {
+            longitude_degrees: -74.006,
+            latitude_degrees: 40.7128,
         }
     }
 
@@ -919,6 +954,9 @@ mod tests {
             SprinklerWeatherPersistentDataV1::ForecastV1 {
                 forecast: forecast(),
             },
+            SprinklerWeatherPersistentDataV1::LocationV1 {
+                location: location(),
+            },
         ];
 
         for value in values {
@@ -961,16 +999,24 @@ mod tests {
         );
 
         assert_eq!(
+            SprinklerWeatherPersistentDataV1::LocationV1 {
+                location: location()
+            }
+            .to_avro()
+            .first(),
+            Some(&0)
+        );
+        assert_eq!(
             SprinklerWeatherPersistentDataV1::HistoryV1 { history: history() }
                 .to_avro()
                 .first(),
-            Some(&0)
+            Some(&2)
         );
         assert_eq!(
             SprinklerWeatherPersistentDataV1::CurrentV1 { current: current() }
                 .to_avro()
                 .first(),
-            Some(&2)
+            Some(&4)
         );
         assert_eq!(
             SprinklerWeatherPersistentDataV1::ForecastV1 {
@@ -978,7 +1024,7 @@ mod tests {
             }
             .to_avro()
             .first(),
-            Some(&4)
+            Some(&6)
         );
     }
 
