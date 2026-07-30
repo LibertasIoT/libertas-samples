@@ -11,14 +11,25 @@
 //! epoch-timestamp-and-sequence cursors so clients can distinguish a server
 //! cursor reset from stale or out-of-order data, replay retained changes, or
 //! recover selected time ranges from cached data.
+//!
+//! The building-HVAC schema supplies only the outdoor inputs needed for thermal
+//! load prediction, heat-pump operation, economizer decisions, and controlled
+//! outdoor-air ventilation. It keeps weather and outdoor-air-quality sections
+//! independent because they have different providers and freshness behavior.
+//! Local equipment and life-safety controls must continue to use their own
+//! sensors; cached internet weather is supervisory input, not a safety signal.
 #![no_std]
 #![forbid(unsafe_code)]
 
 extern crate alloc;
 
+mod building_hvac;
+
 use alloc::vec::Vec;
 use libertas::LibertasDateTime;
 use libertas_macros::{LibertasAvroDecode, LibertasAvroEncode, LibertasExport};
+
+pub use building_hvac::*;
 
 /// Current weather refresh interval
 /// The default number of seconds between requests for current sprinkler
