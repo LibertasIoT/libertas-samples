@@ -1,0 +1,17 @@
+[package]
+name = "libertas-weather_server"
+version = "0.1.0"
+edition = "2024"
+description = "Libertas sprinkler weather endpoint server"
+
+[dependencies]
+libertas = { git = "https://github.com/LibertasIoT/libertas-rs.git", branch = "main", package = "libertas" }
+libertas_macros = { git = "https://github.com/LibertasIoT/libertas-rs.git", branch = "main", package = "libertas_macros" }
+libertas-weather = { path = "../libertas-weather", package = "libertas-weather" }
+reqwest = { version = "0.13", default-features = false, features = ["blocking", "gzip", "query", "rustls"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[lib]
+name = "libertas_weather_server"
+crate-type = ["rlib"]
