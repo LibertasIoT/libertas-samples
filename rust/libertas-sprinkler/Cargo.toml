@@ -4,10 +4,11 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-libertas-matter = { git="https://github.com/LibertasIoT/libertas-matter.git", default-features = false, features = ["alloc"] }
-libertas = { git = "https://github.com/LibertasIoT/libertas-rs.git", package="libertas" }
-libertas_macros = { git = "https://github.com/LibertasIoT/libertas-rs.git", package="libertas_macros" }
-libertas-types = { git = "https://github.com/LibertasIoT/libertas-samples.git" }
+libertas = { git = "https://github.com/LibertasIoT/libertas-rs.git", branch = "main", package = "libertas" }
+libertas_macros = { git = "https://github.com/LibertasIoT/libertas-rs.git", branch = "main", package = "libertas_macros" }
+libertas-matter = { git = "https://github.com/LibertasIoT/libertas-matter", package = "libertas-matter", default-features = false, features = ["alloc"] }
+libertas-weather = { path = "../libertas-weather", package = "libertas-weather" }
 
 [lib]
+name = "libertas_sprinkler"
 crate-type = ["rlib"]
