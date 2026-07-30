@@ -553,3 +553,94 @@ endpoint operation as another protocol field.
   `libertas_shutdown_complete` as its final Libertas API operation, and return.
 - The remaining Libertas API limitation is the lack of a persistence completion
   result when confirmed durability before reporting is required.
+
+## Weather-aware sprinkler controller (`libertas-sprinkler`)
+
+`libertas-sprinkler` is a `no_std` Libertas application library that calculates,
+exposes, and executes application-tailored irrigation schedules. Treat its V1
+schema and database layout as unpublished design-time contracts. Reshape V1
+directly when the design changes; do not retain old configuration fields,
+protocol variants, sidecar schema files, or migration code for compatibility.
+
+- Configuration contains one shared `SprinklerWeatherProtocolV1` client
+  endpoint and one or more `SprinklerZoneV1` values. A zone contains exactly one
+  Matter Irrigation System valve, a curated soil type, a curated planting type,
+  a measured application rate in millimeters per hour, and one schedule server
+  endpoint. Do not restore raw `field_capacity`, sprinkler-head categories,
+  notification lists, or a configuration-time watering adjustment.
+- Use the Device Type Editor descriptor for a Matter Irrigation System device
+  with the Valve Configuration and Control server cluster. Control the valve
+  with the generated typed `Open` and `Close` commands, and observe generated
+  `CurrentState`, `ValveFault`, and `ValveStateChanged` definitions. Never infer
+  delivered water from a requested command duration.
+- Subscribe to every distinct valve once with one application-wide bounded
+  Matter subscription batch. Treat every observed open interval as irrigation,
+  including manual valve operation. Convert actual open time using the zone's
+  measured application rate, checkpoint an open interval every minute, merge
+  adjacent checkpoints, and persist it before recalculating or reporting the
+  schedule. The maximum Matter report interval is 30 seconds; if no valve report
+  arrives for 90 seconds, mark its state unavailable and resend the complete
+  app subscription outside any active state borrow.
+- Expose `SprinklerZoneProtocolV1` on every zone schedule endpoint.
+  `GetScheduleV1` is both the one-shot and subscription request because the
+  endpoint operation is outside the protocol value. Every accepted request
+  returns `ScheduleV1`; a subscription additionally receives `ScheduleV1`
+  reports after later calculation, preference, hold-off, weather, valve, or
+  water-ledger changes.
+- The only runtime watering adjustment is
+  `more_or_less_water_normalized`, a finite number from -1.0 through 1.0. Map it
+  linearly to 50% through 150% of the calculated replenishment. Persist the
+  accepted value before reporting its changed schedule.
+- Hold-off periods are runtime schedule constraints, not application
+  configuration. Validate nonzero representable half-open intervals, limit the
+  replacement list to 64 values, sort it, merge overlapping or touching
+  intervals, and shift the complete calculated valve-open slot until it no
+  longer overlaps a hold-off. Persist the normalized replacement before
+  reporting the new schedule. Omit expired constraints from the exposed
+  schedule without reinterpreting their persisted interval.
+- `SprinklerZoneScheduleV1` is the user-visible calculated result. Keep its
+  calculation time, decision or constraint, optional next watering slot,
+  planned water, estimated deficit, seven-day precipitation and observed
+  irrigation totals, normalized adjustment, normalized hold-offs, observed
+  valve-state availability, valve-open state, and valve fault bitmap
+  synchronized. Do not start automatic watering until the first non-null Matter
+  current-state report establishes the valve's state.
+- Persist every zone independently as `SprinklerDataV1::ZoneMemoryV1`, keyed by
+  its valve object. The memory contains the normalized preference, hold-offs,
+  a folded water-balance baseline, and a bounded seven-day ledger of historical
+  precipitation, historical reference evapotranspiration, and observed
+  irrigation. Initialize missing or invalid memory deterministically and
+  preserve its effect across restarts.
+- Subscribe to sprinkler weather at startup and request seven days of history,
+  fresh current conditions, and seven days of forecast. Apply only contiguous
+  incremental reports. Resume from the last fully applied runtime cursor after
+  timeout or a gap; accept a backward sequence only with a newer epoch timestamp
+  as a server reset. If the server returns `CursorAhead`, discard the transient
+  client cursor and retry an initial range-limited recovery. Do not persist the
+  weather cursor. Track successful stream continuity separately from section
+  timestamps: a gap, rejected report, endpoint status, or peer timeout makes
+  cached current conditions unsafe for actuation until recovery succeeds,
+  without erasing cached history or forecast. If startup has no valid UTC time,
+  omit invalid recovery ranges; once UTC becomes available, retry the full
+  request every minute while required history is still absent.
+- Historical weather drives the water balance, forecast rain and unsafe periods
+  shift the plan, and current rain, near-freezing temperature, excessive wind,
+  or stale current weather inhibits immediate watering. Stale history or
+  forecast may remain degraded planning input, but automatic valve actuation
+  requires both available history and fresh safe current conditions.
+- Permit at most one automatic zone to be open or command-pending at a time.
+  Close a controller-opened valve when current weather becomes unsafe, but do
+  not take ownership of or forcibly close a manual valve opening. A manual open
+  still blocks another automatic zone and contributes to observed irrigation.
+  Keep command-pending state transient, expire it after a bounded interval, and
+  wait for observed valve state before accounting irrigation. Re-evaluate
+  schedules every minute so hold-off boundaries and command timeouts do not
+  inherit the slower weather refresh cadence.
+- Test public protocol and persistence Avro round trips and discriminants,
+  normalized adjustment behavior, hold-off normalization and schedule shifting,
+  weather cursor reset rules, typed Matter command encoding, weather balance,
+  restart baselines, and manual/open-valve accounting.
+- `libertas_macros` revision `f58b1fd7` adds `libertas_size` to the accepted
+  `LibertasExport` helper attributes and to function-argument attribute
+  consumption. Keep this SDK support when bounded list schema attributes are
+  used.
