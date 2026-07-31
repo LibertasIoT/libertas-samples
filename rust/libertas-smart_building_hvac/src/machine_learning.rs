@@ -180,11 +180,13 @@ pub struct BuildingHvacMachineLearningFeaturesV1 {
     /// Current solar irradiance in watts per square meter when available.
     pub global_horizontal_solar_irradiance_watts_per_square_meter: Option<f32>,
     /// Hour-of-day sine
-    /// Sine encoding of local solar time, bounded from -1 through 1.
+    /// Sine encoding of UTC time of day, bounded from -1 through 1. UTC keeps
+    /// the feature reproducible without adding an unpublished location or time
+    /// zone to the weather-client contract.
     #[libertas_number(min = -1, max = 1)]
     pub hour_of_day_sine: f32,
     /// Hour-of-day cosine
-    /// Cosine encoding paired with `hour_of_day_sine`.
+    /// Cosine encoding paired with the UTC `hour_of_day_sine`.
     #[libertas_number(min = -1, max = 1)]
     pub hour_of_day_cosine: f32,
     /// Day-of-year sine
