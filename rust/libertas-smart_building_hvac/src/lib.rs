@@ -9,14 +9,11 @@
 extern crate alloc;
 
 use alloc::{boxed::Box, string::String, vec::Vec};
-use core::any::Any;
-use std::sync::mpsc::Receiver;
 
 use libertas::{
     LibertasDateTime, LibertasDevice, LibertasEndpoint, LibertasUser, LogLevel,
     NotificationArgument, NotificationImportance, libertas_data_read, libertas_data_write,
-    libertas_log, libertas_notification_send, libertas_register_shutdown_handler,
-    libertas_register_wakeup_callback, libertas_shutdown_complete, libertas_wake_up,
+    libertas_log, libertas_notification_send, libertas_shutdown_complete, libertas_wake_up,
 };
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
@@ -24,6 +21,7 @@ use libertas_macros::{
 };
 
 mod machine_learning;
+mod runtime;
 pub use machine_learning::*;
 
 pub use libertas_weather::{
@@ -200,7 +198,7 @@ pub const BUILDING_HVAC_EXCESSIVE_HEAT_RECOVERY_TEMPERATURE_CELSIUS: f32 = 32.0;
 /// `UnitUnsigned("duration-seconds")`; not-recovering resources receive room,
 /// duration, and temperature in that order. Recovery receives room,
 /// condition-name `ResourceText`, and current temperature.
-pub static APP_STRINGS: [(&str, &str); 17] = [
+pub static APP_STRINGS: [(&str, &str); 32] = [
     (
         "HVAC_ROOM_STATUS",
         "Room status: %1$s. HVAC: %2$s. Air quality: %3$s.",
@@ -209,6 +207,22 @@ pub static APP_STRINGS: [(&str, &str); 17] = [
     (
         "HVAC_CONTROL_REVISION_CONFLICT",
         "The room changed on another client. Review the current settings and retry.",
+    ),
+    (
+        "HVAC_CONTROL_INVALID_TEMPERATURE_BAND",
+        "The requested temperatures conflict with each other or the physical thermostat limits.",
+    ),
+    (
+        "HVAC_CONTROL_INVALID_NORMALIZED_PREFERENCE",
+        "Comfort or savings must be between minus one and one.",
+    ),
+    (
+        "HVAC_CONTROL_UNSUPPORTED_OPERATING_PREFERENCE",
+        "The physical thermostat does not support that operating preference.",
+    ),
+    (
+        "HVAC_CONTROL_TEMPORARILY_UNAVAILABLE",
+        "The thermostat limits are not currently available. Retry after its next report.",
     ),
     (
         "HVAC_URGENT_FREEZE_RISK",
@@ -259,6 +273,50 @@ pub static APP_STRINGS: [(&str, &str); 17] = [
     (
         "HVAC_ML_SAMPLE",
         "Thermal learning sample history for %1$s.",
+    ),
+    (
+        "HVAC_ROOM_CONTROL",
+        "Room HVAC control and revision for %1$s.",
+    ),
+    (
+        "HVAC_ROOM_STATISTICS",
+        "Room HVAC statistics and recent conditions for %1$s.",
+    ),
+    (
+        "HVAC_ROOM_LEARNING",
+        "Room HVAC continuous-learning state for %1$s.",
+    ),
+    (
+        "HVAC_ROOM_SENSOR_STATE",
+        "Room environmental sensor state for %1$s.",
+    ),
+    (
+        "HVAC_LOCAL_OUTDOOR_TEMPERATURE",
+        "Local outdoor temperature for this building.",
+    ),
+    (
+        "HVAC_LOCAL_OUTDOOR_HUMIDITY",
+        "Local outdoor humidity for this building.",
+    ),
+    (
+        "HVAC_LOCAL_OUTDOOR_AIR_QUALITY",
+        "Local outdoor air quality for this building.",
+    ),
+    (
+        "HVAC_WEATHER_HISTORY",
+        "Building HVAC weather history for this building.",
+    ),
+    (
+        "HVAC_WEATHER_CURRENT",
+        "Current building HVAC weather for this building.",
+    ),
+    (
+        "HVAC_WEATHER_FORECAST",
+        "Building HVAC weather forecast for this building.",
+    ),
+    (
+        "HVAC_OUTDOOR_AIR_QUALITY",
+        "Modeled outdoor air quality for this building.",
     ),
 ];
 
@@ -3944,16 +4002,6 @@ fn validate_building_configuration(
 
 const BUILDING_HVAC_ML_MODELS_RESOURCE: &str = "HVAC_ML_MODELS";
 
-struct BuildingHvacMachineLearningWakeupContext {
-    client: BuildingHvacMachineLearningClient,
-    results: Receiver<BuildingHvacMachineLearningResult>,
-    model_sets: Vec<BuildingHvacMachineLearningModelSetV1>,
-}
-
-struct BuildingHvacMachineLearningShutdownContext {
-    client: BuildingHvacMachineLearningClient,
-}
-
 fn restore_machine_learning_models(
     building: &BuildingHvacBuildingV1,
 ) -> Vec<BuildingHvacMachineLearningModelSetV1> {
@@ -3980,79 +4028,6 @@ fn restore_machine_learning_models(
         .collect()
 }
 
-fn handle_machine_learning_wakeup(context: &mut Box<dyn Any>) {
-    let context = context
-        .downcast_mut::<BuildingHvacMachineLearningWakeupContext>()
-        .expect("invalid smart building HVAC machine-learning wake-up context");
-    while let Ok(result) = context.results.try_recv() {
-        match result {
-            BuildingHvacMachineLearningResult::Candidate(candidate) => {
-                let Some(current) = context
-                    .model_sets
-                    .iter()
-                    .find(|models| models.room_endpoint == candidate.room_endpoint)
-                else {
-                    libertas_log(
-                        LogLevel::Warn,
-                        "Smart building HVAC rejected an XGBoost candidate for an unknown room",
-                    );
-                    continue;
-                };
-                let mut updated = current.clone();
-                if !updated.promote(candidate.clone()) {
-                    libertas_log(
-                        LogLevel::Warn,
-                        "Smart building HVAC rejected an invalid XGBoost candidate",
-                    );
-                    continue;
-                }
-
-                let value = BuildingHvacPersistentDataV1::MachineLearningModelsV1 {
-                    models: updated.clone(),
-                };
-                let key = [NotificationArgument::Object(updated.room_endpoint)];
-                libertas_data_write(BUILDING_HVAC_ML_MODELS_RESOURCE, &key, &value);
-                if let Some(current) = context
-                    .model_sets
-                    .iter_mut()
-                    .find(|models| models.room_endpoint == updated.room_endpoint)
-                {
-                    *current = updated;
-                }
-                if context.client.try_activate(candidate).is_err() {
-                    libertas_log(
-                        LogLevel::Warn,
-                        "Smart building HVAC persisted an XGBoost model but could not activate it; it will be restored after restart",
-                    );
-                }
-            }
-            BuildingHvacMachineLearningResult::TrainingRejected { horizon, reason } => {
-                let message = format!(
-                    "Smart building HVAC XGBoost training rejected for {horizon:?}: {reason:?}"
-                );
-                libertas_log(LogLevel::Warn, &message);
-            }
-            BuildingHvacMachineLearningResult::Prediction { .. } => {
-                // The live Matter/weather runtime will correlate predictions
-                // when it submits work. The worker remains independently
-                // usable and deterministic fallback is explicit in the result.
-            }
-        }
-    }
-}
-
-fn handle_machine_learning_shutdown(context: &mut Box<dyn Any>) {
-    let context = context
-        .downcast_mut::<BuildingHvacMachineLearningShutdownContext>()
-        .expect("invalid smart building HVAC machine-learning shutdown context");
-    if matches!(
-        context.client.request_shutdown(),
-        Err(BuildingHvacMachineLearningQueueError::Disconnected)
-    ) {
-        libertas_shutdown_complete();
-    }
-}
-
 /// Libertas smart building HVAC
 /// Configures a room-first building topology and its dedicated building-HVAC
 /// weather client. Room endpoints expose writable comfort intent and read-only
@@ -4060,11 +4035,11 @@ fn handle_machine_learning_shutdown(context: &mut Box<dyn Any>) {
 /// calculated schedules, and active urgent HVAC warnings. Selected Libertas
 /// users receive time-sensitive supervisory notifications; this application
 /// does not generate certified life-safety alarms. The runtime protocol and
-/// persistent union are design contracts. Pure analytics, shared-thermostat
-/// control, learning, and urgent-notification algorithms are implemented; this
-/// entry function validates configuration and starts the bounded statically
-/// linked XGBoost worker with persisted accepted models. Matter and weather
-/// listeners remain separate runtime integration work.
+/// persistent union are design contracts. Runtime callbacks subscribe to Matter
+/// devices and weather, persist accepted state before reporting it, arbitrate
+/// shared thermostats, publish room snapshots and heartbeats, evaluate urgent
+/// conditions, learn cross-zone effects, and use the bounded statically linked
+/// XGBoost worker for optional near-term predictions.
 #[libertas_data_schema(BuildingHvacPersistentDataV1)]
 #[libertas_string_resources(APP_STRINGS)]
 pub fn libertas_smart_building_hvac(
@@ -4109,30 +4084,14 @@ pub fn libertas_smart_building_hvac(
                 return;
             }
         };
-    libertas_register_wakeup_callback(
-        handle_machine_learning_wakeup,
-        Box::new(BuildingHvacMachineLearningWakeupContext {
-            client: machine_learning.clone(),
-            results: machine_learning_results,
-            model_sets,
-        }),
+    runtime::start(
+        building,
+        weather,
+        machine_learning,
+        machine_learning_results,
+        model_sets,
+        active_models,
     );
-    libertas_register_shutdown_handler(
-        handle_machine_learning_shutdown,
-        Box::new(BuildingHvacMachineLearningShutdownContext {
-            client: machine_learning.clone(),
-        }),
-    );
-    for model in active_models {
-        if machine_learning.try_activate(model).is_err() {
-            libertas_log(
-                LogLevel::Warn,
-                "Smart building HVAC could not queue an accepted XGBoost model for activation",
-            );
-        }
-    }
-
-    let _ = weather;
 }
 
 #[cfg(test)]
