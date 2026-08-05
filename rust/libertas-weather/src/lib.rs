@@ -1,6 +1,7 @@
 //! Libertas Weather
 //! Defines versioned weather data tailored to the decisions made by Libertas
 //! applications.
+//! #[libertas_types_only]
 //!
 //! The sprinkler schema persists its Hub-provided site location separately from
 //! recent history, current conditions, and forecast data. Each weather section

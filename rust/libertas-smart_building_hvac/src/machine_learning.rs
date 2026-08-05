@@ -4,12 +4,15 @@
 //! model artifacts, and user-visible prediction state. XGBoost itself stays
 //! behind the safe `xgb` wrapper and is owned by one worker thread.
 
-use std::sync::{
-    Arc,
-    atomic::{AtomicBool, Ordering},
-    mpsc::{Receiver, SyncSender, TrySendError, sync_channel},
+use std::{
+    collections::BTreeMap,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+        mpsc::{Receiver, SyncSender, TrySendError, sync_channel},
+    },
+    thread,
 };
-use std::thread;
 
 use libertas::{
     IndexDirection, LibertasDateTime, LibertasEndpoint, NotificationArgument,
@@ -33,19 +36,45 @@ use xgb::{
 /// rejected rather than interpreted with a different feature order.
 pub const BUILDING_HVAC_ML_FEATURE_SCHEMA_VERSION: u32 = 1;
 
-/// Machine-learning feature count
-/// The exact number of ordered features accepted by the V1 XGBoost models.
-pub const BUILDING_HVAC_ML_FEATURE_COUNT: usize = 16;
+/// Maximum machine-learning feature count
+/// Bounds one building-specific dense vector while leaving room for every
+/// configured thermostat, room, sensor class, weather horizon, utility input,
+/// equipment measurement, and controller-history signal. Missing values still
+/// occupy their named column and are passed to XGBoost as `NaN`.
+pub const BUILDING_HVAC_ML_MAXIMUM_FEATURE_COUNT: usize = 8_192;
+
+/// Maximum machine-learning feature-name bytes
+/// Bounds each stable human- and AI-readable column identifier.
+pub const BUILDING_HVAC_ML_MAXIMUM_FEATURE_NAME_BYTES: usize = 192;
 
 /// Minimum training samples
 /// The minimum number of ordered, valid, labeled room periods required before
 /// attempting a candidate model.
 pub const BUILDING_HVAC_ML_MINIMUM_TRAINING_SAMPLES: usize = 14 * 24 * 4;
 
-/// Maximum retained training samples per room
-/// Ninety days of 15-minute samples, including one extra day of capacity for
-/// pruning without creating a gap.
+/// Machine-learning history retention
+/// Keeps a complete 400-day rolling archive so every annual weather season is
+/// represented with more than one month of overlap after a full year.
+pub const BUILDING_HVAC_ML_HISTORY_RETENTION_SECONDS: u64 = 400 * 24 * 60 * 60;
+
+/// Maximum retained samples per room
+/// Bounds an inclusive 400-day indexed history of 15-minute observations.
+pub const BUILDING_HVAC_ML_MAXIMUM_RETAINED_SAMPLES_PER_ROOM: usize = 400 * 24 * 4 + 1;
+
+/// Recent adaptation window
+/// Samples in the latest 91 days represent current equipment, envelope, and
+/// occupancy behavior.
+pub const BUILDING_HVAC_ML_RECENT_WINDOW_SECONDS: u64 = 91 * 24 * 60 * 60;
+
+/// Maximum selected training samples per room
+/// Bounds each worker command and XGBoost fit. When both periods have enough
+/// evidence, half comes from the recent window and half from the older archive.
 pub const BUILDING_HVAC_ML_MAXIMUM_TRAINING_SAMPLES_PER_ROOM: usize = 91 * 24 * 4;
+
+/// Recent training share
+/// Reserves half of a full training set for recent adaptation. The other half
+/// is distributed across older seasonal, weather, and equipment-demand strata.
+pub const BUILDING_HVAC_ML_RECENT_TRAINING_PERCENT: usize = 50;
 
 /// Validation holdout percentage
 /// The newest fifth of an ordered dataset is withheld from candidate training
@@ -70,6 +99,17 @@ pub const BUILDING_HVAC_ML_BOOST_ROUNDS: u32 = 128;
 /// Bounds model complexity and inference cost.
 pub const BUILDING_HVAC_ML_MAXIMUM_TREE_DEPTH: u32 = 4;
 
+/// XGBoost worker threads
+/// Training and inference use exactly one native XGBoost thread so learning
+/// cannot occupy every Hub processor.
+pub const BUILDING_HVAC_ML_XGBOOST_THREADS: u32 = 1;
+
+/// Machine-learning worker nice increment
+/// The Linux worker lowers its CPU scheduling priority by this amount before
+/// accepting work. A positive nice increment yields CPU time to the Libertas
+/// application and other Hub services under contention.
+pub const BUILDING_HVAC_ML_WORKER_NICE_INCREMENT: i32 = 10;
+
 /// Maximum persisted UBJSON model bytes
 /// Rejects unexpectedly large or corrupt model artifacts before loading them.
 pub const BUILDING_HVAC_ML_MAXIMUM_MODEL_BYTES: usize = 16 * 1024 * 1024;
@@ -92,28 +132,6 @@ pub const BUILDING_HVAC_ML_RESULT_CAPACITY: usize = 16;
 pub const BUILDING_HVAC_XGBOOST_VERSION: &str = "3.0.0";
 
 pub(crate) const BUILDING_HVAC_ML_SAMPLE_RESOURCE: &str = "HVAC_ML_SAMPLE";
-
-/// Ordered V1 feature names
-/// These names are persisted with every model and must match byte-for-byte
-/// before the model is loaded.
-pub const BUILDING_HVAC_ML_FEATURE_NAMES: [&str; BUILDING_HVAC_ML_FEATURE_COUNT] = [
-    "room_temperature_celsius",
-    "room_relative_humidity_percent",
-    "outdoor_temperature_celsius",
-    "outdoor_humidity_ratio_kilograms_per_kilogram",
-    "outdoor_wind_speed_meters_per_second",
-    "global_horizontal_solar_irradiance_watts_per_square_meter",
-    "hour_of_day_sine",
-    "hour_of_day_cosine",
-    "day_of_year_sine",
-    "day_of_year_cosine",
-    "own_heating_runtime_fraction",
-    "own_cooling_runtime_fraction",
-    "other_zone_heating_runtime_fraction",
-    "other_zone_cooling_runtime_fraction",
-    "heating_setpoint_offset_celsius",
-    "cooling_setpoint_offset_celsius",
-];
 
 /// Thermal prediction horizon V1
 /// Selects one independently trained room-temperature-change model. Separate
@@ -154,137 +172,239 @@ impl BuildingHvacThermalPredictionHorizonV1 {
     }
 }
 
+/// Named machine-learning feature V1
+/// Defines one stable column in the building-specific XGBoost matrix. The name
+/// includes its family, stable device or room identity when applicable,
+/// measurement, unit, and lookback or forecast horizon. `None` is encoded as
+/// XGBoost's `NaN` missing value; a meaningful zero remains `Some(0.0)`.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+pub struct BuildingHvacMachineLearningFeatureV1 {
+    /// Feature name
+    /// Stable lowercase identifier in
+    /// `family.identity.measurement_unit.horizon` form. Names are sorted
+    /// lexicographically and become the persisted model manifest.
+    #[libertas_size(min = 1, max = 192)]
+    pub name: String,
+    /// Feature value
+    /// Finite value in the unit stated by `name`. Absence means genuinely
+    /// unavailable or inapplicable input and is passed to XGBoost as `NaN`.
+    pub value: Option<f32>,
+}
+
+impl BuildingHvacMachineLearningFeatureV1 {
+    fn is_well_formed(&self) -> bool {
+        !self.name.is_empty()
+            && self.name.len() <= BUILDING_HVAC_ML_MAXIMUM_FEATURE_NAME_BYTES
+            && self.name.bytes().all(|byte| {
+                byte.is_ascii_lowercase()
+                    || byte.is_ascii_digit()
+                    || matches!(byte, b'.' | b'_' | b'-')
+            })
+            && optional_finite(self.value)
+    }
+}
+
 /// XGBoost thermal features V1
-/// Contains the exact ordered inputs for one room observation. Optional
-/// physical measurements become XGBoost missing values; runtime fractions and
-/// cyclical time encodings are always required.
-#[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+/// Contains the exact ordered inputs for one target-room observation. Every
+/// configured room and thermostat receives its own stable columns so XGBoost
+/// can learn shared-source and cross-zone correlations without a configured
+/// equipment topology. Weather, utility, equipment, occupancy, air-quality,
+/// time, controller-history, and lagged values remain separate rather than
+/// being collapsed into lossy Boolean or aggregate demand features.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct BuildingHvacMachineLearningFeaturesV1 {
-    /// Room temperature
-    /// Current fused room temperature in degrees Celsius.
-    pub room_temperature_celsius: f32,
-    /// Room relative humidity
-    /// Current fused room relative humidity percentage when available.
-    pub room_relative_humidity_percent: Option<f32>,
-    /// Outdoor temperature
-    /// Fresh local or weather outdoor dry-bulb temperature in degrees Celsius.
-    pub outdoor_temperature_celsius: Option<f32>,
-    /// Outdoor humidity ratio
-    /// Derived kilograms of water per kilogram of dry air when current weather
-    /// is internally consistent.
-    pub outdoor_humidity_ratio_kilograms_per_kilogram: Option<f32>,
-    /// Outdoor wind speed
-    /// Current wind speed in meters per second when available.
-    pub outdoor_wind_speed_meters_per_second: Option<f32>,
-    /// Global-horizontal solar irradiance
-    /// Current solar irradiance in watts per square meter when available.
-    pub global_horizontal_solar_irradiance_watts_per_square_meter: Option<f32>,
-    /// Hour-of-day sine
-    /// Sine encoding of UTC time of day, bounded from -1 through 1. UTC keeps
-    /// the feature reproducible without adding an unpublished location or time
-    /// zone to the weather-client contract.
-    #[libertas_number(min = -1, max = 1)]
-    pub hour_of_day_sine: f32,
-    /// Hour-of-day cosine
-    /// Cosine encoding paired with the UTC `hour_of_day_sine`.
-    #[libertas_number(min = -1, max = 1)]
-    pub hour_of_day_cosine: f32,
-    /// Day-of-year sine
-    /// Sine encoding of the annual position, bounded from -1 through 1.
-    #[libertas_number(min = -1, max = 1)]
-    pub day_of_year_sine: f32,
-    /// Day-of-year cosine
-    /// Cosine encoding paired with `day_of_year_sine`.
-    #[libertas_number(min = -1, max = 1)]
-    pub day_of_year_cosine: f32,
-    /// Own-zone heating runtime
-    /// Fraction of the observation period during which this room's thermostat
-    /// zone reported heating.
-    #[libertas_number(min = 0, max = 1)]
-    pub own_heating_runtime_fraction: f32,
-    /// Own-zone cooling runtime
-    /// Fraction of the observation period during which this room's thermostat
-    /// zone reported cooling.
-    #[libertas_number(min = 0, max = 1)]
-    pub own_cooling_runtime_fraction: f32,
-    /// Other-zone heating runtime
-    /// Aggregate fraction of the observation period during which other source
-    /// thermostat zones reported heating, capped at one.
-    #[libertas_number(min = 0, max = 1)]
-    pub other_zone_heating_runtime_fraction: f32,
-    /// Other-zone cooling runtime
-    /// Aggregate fraction of the observation period during which other source
-    /// thermostat zones reported cooling, capped at one.
-    #[libertas_number(min = 0, max = 1)]
-    pub other_zone_cooling_runtime_fraction: f32,
-    /// Heating-setpoint offset
-    /// Effective heating setpoint minus current room temperature in degrees
-    /// Celsius when heating is enabled.
-    pub heating_setpoint_offset_celsius: Option<f32>,
-    /// Cooling-setpoint offset
-    /// Effective cooling setpoint minus current room temperature in degrees
-    /// Celsius when cooling is enabled.
-    pub cooling_setpoint_offset_celsius: Option<f32>,
+    /// Target room
+    /// Stable runtime endpoint of the room whose future temperature change is
+    /// being predicted.
+    pub target_room: LibertasEndpoint,
+    /// Feature values
+    /// Complete building-specific column set sorted by feature name. A source
+    /// that is absent or stale retains its column with an absent value so every
+    /// sample for one configuration has the same manifest.
+    /// ----
+    /// Named feature
+    /// One finite value or an explicit XGBoost missing value.
+    #[libertas_size(min = 1, max = 8192)]
+    pub values: Vec<BuildingHvacMachineLearningFeatureV1>,
 }
 
 impl BuildingHvacMachineLearningFeaturesV1 {
     /// Well-formed features
-    /// Rejects nonfinite measurements, impossible percentages, negative
-    /// physical magnitudes, and inconsistent activity fractions.
+    /// Rejects an empty or oversized vector, invalid names, nonfinite present
+    /// values, and duplicate or unordered columns.
     pub fn is_well_formed(&self) -> bool {
-        self.room_temperature_celsius.is_finite()
-            && optional_in_range(self.room_relative_humidity_percent, 0.0, 100.0)
-            && optional_finite(self.outdoor_temperature_celsius)
-            && optional_in_range(self.outdoor_humidity_ratio_kilograms_per_kilogram, 0.0, 1.0)
-            && optional_in_range(self.outdoor_wind_speed_meters_per_second, 0.0, f32::MAX)
-            && optional_in_range(
-                self.global_horizontal_solar_irradiance_watts_per_square_meter,
-                0.0,
-                f32::MAX,
-            )
-            && in_range(self.hour_of_day_sine, -1.0, 1.0)
-            && in_range(self.hour_of_day_cosine, -1.0, 1.0)
-            && in_range(self.day_of_year_sine, -1.0, 1.0)
-            && in_range(self.day_of_year_cosine, -1.0, 1.0)
-            && in_range(self.own_heating_runtime_fraction, 0.0, 1.0)
-            && in_range(self.own_cooling_runtime_fraction, 0.0, 1.0)
-            && self.own_heating_runtime_fraction + self.own_cooling_runtime_fraction <= 1.000_001
-            && in_range(self.other_zone_heating_runtime_fraction, 0.0, 1.0)
-            && in_range(self.other_zone_cooling_runtime_fraction, 0.0, 1.0)
-            && self.other_zone_heating_runtime_fraction + self.other_zone_cooling_runtime_fraction
-                <= 1.000_001
-            && optional_in_range(self.heating_setpoint_offset_celsius, -50.0, 50.0)
-            && optional_in_range(self.cooling_setpoint_offset_celsius, -50.0, 50.0)
+        !self.values.is_empty()
+            && self.values.len() <= BUILDING_HVAC_ML_MAXIMUM_FEATURE_COUNT
+            && self.values.iter().all(|feature| feature.is_well_formed())
+            && self
+                .values
+                .windows(2)
+                .all(|pair| pair[0].name < pair[1].name)
+    }
+
+    /// Named feature value
+    /// Returns one present value from the sorted vector. `None` represents
+    /// either a missing column or a column whose value is missing.
+    pub fn value(&self, name: &str) -> Option<f32> {
+        self.values
+            .binary_search_by(|feature| feature.name.as_str().cmp(name))
+            .ok()
+            .and_then(|index| self.values[index].value)
+    }
+
+    /// Ordered feature names
+    /// Builds the exact self-describing XGBoost column manifest.
+    pub fn feature_names(&self) -> Vec<String> {
+        self.values
+            .iter()
+            .map(|feature| feature.name.clone())
+            .collect()
+    }
+
+    #[cfg(any(target_os = "linux", test))]
+    const fn dense_feature_count(&self) -> usize {
+        self.values.len()
     }
 
     #[cfg(target_os = "linux")]
-    fn append_dense(self, values: &mut Vec<f32>) {
-        values.extend_from_slice(&[
-            self.room_temperature_celsius,
-            missing(self.room_relative_humidity_percent),
-            missing(self.outdoor_temperature_celsius),
-            missing(self.outdoor_humidity_ratio_kilograms_per_kilogram),
-            missing(self.outdoor_wind_speed_meters_per_second),
-            missing(self.global_horizontal_solar_irradiance_watts_per_square_meter),
-            self.hour_of_day_sine,
-            self.hour_of_day_cosine,
-            self.day_of_year_sine,
-            self.day_of_year_cosine,
-            self.own_heating_runtime_fraction,
-            self.own_cooling_runtime_fraction,
-            self.other_zone_heating_runtime_fraction,
-            self.other_zone_cooling_runtime_fraction,
-            missing(self.heating_setpoint_offset_celsius),
-            missing(self.cooling_setpoint_offset_celsius),
-        ]);
+    fn append_dense(&self, values: &mut Vec<f32>) {
+        values.extend(self.values.iter().map(|feature| missing(feature.value)));
     }
+
+    /// Compact persisted vector
+    /// Replaces repeated feature names with their deterministic manifest hash
+    /// before a 15-minute observation is written to indexed history.
+    pub fn compact(&self) -> BuildingHvacMachineLearningFeatureVectorV1 {
+        let names = self.feature_names();
+        BuildingHvacMachineLearningFeatureVectorV1 {
+            manifest_sha256: feature_manifest_sha256(&names).to_vec(),
+            feature_count: u16::try_from(self.values.len()).unwrap_or(u16::MAX),
+            values: self
+                .values
+                .iter()
+                .enumerate()
+                .filter_map(|(index, feature)| {
+                    Some(BuildingHvacMachineLearningIndexedFeatureV1 {
+                        index: u16::try_from(index).ok()?,
+                        value: feature.value?,
+                    })
+                })
+                .collect(),
+        }
+    }
+}
+
+/// Indexed machine-learning feature V1
+/// Stores one present value from a compact sparse observation. Missing columns
+/// are omitted; semantic zeros remain present entries.
+#[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+pub struct BuildingHvacMachineLearningIndexedFeatureV1 {
+    /// Column index
+    /// Zero-based position in the manifest named by the containing vector.
+    pub index: u16,
+    /// Value
+    /// Finite present value. Missing values have no indexed entry.
+    pub value: f32,
+}
+
+/// Compact machine-learning feature vector V1
+/// Stores one ordered observation without repeating thousands of feature-name
+/// strings in every indexed record. The corresponding full ordered names are
+/// regenerated from configuration and checked against `manifest_sha256` before
+/// a sample can be selected or trained.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+pub struct BuildingHvacMachineLearningFeatureVectorV1 {
+    /// Manifest SHA-256
+    /// Thirty-two deterministic checksum bytes over the feature-schema version
+    /// and ordered names, including each name length so concatenation cannot
+    /// create ambiguity.
+    #[libertas_size(min = 32, max = 32)]
+    pub manifest_sha256: Vec<u8>,
+    /// Feature count
+    /// Total number of columns, including omitted missing columns.
+    #[libertas_number(min = 1, max = 8192)]
+    pub feature_count: u16,
+    /// Present values
+    /// Sorted sparse values. A missing column has no entry; a meaningful zero
+    /// has an entry whose value is zero.
+    /// ----
+    /// Indexed feature
+    /// One present finite value at its manifest column.
+    #[libertas_size(max = 8192)]
+    pub values: Vec<BuildingHvacMachineLearningIndexedFeatureV1>,
+}
+
+impl BuildingHvacMachineLearningFeatureVectorV1 {
+    /// Well-formed compact vector
+    /// Requires a SHA-256-sized manifest identity and a bounded finite vector.
+    pub fn is_well_formed(&self) -> bool {
+        self.manifest_sha256.len() == 32
+            && self.feature_count != 0
+            && usize::from(self.feature_count) <= BUILDING_HVAC_ML_MAXIMUM_FEATURE_COUNT
+            && self.values.len() <= usize::from(self.feature_count)
+            && self
+                .values
+                .iter()
+                .all(|value| value.index < self.feature_count && value.value.is_finite())
+            && self
+                .values
+                .windows(2)
+                .all(|pair| pair[0].index < pair[1].index)
+    }
+
+    fn matches_feature_names(&self, names: &[String]) -> bool {
+        let expected_manifest = feature_manifest_sha256(names);
+        usize::from(self.feature_count) == names.len()
+            && self.manifest_sha256.as_slice() == expected_manifest.as_slice()
+    }
+
+    fn value(&self, names: &[String], name: &str) -> Option<f32> {
+        let index = names
+            .binary_search_by(|candidate| candidate.as_str().cmp(name))
+            .ok()?;
+        let index = u16::try_from(index).ok()?;
+        self.values
+            .binary_search_by_key(&index, |feature| feature.index)
+            .ok()
+            .map(|position| self.values[position].value)
+    }
+
+    #[cfg(target_os = "linux")]
+    fn dense_feature_count(&self) -> usize {
+        usize::from(self.feature_count)
+    }
+}
+
+fn feature_manifest_sha256(names: &[String]) -> [u8; 32] {
+    let mut digest = Sha256::new();
+    digest.update(BUILDING_HVAC_ML_FEATURE_SCHEMA_VERSION.to_le_bytes());
+    for name in names {
+        digest.update(u64::try_from(name.len()).unwrap_or(u64::MAX).to_le_bytes());
+        digest.update(name.as_bytes());
+    }
+    digest.finalize().into()
+}
+
+fn feature_manifest_is_well_formed(names: &[String]) -> bool {
+    !names.is_empty()
+        && names.len() <= BUILDING_HVAC_ML_MAXIMUM_FEATURE_COUNT
+        && names.iter().all(|name| {
+            !name.is_empty()
+                && name.len() <= BUILDING_HVAC_ML_MAXIMUM_FEATURE_NAME_BYTES
+                && name.bytes().all(|byte| {
+                    byte.is_ascii_lowercase()
+                        || byte.is_ascii_digit()
+                        || matches!(byte, b'.' | b'_' | b'-')
+                })
+        })
+        && names.windows(2).all(|pair| pair[0] < pair[1])
 }
 
 /// Machine-learning training sample V1
 /// One indexed room observation and the temperature changes later measured at
 /// each supported horizon. It is written only after at least one target becomes
 /// known; missing targets remain available for later completion.
-#[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct BuildingHvacMachineLearningSampleV1 {
     /// Observed at
     /// UTC timestamp of the feature observation and indexed database key.
@@ -294,8 +414,9 @@ pub struct BuildingHvacMachineLearningSampleV1 {
     /// room history.
     pub room_endpoint: LibertasEndpoint,
     /// Features
-    /// Exact V1 thermal feature values at `observed_at`.
-    pub features: BuildingHvacMachineLearningFeaturesV1,
+    /// Compact sparse V1 thermal feature values at `observed_at`. The manifest
+    /// hash must match the full ordered names regenerated for this building.
+    pub features: BuildingHvacMachineLearningFeatureVectorV1,
     /// Fifteen-minute temperature change
     /// Fused room temperature after 15 minutes minus the observed temperature.
     pub temperature_change_15_minutes_celsius: Option<f32>,
@@ -310,7 +431,7 @@ pub struct BuildingHvacMachineLearningSampleV1 {
 impl BuildingHvacMachineLearningSampleV1 {
     /// Target value
     /// Returns the labeled temperature change for one model horizon.
-    pub const fn target(self, horizon: BuildingHvacThermalPredictionHorizonV1) -> Option<f32> {
+    pub const fn target(&self, horizon: BuildingHvacThermalPredictionHorizonV1) -> Option<f32> {
         match horizon {
             BuildingHvacThermalPredictionHorizonV1::FifteenMinutes => {
                 self.temperature_change_15_minutes_celsius
@@ -406,11 +527,12 @@ pub struct BuildingHvacMachineLearningModelV1 {
     /// Exact feature-vector contract used for training.
     pub feature_schema_version: u32,
     /// Ordered feature names
-    /// Human- and AI-readable manifest matching the XGBoost column order.
+    /// Human- and AI-readable manifest matching both the XGBoost model metadata
+    /// and numeric column order. Trees split on indexes after training.
     /// ----
     /// Feature name
     /// One stable feature identifier in model-column order.
-    #[libertas_size(min = 16, max = 16)]
+    #[libertas_size(min = 1, max = 8192)]
     pub feature_names: Vec<String>,
     /// XGBoost version
     /// Bundled native XGBoost version that produced the UBJSON artifact.
@@ -455,12 +577,7 @@ impl BuildingHvacMachineLearningModelV1 {
     /// calling XGBoost.
     pub fn is_well_formed(&self) -> bool {
         self.feature_schema_version == BUILDING_HVAC_ML_FEATURE_SCHEMA_VERSION
-            && self.feature_names.len() == BUILDING_HVAC_ML_FEATURE_COUNT
-            && self
-                .feature_names
-                .iter()
-                .zip(BUILDING_HVAC_ML_FEATURE_NAMES)
-                .all(|(actual, expected)| actual == expected)
+            && feature_manifest_is_well_formed(&self.feature_names)
             && self.xgboost_version == BUILDING_HVAC_XGBOOST_VERSION
             && self.training_range_starts_at <= self.training_range_ends_at
             && self.training_range_ends_at <= self.trained_at
@@ -669,9 +786,9 @@ pub enum BuildingHvacMachineLearningResult {
 }
 
 enum BuildingHvacMachineLearningCommand {
-    Train {
-        horizon: BuildingHvacThermalPredictionHorizonV1,
+    TrainAll {
         trained_at: LibertasDateTime,
+        feature_names: Vec<String>,
         samples: Vec<BuildingHvacMachineLearningSampleV1>,
     },
     Activate {
@@ -726,11 +843,10 @@ impl BuildingHvacMachineLearningHistory {
         now_utc: LibertasDateTime,
         sample: BuildingHvacMachineLearningSampleV1,
     ) -> Result<(), BuildingHvacMachineLearningHistoryError> {
-        let retention_seconds =
-            (BUILDING_HVAC_ML_MAXIMUM_TRAINING_SAMPLES_PER_ROOM as u64).saturating_mul(15 * 60);
         if !sample.is_well_formed()
             || sample.observed_at > now_utc
-            || sample.observed_at < now_utc.saturating_sub(retention_seconds)
+            || sample.observed_at
+                < now_utc.saturating_sub(BUILDING_HVAC_ML_HISTORY_RETENTION_SECONDS)
         {
             return Err(BuildingHvacMachineLearningHistoryError::InvalidSample);
         }
@@ -762,7 +878,7 @@ impl BuildingHvacMachineLearningHistory {
         let value = crate::BuildingHvacPersistentDataV1::MachineLearningSampleV1 { sample: merged };
         libertas_data_write_indexed(database.handle, index, &value);
 
-        let oldest_retained = now_utc.saturating_sub(retention_seconds);
+        let oldest_retained = now_utc.saturating_sub(BUILDING_HVAC_ML_HISTORY_RETENTION_SECONDS);
         if let Ok(oldest_retained) = i64::try_from(oldest_retained)
             && oldest_retained > i64::MIN
         {
@@ -775,23 +891,24 @@ impl BuildingHvacMachineLearningHistory {
         Ok(())
     }
 
-    /// Load recent samples
-    /// Reads newest records through `through_utc`, rejects mismatched or invalid
-    /// values, removes duplicate timestamps, and returns ascending observation
-    /// order for time-forward training.
-    pub fn load_recent_samples(
+    /// Load training samples
+    /// Reads the retained 400-day room archive through `through_utc`, rejects
+    /// mismatched or invalid records, and selects a bounded training set.
+    /// Selection reserves recent evidence for adaptation and distributes older
+    /// evidence across annual phase, outdoor weather, and signed HVAC demand
+    /// strata. The result remains in ascending observation order so the newest
+    /// portion can be used for time-forward validation.
+    pub fn load_training_samples(
         room_endpoint: LibertasEndpoint,
         through_utc: LibertasDateTime,
-        maximum_samples: usize,
+        expected_feature_names: &[String],
     ) -> Vec<BuildingHvacMachineLearningSampleV1> {
-        let maximum_samples =
-            maximum_samples.min(BUILDING_HVAC_ML_MAXIMUM_TRAINING_SAMPLES_PER_ROOM);
-        if maximum_samples == 0 {
-            return Vec::new();
-        }
         let Ok(index) = i64::try_from(through_utc) else {
             return Vec::new();
         };
+        if !feature_manifest_is_well_formed(expected_feature_names) {
+            return Vec::new();
+        }
         let key = [NotificationArgument::Object(room_endpoint)];
         let database = libertas_data_open_indexed(BUILDING_HVAC_ML_SAMPLE_RESOURCE, &key);
         let mut records = Vec::new();
@@ -799,7 +916,7 @@ impl BuildingHvacMachineLearningHistory {
             database.handle,
             index,
             IndexDirection::Below,
-            maximum_samples,
+            BUILDING_HVAC_ML_MAXIMUM_RETAINED_SAMPLES_PER_ROOM,
             &mut records,
         );
         let mut samples: Vec<_> = records
@@ -809,7 +926,10 @@ impl BuildingHvacMachineLearningHistory {
                     if i64::try_from(sample.observed_at) == Ok(record.index)
                         && sample.room_endpoint == room_endpoint
                         && sample.observed_at <= through_utc
-                        && sample.is_well_formed() =>
+                        && sample.is_well_formed()
+                        && sample
+                            .features
+                            .matches_feature_names(expected_feature_names) =>
                 {
                     Some(sample)
                 }
@@ -818,8 +938,253 @@ impl BuildingHvacMachineLearningHistory {
             .collect();
         samples.sort_by_key(|sample| sample.observed_at);
         samples.dedup_by_key(|sample| sample.observed_at);
-        samples
+        select_stratified_training_samples(&samples, through_utc, expected_feature_names)
     }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct TrainingStratum {
+    annual_phase: u8,
+    outdoor_temperature: u8,
+    outdoor_humidity: u8,
+    outdoor_wind: u8,
+    solar_irradiance: u8,
+    heating_demand_thermostats: u8,
+    cooling_demand_thermostats: u8,
+}
+
+fn select_stratified_training_samples(
+    samples: &[BuildingHvacMachineLearningSampleV1],
+    through_utc: LibertasDateTime,
+    feature_names: &[String],
+) -> Vec<BuildingHvacMachineLearningSampleV1> {
+    let maximum = BUILDING_HVAC_ML_MAXIMUM_TRAINING_SAMPLES_PER_ROOM.min(samples.len());
+    if samples.len() <= maximum {
+        return samples.to_vec();
+    }
+
+    let recent_starts_at = through_utc.saturating_sub(BUILDING_HVAC_ML_RECENT_WINDOW_SECONDS);
+    let recent_start = samples.partition_point(|sample| sample.observed_at < recent_starts_at);
+    let recent_available = samples.len().saturating_sub(recent_start);
+    let older_available = recent_start;
+
+    let desired_recent = maximum.saturating_mul(BUILDING_HVAC_ML_RECENT_TRAINING_PERCENT) / 100;
+    let mut recent_target = recent_available.min(desired_recent);
+    let mut older_target = older_available.min(maximum.saturating_sub(recent_target));
+    let mut unallocated = maximum.saturating_sub(recent_target + older_target);
+
+    let additional_recent = unallocated.min(recent_available.saturating_sub(recent_target));
+    recent_target += additional_recent;
+    unallocated -= additional_recent;
+    older_target += unallocated.min(older_available.saturating_sub(older_target));
+
+    let mut selected = vec![false; samples.len()];
+    for index in select_stratified_indices(&samples[..recent_start], older_target, feature_names) {
+        selected[index] = true;
+    }
+    for index in select_stratified_indices(&samples[recent_start..], recent_target, feature_names) {
+        selected[recent_start + index] = true;
+    }
+
+    if recent_target > 0 {
+        let newest = samples.len() - 1;
+        if !selected[newest] {
+            if let Some(replaced) = (recent_start..newest).find(|index| selected[*index]) {
+                selected[replaced] = false;
+            }
+            selected[newest] = true;
+        }
+    }
+
+    let selected_count = selected.iter().filter(|selected| **selected).count();
+    if selected_count < maximum {
+        let available: Vec<_> = selected
+            .iter()
+            .enumerate()
+            .filter_map(|(index, selected)| (!*selected).then_some(index))
+            .collect();
+        for index in evenly_spaced_values(&available, maximum - selected_count) {
+            selected[index] = true;
+        }
+    }
+
+    samples
+        .iter()
+        .zip(selected)
+        .filter(|(_, selected)| *selected)
+        .map(|(sample, _)| sample.clone())
+        .collect()
+}
+
+fn select_stratified_indices(
+    samples: &[BuildingHvacMachineLearningSampleV1],
+    target: usize,
+    feature_names: &[String],
+) -> Vec<usize> {
+    if target == 0 || samples.is_empty() {
+        return Vec::new();
+    }
+    if target >= samples.len() {
+        return (0..samples.len()).collect();
+    }
+
+    let mut grouped = BTreeMap::<TrainingStratum, Vec<usize>>::new();
+    for (index, sample) in samples.iter().enumerate() {
+        grouped
+            .entry(training_stratum(&sample.features, feature_names))
+            .or_default()
+            .push(index);
+    }
+    let buckets: Vec<_> = grouped.into_values().collect();
+    if target < buckets.len() {
+        let bucket_positions: Vec<_> = (0..buckets.len()).collect();
+        return evenly_spaced_values(&bucket_positions, target)
+            .into_iter()
+            .map(|bucket| buckets[bucket][buckets[bucket].len() / 2])
+            .collect();
+    }
+
+    let mut quotas = vec![0_usize; buckets.len()];
+    let mut remaining = target;
+    while remaining > 0 {
+        let mut allocated = false;
+        for (quota, bucket) in quotas.iter_mut().zip(&buckets) {
+            if *quota < bucket.len() {
+                *quota += 1;
+                remaining -= 1;
+                allocated = true;
+                if remaining == 0 {
+                    break;
+                }
+            }
+        }
+        if !allocated {
+            break;
+        }
+    }
+
+    let mut selected = Vec::with_capacity(target);
+    for (bucket, quota) in buckets.iter().zip(quotas) {
+        selected.extend(evenly_spaced_values(bucket, quota));
+    }
+    selected.sort_unstable();
+    selected
+}
+
+fn evenly_spaced_values(values: &[usize], target: usize) -> Vec<usize> {
+    let target = target.min(values.len());
+    match target {
+        0 => Vec::new(),
+        1 => vec![values[values.len() / 2]],
+        target if target == values.len() => values.to_vec(),
+        target => (0..target)
+            .map(|position| {
+                let source = position.saturating_mul(values.len() - 1) / (target - 1);
+                values[source]
+            })
+            .collect(),
+    }
+}
+
+fn training_stratum(
+    features: &BuildingHvacMachineLearningFeatureVectorV1,
+    feature_names: &[String],
+) -> TrainingStratum {
+    let annual_sine = features
+        .value(feature_names, "time.day_of_year_sine")
+        .unwrap_or(0.0);
+    let annual_cosine = features
+        .value(feature_names, "time.day_of_year_cosine")
+        .unwrap_or(1.0);
+    TrainingStratum {
+        annual_phase: annual_phase_bin(annual_sine, annual_cosine),
+        outdoor_temperature: match features.value(
+            feature_names,
+            "weather.current.dry_bulb_temperature_celsius",
+        ) {
+            None => 0,
+            Some(value) if value < -10.0 => 1,
+            Some(value) if value < 0.0 => 2,
+            Some(value) if value < 10.0 => 3,
+            Some(value) if value < 20.0 => 4,
+            Some(value) if value < 30.0 => 5,
+            Some(value) if value < 35.0 => 6,
+            Some(_) => 7,
+        },
+        outdoor_humidity: match features
+            .value(feature_names, "weather.current.humidity_ratio_kg_per_kg")
+        {
+            None => 0,
+            Some(value) if value < 0.004 => 1,
+            Some(value) if value < 0.008 => 2,
+            Some(value) if value < 0.012 => 3,
+            Some(value) if value < 0.018 => 4,
+            Some(_) => 5,
+        },
+        outdoor_wind: match features.value(
+            feature_names,
+            "weather.current.wind_speed_meters_per_second",
+        ) {
+            None => 0,
+            Some(value) if value < 2.0 => 1,
+            Some(value) if value < 6.0 => 2,
+            Some(value) if value < 12.0 => 3,
+            Some(_) => 4,
+        },
+        solar_irradiance: match features.value(
+            feature_names,
+            "weather.current.global_horizontal_irradiance_watts_per_square_meter",
+        ) {
+            None => 0,
+            Some(value) if value <= 1.0 => 1,
+            Some(value) if value < 200.0 => 2,
+            Some(value) if value < 600.0 => 3,
+            Some(_) => 4,
+        },
+        heating_demand_thermostats: u8::try_from(
+            feature_names
+                .iter()
+                .enumerate()
+                .filter(|(index, name)| {
+                    name.starts_with("thermostat.")
+                        && name.ends_with(".active_setpoint_delta_celsius")
+                        && features
+                            .values
+                            .binary_search_by_key(
+                                &u16::try_from(*index).unwrap_or(u16::MAX),
+                                |feature| feature.index,
+                            )
+                            .ok()
+                            .is_some_and(|position| features.values[position].value > 0.05)
+                })
+                .count(),
+        )
+        .unwrap_or(u8::MAX),
+        cooling_demand_thermostats: u8::try_from(
+            feature_names
+                .iter()
+                .enumerate()
+                .filter(|(index, name)| {
+                    name.starts_with("thermostat.")
+                        && name.ends_with(".active_setpoint_delta_celsius")
+                        && features
+                            .values
+                            .binary_search_by_key(
+                                &u16::try_from(*index).unwrap_or(u16::MAX),
+                                |feature| feature.index,
+                            )
+                            .ok()
+                            .is_some_and(|position| features.values[position].value < -0.05)
+                })
+                .count(),
+        )
+        .unwrap_or(u8::MAX),
+    }
+}
+
+fn annual_phase_bin(sine: f32, cosine: f32) -> u8 {
+    let phase = sine.atan2(cosine).rem_euclid(std::f32::consts::TAU);
+    ((phase / std::f32::consts::TAU * 8.0) as u8).min(7)
 }
 
 /// Machine-learning worker client
@@ -829,22 +1194,43 @@ impl BuildingHvacMachineLearningHistory {
 pub struct BuildingHvacMachineLearningClient {
     commands: SyncSender<BuildingHvacMachineLearningCommand>,
     stop_requested: Arc<AtomicBool>,
+    training_pending: Arc<AtomicBool>,
 }
 
 impl BuildingHvacMachineLearningClient {
-    /// Try training
-    /// Enqueues one independently bounded candidate-training job.
-    pub fn try_train(
+    /// Try training all horizons
+    /// Transfers one bounded sample set to the worker, which fits the three
+    /// horizons sequentially. Reusing one sparse sample allocation prevents
+    /// three queued copies of the selected 400-day evidence.
+    pub fn try_train_all(
         &self,
-        horizon: BuildingHvacThermalPredictionHorizonV1,
         trained_at: LibertasDateTime,
+        feature_names: Vec<String>,
         samples: Vec<BuildingHvacMachineLearningSampleV1>,
     ) -> Result<(), BuildingHvacMachineLearningQueueError> {
-        self.try_send(BuildingHvacMachineLearningCommand::Train {
-            horizon,
+        if self
+            .training_pending
+            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+            .is_err()
+        {
+            return Err(BuildingHvacMachineLearningQueueError::Full);
+        }
+        let result = self.try_send(BuildingHvacMachineLearningCommand::TrainAll {
             trained_at,
+            feature_names,
             samples,
-        })
+        });
+        if result.is_err() {
+            self.training_pending.store(false, Ordering::Release);
+        }
+        result
+    }
+
+    /// Training pending
+    /// Reports whether a room training cycle is queued or executing so the
+    /// Libertas thread does not allocate another maximum-size sample set.
+    pub fn training_pending(&self) -> bool {
+        self.training_pending.load(Ordering::Acquire)
     }
 
     /// Try activating
@@ -911,9 +1297,10 @@ impl BuildingHvacMachineLearningEngine {
     pub fn train_candidate(
         horizon: BuildingHvacThermalPredictionHorizonV1,
         trained_at: LibertasDateTime,
+        feature_names: &[String],
         samples: &[BuildingHvacMachineLearningSampleV1],
     ) -> Result<BuildingHvacMachineLearningModelV1, BuildingHvacMachineLearningRejection> {
-        let labeled = validate_and_collect_samples(horizon, samples)?;
+        let labeled = validate_and_collect_samples(horizon, feature_names, samples)?;
         let validation_count = (labeled.len() * BUILDING_HVAC_ML_VALIDATION_PERCENT / 100)
             .max(BUILDING_HVAC_ML_MINIMUM_VALIDATION_SAMPLES)
             .min(labeled.len().saturating_sub(1));
@@ -923,12 +1310,12 @@ impl BuildingHvacMachineLearningEngine {
         }
 
         let (training, validation) = labeled.split_at(training_count);
-        let booster = train_booster(training)?;
-        let validation_predictions = predict_booster(
+        let booster = train_booster(training, feature_names)?;
+        let validation_predictions = predict_feature_vectors(
             &booster,
             &validation
                 .iter()
-                .map(|(sample, _)| sample.features)
+                .map(|(sample, _)| sample.features.clone())
                 .collect::<Vec<_>>(),
         )?;
         let labels: Vec<f32> = validation.iter().map(|(_, label)| *label).collect();
@@ -956,14 +1343,18 @@ impl BuildingHvacMachineLearningEngine {
         if model_ubjson.is_empty() || model_ubjson.len() > BUILDING_HVAC_ML_MAXIMUM_MODEL_BYTES {
             return Err(BuildingHvacMachineLearningRejection::InvalidArtifact);
         }
+        let persisted_booster = Booster::load_buffer(&model_ubjson).map_err(xgboost_rejection)?;
+        let persisted_feature_names = persisted_booster
+            .get_feature_names()
+            .map_err(xgboost_rejection)?;
+        if persisted_feature_names.as_slice() != feature_names {
+            return Err(BuildingHvacMachineLearningRejection::InvalidArtifact);
+        }
         let candidate = BuildingHvacMachineLearningModelV1 {
             room_endpoint: training[0].0.room_endpoint,
             horizon,
             feature_schema_version: BUILDING_HVAC_ML_FEATURE_SCHEMA_VERSION,
-            feature_names: BUILDING_HVAC_ML_FEATURE_NAMES
-                .iter()
-                .map(|name| String::from(*name))
-                .collect(),
+            feature_names: feature_names.to_vec(),
             xgboost_version: String::from(BUILDING_HVAC_XGBOOST_VERSION),
             trained_at,
             training_range_starts_at: training[0].0.observed_at,
@@ -989,6 +1380,7 @@ impl BuildingHvacMachineLearningEngine {
     pub fn train_candidate(
         _horizon: BuildingHvacThermalPredictionHorizonV1,
         _trained_at: LibertasDateTime,
+        _feature_names: &[String],
         _samples: &[BuildingHvacMachineLearningSampleV1],
     ) -> Result<BuildingHvacMachineLearningModelV1, BuildingHvacMachineLearningRejection> {
         Err(BuildingHvacMachineLearningRejection::Xgboost(String::from(
@@ -1004,10 +1396,16 @@ impl BuildingHvacMachineLearningEngine {
         model: &BuildingHvacMachineLearningModelV1,
         features: BuildingHvacMachineLearningFeaturesV1,
     ) -> Result<f32, BuildingHvacMachineLearningRejection> {
-        if !model.is_well_formed() || !features.is_well_formed() {
+        if !model.is_well_formed()
+            || !features.is_well_formed()
+            || features.feature_names() != model.feature_names
+        {
             return Err(BuildingHvacMachineLearningRejection::InvalidArtifact);
         }
         let booster = Booster::load_buffer(&model.model_ubjson).map_err(xgboost_rejection)?;
+        if booster.get_feature_names().map_err(xgboost_rejection)? != model.feature_names {
+            return Err(BuildingHvacMachineLearningRejection::InvalidArtifact);
+        }
         let prediction = predict_booster(&booster, &[features])?
             .into_iter()
             .next()
@@ -1056,33 +1454,58 @@ pub(crate) fn start_machine_learning_worker(
 > {
     let (command_sender, command_receiver) = sync_channel(BUILDING_HVAC_ML_COMMAND_CAPACITY);
     let (result_sender, result_receiver) = sync_channel(BUILDING_HVAC_ML_RESULT_CAPACITY);
+    let (startup_sender, startup_receiver) = sync_channel(1);
     let stop_requested = Arc::new(AtomicBool::new(false));
     let worker_stop = Arc::clone(&stop_requested);
+    let training_pending = Arc::new(AtomicBool::new(false));
+    let worker_training_pending = Arc::clone(&training_pending);
     thread::Builder::new()
         .name(String::from("libertas-hvac-xgboost"))
         .spawn(move || {
+            let priority = configure_machine_learning_worker_priority();
+            let ready = priority.is_ok();
+            if startup_sender.send(priority).is_err() || !ready {
+                return;
+            }
             machine_learning_worker(
                 command_receiver,
                 result_sender,
                 worker_stop,
+                worker_training_pending,
                 wake_main,
                 shutdown_complete,
             );
         })
         .map_err(|error| format!("failed to start XGBoost worker: {error}"))?;
+    startup_receiver
+        .recv()
+        .map_err(|_| String::from("XGBoost worker stopped before reporting its CPU priority"))??;
     Ok((
         BuildingHvacMachineLearningClient {
             commands: command_sender,
             stop_requested,
+            training_pending,
         },
         result_receiver,
     ))
+}
+
+#[cfg(target_os = "linux")]
+fn configure_machine_learning_worker_priority() -> Result<i32, String> {
+    rustix::process::nice(BUILDING_HVAC_ML_WORKER_NICE_INCREMENT)
+        .map_err(|error| format!("failed to lower XGBoost worker CPU priority: {error}"))
+}
+
+#[cfg(not(target_os = "linux"))]
+fn configure_machine_learning_worker_priority() -> Result<i32, String> {
+    Ok(0)
 }
 
 fn machine_learning_worker(
     commands: Receiver<BuildingHvacMachineLearningCommand>,
     results: SyncSender<BuildingHvacMachineLearningResult>,
     stop_requested: Arc<AtomicBool>,
+    training_pending: Arc<AtomicBool>,
     wake_main: fn(),
     shutdown_complete: fn(),
 ) {
@@ -1091,24 +1514,40 @@ fn machine_learning_worker(
         if stop_requested.load(Ordering::Acquire)
             || matches!(command, BuildingHvacMachineLearningCommand::Shutdown)
         {
+            training_pending.store(false, Ordering::Release);
             shutdown_complete();
             return;
         }
         match command {
-            BuildingHvacMachineLearningCommand::Train {
-                horizon,
+            BuildingHvacMachineLearningCommand::TrainAll {
                 trained_at,
+                feature_names,
                 samples,
             } => {
-                let result = match BuildingHvacMachineLearningEngine::train_candidate(
-                    horizon, trained_at, &samples,
-                ) {
-                    Ok(candidate) => BuildingHvacMachineLearningResult::Candidate(candidate),
-                    Err(reason) => {
-                        BuildingHvacMachineLearningResult::TrainingRejected { horizon, reason }
+                for horizon in [
+                    BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+                    BuildingHvacThermalPredictionHorizonV1::ThirtyMinutes,
+                    BuildingHvacThermalPredictionHorizonV1::SixtyMinutes,
+                ] {
+                    if stop_requested.load(Ordering::Acquire) {
+                        training_pending.store(false, Ordering::Release);
+                        shutdown_complete();
+                        return;
                     }
-                };
-                send_worker_result(&results, result, wake_main);
+                    let result = match BuildingHvacMachineLearningEngine::train_candidate(
+                        horizon,
+                        trained_at,
+                        &feature_names,
+                        &samples,
+                    ) {
+                        Ok(candidate) => BuildingHvacMachineLearningResult::Candidate(candidate),
+                        Err(reason) => {
+                            BuildingHvacMachineLearningResult::TrainingRejected { horizon, reason }
+                        }
+                    };
+                    send_worker_result(&results, result, wake_main);
+                }
+                training_pending.store(false, Ordering::Release);
             }
             BuildingHvacMachineLearningCommand::Activate { model } => {
                 let horizon = model.horizon;
@@ -1162,6 +1601,7 @@ fn machine_learning_worker(
             BuildingHvacMachineLearningCommand::Shutdown => unreachable!(),
         }
     }
+    training_pending.store(false, Ordering::Release);
     if stop_requested.load(Ordering::Acquire) {
         shutdown_complete();
     }
@@ -1185,6 +1625,9 @@ fn load_active_booster(
         return Err(BuildingHvacMachineLearningRejection::InvalidArtifact);
     }
     let booster = Booster::load_buffer(&model.model_ubjson).map_err(xgboost_rejection)?;
+    if booster.get_feature_names().map_err(xgboost_rejection)? != model.feature_names {
+        return Err(BuildingHvacMachineLearningRejection::InvalidArtifact);
+    }
     Ok(ActiveBooster { model, booster })
 }
 
@@ -1202,7 +1645,7 @@ fn predict_active_booster(
     active: &ActiveBooster,
     features: BuildingHvacMachineLearningFeaturesV1,
 ) -> Option<BuildingHvacThermalPredictionV1> {
-    if !features.is_well_formed() {
+    if !features.is_well_formed() || features.feature_names() != active.model.feature_names {
         return None;
     }
     predict_booster(&active.booster, &[features])
@@ -1230,6 +1673,7 @@ fn predict_active_booster(
 #[cfg(target_os = "linux")]
 fn validate_and_collect_samples(
     horizon: BuildingHvacThermalPredictionHorizonV1,
+    feature_names: &[String],
     samples: &[BuildingHvacMachineLearningSampleV1],
 ) -> Result<Vec<(BuildingHvacMachineLearningSampleV1, f32)>, BuildingHvacMachineLearningRejection> {
     if samples.len() < BUILDING_HVAC_ML_MINIMUM_TRAINING_SAMPLES
@@ -1238,11 +1682,15 @@ fn validate_and_collect_samples(
         return Err(BuildingHvacMachineLearningRejection::TooFewSamples);
     }
     let room_endpoint = samples[0].room_endpoint;
+    if !feature_manifest_is_well_formed(feature_names) {
+        return Err(BuildingHvacMachineLearningRejection::InvalidSamples);
+    }
     let mut previous_time = None;
     let mut labeled = Vec::with_capacity(samples.len());
     for sample in samples {
         if !sample.is_well_formed()
             || sample.room_endpoint != room_endpoint
+            || !sample.features.matches_feature_names(feature_names)
             || previous_time.is_some_and(|previous| previous >= sample.observed_at)
         {
             return Err(BuildingHvacMachineLearningRejection::InvalidSamples);
@@ -1256,7 +1704,7 @@ fn validate_and_collect_samples(
             ) {
                 return Err(BuildingHvacMachineLearningRejection::InvalidSamples);
             }
-            labeled.push((*sample, label));
+            labeled.push((sample.clone(), label));
         }
     }
     if labeled.len() < BUILDING_HVAC_ML_MINIMUM_TRAINING_SAMPLES {
@@ -1269,14 +1717,31 @@ fn validate_and_collect_samples(
 #[cfg(target_os = "linux")]
 fn train_booster(
     samples: &[(BuildingHvacMachineLearningSampleV1, f32)],
+    feature_names: &[String],
 ) -> Result<Booster, BuildingHvacMachineLearningRejection> {
-    let mut dense = Vec::with_capacity(samples.len() * BUILDING_HVAC_ML_FEATURE_COUNT);
+    let feature_count = samples[0].0.features.dense_feature_count();
+    let mut indptr = Vec::with_capacity(samples.len() + 1);
+    let mut indices = Vec::new();
+    let mut values = Vec::new();
     let mut labels = Vec::with_capacity(samples.len());
+    indptr.push(0);
     for (sample, label) in samples {
-        sample.features.append_dense(&mut dense);
+        if sample.features.dense_feature_count() != feature_count {
+            return Err(BuildingHvacMachineLearningRejection::InvalidSamples);
+        }
+        indices.extend(
+            sample
+                .features
+                .values
+                .iter()
+                .map(|feature| usize::from(feature.index)),
+        );
+        values.extend(sample.features.values.iter().map(|feature| feature.value));
+        indptr.push(indices.len());
         labels.push(*label);
     }
-    let mut matrix = DMatrix::from_dense(&dense, samples.len()).map_err(xgboost_rejection)?;
+    let mut matrix = DMatrix::from_csr(&indptr, &indices, &values, Some(feature_count))
+        .map_err(xgboost_rejection)?;
     matrix.set_labels(&labels).map_err(xgboost_rejection)?;
 
     let learning = LearningTaskParametersBuilder::default()
@@ -1296,11 +1761,15 @@ fn train_booster(
     let booster_parameters = parameters::BoosterParametersBuilder::default()
         .booster_type(BoosterType::Tree(tree))
         .learning_params(learning)
-        .threads(Some(1))
+        .threads(Some(BUILDING_HVAC_ML_XGBOOST_THREADS))
         .verbose(false)
         .build()
         .map_err(|error| BuildingHvacMachineLearningRejection::Xgboost(error.to_string()))?;
     let mut booster = Booster::new_with_cached_dmats(&booster_parameters, &[&matrix])
+        .map_err(xgboost_rejection)?;
+    let feature_name_references: Vec<_> = feature_names.iter().map(String::as_str).collect();
+    booster
+        .set_feature_names(&feature_name_references)
         .map_err(xgboost_rejection)?;
     // Drive each round explicitly. The xgb 3.0.5 convenience `train` function
     // creates a booster but does not call `update`, leaving an untrained model.
@@ -1320,11 +1789,61 @@ fn predict_booster(
     if features.is_empty() || features.iter().any(|features| !features.is_well_formed()) {
         return Err(BuildingHvacMachineLearningRejection::InvalidSamples);
     }
-    let mut dense = Vec::with_capacity(features.len() * BUILDING_HVAC_ML_FEATURE_COUNT);
+    let feature_count = features[0].dense_feature_count();
+    if features
+        .iter()
+        .any(|features| features.dense_feature_count() != feature_count)
+    {
+        return Err(BuildingHvacMachineLearningRejection::InvalidSamples);
+    }
+    let mut dense = Vec::with_capacity(features.len() * feature_count);
     for features in features {
         features.append_dense(&mut dense);
     }
     let matrix = DMatrix::from_dense(&dense, features.len()).map_err(xgboost_rejection)?;
+    let predictions = booster.predict(&matrix).map_err(xgboost_rejection)?;
+    if predictions.len() != features.len()
+        || predictions
+            .iter()
+            .any(|prediction| bounded_prediction(*prediction).is_none())
+    {
+        Err(BuildingHvacMachineLearningRejection::InvalidArtifact)
+    } else {
+        Ok(predictions)
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn predict_feature_vectors(
+    booster: &Booster,
+    features: &[BuildingHvacMachineLearningFeatureVectorV1],
+) -> Result<Vec<f32>, BuildingHvacMachineLearningRejection> {
+    if features.is_empty() || features.iter().any(|features| !features.is_well_formed()) {
+        return Err(BuildingHvacMachineLearningRejection::InvalidSamples);
+    }
+    let feature_count = features[0].dense_feature_count();
+    if features
+        .iter()
+        .any(|features| features.dense_feature_count() != feature_count)
+    {
+        return Err(BuildingHvacMachineLearningRejection::InvalidSamples);
+    }
+    let mut indptr = Vec::with_capacity(features.len() + 1);
+    let mut indices = Vec::new();
+    let mut values = Vec::new();
+    indptr.push(0);
+    for features in features {
+        indices.extend(
+            features
+                .values
+                .iter()
+                .map(|feature| usize::from(feature.index)),
+        );
+        values.extend(features.values.iter().map(|feature| feature.value));
+        indptr.push(indices.len());
+    }
+    let matrix = DMatrix::from_csr(&indptr, &indices, &values, Some(feature_count))
+        .map_err(xgboost_rejection)?;
     let predictions = booster.predict(&matrix).map_err(xgboost_rejection)?;
     if predictions.len() != features.len()
         || predictions
@@ -1433,24 +1952,74 @@ fn in_range(value: f32, minimum: f32, maximum: f32) -> bool {
 mod tests {
     use super::*;
 
+    fn feature(name: &str, value: Option<f32>) -> BuildingHvacMachineLearningFeatureV1 {
+        BuildingHvacMachineLearningFeatureV1 {
+            name: String::from(name),
+            value,
+        }
+    }
+
+    fn set_feature(
+        features: &mut BuildingHvacMachineLearningFeaturesV1,
+        name: &str,
+        value: Option<f32>,
+    ) {
+        let index = features
+            .values
+            .binary_search_by(|feature| feature.name.as_str().cmp(name))
+            .unwrap();
+        features.values[index].value = value;
+    }
+
+    fn set_compact_feature(
+        features: &mut BuildingHvacMachineLearningFeatureVectorV1,
+        feature_names: &[String],
+        name: &str,
+        value: Option<f32>,
+    ) {
+        let index = feature_names
+            .binary_search_by(|feature| feature.as_str().cmp(name))
+            .unwrap();
+        let index = u16::try_from(index).unwrap();
+        match (
+            features
+                .values
+                .binary_search_by_key(&index, |feature| feature.index),
+            value,
+        ) {
+            (Ok(position), Some(value)) => features.values[position].value = value,
+            (Ok(position), None) => {
+                features.values.remove(position);
+            }
+            (Err(position), Some(value)) => {
+                features.values.insert(
+                    position,
+                    BuildingHvacMachineLearningIndexedFeatureV1 { index, value },
+                );
+            }
+            (Err(_), None) => {}
+        }
+    }
+
     fn features() -> BuildingHvacMachineLearningFeaturesV1 {
+        let mut values = vec![
+            feature("target.temperature_celsius", Some(20.0)),
+            feature("thermostat.200.active_setpoint_delta_celsius", Some(2.0)),
+            feature("thermostat.201.active_setpoint_delta_celsius", Some(0.0)),
+            feature("time.day_of_year_cosine", Some(1.0)),
+            feature("time.day_of_year_sine", Some(0.0)),
+            feature("weather.current.dry_bulb_temperature_celsius", Some(5.0)),
+            feature(
+                "weather.current.global_horizontal_irradiance_watts_per_square_meter",
+                Some(150.0),
+            ),
+            feature("weather.current.humidity_ratio_kg_per_kg", Some(0.004)),
+            feature("weather.current.wind_speed_meters_per_second", Some(3.0)),
+        ];
+        values.sort_by(|left, right| left.name.cmp(&right.name));
         BuildingHvacMachineLearningFeaturesV1 {
-            room_temperature_celsius: 20.0,
-            room_relative_humidity_percent: Some(45.0),
-            outdoor_temperature_celsius: Some(5.0),
-            outdoor_humidity_ratio_kilograms_per_kilogram: Some(0.004),
-            outdoor_wind_speed_meters_per_second: Some(3.0),
-            global_horizontal_solar_irradiance_watts_per_square_meter: Some(150.0),
-            hour_of_day_sine: 0.0,
-            hour_of_day_cosine: 1.0,
-            day_of_year_sine: 0.0,
-            day_of_year_cosine: 1.0,
-            own_heating_runtime_fraction: 0.5,
-            own_cooling_runtime_fraction: 0.0,
-            other_zone_heating_runtime_fraction: 0.0,
-            other_zone_cooling_runtime_fraction: 0.0,
-            heating_setpoint_offset_celsius: Some(2.0),
-            cooling_setpoint_offset_celsius: Some(6.0),
+            target_room: 100,
+            values,
         }
     }
 
@@ -1458,10 +2027,110 @@ mod tests {
         BuildingHvacMachineLearningSampleV1 {
             observed_at: 1_785_059_200,
             room_endpoint: 100,
-            features: features(),
+            features: features().compact(),
             temperature_change_15_minutes_celsius: Some(0.2),
             temperature_change_30_minutes_celsius: None,
             temperature_change_60_minutes_celsius: None,
+        }
+    }
+
+    fn archived_sample(
+        observed_at: LibertasDateTime,
+        annual_position: f32,
+        outdoor_temperature_celsius: f32,
+        demand_pattern: u8,
+    ) -> BuildingHvacMachineLearningSampleV1 {
+        let mut features = features();
+        let phase = annual_position * std::f32::consts::TAU;
+        set_feature(&mut features, "time.day_of_year_sine", Some(phase.sin()));
+        set_feature(&mut features, "time.day_of_year_cosine", Some(phase.cos()));
+        set_feature(
+            &mut features,
+            "weather.current.dry_bulb_temperature_celsius",
+            Some(outdoor_temperature_celsius),
+        );
+        set_feature(
+            &mut features,
+            "weather.current.humidity_ratio_kg_per_kg",
+            Some(if outdoor_temperature_celsius > 25.0 {
+                0.016
+            } else {
+                0.005
+            }),
+        );
+        set_feature(
+            &mut features,
+            "weather.current.global_horizontal_irradiance_watts_per_square_meter",
+            Some(if (observed_at / (12 * 60 * 60)).is_multiple_of(2) {
+                0.0
+            } else {
+                700.0
+            }),
+        );
+        set_feature(
+            &mut features,
+            "thermostat.200.active_setpoint_delta_celsius",
+            Some(0.0),
+        );
+        set_feature(
+            &mut features,
+            "thermostat.201.active_setpoint_delta_celsius",
+            Some(0.0),
+        );
+        match demand_pattern {
+            1 => set_feature(
+                &mut features,
+                "thermostat.200.active_setpoint_delta_celsius",
+                Some(2.0),
+            ),
+            2 => set_feature(
+                &mut features,
+                "thermostat.200.active_setpoint_delta_celsius",
+                Some(-2.0),
+            ),
+            3 => set_feature(
+                &mut features,
+                "thermostat.201.active_setpoint_delta_celsius",
+                Some(2.0),
+            ),
+            4 => set_feature(
+                &mut features,
+                "thermostat.201.active_setpoint_delta_celsius",
+                Some(-2.0),
+            ),
+            5 => {
+                set_feature(
+                    &mut features,
+                    "thermostat.200.active_setpoint_delta_celsius",
+                    Some(2.0),
+                );
+                set_feature(
+                    &mut features,
+                    "thermostat.201.active_setpoint_delta_celsius",
+                    Some(2.0),
+                );
+            }
+            6 => {
+                set_feature(
+                    &mut features,
+                    "thermostat.200.active_setpoint_delta_celsius",
+                    Some(-2.0),
+                );
+                set_feature(
+                    &mut features,
+                    "thermostat.201.active_setpoint_delta_celsius",
+                    Some(-2.0),
+                );
+            }
+            _ => {}
+        }
+        BuildingHvacMachineLearningSampleV1 {
+            observed_at,
+            room_endpoint: 100,
+            features: features.compact(),
+            temperature_change_15_minutes_celsius: Some(0.2),
+            temperature_change_30_minutes_celsius: Some(0.35),
+            temperature_change_60_minutes_celsius: Some(0.5),
         }
     }
 
@@ -1484,6 +2153,337 @@ mod tests {
         assert_eq!(
             merge_sample_targets(existing, conflicting_target),
             Err(BuildingHvacMachineLearningHistoryError::ConflictingObservation)
+        );
+    }
+
+    #[test]
+    fn feature_manifest_preserves_sorted_named_columns_and_missing_values() {
+        let features = features();
+        assert_eq!(features.dense_feature_count(), 9);
+        assert_eq!(
+            features.feature_names(),
+            [
+                "target.temperature_celsius",
+                "thermostat.200.active_setpoint_delta_celsius",
+                "thermostat.201.active_setpoint_delta_celsius",
+                "time.day_of_year_cosine",
+                "time.day_of_year_sine",
+                "weather.current.dry_bulb_temperature_celsius",
+                "weather.current.global_horizontal_irradiance_watts_per_square_meter",
+                "weather.current.humidity_ratio_kg_per_kg",
+                "weather.current.wind_speed_meters_per_second",
+            ]
+            .into_iter()
+            .map(String::from)
+            .collect::<Vec<_>>()
+        );
+        assert!(feature_manifest_is_well_formed(&features.feature_names()));
+
+        let mut reordered = features.clone();
+        reordered.values.swap(0, 1);
+        assert!(!reordered.is_well_formed());
+
+        let mut duplicate = features;
+        duplicate.values[1].name = duplicate.values[0].name.clone();
+        assert!(!duplicate.is_well_formed());
+    }
+
+    #[test]
+    fn compact_features_keep_numeric_zero_and_omit_only_missing_values() {
+        let mut named = features();
+        set_feature(
+            &mut named,
+            "weather.current.wind_speed_meters_per_second",
+            None,
+        );
+        let names = named.feature_names();
+        let compact = named.compact();
+
+        assert!(compact.is_well_formed());
+        assert!(compact.matches_feature_names(&names));
+        assert_eq!(
+            compact.value(&names, "thermostat.201.active_setpoint_delta_celsius"),
+            Some(0.0)
+        );
+        assert_eq!(
+            compact.value(&names, "weather.current.wind_speed_meters_per_second"),
+            None
+        );
+
+        let mut different_names = names;
+        different_names[0].push_str("_different");
+        different_names.sort();
+        assert!(!compact.matches_feature_names(&different_names));
+    }
+
+    #[test]
+    fn training_selection_keeps_recent_and_stratified_seasonal_evidence() {
+        const SAMPLE_INTERVAL_SECONDS: u64 = 15 * 60;
+        let starts_at = 1_700_000_000;
+        let mut samples = Vec::with_capacity(400 * 24 * 4);
+        for index in 0..400 * 24 * 4 {
+            let day = index / (24 * 4);
+            let annual_position = (day % 365) as f32 / 365.0;
+            let seasonal_temperature =
+                15.0 - 20.0 * (annual_position * std::f32::consts::TAU).cos();
+            samples.push(archived_sample(
+                starts_at + index as u64 * SAMPLE_INTERVAL_SECONDS,
+                annual_position,
+                seasonal_temperature,
+                (index % 7) as u8,
+            ));
+        }
+        let rare_extreme_at = samples[100].observed_at;
+        let feature_names = features().feature_names();
+        set_compact_feature(
+            &mut samples[100].features,
+            &feature_names,
+            "weather.current.dry_bulb_temperature_celsius",
+            Some(-30.0),
+        );
+        set_compact_feature(
+            &mut samples[100].features,
+            &feature_names,
+            "weather.current.humidity_ratio_kg_per_kg",
+            Some(0.002),
+        );
+        set_compact_feature(
+            &mut samples[100].features,
+            &feature_names,
+            "weather.current.wind_speed_meters_per_second",
+            Some(20.0),
+        );
+
+        let through_utc = samples.last().unwrap().observed_at;
+        let selected = select_stratified_training_samples(&samples, through_utc, &feature_names);
+
+        assert_eq!(
+            selected.len(),
+            BUILDING_HVAC_ML_MAXIMUM_TRAINING_SAMPLES_PER_ROOM
+        );
+        assert!(
+            selected
+                .windows(2)
+                .all(|pair| pair[0].observed_at < pair[1].observed_at)
+        );
+        assert_eq!(selected.last().unwrap().observed_at, through_utc);
+        assert!(
+            selected
+                .iter()
+                .any(|sample| sample.observed_at == rare_extreme_at)
+        );
+
+        let recent_starts_at = through_utc.saturating_sub(BUILDING_HVAC_ML_RECENT_WINDOW_SECONDS);
+        assert_eq!(
+            selected
+                .iter()
+                .filter(|sample| sample.observed_at >= recent_starts_at)
+                .count(),
+            BUILDING_HVAC_ML_MAXIMUM_TRAINING_SAMPLES_PER_ROOM
+                * BUILDING_HVAC_ML_RECENT_TRAINING_PERCENT
+                / 100
+        );
+
+        let annual_phases: std::collections::BTreeSet<_> = selected
+            .iter()
+            .map(|sample| {
+                annual_phase_bin(
+                    sample
+                        .features
+                        .value(&feature_names, "time.day_of_year_sine")
+                        .unwrap(),
+                    sample
+                        .features
+                        .value(&feature_names, "time.day_of_year_cosine")
+                        .unwrap(),
+                )
+            })
+            .collect();
+        let demand_modes: std::collections::BTreeSet<_> = selected
+            .iter()
+            .map(|sample| {
+                let stratum = training_stratum(&sample.features, &feature_names);
+                (
+                    stratum.heating_demand_thermostats,
+                    stratum.cooling_demand_thermostats,
+                )
+            })
+            .collect();
+        assert_eq!(annual_phases.len(), 8);
+        assert_eq!(
+            demand_modes,
+            [(0, 0), (0, 1), (0, 2), (1, 0), (2, 0)]
+                .into_iter()
+                .collect()
+        );
+    }
+
+    #[test]
+    fn training_selection_does_not_drop_a_bounded_history() {
+        let samples: Vec<_> = (0..BUILDING_HVAC_ML_MINIMUM_TRAINING_SAMPLES)
+            .map(|index| archived_sample(1_700_000_000 + index as u64 * 900, 0.25, 5.0, 1))
+            .collect();
+        let feature_names = features().feature_names();
+        assert_eq!(
+            select_stratified_training_samples(
+                &samples,
+                samples.last().unwrap().observed_at,
+                &feature_names,
+            ),
+            samples
+        );
+    }
+
+    #[test]
+    fn retained_archive_covers_400_days_at_fifteen_minute_resolution() {
+        assert_eq!(
+            BUILDING_HVAC_ML_HISTORY_RETENTION_SECONDS,
+            400 * 24 * 60 * 60
+        );
+        assert_eq!(
+            BUILDING_HVAC_ML_MAXIMUM_RETAINED_SAMPLES_PER_ROOM,
+            400 * 24 * 4 + 1
+        );
+    }
+
+    #[test]
+    fn client_allows_only_one_queued_or_running_training_cycle() {
+        let (commands, _receiver) = sync_channel(BUILDING_HVAC_ML_COMMAND_CAPACITY);
+        let client = BuildingHvacMachineLearningClient {
+            commands,
+            stop_requested: Arc::new(AtomicBool::new(false)),
+            training_pending: Arc::new(AtomicBool::new(false)),
+        };
+        assert!(!client.training_pending());
+        assert_eq!(client.try_train_all(1, Vec::new(), Vec::new()), Ok(()));
+        assert!(client.training_pending());
+        assert_eq!(
+            client.try_train_all(1, Vec::new(), Vec::new()),
+            Err(BuildingHvacMachineLearningQueueError::Full)
+        );
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn machine_learning_worker_priority_is_lowered_on_linux() {
+        let inherited = rustix::process::getpriority_process(None).unwrap();
+        let (reported, observed) = thread::spawn(|| {
+            let reported = configure_machine_learning_worker_priority().unwrap();
+            let observed = rustix::process::getpriority_process(None).unwrap();
+            (reported, observed)
+        })
+        .join()
+        .unwrap();
+        assert_eq!(reported, observed);
+        assert_eq!(
+            observed,
+            inherited
+                .saturating_add(BUILDING_HVAC_ML_WORKER_NICE_INCREMENT)
+                .min(19)
+        );
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    #[ignore = "manual Hub-target resource measurement"]
+    fn benchmark_three_horizon_training_cycle() {
+        let starts_at = 1_700_000_000;
+        let feature_names = features().feature_names();
+        let samples: Vec<_> = (0..BUILDING_HVAC_ML_MAXIMUM_TRAINING_SAMPLES_PER_ROOM)
+            .map(|index| {
+                let annual_position = (index / (24 * 4) % 365) as f32 / 365.0;
+                let mut sample = archived_sample(
+                    starts_at + index as u64 * 15 * 60,
+                    annual_position,
+                    15.0 - 20.0 * (annual_position * std::f32::consts::TAU).cos(),
+                    (index % 5) as u8,
+                );
+                let first_heating = index.is_multiple_of(11);
+                let second_heating = (index + 1).is_multiple_of(13);
+                set_compact_feature(
+                    &mut sample.features,
+                    &feature_names,
+                    "thermostat.200.active_setpoint_delta_celsius",
+                    Some(if first_heating { 2.0 } else { 0.0 }),
+                );
+                set_compact_feature(
+                    &mut sample.features,
+                    &feature_names,
+                    "thermostat.201.active_setpoint_delta_celsius",
+                    Some(if second_heating { 2.0 } else { 0.0 }),
+                );
+                let first_delta = sample
+                    .features
+                    .value(
+                        &feature_names,
+                        "thermostat.200.active_setpoint_delta_celsius",
+                    )
+                    .unwrap();
+                let second_delta = sample
+                    .features
+                    .value(
+                        &feature_names,
+                        "thermostat.201.active_setpoint_delta_celsius",
+                    )
+                    .unwrap();
+                sample.temperature_change_15_minutes_celsius = Some(
+                    0.3 * first_delta
+                        + 0.5
+                            * if first_delta > 0.0 && second_delta > 0.0 {
+                                1.0
+                            } else {
+                                0.0
+                            }
+                        + (20.0
+                            - sample
+                                .features
+                                .value(&feature_names, "target.temperature_celsius")
+                                .unwrap())
+                            * 0.03,
+                );
+                sample
+            })
+            .collect();
+        let trained_at = samples.last().unwrap().observed_at + 15 * 60;
+        let started = std::time::Instant::now();
+        let models: Vec<_> = [
+            BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+            BuildingHvacThermalPredictionHorizonV1::ThirtyMinutes,
+            BuildingHvacThermalPredictionHorizonV1::SixtyMinutes,
+        ]
+        .into_iter()
+        .map(|horizon| {
+            BuildingHvacMachineLearningEngine::train_candidate(
+                horizon,
+                trained_at,
+                &feature_names,
+                &samples,
+            )
+            .unwrap()
+        })
+        .collect();
+        let feature_vector_bytes: usize = samples
+            .iter()
+            .map(|sample| {
+                sample.features.values.capacity()
+                    * std::mem::size_of::<BuildingHvacMachineLearningIndexedFeatureV1>()
+            })
+            .sum();
+        eprintln!(
+            "samples={} features={} horizons={} sample_size_bytes={} sample_vector_bytes={} feature_vector_bytes={} owned_sample_bytes={} model_bytes={} elapsed_ms={}",
+            samples.len(),
+            samples[0].features.dense_feature_count(),
+            models.len(),
+            std::mem::size_of::<BuildingHvacMachineLearningSampleV1>(),
+            samples.capacity() * std::mem::size_of::<BuildingHvacMachineLearningSampleV1>(),
+            feature_vector_bytes,
+            samples.capacity() * std::mem::size_of::<BuildingHvacMachineLearningSampleV1>()
+                + feature_vector_bytes,
+            models
+                .iter()
+                .map(|model| model.model_ubjson.len())
+                .sum::<usize>(),
+            started.elapsed().as_millis(),
         );
     }
 }
