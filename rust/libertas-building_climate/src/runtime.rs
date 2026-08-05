@@ -1187,7 +1187,7 @@ fn handle_device_event(
 ) {
     let context = context
         .downcast_mut::<DeviceContext>()
-        .expect("invalid smart building HVAC Matter context");
+        .expect("invalid building climate Matter context");
     if opcode == Operation::WriteResponse as u8 {
         if let DeviceRole::Thermostat(index) = context.role {
             let failed = [
@@ -1850,7 +1850,7 @@ fn handle_room_endpoint(
 ) -> LibertasEndpointHandlerResult {
     let context = context
         .downcast_mut::<RoomContext>()
-        .expect("invalid smart building HVAC room context");
+        .expect("invalid building climate room context");
     if opcode == OP_ENDPOINT_PEER_DOWN {
         context.shared.borrow_mut().rooms[context.room_index]
             .subscribers
@@ -2249,7 +2249,7 @@ fn handle_weather_endpoint(
 ) -> LibertasEndpointHandlerResult {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
-        .expect("invalid smart building HVAC weather context");
+        .expect("invalid building climate weather context");
     if opcode == OP_ENDPOINT_PEER_DOWN || opcode == OP_ENDPOINT_PEER_TIMEOUT {
         shared.borrow_mut().weather_stream_ready = false;
         arm_weather_retry(shared, WEATHER_RETRY_SECONDS);
@@ -2514,7 +2514,7 @@ fn handle_external_feature_endpoint(
 ) -> LibertasEndpointHandlerResult {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
-        .expect("invalid smart building HVAC external-feature context");
+        .expect("invalid building climate external-feature context");
     if opcode == OP_ENDPOINT_PEER_DOWN || opcode == OP_ENDPOINT_PEER_TIMEOUT {
         arm_external_feature_retry(shared, EXTERNAL_FEATURE_RETRY_SECONDS);
         return LibertasEndpointHandlerResult::Handled;
@@ -4786,7 +4786,7 @@ fn evaluate_and_publish(shared: &Rc<RefCell<ControllerState>>) {
 fn handle_wakeup(context: &mut Box<dyn Any>) {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
-        .expect("invalid smart building HVAC wake-up context");
+        .expect("invalid building climate wake-up context");
     let mut changed = false;
     loop {
         let result = shared.borrow_mut().machine_learning_results.try_recv();
@@ -4874,7 +4874,7 @@ fn handle_wakeup(context: &mut Box<dyn Any>) {
 fn handle_shutdown(context: &mut Box<dyn Any>) {
     let context = context
         .downcast_mut::<ShutdownContext>()
-        .expect("invalid smart building HVAC shutdown context");
+        .expect("invalid building climate shutdown context");
     if matches!(
         context.client.request_shutdown(),
         Err(BuildingHvacMachineLearningQueueError::Disconnected)
@@ -4886,7 +4886,7 @@ fn handle_shutdown(context: &mut Box<dyn Any>) {
 fn weather_retry_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
-        .expect("invalid smart building HVAC weather timer context");
+        .expect("invalid building climate weather timer context");
     let endpoint = shared.borrow().weather_endpoint;
     libertas_endpoint_subscribe_request(endpoint, &weather_request(shared));
     libertas_timer_update_interval(timer, absolute_ticks(now_ticks, WEATHER_RETRY_SECONDS));
@@ -4895,7 +4895,7 @@ fn weather_retry_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
 fn external_feature_retry_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
-        .expect("invalid smart building HVAC external-feature timer context");
+        .expect("invalid building climate external-feature timer context");
     subscribe_external_features(shared);
     libertas_timer_update_interval(
         timer,
@@ -4906,7 +4906,7 @@ fn external_feature_retry_timer(timer: u32, now_ticks: u64, context: &mut Box<dy
 fn evaluation_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
-        .expect("invalid smart building HVAC evaluation timer context");
+        .expect("invalid building climate evaluation timer context");
     evaluate_and_publish(shared);
     report_due_heartbeats(shared, now_ticks);
     let now = libertas_get_utc_time();

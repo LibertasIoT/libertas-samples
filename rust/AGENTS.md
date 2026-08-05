@@ -686,9 +686,9 @@ protocol variants, sidecar schema files, or migration code for compatibility.
   consumption. Keep this SDK support when bounded list schema attributes are
   used.
 
-## Smart building HVAC controller (`libertas-smart_building_hvac`)
+## Building climate controller (`libertas-building_climate`)
 
-`libertas-smart_building_hvac` is a `std` Matter application library for
+`libertas-building_climate` is a `std` Matter application library for
 room-aware supervisory control of a whole house or building on the Libertas Hub
 Linux runtime. Treat its V1
 configuration, runtime protocol, and database layout as unpublished design-time

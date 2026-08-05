@@ -1,7 +1,7 @@
 # Third-party software
 
 The Linux Hub build statically links the following software into the
-`libertas-smart_building_hvac` application artifact.
+`libertas-building_climate` application artifact.
 
 ## XGBoost 3.0.0
 
