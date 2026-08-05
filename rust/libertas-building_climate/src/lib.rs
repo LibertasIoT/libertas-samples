@@ -1,4 +1,4 @@
-//! Libertas Smart Building HVAC
+//! Libertas Building Climate
 //! Configures rooms, their Matter thermostats and environmental sensors, and a
 //! building-HVAC weather client with an optional operational-feature client.
 //! Every room exposes a Libertas endpoint that separates writable comfort
@@ -190,7 +190,7 @@ pub const BUILDING_HVAC_EXCESSIVE_HEAT_TEMPERATURE_CELSIUS: f32 = 35.0;
 /// falls to at most this value.
 pub const BUILDING_HVAC_EXCESSIVE_HEAT_RECOVERY_TEMPERATURE_CELSIUS: f32 = 32.0;
 
-/// Smart building HVAC localized strings
+/// Building climate localized strings
 /// Templates used by FormattedText runtime values. The encoded byte arrays
 /// carry these resource identifiers and Notification-compatible typed
 /// arguments; clients select the localized template before printf-style
@@ -269,7 +269,7 @@ pub static APP_STRINGS: [(&str, &str); 33] = [
     ),
     (
         "HVAC_ML_MODELS",
-        "Accepted smart building HVAC thermal prediction models for %1$s.",
+        "Accepted building climate thermal prediction models for %1$s.",
     ),
     (
         "HVAC_ML_SAMPLE",
@@ -1755,7 +1755,7 @@ pub struct BuildingHvacThermostatV1 {
     pub rooms: Vec<BuildingHvacThermostatRoomV1>,
 }
 
-/// Smart building HVAC configuration V1
+/// Building climate configuration V1
 /// Contains the complete physical room, thermostat, and sensor topology. Rooms
 /// and thermostats share one schema-data tree so nested room references can use
 /// `EnumSource("$.rooms")`.
@@ -2386,7 +2386,7 @@ impl BuildingHvacRoomLearningStateV1 {
     }
 }
 
-/// Smart building HVAC persistent data V1
+/// Building climate persistent data V1
 /// Defines every database record written by the controller. Room records use
 /// the configured room endpoint as their stable key. Local outdoor sensor and
 /// weather records are singleton sections. No record contains subscription
@@ -4214,7 +4214,7 @@ fn restore_machine_learning_models(
         .collect()
 }
 
-/// Libertas smart building HVAC
+/// Libertas building climate
 /// Configures a room-first building topology and its dedicated building-HVAC
 /// weather client. Room endpoints expose writable comfort intent and read-only
 /// indoor and outdoor sensor state, statistics, learned cross-zone influence,
@@ -4228,7 +4228,7 @@ fn restore_machine_learning_models(
 /// XGBoost worker for optional near-term predictions.
 #[libertas_data_schema(BuildingHvacPersistentDataV1)]
 #[libertas_string_resources(APP_STRINGS)]
-pub fn libertas_smart_building_hvac(
+pub fn libertas_building_climate(
     /*
      * Building
      * Define rooms first, then select those rooms from each Matter thermostat
@@ -4265,10 +4265,7 @@ pub fn libertas_smart_building_hvac(
                     .any(|room| room.control_endpoint == external.endpoint)
         })
     {
-        libertas_log(
-            LogLevel::Error,
-            "Smart building HVAC configuration is invalid",
-        );
+        libertas_log(LogLevel::Error, "Building climate configuration is invalid");
         return;
     }
 
