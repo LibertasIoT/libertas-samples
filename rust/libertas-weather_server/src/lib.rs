@@ -67,11 +67,11 @@ use libertas_weather::{
     SPRINKLER_SUBSCRIPTION_REPLAY_WINDOW_SECONDS, SprinklerCurrentWeatherV1,
     SprinklerWeatherChangeV1, SprinklerWeatherCursorV1, SprinklerWeatherForecastPeriodV1,
     SprinklerWeatherForecastV1, SprinklerWeatherHistoryPeriodV1, SprinklerWeatherHistoryV1,
-    SprinklerWeatherIncrementalReportV1, SprinklerWeatherLocationV1,
-    SprinklerWeatherPersistentDataV1, SprinklerWeatherProtocolV1, SprinklerWeatherRecoveryErrorV1,
-    SprinklerWeatherRecoveryV1, SprinklerWeatherResetReasonV1, SprinklerWeatherSectionV1,
-    SprinklerWeatherSnapshotV1, SprinklerWeatherTimeRangeV1,
+    SprinklerWeatherIncrementalReportV1, SprinklerWeatherProtocolV1,
+    SprinklerWeatherRecoveryErrorV1, SprinklerWeatherRecoveryV1, SprinklerWeatherResetReasonV1,
+    SprinklerWeatherSectionV1, SprinklerWeatherSnapshotV1, SprinklerWeatherTimeRangeV1,
 };
+pub use libertas_weather::{SprinklerWeatherLocationV1, SprinklerWeatherPersistentDataV1};
 use reqwest::{blocking::Client, redirect::Policy};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
@@ -124,6 +124,7 @@ pub struct SprinklerWeatherEndpointServerV1 {
     /// The server endpoint exposing `SprinklerWeatherProtocolV1`. Both one-shot
     /// and subscription clients send `GetWeatherV1` to this endpoint.
     #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)]
+    #[libertas_foreign_type("libertas-weather::SprinklerWeatherProtocolV1")]
     #[libertas_endpoint_server]
     #[libertas_ui_header]
     pub endpoint: LibertasEndpoint,
@@ -1743,7 +1744,7 @@ fn handle_endpoint_event(
 /// transient cursor and replay journal intentionally restart at sequence zero;
 /// accepted subscriptions receive periodic heartbeat reports and can recover
 /// with epoch-timestamp-and-sequence reset detection.
-#[libertas_data_schema(SprinklerWeatherPersistentDataV1)]
+#[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentDataV1")]
 #[libertas_string_resources(APP_STRINGS)]
 pub fn libertas_weather_server(server: SprinklerWeatherEndpointServerV1) {
     let endpoint = server.endpoint;

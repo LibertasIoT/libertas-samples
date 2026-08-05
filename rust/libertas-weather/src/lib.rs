@@ -165,6 +165,7 @@ impl SprinklerWeatherHistoryV1 {
     /// History freshness
     /// Returns `true` when `now` is earlier than `valid_until`. Equality means
     /// the section has expired.
+    /// #[libertas_ignored]
     pub fn is_fresh_at(&self, now: LibertasDateTime) -> bool {
         now < self.valid_until
     }
@@ -228,6 +229,7 @@ impl SprinklerCurrentWeatherV1 {
     /// Current weather freshness
     /// Returns `true` when `now` is earlier than `valid_until`. Equality means
     /// the section has expired.
+    /// #[libertas_ignored]
     pub fn is_fresh_at(&self, now: LibertasDateTime) -> bool {
         now < self.valid_until
     }
@@ -310,6 +312,7 @@ impl SprinklerWeatherForecastV1 {
     /// Forecast freshness
     /// Returns `true` when `now` is earlier than `valid_until`. Equality means
     /// the section has expired.
+    /// #[libertas_ignored]
     pub fn is_fresh_at(&self, now: LibertasDateTime) -> bool {
         now < self.valid_until
     }
@@ -349,6 +352,7 @@ impl SprinklerWeatherCursorV1 {
     /// the client may first observe it after subsequent changes have advanced
     /// the sequence. A smaller sequence with the same or an older epoch
     /// timestamp is stale or out of order and must not roll back local state.
+    /// #[libertas_ignored]
     pub fn is_server_reset_after(&self, previous: Self) -> bool {
         self.epoch_timestamp > previous.epoch_timestamp && self.sequence < previous.sequence
     }
@@ -358,6 +362,7 @@ impl SprinklerWeatherCursorV1 {
     /// matching epoch timestamp, or is a valid server-reset marker. This checks
     /// cursor ordering only; incremental reports must additionally prove that
     /// every intervening sequence is present.
+    /// #[libertas_ignored]
     pub fn is_valid_successor_of(&self, previous: Self) -> bool {
         *self == previous
             || self.is_server_reset_after(previous)
@@ -387,6 +392,7 @@ impl SprinklerWeatherTimeRangeV1 {
     /// Valid time range
     /// Returns `true` when the exclusive upper bound is later than the inclusive
     /// lower bound.
+    /// #[libertas_ignored]
     pub fn is_valid(&self) -> bool {
         self.starts_at < self.ends_before
     }
@@ -551,6 +557,7 @@ impl SprinklerWeatherIncrementalReportV1 {
     /// Returns `true` when the sequence distance equals the number of changes
     /// and both cursors have the same epoch timestamp. An empty heartbeat
     /// therefore preserves both cursor fields exactly.
+    /// #[libertas_ignored]
     pub fn has_contiguous_cursor_range(&self) -> bool {
         let Ok(change_count) = u64::try_from(self.changes.len()) else {
             return false;
@@ -565,6 +572,7 @@ impl SprinklerWeatherIncrementalReportV1 {
     /// Returns `true` when this report has a contiguous cursor range beginning
     /// at `cursor`. A client must request recovery instead of applying a report
     /// when this method returns `false`.
+    /// #[libertas_ignored]
     pub fn can_apply_after(&self, cursor: SprinklerWeatherCursorV1) -> bool {
         self.from_cursor == cursor && self.has_contiguous_cursor_range()
     }

@@ -253,6 +253,7 @@ impl BuildingHvacWeatherHistoryV1 {
     /// History freshness
     /// Returns `true` when `now` is earlier than `valid_until`. Equality means
     /// the section has expired.
+    /// #[libertas_ignored]
     pub fn is_fresh_at(&self, now: LibertasDateTime) -> bool {
         now < self.valid_until
     }
@@ -292,6 +293,7 @@ impl BuildingHvacCurrentWeatherV1 {
     /// Current-weather freshness
     /// Returns `true` when `now` is earlier than `valid_until`. Equality means
     /// the section has expired.
+    /// #[libertas_ignored]
     pub fn is_fresh_at(&self, now: LibertasDateTime) -> bool {
         now < self.valid_until
     }
@@ -348,6 +350,7 @@ impl BuildingHvacWeatherForecastV1 {
     /// Forecast freshness
     /// Returns `true` when `now` is earlier than `valid_until`. Equality means
     /// the section has expired.
+    /// #[libertas_ignored]
     pub fn is_fresh_at(&self, now: LibertasDateTime) -> bool {
         now < self.valid_until
     }
@@ -414,6 +417,7 @@ impl BuildingHvacOutdoorAirQualityV1 {
     /// Outdoor-air-quality freshness
     /// Returns `true` when `now` is earlier than `valid_until`. Equality means
     /// the section has expired.
+    /// #[libertas_ignored]
     pub fn is_fresh_at(&self, now: LibertasDateTime) -> bool {
         now < self.valid_until
     }
@@ -443,6 +447,7 @@ impl BuildingHvacWeatherCursorV1 {
     /// Returns `true` when this cursor has a newer epoch timestamp and a lower
     /// sequence than `previous`. A backward sequence without a newer timestamp
     /// is stale or out of order.
+    /// #[libertas_ignored]
     pub fn is_server_reset_after(&self, previous: Self) -> bool {
         self.epoch_timestamp > previous.epoch_timestamp && self.sequence < previous.sequence
     }
@@ -451,6 +456,7 @@ impl BuildingHvacWeatherCursorV1 {
     /// Returns `true` when the cursor is unchanged, advances within the same
     /// epoch, or identifies a server reset. Incremental reports must separately
     /// prove that every intervening sequence is present.
+    /// #[libertas_ignored]
     pub fn is_valid_successor_of(&self, previous: Self) -> bool {
         *self == previous
             || self.is_server_reset_after(previous)
@@ -479,6 +485,7 @@ impl BuildingHvacWeatherTimeRangeV1 {
     /// Valid time range
     /// Returns `true` when the exclusive upper bound is later than the inclusive
     /// lower bound.
+    /// #[libertas_ignored]
     pub fn is_valid(&self) -> bool {
         self.starts_at < self.ends_before
     }
@@ -675,6 +682,7 @@ impl BuildingHvacWeatherIncrementalReportV1 {
     /// Contiguous cursor range
     /// Returns `true` when both cursors use the same epoch timestamp and the
     /// sequence distance equals the number of changes.
+    /// #[libertas_ignored]
     pub fn has_contiguous_cursor_range(&self) -> bool {
         let Ok(change_count) = u64::try_from(self.changes.len()) else {
             return false;
@@ -688,6 +696,7 @@ impl BuildingHvacWeatherIncrementalReportV1 {
     /// Applicable after cursor
     /// Returns `true` when the report begins at `cursor` and contains one exact
     /// contiguous range. Otherwise the client requests recovery.
+    /// #[libertas_ignored]
     pub fn can_apply_after(&self, cursor: BuildingHvacWeatherCursorV1) -> bool {
         self.from_cursor == cursor && self.has_contiguous_cursor_range()
     }
