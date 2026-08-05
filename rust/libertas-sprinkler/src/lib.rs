@@ -32,7 +32,7 @@ use libertas::{
     libertas_timer_update_interval,
 };
 use libertas_macros::{
-    LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
+    LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema, libertas_export,
     libertas_string_resources,
 };
 use libertas_matter::{
@@ -1996,14 +1996,16 @@ fn initial_schedule(
 /// its own recent-water state.
 #[libertas_data_schema(SprinklerDataV1)]
 #[libertas_string_resources(APP_STRINGS)]
+#[libertas_export]
 pub fn libertas_sprinkler(
     /*
      * Sprinkler weather
      * The client endpoint for `SprinklerWeatherProtocolV1`. The application
      * subscribes at startup and will not automatically water without fresh
      * safe current conditions.
-     * #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)]
      */
+    #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)]
+    #[libertas_foreign_type("libertas-weather::SprinklerWeatherProtocolV1")]
     weather_endpoint: LibertasEndpoint,
     /*
      * Sprinkler zones
