@@ -567,8 +567,11 @@ used for freeze, equipment, smoke, or life-safety protection.
 - Carry dry-bulb and dew-point temperature, relative humidity, surface pressure,
   wind speed, wind gust, wind direction, precipitation amount and phase, and
   global-horizontal, direct-normal, and diffuse-horizontal solar irradiance.
-  Derive humidity ratio, moist-air enthalpy, and wet-bulb temperature instead of
-  storing redundant values that can disagree.
+  Carry solar elevation and solar azimuth calculated from the site coordinates
+  and the represented UTC time. HVAC machine-learning features use solar
+  elevation directly and the sine and cosine of solar azimuth; do not use raw
+  azimuth as an ordinal feature. Derive humidity ratio, moist-air enthalpy, and
+  wet-bulb temperature instead of storing redundant values that can disagree.
 - Keep modeled outdoor air quality independently optional and independently
   cached from physical weather. V1 includes PM2.5, PM10, ozone, and nitrogen
   dioxide concentrations. Stale or missing model data is never proof that

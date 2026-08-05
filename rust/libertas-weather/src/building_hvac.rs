@@ -173,6 +173,21 @@ pub struct BuildingHvacOutdoorConditionsV1 {
     /// The liquid or frozen precipitation phase affecting exposed HVAC
     /// equipment during the containing interval.
     pub precipitation_kind: BuildingHvacPrecipitationKindV1,
+    /// Solar elevation
+    /// Geometric elevation of the sun's center in degrees above the astronomical
+    /// horizon at the represented observation time. Negative values place the
+    /// sun below the horizon. Use the containing current record's `valid_at` or
+    /// the midpoint of a containing history or forecast period together with
+    /// the building site coordinates to calculate this value.
+    #[libertas_number(min = -90, max = 90)]
+    pub solar_elevation_degrees: f32,
+    /// Solar azimuth
+    /// Direction of the sun's center in degrees clockwise from true north at
+    /// the same represented observation time. HVAC machine-learning consumers
+    /// convert this cyclic angle to sine and cosine instead of interpreting the
+    /// raw degree value as ordinal.
+    #[libertas_number(min = 0, max = 360)]
+    pub solar_azimuth_degrees: f32,
     /// Global horizontal irradiance
     /// Total direct and diffuse solar power incident on a horizontal surface in
     /// watts per square meter. This is the primary whole-building solar-gain
@@ -919,6 +934,8 @@ mod tests {
             wind_direction_degrees: 225,
             precipitation_millimeters: 0.8,
             precipitation_kind: BuildingHvacPrecipitationKindV1::Rain,
+            solar_elevation_degrees: 42.0,
+            solar_azimuth_degrees: 210.0,
             global_horizontal_irradiance_watts_per_square_meter: 620.0,
             direct_normal_irradiance_watts_per_square_meter: 710.0,
             diffuse_horizontal_irradiance_watts_per_square_meter: 140.0,

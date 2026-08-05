@@ -37,7 +37,9 @@ const MATTER_READING_FRESHNESS_SECONDS: u64 = 90;
 const EVALUATION_INTERVAL_SECONDS: u32 = 60;
 const CONDITION_PERIOD_SECONDS: u64 = 15 * 60;
 const WEATHER_RETRY_SECONDS: u32 = 60;
+const EXTERNAL_FEATURE_RETRY_SECONDS: u32 = 60;
 const ML_TRAINING_INTERVAL_SECONDS: u64 = 24 * 60 * 60;
+const ML_TARGET_MAXIMUM_DELAY_SECONDS: u64 = 2 * 60;
 const MAX_ML_PENDING_FEATURES: usize = 5;
 
 const ROOM_CONTROL_RESOURCE: &str = "HVAC_ROOM_CONTROL";
@@ -52,6 +54,7 @@ const WEATHER_HISTORY_RESOURCE: &str = "HVAC_WEATHER_HISTORY";
 const WEATHER_CURRENT_RESOURCE: &str = "HVAC_WEATHER_CURRENT";
 const WEATHER_FORECAST_RESOURCE: &str = "HVAC_WEATHER_FORECAST";
 const OUTDOOR_AIR_QUALITY_RESOURCE: &str = "HVAC_OUTDOOR_AIR_QUALITY";
+const EXTERNAL_FEATURE_INPUTS_RESOURCE: &str = "HVAC_EXTERNAL_FEATURE_INPUTS";
 
 #[derive(Clone)]
 struct Subscriber {
@@ -122,6 +125,7 @@ struct ThermostatRuntime {
     running_mode: Option<u8>,
     running_state: Option<u16>,
     control_sequence: Option<u8>,
+    local_temperature_celsius: Option<f32>,
     heating_setpoint_celsius: Option<f32>,
     cooling_setpoint_celsius: Option<f32>,
     minimum_heating_setpoint_celsius: Option<f32>,
@@ -143,6 +147,7 @@ impl ThermostatRuntime {
             running_mode: None,
             running_state: None,
             control_sequence: None,
+            local_temperature_celsius: None,
             heating_setpoint_celsius: None,
             cooling_setpoint_celsius: None,
             minimum_heating_setpoint_celsius: None,
@@ -201,10 +206,20 @@ impl ThermostatRuntime {
 struct PendingFeatures {
     observed_at: LibertasDateTime,
     temperature_celsius: f32,
-    features: BuildingHvacMachineLearningFeaturesV1,
+    features: BuildingHvacMachineLearningFeatureVectorV1,
+    predicted_change_15_minutes_celsius: Option<f32>,
+    predicted_change_30_minutes_celsius: Option<f32>,
+    predicted_change_60_minutes_celsius: Option<f32>,
     persisted_15: bool,
     persisted_30: bool,
     persisted_60: bool,
+}
+
+#[derive(Clone, Copy)]
+struct PredictionResidualObservation {
+    observed_at: LibertasDateTime,
+    horizon: BuildingHvacThermalPredictionHorizonV1,
+    residual_celsius: f32,
 }
 
 struct RoomRuntime {
@@ -224,6 +239,7 @@ struct RoomRuntime {
     last_report: Option<BuildingHvacRoomProtocolV1>,
     last_condition_boundary: Option<LibertasDateTime>,
     pending_features: Vec<PendingFeatures>,
+    prediction_residuals: Vec<PredictionResidualObservation>,
     last_training_at: Option<LibertasDateTime>,
 }
 
@@ -235,6 +251,10 @@ struct ControllerState {
     weather_stream_ready: bool,
     weather_maximum_wait_seconds: u32,
     weather_retry_timer: u32,
+    external_feature_endpoint: Option<LibertasEndpoint>,
+    external_features: BuildingHvacExternalFeatureSnapshotV1,
+    external_feature_maximum_wait_seconds: u32,
+    external_feature_retry_timer: u32,
     local_outdoor: Option<BuildingHvacLocalOutdoorSensorStateV1>,
     thermostats: Vec<ThermostatRuntime>,
     rooms: Vec<RoomRuntime>,
@@ -247,7 +267,36 @@ struct ControllerState {
     next_training_room: usize,
     last_ml_sample_boundary: Option<LibertasDateTime>,
     last_prediction_minute: Option<LibertasDateTime>,
+    feature_history: Vec<BuildingFeatureObservation>,
     outdoor_configuration: Option<BuildingHvacOutdoorSensorV1>,
+}
+
+#[derive(Clone)]
+struct ThermostatFeatureObservation {
+    thermostat: LibertasDevice,
+    activity: BuildingHvacRoomActivityV1,
+    local_temperature_celsius: Option<f32>,
+    heating_setpoint_celsius: Option<f32>,
+    cooling_setpoint_celsius: Option<f32>,
+    active_setpoint_delta_celsius: f32,
+    write_pending: bool,
+}
+
+#[derive(Clone)]
+struct RoomFeatureObservation {
+    endpoint: LibertasEndpoint,
+    temperature_celsius: Option<f32>,
+    relative_humidity_percent: Option<f32>,
+    effective_heating_setpoint_celsius: Option<f32>,
+    effective_cooling_setpoint_celsius: Option<f32>,
+    activity: BuildingHvacRoomActivityV1,
+}
+
+#[derive(Clone)]
+struct BuildingFeatureObservation {
+    observed_at: LibertasDateTime,
+    thermostats: Vec<ThermostatFeatureObservation>,
+    rooms: Vec<RoomFeatureObservation>,
 }
 
 struct RoomContext {
@@ -565,6 +614,10 @@ fn finite_conditions(value: &BuildingHvacOutdoorConditionsV1) -> bool {
         && value.wind_direction_degrees <= 360
         && value.precipitation_millimeters.is_finite()
         && value.precipitation_millimeters >= 0.0
+        && value.solar_elevation_degrees.is_finite()
+        && (-90.0..=90.0).contains(&value.solar_elevation_degrees)
+        && value.solar_azimuth_degrees.is_finite()
+        && (0.0..=360.0).contains(&value.solar_azimuth_degrees)
         && value
             .global_horizontal_irradiance_watts_per_square_meter
             .is_finite()
@@ -691,6 +744,20 @@ fn restore_weather() -> BuildingHvacWeatherSnapshotV1 {
         current,
         forecast,
         outdoor_air_quality,
+    }
+}
+
+fn restore_external_features() -> BuildingHvacExternalFeatureSnapshotV1 {
+    match libertas_data_read(EXTERNAL_FEATURE_INPUTS_RESOURCE, singleton_key()) {
+        Some(BuildingHvacPersistentDataV1::ExternalFeatureInputsV1 { snapshot })
+            if snapshot.is_well_formed() =>
+        {
+            snapshot
+        }
+        _ => BuildingHvacExternalFeatureSnapshotV1 {
+            retrieved_at: 0,
+            inputs: Vec::new(),
+        },
     }
 }
 
@@ -1038,7 +1105,7 @@ fn handle_thermostat_report(
     now_ticks: u64,
 ) -> bool {
     use Thermostat::attributes::{
-        ControlSequenceOfOperation, MaxCoolSetpointLimit, MaxHeatSetpointLimit,
+        ControlSequenceOfOperation, LocalTemperature, MaxCoolSetpointLimit, MaxHeatSetpointLimit,
         MinCoolSetpointLimit, MinHeatSetpointLimit, MinSetpointDeadBand, OccupiedCoolingSetpoint,
         OccupiedHeatingSetpoint, ThermostatRunningMode, ThermostatRunningState,
     };
@@ -1075,6 +1142,9 @@ fn handle_thermostat_report(
     });
     decode_scalar!(ControlSequenceOfOperation, ControlSequenceOfOperation(value) => {
         thermostat.control_sequence = Some(value.0);
+    });
+    decode_scalar!(LocalTemperature, LocalTemperature(value) => {
+        thermostat.local_temperature_celsius = value.into_option().map(setpoint_celsius);
     });
     decode_scalar!(ThermostatRunningMode, ThermostatRunningMode(value) => {
         thermostat.running_mode = Some(value.0);
@@ -1341,7 +1411,7 @@ macro_rules! concentration_subscription {
         use libertas_matter::definitions::$module::attributes::{
             LevelValue, MeasuredValue, MeasurementMedium, MeasurementUnit,
         };
-        let mut cluster = MatterSubscriptionCluster::<10, 0>::for_attribute::<MeasuredValue>(
+        let mut cluster = MatterSubscriptionCluster::<11, 0>::for_attribute::<MeasuredValue>(
             0,
             MATTER_SUBSCRIPTION_MAX_INTERVAL_SECONDS,
         );
@@ -1356,17 +1426,17 @@ macro_rules! concentration_subscription {
 
 fn subscription_clusters(
     role: DeviceRole,
-) -> Result<Vec<MatterSubscriptionCluster<10, 0>>, libertas_matter::error::Error> {
+) -> Result<Vec<MatterSubscriptionCluster<11, 0>>, libertas_matter::error::Error> {
     let mut clusters = Vec::new();
     match role {
         DeviceRole::Thermostat(_) => {
             use Thermostat::attributes::{
-                ControlSequenceOfOperation, MaxCoolSetpointLimit, MaxHeatSetpointLimit,
-                MinCoolSetpointLimit, MinHeatSetpointLimit, MinSetpointDeadBand,
-                OccupiedCoolingSetpoint, OccupiedHeatingSetpoint, ThermostatRunningMode,
-                ThermostatRunningState,
+                ControlSequenceOfOperation, LocalTemperature, MaxCoolSetpointLimit,
+                MaxHeatSetpointLimit, MinCoolSetpointLimit, MinHeatSetpointLimit,
+                MinSetpointDeadBand, OccupiedCoolingSetpoint, OccupiedHeatingSetpoint,
+                ThermostatRunningMode, ThermostatRunningState,
             };
-            let mut cluster = MatterSubscriptionCluster::<10, 0>::for_attribute::<
+            let mut cluster = MatterSubscriptionCluster::<11, 0>::for_attribute::<
                 OccupiedHeatingSetpoint,
             >(0, MATTER_SUBSCRIPTION_MAX_INTERVAL_SECONDS);
             cluster
@@ -1378,13 +1448,14 @@ fn subscription_clusters(
                 .add_attribute::<MaxCoolSetpointLimit>()?
                 .add_attribute::<MinSetpointDeadBand>()?
                 .add_attribute::<ControlSequenceOfOperation>()?
+                .add_attribute::<LocalTemperature>()?
                 .add_attribute::<ThermostatRunningMode>()?
                 .add_attribute::<ThermostatRunningState>()?;
             clusters.push(cluster);
         }
         DeviceRole::IndoorTemperature { .. } | DeviceRole::OutdoorTemperature => {
             use TemperatureMeasurement::attributes::MeasuredValue;
-            let mut cluster = MatterSubscriptionCluster::<10, 0>::for_attribute::<MeasuredValue>(
+            let mut cluster = MatterSubscriptionCluster::<11, 0>::for_attribute::<MeasuredValue>(
                 0,
                 MATTER_SUBSCRIPTION_MAX_INTERVAL_SECONDS,
             );
@@ -1393,7 +1464,7 @@ fn subscription_clusters(
         }
         DeviceRole::IndoorHumidity { .. } | DeviceRole::OutdoorHumidity => {
             use RelativeHumidityMeasurement::attributes::MeasuredValue;
-            let mut cluster = MatterSubscriptionCluster::<10, 0>::for_attribute::<MeasuredValue>(
+            let mut cluster = MatterSubscriptionCluster::<11, 0>::for_attribute::<MeasuredValue>(
                 0,
                 MATTER_SUBSCRIPTION_MAX_INTERVAL_SECONDS,
             );
@@ -1402,7 +1473,7 @@ fn subscription_clusters(
         }
         DeviceRole::IndoorAirQuality { .. } | DeviceRole::OutdoorAirQuality => {
             use AirQuality::attributes::AirQuality as OverallAirQuality;
-            let mut overall = MatterSubscriptionCluster::<10, 0>::for_attribute::<OverallAirQuality>(
+            let mut overall = MatterSubscriptionCluster::<11, 0>::for_attribute::<OverallAirQuality>(
                 0,
                 MATTER_SUBSCRIPTION_MAX_INTERVAL_SECONDS,
             );
@@ -2243,6 +2314,265 @@ fn handle_weather_endpoint(
     LibertasEndpointHandlerResult::Handled
 }
 
+fn external_feature_name_is_supported(state: &ControllerState, name: &str) -> bool {
+    if [
+        "time.local_hour_of_day_sine",
+        "time.local_hour_of_day_cosine",
+        "time.local_day_of_week_sine",
+        "time.local_day_of_week_cosine",
+        "time.local_weekend_indicator",
+        "time.local_holiday_indicator",
+        "time.occupancy_schedule_active_indicator",
+        "time.seconds_to_next_occupancy_transition",
+    ]
+    .contains(&name)
+        || [
+            "utility.current_price_per_kilowatt_hour",
+            "utility.forecast_price_plus_15m_per_kilowatt_hour",
+            "utility.forecast_price_plus_30m_per_kilowatt_hour",
+            "utility.forecast_price_plus_60m_per_kilowatt_hour",
+            "utility.forecast_price_plus_2h_per_kilowatt_hour",
+            "utility.forecast_price_plus_3h_per_kilowatt_hour",
+            "utility.forecast_price_plus_6h_per_kilowatt_hour",
+            "utility.forecast_price_plus_12h_per_kilowatt_hour",
+            "utility.forecast_price_plus_24h_per_kilowatt_hour",
+            "utility.minimum_price_next_6h_per_kilowatt_hour",
+            "utility.maximum_price_next_6h_per_kilowatt_hour",
+            "utility.minimum_price_next_24h_per_kilowatt_hour",
+            "utility.maximum_price_next_24h_per_kilowatt_hour",
+            "utility.current_carbon_intensity_kilograms_per_kilowatt_hour",
+            "utility.forecast_carbon_intensity_plus_60m_kilograms_per_kilowatt_hour",
+            "utility.forecast_carbon_intensity_plus_6h_kilograms_per_kilowatt_hour",
+            "utility.demand_response_active_indicator",
+            "utility.seconds_to_demand_response_transition",
+            "utility.building_electric_demand_kilowatts",
+            "utility.building_electric_demand_mean_15m_kilowatts",
+            "utility.building_electric_demand_mean_60m_kilowatts",
+            "utility.building_peak_window_demand_kilowatts",
+        ]
+        .contains(&name)
+    {
+        return true;
+    }
+    if let Some(rest) = name.strip_prefix("room.")
+        && let Some((endpoint, suffix)) = rest.split_once('.')
+        && endpoint
+            .parse::<LibertasEndpoint>()
+            .ok()
+            .is_some_and(|endpoint| {
+                state
+                    .rooms
+                    .iter()
+                    .any(|room| room.configuration.control_endpoint == endpoint)
+            })
+    {
+        return [
+            "occupancy_state_normalized",
+            "occupancy_fraction_15m",
+            "occupancy_fraction_60m",
+            "occupant_count",
+            "window_open_fraction_15m",
+            "window_open_fraction_60m",
+            "override_active_indicator",
+            "override_remaining_seconds",
+            "recent_delivered_heating_kilowatt_hours_thermal",
+            "recent_delivered_cooling_kilowatt_hours_thermal",
+        ]
+        .contains(&suffix);
+    }
+    if let Some(rest) = name.strip_prefix("thermostat.")
+        && let Some((device, suffix)) = rest.split_once('.')
+        && device.parse::<LibertasDevice>().ok().is_some_and(|device| {
+            state
+                .thermostats
+                .iter()
+                .any(|thermostat| thermostat.configuration.thermostat == device)
+        })
+    {
+        return [
+            "pi_heating_demand_normalized",
+            "pi_cooling_demand_normalized",
+            "signed_pi_demand_normalized",
+            "local_relative_humidity_percent",
+            "last_command_succeeded_indicator",
+            "electric_power_kilowatts",
+            "electric_energy_kilowatt_hours",
+            "gas_power_kilowatts",
+            "gas_energy_kilowatt_hours",
+            "delivered_heating_power_kilowatts_thermal",
+            "delivered_cooling_power_kilowatts_thermal",
+        ]
+        .contains(&suffix);
+    }
+    let Some(rest) = name.strip_prefix("equipment.central.") else {
+        return false;
+    };
+    let Some((aggregation, measurement)) = rest.split_once('.') else {
+        return false;
+    };
+    ["current", "mean_15m", "mean_60m", "change_15m"].contains(&aggregation)
+        && [
+            "supply_air_temperature_celsius",
+            "return_air_temperature_celsius",
+            "mixed_air_temperature_celsius",
+            "supply_airflow_cubic_meters_per_second",
+            "outdoor_airflow_cubic_meters_per_second",
+            "supply_fan_speed_normalized",
+            "return_fan_speed_normalized",
+            "duct_static_pressure_pascals",
+            "duct_static_pressure_setpoint_pascals",
+            "outdoor_air_damper_position_normalized",
+            "return_air_damper_position_normalized",
+            "zone_damper_mean_position_normalized",
+            "heating_valve_position_normalized",
+            "cooling_valve_position_normalized",
+            "compressor_capacity_normalized",
+            "heating_stage",
+            "cooling_stage",
+            "supply_water_temperature_celsius",
+            "return_water_temperature_celsius",
+            "pump_speed_normalized",
+            "electric_power_kilowatts",
+            "electric_energy_kilowatt_hours",
+            "gas_power_kilowatts",
+            "gas_energy_kilowatt_hours",
+            "delivered_heating_power_kilowatts_thermal",
+            "delivered_cooling_power_kilowatts_thermal",
+            "coefficient_of_performance",
+            "active_fault_count",
+        ]
+        .contains(&measurement)
+}
+
+fn accept_external_features(
+    shared: &Rc<RefCell<ControllerState>>,
+    snapshot: BuildingHvacExternalFeatureSnapshotV1,
+) -> bool {
+    let now = libertas_get_utc_time();
+    let unchanged = {
+        let state = shared.borrow();
+        if !snapshot.is_well_formed()
+            || now.is_none_or(|now| snapshot.retrieved_at > now)
+            || snapshot.retrieved_at < state.external_features.retrieved_at
+            || snapshot.retrieved_at == state.external_features.retrieved_at
+                && snapshot != state.external_features
+            || snapshot
+                .inputs
+                .iter()
+                .any(|input| !external_feature_name_is_supported(&state, &input.feature_name))
+        {
+            return false;
+        }
+        snapshot == state.external_features
+    };
+    if unchanged {
+        return true;
+    }
+    libertas_data_write(
+        EXTERNAL_FEATURE_INPUTS_RESOURCE,
+        singleton_key(),
+        &BuildingHvacPersistentDataV1::ExternalFeatureInputsV1 {
+            snapshot: snapshot.clone(),
+        },
+    );
+    let mut state = shared.borrow_mut();
+    state.external_features = snapshot;
+    for room in &mut state.rooms {
+        room.plan = None;
+    }
+    true
+}
+
+fn arm_external_feature_retry(shared: &Rc<RefCell<ControllerState>>, seconds: u32) {
+    let timer = shared.borrow().external_feature_retry_timer;
+    if timer != 0 {
+        libertas_timer_update_interval(
+            timer,
+            absolute_ticks(libertas_get_sys_ticks(), seconds.max(1)),
+        );
+    }
+}
+
+fn subscribe_external_features(shared: &Rc<RefCell<ControllerState>>) {
+    let Some(endpoint) = shared.borrow().external_feature_endpoint else {
+        return;
+    };
+    libertas_endpoint_subscribe_request(
+        endpoint,
+        &BuildingHvacExternalFeatureProtocolV1::GetExternalFeaturesV1,
+    );
+    arm_external_feature_retry(shared, EXTERNAL_FEATURE_RETRY_SECONDS);
+}
+
+fn handle_external_feature_endpoint(
+    _endpoint: LibertasEndpoint,
+    opcode: u8,
+    message: LibertasEndpointMessage<BuildingHvacExternalFeatureProtocolV1>,
+    context: &mut Box<dyn Any>,
+    _transaction_id: LibertasTransId,
+    _peer: u32,
+) -> LibertasEndpointHandlerResult {
+    let shared = context
+        .downcast_mut::<Rc<RefCell<ControllerState>>>()
+        .expect("invalid smart building HVAC external-feature context");
+    if opcode == OP_ENDPOINT_PEER_DOWN || opcode == OP_ENDPOINT_PEER_TIMEOUT {
+        arm_external_feature_retry(shared, EXTERNAL_FEATURE_RETRY_SECONDS);
+        return LibertasEndpointHandlerResult::Handled;
+    }
+    let mut retry_seconds = EXTERNAL_FEATURE_RETRY_SECONDS;
+    let accepted = match (opcode, message) {
+        (
+            OP_ENDPOINT_RSP,
+            LibertasEndpointMessage::Data(
+                BuildingHvacExternalFeatureProtocolV1::ExternalFeaturesV1 {
+                    maximum_wait_interval_seconds,
+                    snapshot,
+                },
+            ),
+        ) if maximum_wait_interval_seconds != 0 => {
+            let accepted = accept_external_features(shared, snapshot);
+            if accepted {
+                shared.borrow_mut().external_feature_maximum_wait_seconds =
+                    maximum_wait_interval_seconds;
+                arm_external_feature_retry(shared, maximum_wait_interval_seconds);
+            }
+            accepted
+        }
+        (
+            OP_ENDPOINT_DATA,
+            LibertasEndpointMessage::Data(
+                BuildingHvacExternalFeatureProtocolV1::ExternalFeatureUpdateV1 { snapshot },
+            ),
+        ) => {
+            let accepted = accept_external_features(shared, snapshot);
+            if accepted {
+                let wait = shared.borrow().external_feature_maximum_wait_seconds;
+                arm_external_feature_retry(shared, wait);
+            }
+            accepted
+        }
+        (
+            OP_ENDPOINT_RSP,
+            LibertasEndpointMessage::Data(
+                BuildingHvacExternalFeatureProtocolV1::ExternalFeaturesErrorV1 {
+                    retry_after_seconds,
+                    ..
+                },
+            ),
+        ) => {
+            retry_seconds = retry_after_seconds.max(1);
+            false
+        }
+        _ => false,
+    };
+    if accepted {
+        evaluate_and_publish(shared);
+    } else {
+        arm_external_feature_retry(shared, retry_seconds);
+    }
+    LibertasEndpointHandlerResult::Handled
+}
+
 fn outdoor_temperature(state: &ControllerState, now: LibertasDateTime) -> Option<f32> {
     state
         .local_outdoor
@@ -2267,7 +2597,10 @@ fn prediction_for(
     room.machine_learning
         .predictions
         .iter()
-        .find(|prediction| prediction.horizon == horizon)
+        .find(|prediction| {
+            prediction.horizon == horizon
+                && prediction.source == BuildingHvacThermalPredictionSourceV1::Xgboost
+        })
         .map(|prediction| prediction.temperature_change_celsius)
 }
 
@@ -2343,16 +2676,22 @@ fn apply_thermostat_decisions(shared: &Rc<RefCell<ControllerState>>) {
                     .zip(&controls)
                     .map(|(index, control)| {
                         let room = &state.rooms[*index];
+                        let learned_change = prediction_for(
+                            room,
+                            BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+                        );
                         BuildingHvacRoomControlCandidate {
                             room_endpoint: room.configuration.control_endpoint,
                             control,
                             state: &room.state,
-                            predicted_cross_zone_temperature_change_celsius:
-                                predicted_cross_zone_change(&state, room),
-                            predicted_machine_learning_temperature_change_celsius: prediction_for(
-                                room,
-                                BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
-                            ),
+                            predicted_cross_zone_temperature_change_celsius: if learned_change
+                                .is_some()
+                            {
+                                0.0
+                            } else {
+                                predicted_cross_zone_change(&state, room)
+                            },
+                            predicted_machine_learning_temperature_change_celsius: learned_change,
                         }
                     })
                     .collect();
@@ -2629,9 +2968,9 @@ fn append_condition_periods(
 
 fn cyclic_time(now: LibertasDateTime) -> (f32, f32, f32, f32) {
     let seconds_of_day = (now % 86_400) as f32;
-    let day = ((now / 86_400) % 365) as f32;
+    let day_of_year = utc_day_of_year(now);
     let hour_angle = TAU * seconds_of_day / 86_400.0;
-    let day_angle = TAU * day / 365.0;
+    let day_angle = TAU * f32::from(day_of_year) / 365.25;
     (
         hour_angle.sin(),
         hour_angle.cos(),
@@ -2640,71 +2979,1482 @@ fn cyclic_time(now: LibertasDateTime) -> (f32, f32, f32, f32) {
     )
 }
 
+fn utc_day_of_year(now: LibertasDateTime) -> u16 {
+    // Convert Unix days to the proleptic Gregorian civil date. This preserves
+    // the real January-through-December phase across leap years.
+    let days_since_epoch = i64::try_from(now / 86_400).unwrap_or(i64::MAX / 2);
+    let shifted = days_since_epoch + 719_468;
+    let era = shifted.div_euclid(146_097);
+    let day_of_era = shifted.rem_euclid(146_097);
+    let year_of_era =
+        (day_of_era - day_of_era / 1_460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
+    let mut year = year_of_era + era * 400;
+    let march_day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+    let march_month = (5 * march_day_of_year + 2) / 153;
+    let day = march_day_of_year - (153 * march_month + 2) / 5 + 1;
+    let month = march_month + if march_month < 10 { 3 } else { -9 };
+    if month <= 2 {
+        year += 1;
+    }
+    let leap_year = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+    let month_offsets = [0_i64, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+    let month_index = usize::try_from(month.saturating_sub(1))
+        .unwrap_or(0)
+        .min(11);
+    let leap_offset = i64::from(leap_year && month > 2);
+    let day_of_year = month_offsets[month_index] + day + leap_offset;
+    u16::try_from(day_of_year).unwrap_or(1)
+}
+
+fn active_thermostat_setpoint_delta_celsius(
+    activity: BuildingHvacRoomActivityV1,
+    heating_setpoint_celsius: Option<f32>,
+    cooling_setpoint_celsius: Option<f32>,
+    associated_room_temperatures_celsius: impl Iterator<Item = f32>,
+) -> f32 {
+    match activity {
+        BuildingHvacRoomActivityV1::Heating => heating_setpoint_celsius
+            .filter(|setpoint| setpoint.is_finite())
+            .and_then(|setpoint| {
+                associated_room_temperatures_celsius
+                    .filter(|temperature| temperature.is_finite())
+                    .map(|temperature| setpoint - temperature)
+                    .reduce(f32::max)
+            })
+            .unwrap_or(0.0)
+            .clamp(0.0, 50.0),
+        BuildingHvacRoomActivityV1::Cooling => cooling_setpoint_celsius
+            .filter(|setpoint| setpoint.is_finite())
+            .and_then(|setpoint| {
+                associated_room_temperatures_celsius
+                    .filter(|temperature| temperature.is_finite())
+                    .map(|temperature| setpoint - temperature)
+                    .reduce(f32::min)
+            })
+            .unwrap_or(0.0)
+            .clamp(-50.0, 0.0),
+        _ => 0.0,
+    }
+}
+
+struct MachineLearningFeatureBuilder {
+    target_room: LibertasEndpoint,
+    values: Vec<BuildingHvacMachineLearningFeatureV1>,
+}
+
+impl MachineLearningFeatureBuilder {
+    fn new(target_room: LibertasEndpoint) -> Self {
+        Self {
+            target_room,
+            values: Vec::new(),
+        }
+    }
+
+    fn add(&mut self, name: impl Into<String>, value: Option<f32>) {
+        self.values.push(BuildingHvacMachineLearningFeatureV1 {
+            name: name.into(),
+            value: value.filter(|value| value.is_finite()),
+        });
+    }
+
+    fn finish(mut self) -> Option<BuildingHvacMachineLearningFeaturesV1> {
+        self.values
+            .sort_by(|left, right| left.name.cmp(&right.name));
+        let features = BuildingHvacMachineLearningFeaturesV1 {
+            target_room: self.target_room,
+            values: self.values,
+        };
+        features.is_well_formed().then_some(features)
+    }
+}
+
+fn activity_value(activity: BuildingHvacRoomActivityV1) -> Option<f32> {
+    match activity {
+        BuildingHvacRoomActivityV1::Heating => Some(1.0),
+        BuildingHvacRoomActivityV1::Cooling => Some(-1.0),
+        BuildingHvacRoomActivityV1::Idle | BuildingHvacRoomActivityV1::FanOnly => Some(0.0),
+        BuildingHvacRoomActivityV1::Unknown => None,
+    }
+}
+
+const fn binary_indicator(value: bool) -> f32 {
+    if value { 1.0 } else { 0.0 }
+}
+
+fn activity_indicator(
+    activity: BuildingHvacRoomActivityV1,
+    expected: BuildingHvacRoomActivityV1,
+) -> Option<f32> {
+    (activity != BuildingHvacRoomActivityV1::Unknown)
+        .then_some(binary_indicator(activity == expected))
+}
+
+fn room_observation_at(
+    state: &ControllerState,
+    endpoint: LibertasEndpoint,
+    at_or_before: LibertasDateTime,
+) -> Option<&RoomFeatureObservation> {
+    state
+        .feature_history
+        .iter()
+        .rev()
+        .find(|observation| observation.observed_at <= at_or_before)?
+        .rooms
+        .iter()
+        .find(|room| room.endpoint == endpoint)
+}
+
+fn thermostat_observation_at(
+    state: &ControllerState,
+    thermostat: LibertasDevice,
+    at_or_before: LibertasDateTime,
+) -> Option<&ThermostatFeatureObservation> {
+    state
+        .feature_history
+        .iter()
+        .rev()
+        .find(|observation| observation.observed_at <= at_or_before)?
+        .thermostats
+        .iter()
+        .find(|entry| entry.thermostat == thermostat)
+}
+
+fn add_room_air_measurements(
+    builder: &mut MachineLearningFeatureBuilder,
+    prefix: &str,
+    room: &RoomRuntime,
+    now: LibertasDateTime,
+) {
+    let kinds = [
+        (BuildingHvacAirMeasurementKindV1::CarbonDioxide, "co2"),
+        (BuildingHvacAirMeasurementKindV1::CarbonMonoxide, "co"),
+        (BuildingHvacAirMeasurementKindV1::NitrogenDioxide, "no2"),
+        (BuildingHvacAirMeasurementKindV1::Ozone, "ozone"),
+        (BuildingHvacAirMeasurementKindV1::ParticulateMatter1, "pm1"),
+        (
+            BuildingHvacAirMeasurementKindV1::ParticulateMatter2_5,
+            "pm2_5",
+        ),
+        (
+            BuildingHvacAirMeasurementKindV1::ParticulateMatter10,
+            "pm10",
+        ),
+        (
+            BuildingHvacAirMeasurementKindV1::Formaldehyde,
+            "formaldehyde",
+        ),
+        (
+            BuildingHvacAirMeasurementKindV1::TotalVolatileOrganicCompounds,
+            "tvoc",
+        ),
+        (BuildingHvacAirMeasurementKindV1::Radon, "radon"),
+    ];
+    for (kind, name) in kinds {
+        let mut mixing_ppm = Vec::new();
+        let mut mass_micrograms = Vec::new();
+        let mut radioactivity = Vec::new();
+        for measurement in room.sensor_states.iter().filter_map(|sensor| {
+            sensor
+                .air_quality
+                .as_ref()
+                .filter(|reading| {
+                    reading.observed_at <= now
+                        && reading.valid_until > now
+                        && reading.is_well_formed()
+                })
+                .and_then(|reading| reading.measurement(kind))
+        }) {
+            let value = measurement.measured_value_in_reported_unit;
+            match measurement.reported_unit {
+                BuildingHvacAirMeasurementUnitV1::PartsPerMillion => mixing_ppm.push(value),
+                BuildingHvacAirMeasurementUnitV1::PartsPerBillion => {
+                    mixing_ppm.push(value / 1_000.0);
+                }
+                BuildingHvacAirMeasurementUnitV1::PartsPerTrillion => {
+                    mixing_ppm.push(value / 1_000_000.0);
+                }
+                BuildingHvacAirMeasurementUnitV1::MilligramsPerCubicMeter => {
+                    mass_micrograms.push(value * 1_000.0);
+                }
+                BuildingHvacAirMeasurementUnitV1::MicrogramsPerCubicMeter => {
+                    mass_micrograms.push(value);
+                }
+                BuildingHvacAirMeasurementUnitV1::NanogramsPerCubicMeter => {
+                    mass_micrograms.push(value / 1_000.0);
+                }
+                BuildingHvacAirMeasurementUnitV1::PicogramsPerCubicMeter => {
+                    mass_micrograms.push(value / 1_000_000.0);
+                }
+                BuildingHvacAirMeasurementUnitV1::BecquerelsPerCubicMeter => {
+                    radioactivity.push(value);
+                }
+            }
+        }
+        let mean = |values: &[f32]| {
+            (!values.is_empty()).then(|| {
+                values.iter().copied().map(f64::from).sum::<f64>() as f32 / values.len() as f32
+            })
+        };
+        builder.add(
+            format!("{prefix}.air_quality.{name}_parts_per_million"),
+            mean(&mixing_ppm),
+        );
+        builder.add(
+            format!("{prefix}.air_quality.{name}_micrograms_per_cubic_meter"),
+            mean(&mass_micrograms),
+        );
+        builder.add(
+            format!("{prefix}.air_quality.{name}_becquerels_per_cubic_meter"),
+            mean(&radioactivity),
+        );
+    }
+}
+
+fn weather_psychrometrics(conditions: &BuildingHvacOutdoorConditionsV1) -> Option<(f32, f32, f32)> {
+    let pressure_pascals = conditions.surface_pressure_hectopascals * 100.0;
+    let vapor_pressure =
+        saturation_vapor_pressure_pascals(conditions.dew_point_temperature_celsius)?;
+    if !pressure_pascals.is_finite()
+        || vapor_pressure >= pressure_pascals
+        || conditions.dew_point_temperature_celsius > conditions.dry_bulb_temperature_celsius + 0.05
+    {
+        return None;
+    }
+    let humidity_ratio = 0.621_945 * vapor_pressure / (pressure_pascals - vapor_pressure);
+    let enthalpy = moist_air_enthalpy_kilojoules_per_kilogram_dry_air(
+        conditions.dry_bulb_temperature_celsius,
+        humidity_ratio,
+    );
+    let wet_bulb = solve_wet_bulb_temperature_celsius(
+        conditions.dry_bulb_temperature_celsius,
+        conditions.dew_point_temperature_celsius,
+        pressure_pascals,
+        enthalpy,
+    )?;
+    Some((humidity_ratio, enthalpy, wet_bulb))
+}
+
+fn add_weather_conditions(
+    builder: &mut MachineLearningFeatureBuilder,
+    prefix: &str,
+    conditions: Option<&BuildingHvacOutdoorConditionsV1>,
+    precipitation_probability_percent: Option<f32>,
+) {
+    let psychrometrics = conditions.and_then(weather_psychrometrics);
+    let direction_radians =
+        conditions.map(|value| f32::from(value.wind_direction_degrees).to_radians());
+    let solar_azimuth_radians = conditions.map(|value| value.solar_azimuth_degrees.to_radians());
+    builder.add(
+        format!("{prefix}.dry_bulb_temperature_celsius"),
+        conditions.map(|value| value.dry_bulb_temperature_celsius),
+    );
+    builder.add(
+        format!("{prefix}.dew_point_temperature_celsius"),
+        conditions.map(|value| value.dew_point_temperature_celsius),
+    );
+    builder.add(
+        format!("{prefix}.relative_humidity_percent"),
+        conditions.map(|value| f32::from(value.relative_humidity_percent)),
+    );
+    builder.add(
+        format!("{prefix}.humidity_ratio_kg_per_kg"),
+        psychrometrics.map(|value| value.0),
+    );
+    builder.add(
+        format!("{prefix}.moist_air_enthalpy_kilojoules_per_kilogram"),
+        psychrometrics.map(|value| value.1),
+    );
+    builder.add(
+        format!("{prefix}.wet_bulb_temperature_celsius"),
+        psychrometrics.map(|value| value.2),
+    );
+    builder.add(
+        format!("{prefix}.surface_pressure_hectopascals"),
+        conditions.map(|value| value.surface_pressure_hectopascals),
+    );
+    builder.add(
+        format!("{prefix}.wind_speed_meters_per_second"),
+        conditions.map(|value| value.wind_speed_meters_per_second),
+    );
+    builder.add(
+        format!("{prefix}.wind_gust_meters_per_second"),
+        conditions.map(|value| value.wind_gust_meters_per_second),
+    );
+    builder.add(
+        format!("{prefix}.wind_direction_sine"),
+        direction_radians.map(f32::sin),
+    );
+    builder.add(
+        format!("{prefix}.wind_direction_cosine"),
+        direction_radians.map(f32::cos),
+    );
+    builder.add(
+        format!("{prefix}.precipitation_millimeters"),
+        conditions.map(|value| value.precipitation_millimeters),
+    );
+    for (name, kind) in [
+        ("none", BuildingHvacPrecipitationKindV1::None),
+        ("rain", BuildingHvacPrecipitationKindV1::Rain),
+        (
+            "freezing_rain",
+            BuildingHvacPrecipitationKindV1::FreezingRain,
+        ),
+        ("snow", BuildingHvacPrecipitationKindV1::Snow),
+        ("mixed", BuildingHvacPrecipitationKindV1::Mixed),
+        ("unknown", BuildingHvacPrecipitationKindV1::Unknown),
+    ] {
+        builder.add(
+            format!("{prefix}.precipitation_kind_{name}_indicator"),
+            conditions.map(|value| binary_indicator(value.precipitation_kind == kind)),
+        );
+    }
+    builder.add(
+        format!("{prefix}.precipitation_probability_percent"),
+        precipitation_probability_percent,
+    );
+    builder.add(
+        format!("{prefix}.solar_elevation_degrees"),
+        conditions.map(|value| value.solar_elevation_degrees),
+    );
+    builder.add(
+        format!("{prefix}.solar_azimuth_sine"),
+        solar_azimuth_radians.map(f32::sin),
+    );
+    builder.add(
+        format!("{prefix}.solar_azimuth_cosine"),
+        solar_azimuth_radians.map(f32::cos),
+    );
+    builder.add(
+        format!("{prefix}.global_horizontal_irradiance_watts_per_square_meter"),
+        conditions.map(|value| value.global_horizontal_irradiance_watts_per_square_meter),
+    );
+    builder.add(
+        format!("{prefix}.direct_normal_irradiance_watts_per_square_meter"),
+        conditions.map(|value| value.direct_normal_irradiance_watts_per_square_meter),
+    );
+    builder.add(
+        format!("{prefix}.diffuse_horizontal_irradiance_watts_per_square_meter"),
+        conditions.map(|value| value.diffuse_horizontal_irradiance_watts_per_square_meter),
+    );
+}
+
+fn weather_history_conditions(
+    state: &ControllerState,
+    at: LibertasDateTime,
+) -> Option<&BuildingHvacOutdoorConditionsV1> {
+    state
+        .weather
+        .history
+        .as_ref()?
+        .periods
+        .iter()
+        .rev()
+        .find(|period| {
+            period.starts_at <= at
+                && at
+                    < period
+                        .starts_at
+                        .saturating_add(u64::from(period.duration_seconds))
+        })
+        .map(|period| &period.conditions)
+}
+
+fn weather_forecast_period(
+    state: &ControllerState,
+    at: LibertasDateTime,
+) -> Option<&BuildingHvacWeatherForecastPeriodV1> {
+    state
+        .weather
+        .forecast
+        .as_ref()?
+        .periods
+        .iter()
+        .find(|period| {
+            period.starts_at <= at
+                && at
+                    < period
+                        .starts_at
+                        .saturating_add(u64::from(period.duration_seconds))
+        })
+}
+
+fn outdoor_air_quality_period(
+    state: &ControllerState,
+    at: LibertasDateTime,
+) -> Option<&BuildingHvacOutdoorAirQualityPeriodV1> {
+    state
+        .weather
+        .outdoor_air_quality
+        .as_ref()?
+        .periods
+        .iter()
+        .find(|period| {
+            period.starts_at <= at
+                && at
+                    < period
+                        .starts_at
+                        .saturating_add(u64::from(period.duration_seconds))
+        })
+}
+
+fn add_outdoor_air_quality(
+    builder: &mut MachineLearningFeatureBuilder,
+    prefix: &str,
+    period: Option<&BuildingHvacOutdoorAirQualityPeriodV1>,
+) {
+    builder.add(
+        format!("{prefix}.pm2_5_micrograms_per_cubic_meter"),
+        period.map(|value| value.particulate_matter_2_5_micrograms_per_cubic_meter),
+    );
+    builder.add(
+        format!("{prefix}.pm10_micrograms_per_cubic_meter"),
+        period.map(|value| value.particulate_matter_10_micrograms_per_cubic_meter),
+    );
+    builder.add(
+        format!("{prefix}.ozone_micrograms_per_cubic_meter"),
+        period.map(|value| value.ozone_micrograms_per_cubic_meter),
+    );
+    builder.add(
+        format!("{prefix}.no2_micrograms_per_cubic_meter"),
+        period.map(|value| value.nitrogen_dioxide_micrograms_per_cubic_meter),
+    );
+}
+
+fn mean_history_condition(
+    state: &ControllerState,
+    now: LibertasDateTime,
+    window_seconds: u64,
+    value: impl Fn(&BuildingHvacOutdoorConditionsV1) -> f32,
+) -> Option<f32> {
+    let starts_at = now.saturating_sub(window_seconds);
+    let values: Vec<_> = state
+        .weather
+        .history
+        .as_ref()?
+        .periods
+        .iter()
+        .filter(|period| period.starts_at >= starts_at && period.starts_at < now)
+        .map(|period| value(&period.conditions))
+        .filter(|value| value.is_finite())
+        .collect();
+    (!values.is_empty())
+        .then(|| values.iter().copied().map(f64::from).sum::<f64>() as f32 / values.len() as f32)
+}
+
+fn mean_history_derived(
+    state: &ControllerState,
+    now: LibertasDateTime,
+    window_seconds: u64,
+    value: impl Fn(&BuildingHvacOutdoorConditionsV1) -> Option<f32>,
+) -> Option<f32> {
+    let starts_at = now.saturating_sub(window_seconds);
+    let values: Vec<_> = state
+        .weather
+        .history
+        .as_ref()?
+        .periods
+        .iter()
+        .filter(|period| period.starts_at >= starts_at && period.starts_at < now)
+        .filter_map(|period| value(&period.conditions))
+        .filter(|value| value.is_finite())
+        .collect();
+    (!values.is_empty())
+        .then(|| values.iter().copied().map(f64::from).sum::<f64>() as f32 / values.len() as f32)
+}
+
+fn add_weather_features(
+    builder: &mut MachineLearningFeatureBuilder,
+    state: &ControllerState,
+    now: LibertasDateTime,
+) {
+    let current = state.weather.current.as_ref();
+    add_weather_conditions(
+        builder,
+        "weather.current",
+        current.map(|value| &value.conditions),
+        None,
+    );
+    builder.add(
+        "weather.current.section_age_seconds",
+        current.map(|value| now.saturating_sub(value.retrieved_at) as f32),
+    );
+    builder.add(
+        "weather.history.section_age_seconds",
+        state
+            .weather
+            .history
+            .as_ref()
+            .map(|value| now.saturating_sub(value.retrieved_at) as f32),
+    );
+    builder.add(
+        "weather.forecast.section_age_seconds",
+        state
+            .weather
+            .forecast
+            .as_ref()
+            .map(|value| now.saturating_sub(value.retrieved_at) as f32),
+    );
+    builder.add(
+        "weather.air_quality.section_age_seconds",
+        state
+            .weather
+            .outdoor_air_quality
+            .as_ref()
+            .map(|value| now.saturating_sub(value.retrieved_at) as f32),
+    );
+    for (label, seconds) in [("15m", 15 * 60), ("30m", 30 * 60), ("60m", 60 * 60)] {
+        add_weather_conditions(
+            builder,
+            &format!("weather.history.lag_{label}"),
+            weather_history_conditions(state, now.saturating_sub(seconds)),
+            None,
+        );
+    }
+    for (label, seconds) in [
+        ("15m", 15 * 60),
+        ("30m", 30 * 60),
+        ("60m", 60 * 60),
+        ("2h", 2 * 60 * 60),
+        ("3h", 3 * 60 * 60),
+        ("6h", 6 * 60 * 60),
+        ("12h", 12 * 60 * 60),
+        ("24h", 24 * 60 * 60),
+    ] {
+        let at = now.saturating_add(seconds);
+        let forecast = weather_forecast_period(state, at);
+        add_weather_conditions(
+            builder,
+            &format!("weather.forecast.plus_{label}"),
+            forecast.map(|value| &value.conditions),
+            forecast.map(|value| f32::from(value.precipitation_probability_percent)),
+        );
+        add_outdoor_air_quality(
+            builder,
+            &format!("weather.air_quality.plus_{label}"),
+            outdoor_air_quality_period(state, at),
+        );
+    }
+    add_outdoor_air_quality(
+        builder,
+        "weather.air_quality.current",
+        outdoor_air_quality_period(state, now),
+    );
+    for (label, seconds) in [
+        ("3h", 3 * 60 * 60),
+        ("6h", 6 * 60 * 60),
+        ("24h", 24 * 60 * 60),
+    ] {
+        builder.add(
+            format!("weather.history.mean_dry_bulb_temperature_celsius_{label}"),
+            mean_history_condition(state, now, seconds, |value| {
+                value.dry_bulb_temperature_celsius
+            }),
+        );
+        builder.add(
+            format!("weather.history.mean_relative_humidity_percent_{label}"),
+            mean_history_condition(state, now, seconds, |value| {
+                f32::from(value.relative_humidity_percent)
+            }),
+        );
+        builder.add(
+            format!("weather.history.mean_dew_point_temperature_celsius_{label}"),
+            mean_history_condition(state, now, seconds, |value| {
+                value.dew_point_temperature_celsius
+            }),
+        );
+        builder.add(
+            format!("weather.history.mean_humidity_ratio_kg_per_kg_{label}"),
+            mean_history_derived(state, now, seconds, |value| {
+                weather_psychrometrics(value).map(|derived| derived.0)
+            }),
+        );
+        builder.add(
+            format!("weather.history.mean_moist_air_enthalpy_kilojoules_per_kilogram_{label}"),
+            mean_history_derived(state, now, seconds, |value| {
+                weather_psychrometrics(value).map(|derived| derived.1)
+            }),
+        );
+        builder.add(
+            format!("weather.history.mean_wet_bulb_temperature_celsius_{label}"),
+            mean_history_derived(state, now, seconds, |value| {
+                weather_psychrometrics(value).map(|derived| derived.2)
+            }),
+        );
+        builder.add(
+            format!("weather.history.mean_wind_speed_meters_per_second_{label}"),
+            mean_history_condition(state, now, seconds, |value| {
+                value.wind_speed_meters_per_second
+            }),
+        );
+        builder.add(
+            format!(
+                "weather.history.mean_global_horizontal_irradiance_watts_per_square_meter_{label}"
+            ),
+            mean_history_condition(state, now, seconds, |value| {
+                value.global_horizontal_irradiance_watts_per_square_meter
+            }),
+        );
+        let previous = weather_history_conditions(state, now.saturating_sub(seconds));
+        builder.add(
+            format!("weather.history.dry_bulb_temperature_change_celsius_{label}"),
+            current.zip(previous).map(|(current, previous)| {
+                current.conditions.dry_bulb_temperature_celsius
+                    - previous.dry_bulb_temperature_celsius
+            }),
+        );
+    }
+    for (label, seconds) in [("1h", 60 * 60), ("6h", 6 * 60 * 60), ("24h", 24 * 60 * 60)] {
+        let starts_at = now.saturating_sub(seconds);
+        let periods: Vec<_> = state
+            .weather
+            .history
+            .as_ref()
+            .map(|history| {
+                history
+                    .periods
+                    .iter()
+                    .filter(|period| period.starts_at >= starts_at && period.starts_at < now)
+                    .collect()
+            })
+            .unwrap_or_default();
+        let integrated = |value: fn(&BuildingHvacOutdoorConditionsV1) -> f32| {
+            (!periods.is_empty()).then(|| {
+                periods
+                    .iter()
+                    .map(|period| {
+                        value(&period.conditions) * period.duration_seconds as f32 / 3_600.0
+                    })
+                    .sum()
+            })
+        };
+        builder.add(
+            format!("weather.history.solar_energy_wh_per_square_meter_{label}"),
+            integrated(|value| value.global_horizontal_irradiance_watts_per_square_meter),
+        );
+        builder.add(
+            format!("weather.history.precipitation_millimeters_{label}"),
+            (!periods.is_empty()).then(|| {
+                periods
+                    .iter()
+                    .map(|period| period.conditions.precipitation_millimeters)
+                    .sum()
+            }),
+        );
+        builder.add(
+            format!("weather.history.heating_degree_hours_base18_celsius_{label}"),
+            integrated(|value| (18.0 - value.dry_bulb_temperature_celsius).max(0.0)),
+        );
+        builder.add(
+            format!("weather.history.cooling_degree_hours_base18_celsius_{label}"),
+            integrated(|value| (value.dry_bulb_temperature_celsius - 18.0).max(0.0)),
+        );
+    }
+}
+
+fn thermostat_window_statistics(
+    state: &ControllerState,
+    thermostat: LibertasDevice,
+    now: LibertasDateTime,
+    window_seconds: u64,
+) -> (
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<u32>,
+) {
+    let starts_at = now.saturating_sub(window_seconds);
+    let samples: Vec<_> = state
+        .feature_history
+        .iter()
+        .filter(|observation| observation.observed_at >= starts_at)
+        .filter_map(|observation| {
+            observation
+                .thermostats
+                .iter()
+                .find(|entry| entry.thermostat == thermostat)
+        })
+        .collect();
+    let known: Vec<_> = samples
+        .iter()
+        .filter(|entry| entry.activity != BuildingHvacRoomActivityV1::Unknown)
+        .collect();
+    let fraction = |expected: BuildingHvacRoomActivityV1| {
+        (!known.is_empty()).then(|| {
+            known
+                .iter()
+                .filter(|entry| entry.activity == expected)
+                .count() as f32
+                / known.len() as f32
+        })
+    };
+    let starts = samples
+        .windows(2)
+        .filter(|pair| {
+            activity_value(pair[0].activity).is_some_and(|value| value == 0.0)
+                && activity_value(pair[1].activity).is_some_and(|value| value != 0.0)
+        })
+        .count();
+    (
+        fraction(BuildingHvacRoomActivityV1::Heating),
+        fraction(BuildingHvacRoomActivityV1::Cooling),
+        fraction(BuildingHvacRoomActivityV1::FanOnly),
+        fraction(BuildingHvacRoomActivityV1::Idle),
+        u32::try_from(starts).ok(),
+    )
+}
+
+fn capture_feature_observation(state: &mut ControllerState, now: LibertasDateTime) {
+    let observed_at = now - now % 60;
+    if state
+        .feature_history
+        .last()
+        .is_some_and(|observation| observation.observed_at == observed_at)
+    {
+        return;
+    }
+    let thermostats = state
+        .thermostats
+        .iter()
+        .enumerate()
+        .map(
+            |(thermostat_index, thermostat)| ThermostatFeatureObservation {
+                thermostat: thermostat.configuration.thermostat,
+                activity: thermostat.activity,
+                local_temperature_celsius: thermostat.local_temperature_celsius,
+                heating_setpoint_celsius: thermostat.heating_setpoint_celsius,
+                cooling_setpoint_celsius: thermostat.cooling_setpoint_celsius,
+                active_setpoint_delta_celsius: active_thermostat_setpoint_delta_celsius(
+                    thermostat.activity,
+                    thermostat.heating_setpoint_celsius,
+                    thermostat.cooling_setpoint_celsius,
+                    state
+                        .rooms
+                        .iter()
+                        .filter(move |room| room.thermostat_index == thermostat_index)
+                        .filter_map(|room| room.state.temperature_celsius),
+                ),
+                write_pending: thermostat.pending_write.is_some(),
+            },
+        )
+        .collect();
+    let rooms = state
+        .rooms
+        .iter()
+        .map(|room| RoomFeatureObservation {
+            endpoint: room.configuration.control_endpoint,
+            temperature_celsius: room.state.temperature_celsius,
+            relative_humidity_percent: room.state.relative_humidity_percent,
+            effective_heating_setpoint_celsius: room.state.effective_heating_setpoint_celsius,
+            effective_cooling_setpoint_celsius: room.state.effective_cooling_setpoint_celsius,
+            activity: room.state.activity,
+        })
+        .collect();
+    state.feature_history.push(BuildingFeatureObservation {
+        observed_at,
+        thermostats,
+        rooms,
+    });
+    let oldest = observed_at.saturating_sub(24 * 60 * 60);
+    let first_retained = state
+        .feature_history
+        .partition_point(|observation| observation.observed_at < oldest);
+    if first_retained != 0 {
+        state.feature_history.drain(..first_retained);
+    }
+}
+
 fn machine_learning_features(
     state: &ControllerState,
     room_index: usize,
     now: LibertasDateTime,
 ) -> Option<BuildingHvacMachineLearningFeaturesV1> {
-    let room = &state.rooms[room_index];
-    let room_temperature = room.state.temperature_celsius?;
-    let current = state
-        .weather
-        .current
-        .as_ref()
-        .filter(|current| current.is_fresh_at(now));
-    let analytics = current
-        .and_then(|current| BuildingHvacAnalyticsEngine::new().analyze_outdoor_air(now, current));
+    let target_room = &state.rooms[room_index];
+    let target_temperature = target_room.state.temperature_celsius?;
+    let target_endpoint = target_room.configuration.control_endpoint;
+    let mut builder = MachineLearningFeatureBuilder::new(target_endpoint);
     let (hour_sin, hour_cos, day_sin, day_cos) = cyclic_time(now);
-    let own_activity = state.thermostats[room.thermostat_index].activity;
-    let other_heating = state
-        .thermostats
-        .iter()
-        .enumerate()
-        .any(|(index, thermostat)| {
-            index != room.thermostat_index
-                && thermostat.activity == BuildingHvacRoomActivityV1::Heating
+    builder.add("time.utc_hour_of_day_sine", Some(hour_sin));
+    builder.add("time.utc_hour_of_day_cosine", Some(hour_cos));
+    builder.add("time.day_of_year_sine", Some(day_sin));
+    builder.add("time.day_of_year_cosine", Some(day_cos));
+    let day_of_week = ((now / (24 * 60 * 60) + 4) % 7) as f32;
+    let day_angle = day_of_week / 7.0 * TAU;
+    builder.add("time.utc_day_of_week_sine", Some(day_angle.sin()));
+    builder.add("time.utc_day_of_week_cosine", Some(day_angle.cos()));
+    builder.add(
+        "time.utc_weekend_indicator",
+        Some(binary_indicator(day_of_week == 0.0 || day_of_week == 6.0)),
+    );
+    builder.add("time.local_hour_of_day_sine", None);
+    builder.add("time.local_hour_of_day_cosine", None);
+    builder.add("time.local_day_of_week_sine", None);
+    builder.add("time.local_day_of_week_cosine", None);
+    builder.add("time.local_weekend_indicator", None);
+    builder.add("time.local_holiday_indicator", None);
+    builder.add("time.occupancy_schedule_active_indicator", None);
+    builder.add("time.seconds_to_next_occupancy_transition", None);
+
+    for (thermostat_index, thermostat) in state.thermostats.iter().enumerate() {
+        let device = thermostat.configuration.thermostat;
+        let prefix = format!("thermostat.{device}");
+        let active_delta = active_thermostat_setpoint_delta_celsius(
+            thermostat.activity,
+            thermostat.heating_setpoint_celsius,
+            thermostat.cooling_setpoint_celsius,
+            state
+                .rooms
+                .iter()
+                .filter(move |room| room.thermostat_index == thermostat_index)
+                .filter_map(|room| room.state.temperature_celsius),
+        );
+        builder.add(
+            format!("{prefix}.active_setpoint_delta_celsius"),
+            Some(active_delta),
+        );
+        builder.add(
+            format!("{prefix}.heating_error_celsius"),
+            (active_delta > 0.0).then_some(active_delta),
+        );
+        builder.add(
+            format!("{prefix}.cooling_error_celsius"),
+            (active_delta < 0.0).then_some(-active_delta),
+        );
+        builder.add(format!("{prefix}.pi_heating_demand_normalized"), None);
+        builder.add(format!("{prefix}.pi_cooling_demand_normalized"), None);
+        builder.add(format!("{prefix}.signed_pi_demand_normalized"), None);
+        builder.add(
+            format!("{prefix}.heating_indicator"),
+            activity_indicator(thermostat.activity, BuildingHvacRoomActivityV1::Heating),
+        );
+        builder.add(
+            format!("{prefix}.cooling_indicator"),
+            activity_indicator(thermostat.activity, BuildingHvacRoomActivityV1::Cooling),
+        );
+        builder.add(
+            format!("{prefix}.fan_only_indicator"),
+            activity_indicator(thermostat.activity, BuildingHvacRoomActivityV1::FanOnly),
+        );
+        builder.add(
+            format!("{prefix}.local_temperature_celsius"),
+            thermostat.local_temperature_celsius,
+        );
+        builder.add(format!("{prefix}.local_relative_humidity_percent"), None);
+        builder.add(
+            format!("{prefix}.heating_setpoint_celsius"),
+            thermostat.heating_setpoint_celsius,
+        );
+        builder.add(
+            format!("{prefix}.cooling_setpoint_celsius"),
+            thermostat.cooling_setpoint_celsius,
+        );
+        builder.add(
+            format!("{prefix}.minimum_heating_setpoint_celsius"),
+            thermostat.minimum_heating_setpoint_celsius,
+        );
+        builder.add(
+            format!("{prefix}.maximum_heating_setpoint_celsius"),
+            thermostat.maximum_heating_setpoint_celsius,
+        );
+        builder.add(
+            format!("{prefix}.minimum_cooling_setpoint_celsius"),
+            thermostat.minimum_cooling_setpoint_celsius,
+        );
+        builder.add(
+            format!("{prefix}.maximum_cooling_setpoint_celsius"),
+            thermostat.maximum_cooling_setpoint_celsius,
+        );
+        builder.add(
+            format!("{prefix}.minimum_deadband_celsius"),
+            thermostat.minimum_deadband_celsius,
+        );
+        builder.add(
+            format!("{prefix}.control_sequence"),
+            thermostat.control_sequence.map(f32::from),
+        );
+        builder.add(
+            format!("{prefix}.running_mode"),
+            thermostat.running_mode.map(f32::from),
+        );
+        builder.add(
+            format!("{prefix}.running_state_bitmap"),
+            thermostat.running_state.map(f32::from),
+        );
+        for measurement in [
+            "electric_power_kilowatts",
+            "electric_energy_kilowatt_hours",
+            "gas_power_kilowatts",
+            "gas_energy_kilowatt_hours",
+            "delivered_heating_power_kilowatts_thermal",
+            "delivered_cooling_power_kilowatts_thermal",
+        ] {
+            builder.add(format!("{prefix}.{measurement}"), None);
+        }
+        builder.add(
+            format!("{prefix}.report_age_seconds"),
+            thermostat
+                .observed_at
+                .map(|observed_at| now.saturating_sub(observed_at) as f32),
+        );
+        builder.add(
+            format!("{prefix}.command_pending_indicator"),
+            Some(binary_indicator(thermostat.pending_write.is_some())),
+        );
+        builder.add(format!("{prefix}.last_command_succeeded_indicator"), None);
+        for (label, seconds) in [
+            ("5m", 5 * 60),
+            ("15m", 15 * 60),
+            ("30m", 30 * 60),
+            ("60m", 60 * 60),
+        ] {
+            let (heating, cooling, fan, idle, _) =
+                thermostat_window_statistics(state, device, now, seconds);
+            builder.add(
+                format!("{prefix}.heating_runtime_fraction_{label}"),
+                heating,
+            );
+            builder.add(
+                format!("{prefix}.cooling_runtime_fraction_{label}"),
+                cooling,
+            );
+            builder.add(format!("{prefix}.fan_runtime_fraction_{label}"), fan);
+            builder.add(format!("{prefix}.idle_runtime_fraction_{label}"), idle);
+            builder.add(
+                format!("{prefix}.signed_runtime_fraction_{label}"),
+                heating
+                    .zip(cooling)
+                    .map(|(heating, cooling)| heating - cooling),
+            );
+        }
+        for (label, seconds) in [("1h", 60 * 60), ("24h", 24 * 60 * 60)] {
+            let (_, _, _, _, starts) = thermostat_window_statistics(state, device, now, seconds);
+            builder.add(
+                format!("{prefix}.equipment_starts_{label}"),
+                starts.map(|value| value as f32),
+            );
+        }
+        let history = state
+            .feature_history
+            .iter()
+            .rev()
+            .filter_map(|observation| {
+                observation
+                    .thermostats
+                    .iter()
+                    .find(|entry| entry.thermostat == device)
+                    .map(|entry| (observation.observed_at, entry))
+            })
+            .collect::<Vec<_>>();
+        let seconds_since =
+            |changed: fn(&ThermostatFeatureObservation, &ThermostatFeatureObservation) -> bool| {
+                history
+                    .windows(2)
+                    .find(|pair| changed(pair[1].1, pair[0].1))
+                    .map(|pair| now.saturating_sub(pair[0].0) as f32)
+            };
+        builder.add(
+            format!("{prefix}.seconds_since_state_transition"),
+            seconds_since(|older, newer| older.activity != newer.activity),
+        );
+        builder.add(
+            format!("{prefix}.seconds_since_setpoint_change"),
+            seconds_since(|older, newer| {
+                older.heating_setpoint_celsius != newer.heating_setpoint_celsius
+                    || older.cooling_setpoint_celsius != newer.cooling_setpoint_celsius
+            }),
+        );
+        for (label, seconds) in [("15m", 15 * 60), ("60m", 60 * 60)] {
+            let starts_at = now.saturating_sub(seconds);
+            let pending: Vec<_> = history
+                .iter()
+                .filter(|(observed_at, _)| *observed_at >= starts_at)
+                .collect();
+            builder.add(
+                format!("{prefix}.command_pending_fraction_{label}"),
+                (!pending.is_empty()).then(|| {
+                    pending
+                        .iter()
+                        .filter(|(_, observation)| observation.write_pending)
+                        .count() as f32
+                        / pending.len() as f32
+                }),
+            );
+        }
+        for (label, seconds) in [("15m", 15 * 60), ("30m", 30 * 60), ("60m", 60 * 60)] {
+            let previous = thermostat_observation_at(state, device, now.saturating_sub(seconds));
+            builder.add(
+                format!("{prefix}.local_temperature_celsius_lag_{label}"),
+                previous.and_then(|value| value.local_temperature_celsius),
+            );
+            builder.add(
+                format!("{prefix}.local_temperature_change_celsius_{label}"),
+                thermostat
+                    .local_temperature_celsius
+                    .zip(previous.and_then(|value| value.local_temperature_celsius))
+                    .map(|(current, previous)| current - previous),
+            );
+            builder.add(
+                format!("{prefix}.active_setpoint_delta_change_celsius_{label}"),
+                previous.map(|previous| active_delta - previous.active_setpoint_delta_celsius),
+            );
+            builder.add(
+                format!("{prefix}.heating_setpoint_change_celsius_{label}"),
+                thermostat
+                    .heating_setpoint_celsius
+                    .zip(previous.and_then(|value| value.heating_setpoint_celsius))
+                    .map(|(current, previous)| current - previous),
+            );
+            builder.add(
+                format!("{prefix}.cooling_setpoint_change_celsius_{label}"),
+                thermostat
+                    .cooling_setpoint_celsius
+                    .zip(previous.and_then(|value| value.cooling_setpoint_celsius))
+                    .map(|(current, previous)| current - previous),
+            );
+        }
+    }
+
+    for room in &state.rooms {
+        let endpoint = room.configuration.control_endpoint;
+        let prefix = format!("room.{endpoint}");
+        let temperature = room.state.temperature_celsius;
+        let humidity = room.state.relative_humidity_percent;
+        builder.add(format!("{prefix}.temperature_celsius"), temperature);
+        builder.add(format!("{prefix}.relative_humidity_percent"), humidity);
+        let dew_point = temperature
+            .zip(humidity)
+            .and_then(|(temperature, humidity)| {
+                if humidity <= 0.0 {
+                    return None;
+                }
+                let gamma = (humidity / 100.0).ln() + 17.625 * temperature / (243.04 + temperature);
+                let dew = 243.04 * gamma / (17.625 - gamma);
+                dew.is_finite().then_some(dew)
+            });
+        let pressure = state
+            .weather
+            .current
+            .as_ref()
+            .map(|current| current.conditions.surface_pressure_hectopascals * 100.0)
+            .unwrap_or(101_325.0);
+        let humidity_ratio = dew_point.and_then(|dew_point| {
+            let vapor = saturation_vapor_pressure_pascals(dew_point)?;
+            (vapor < pressure).then_some(0.621_945 * vapor / (pressure - vapor))
         });
-    let other_cooling = state
-        .thermostats
-        .iter()
-        .enumerate()
-        .any(|(index, thermostat)| {
-            index != room.thermostat_index
-                && thermostat.activity == BuildingHvacRoomActivityV1::Cooling
-        });
-    let features = BuildingHvacMachineLearningFeaturesV1 {
-        room_temperature_celsius: room_temperature,
-        room_relative_humidity_percent: room.state.relative_humidity_percent,
-        outdoor_temperature_celsius: outdoor_temperature(state, now),
-        outdoor_humidity_ratio_kilograms_per_kilogram: analytics
-            .map(|value| value.humidity_ratio_kilograms_water_per_kilogram_dry_air),
-        outdoor_wind_speed_meters_per_second: current
-            .map(|value| value.conditions.wind_speed_meters_per_second),
-        global_horizontal_solar_irradiance_watts_per_square_meter: current.map(|value| {
-            value
-                .conditions
-                .global_horizontal_irradiance_watts_per_square_meter
+        builder.add(format!("{prefix}.dew_point_temperature_celsius"), dew_point);
+        builder.add(format!("{prefix}.humidity_ratio_kg_per_kg"), humidity_ratio);
+        builder.add(
+            format!("{prefix}.effective_heating_setpoint_celsius"),
+            room.state.effective_heating_setpoint_celsius,
+        );
+        builder.add(
+            format!("{prefix}.effective_cooling_setpoint_celsius"),
+            room.state.effective_cooling_setpoint_celsius,
+        );
+        builder.add(
+            format!("{prefix}.active_setpoint_delta_celsius"),
+            Some(active_thermostat_setpoint_delta_celsius(
+                room.state.activity,
+                room.state.effective_heating_setpoint_celsius,
+                room.state.effective_cooling_setpoint_celsius,
+                room.state.temperature_celsius.into_iter(),
+            )),
+        );
+        builder.add(
+            format!("{prefix}.heating_indicator"),
+            activity_indicator(room.state.activity, BuildingHvacRoomActivityV1::Heating),
+        );
+        builder.add(
+            format!("{prefix}.cooling_indicator"),
+            activity_indicator(room.state.activity, BuildingHvacRoomActivityV1::Cooling),
+        );
+        builder.add(
+            format!("{prefix}.fan_only_indicator"),
+            activity_indicator(room.state.activity, BuildingHvacRoomActivityV1::FanOnly),
+        );
+        builder.add(
+            format!("{prefix}.fresh_temperature_sensor_count"),
+            Some(f32::from(room.state.fresh_temperature_sensor_count)),
+        );
+        builder.add(
+            format!("{prefix}.configured_temperature_sensor_count"),
+            Some(f32::from(room.state.configured_temperature_sensor_count)),
+        );
+        builder.add(
+            format!("{prefix}.fresh_humidity_sensor_count"),
+            Some(f32::from(room.state.fresh_humidity_sensor_count)),
+        );
+        builder.add(
+            format!("{prefix}.configured_humidity_sensor_count"),
+            Some(f32::from(room.state.configured_humidity_sensor_count)),
+        );
+        builder.add(
+            format!("{prefix}.control_revision"),
+            Some(room.control_revision.min(16_777_216) as f32),
+        );
+        if let Some(statistics) = &room.statistics {
+            let duration = statistics.ends_before.saturating_sub(statistics.starts_at) as f32;
+            builder.add(
+                format!("{prefix}.statistics_heating_runtime_fraction"),
+                (duration > 0.0).then_some(statistics.heating_active_seconds as f32 / duration),
+            );
+            builder.add(
+                format!("{prefix}.statistics_cooling_runtime_fraction"),
+                (duration > 0.0).then_some(statistics.cooling_active_seconds as f32 / duration),
+            );
+            builder.add(
+                format!("{prefix}.statistics_fan_runtime_fraction"),
+                (duration > 0.0).then_some(statistics.fan_only_active_seconds as f32 / duration),
+            );
+        } else {
+            builder.add(
+                format!("{prefix}.statistics_heating_runtime_fraction"),
+                None,
+            );
+            builder.add(
+                format!("{prefix}.statistics_cooling_runtime_fraction"),
+                None,
+            );
+            builder.add(format!("{prefix}.statistics_fan_runtime_fraction"), None);
+        }
+        for (label, seconds) in [
+            ("5m", 5 * 60),
+            ("15m", 15 * 60),
+            ("30m", 30 * 60),
+            ("60m", 60 * 60),
+            ("120m", 120 * 60),
+        ] {
+            let at = now.saturating_sub(seconds);
+            let previous = room_observation_at(state, endpoint, at);
+            let persisted = room.recent_conditions.iter().rev().find(|period| {
+                period.starts_at <= at
+                    && at
+                        < period
+                            .starts_at
+                            .saturating_add(u64::from(period.duration_seconds))
+            });
+            let previous_temperature = previous
+                .and_then(|value| value.temperature_celsius)
+                .or_else(|| persisted.and_then(|value| value.temperature_celsius));
+            let previous_humidity = previous
+                .and_then(|value| value.relative_humidity_percent)
+                .or_else(|| persisted.and_then(|value| value.relative_humidity_percent));
+            builder.add(
+                format!("{prefix}.temperature_celsius_lag_{label}"),
+                previous_temperature,
+            );
+            if seconds <= 60 * 60 {
+                builder.add(
+                    format!("{prefix}.temperature_slope_celsius_per_hour_{label}"),
+                    temperature
+                        .zip(previous_temperature)
+                        .map(|(current, previous)| (current - previous) * 3_600.0 / seconds as f32),
+                );
+            }
+            if matches!(seconds, 15 * 60 | 60 * 60) {
+                builder.add(
+                    format!("{prefix}.relative_humidity_slope_percent_per_hour_{label}"),
+                    humidity
+                        .zip(previous_humidity)
+                        .map(|(current, previous)| (current - previous) * 3_600.0 / seconds as f32),
+                );
+            }
+            if matches!(seconds, 15 * 60 | 60 * 60) {
+                builder.add(
+                    format!("{prefix}.heating_setpoint_change_celsius_{label}"),
+                    room.state
+                        .effective_heating_setpoint_celsius
+                        .zip(
+                            previous
+                                .and_then(|value| value.effective_heating_setpoint_celsius)
+                                .or_else(|| {
+                                    persisted
+                                        .and_then(|value| value.effective_heating_setpoint_celsius)
+                                }),
+                        )
+                        .map(|(current, previous)| current - previous),
+                );
+                builder.add(
+                    format!("{prefix}.cooling_setpoint_change_celsius_{label}"),
+                    room.state
+                        .effective_cooling_setpoint_celsius
+                        .zip(
+                            previous
+                                .and_then(|value| value.effective_cooling_setpoint_celsius)
+                                .or_else(|| {
+                                    persisted
+                                        .and_then(|value| value.effective_cooling_setpoint_celsius)
+                                }),
+                        )
+                        .map(|(current, previous)| current - previous),
+                );
+            }
+        }
+        builder.add(format!("{prefix}.occupancy_state_normalized"), None);
+        builder.add(format!("{prefix}.occupancy_fraction_15m"), None);
+        builder.add(format!("{prefix}.occupancy_fraction_60m"), None);
+        builder.add(format!("{prefix}.occupant_count"), None);
+        builder.add(format!("{prefix}.window_open_fraction_15m"), None);
+        builder.add(format!("{prefix}.window_open_fraction_60m"), None);
+        builder.add(format!("{prefix}.override_active_indicator"), None);
+        builder.add(format!("{prefix}.override_remaining_seconds"), None);
+        builder.add(
+            format!("{prefix}.comfort_or_savings_normalized"),
+            Some(room.control.comfort_or_savings_normalized),
+        );
+        builder.add(
+            format!("{prefix}.recent_delivered_heating_kilowatt_hours_thermal"),
+            None,
+        );
+        builder.add(
+            format!("{prefix}.recent_delivered_cooling_kilowatt_hours_thermal"),
+            None,
+        );
+        add_room_air_measurements(&mut builder, &prefix, room, now);
+    }
+
+    let target_prefix = "target";
+    builder.add(
+        format!("{target_prefix}.temperature_celsius"),
+        Some(target_temperature),
+    );
+    builder.add(
+        format!("{target_prefix}.preferred_heating_temperature_celsius"),
+        Some(target_room.control.preferred_heating_temperature_celsius),
+    );
+    builder.add(
+        format!("{target_prefix}.preferred_cooling_temperature_celsius"),
+        Some(target_room.control.preferred_cooling_temperature_celsius),
+    );
+    builder.add(
+        format!("{target_prefix}.comfort_or_savings_normalized"),
+        Some(target_room.control.comfort_or_savings_normalized),
+    );
+    builder.add(
+        format!("{target_prefix}.requested_mode_signed"),
+        Some(match target_room.control.operating_preference {
+            BuildingHvacRoomOperatingPreferenceV1::Heat => 1.0,
+            BuildingHvacRoomOperatingPreferenceV1::Cool => -1.0,
+            BuildingHvacRoomOperatingPreferenceV1::Auto
+            | BuildingHvacRoomOperatingPreferenceV1::Off => 0.0,
         }),
-        hour_of_day_sine: hour_sin,
-        hour_of_day_cosine: hour_cos,
-        day_of_year_sine: day_sin,
-        day_of_year_cosine: day_cos,
-        own_heating_runtime_fraction: (own_activity == BuildingHvacRoomActivityV1::Heating) as u8
-            as f32,
-        own_cooling_runtime_fraction: (own_activity == BuildingHvacRoomActivityV1::Cooling) as u8
-            as f32,
-        other_zone_heating_runtime_fraction: other_heating as u8 as f32,
-        other_zone_cooling_runtime_fraction: other_cooling as u8 as f32,
-        heating_setpoint_offset_celsius: room
-            .state
-            .effective_heating_setpoint_celsius
-            .map(|value| value - room_temperature),
-        cooling_setpoint_offset_celsius: room
-            .state
-            .effective_cooling_setpoint_celsius
-            .map(|value| value - room_temperature),
-    };
-    features.is_well_formed().then_some(features)
+    );
+    for (name, preference) in [
+        ("auto", BuildingHvacRoomOperatingPreferenceV1::Auto),
+        ("heat", BuildingHvacRoomOperatingPreferenceV1::Heat),
+        ("cool", BuildingHvacRoomOperatingPreferenceV1::Cool),
+        ("off", BuildingHvacRoomOperatingPreferenceV1::Off),
+    ] {
+        builder.add(
+            format!("{target_prefix}.requested_mode_{name}_indicator"),
+            Some(binary_indicator(
+                target_room.control.operating_preference == preference,
+            )),
+        );
+    }
+    builder.add(format!("{target_prefix}.override_active_indicator"), None);
+    builder.add(format!("{target_prefix}.override_remaining_seconds"), None);
+    builder.add(
+        format!("{target_prefix}.below_heating_comfort_degree_minutes_celsius"),
+        target_room
+            .statistics
+            .as_ref()
+            .map(|value| value.below_heating_comfort_degree_minutes_celsius),
+    );
+    builder.add(
+        format!("{target_prefix}.above_cooling_comfort_degree_minutes_celsius"),
+        target_room
+            .statistics
+            .as_ref()
+            .map(|value| value.above_cooling_comfort_degree_minutes_celsius),
+    );
+    for (label, seconds) in [("15m", 15 * 60), ("30m", 30 * 60), ("60m", 60 * 60)] {
+        let thermostat = state.thermostats[target_room.thermostat_index]
+            .configuration
+            .thermostat;
+        let (heating, cooling, _, _, _) =
+            thermostat_window_statistics(state, thermostat, now, seconds);
+        builder.add(
+            format!("{target_prefix}.recent_delivered_heating_runtime_hours_{label}"),
+            heating.map(|fraction| fraction * seconds as f32 / 3_600.0),
+        );
+        builder.add(
+            format!("{target_prefix}.recent_delivered_cooling_runtime_hours_{label}"),
+            cooling.map(|fraction| fraction * seconds as f32 / 3_600.0),
+        );
+    }
+    for (label, horizon) in [
+        (
+            "15m",
+            BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+        ),
+        ("30m", BuildingHvacThermalPredictionHorizonV1::ThirtyMinutes),
+        ("60m", BuildingHvacThermalPredictionHorizonV1::SixtyMinutes),
+    ] {
+        builder.add(
+            format!("{target_prefix}.predicted_temperature_change_celsius_{label}"),
+            target_room
+                .machine_learning
+                .predictions
+                .iter()
+                .find(|prediction| prediction.horizon == horizon)
+                .map(|prediction| prediction.temperature_change_celsius),
+        );
+    }
+    for (label, horizon) in [
+        (
+            "15m",
+            BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+        ),
+        ("30m", BuildingHvacThermalPredictionHorizonV1::ThirtyMinutes),
+        ("60m", BuildingHvacThermalPredictionHorizonV1::SixtyMinutes),
+    ] {
+        builder.add(
+            format!("{target_prefix}.prediction_residual_celsius_{label}"),
+            target_room
+                .prediction_residuals
+                .iter()
+                .rev()
+                .find(|residual| residual.horizon == horizon)
+                .map(|residual| residual.residual_celsius),
+        );
+        let residuals: Vec<_> = target_room
+            .prediction_residuals
+            .iter()
+            .filter(|residual| residual.horizon == horizon)
+            .map(|residual| residual.residual_celsius.abs())
+            .collect();
+        builder.add(
+            format!("{target_prefix}.prediction_rolling_mae_celsius_24h_{label}"),
+            (!residuals.is_empty()).then(|| {
+                residuals.iter().copied().map(f64::from).sum::<f64>() as f32
+                    / residuals.len() as f32
+            }),
+        );
+    }
+    let planned = target_room
+        .plan
+        .as_ref()
+        .and_then(|plan| plan.periods.first());
+    builder.add(
+        format!("{target_prefix}.planned_heating_setpoint_celsius"),
+        planned.and_then(|period| period.heating_setpoint_celsius),
+    );
+    builder.add(
+        format!("{target_prefix}.planned_cooling_setpoint_celsius"),
+        planned.and_then(|period| period.cooling_setpoint_celsius),
+    );
+    builder.add(
+        format!("{target_prefix}.previous_activity_signed"),
+        room_observation_at(state, target_endpoint, now.saturating_sub(60))
+            .and_then(|room| activity_value(room.activity)),
+    );
+
+    add_weather_features(&mut builder, state, now);
+    builder.add(
+        "weather.local_outdoor_temperature_celsius",
+        state
+            .local_outdoor
+            .as_ref()
+            .and_then(|outdoor| outdoor.temperature)
+            .filter(|reading| reading.observed_at <= now && reading.valid_until > now)
+            .map(|reading| reading.temperature_celsius),
+    );
+
+    for name in [
+        "current_price_per_kilowatt_hour",
+        "forecast_price_plus_15m_per_kilowatt_hour",
+        "forecast_price_plus_30m_per_kilowatt_hour",
+        "forecast_price_plus_60m_per_kilowatt_hour",
+        "forecast_price_plus_2h_per_kilowatt_hour",
+        "forecast_price_plus_3h_per_kilowatt_hour",
+        "forecast_price_plus_6h_per_kilowatt_hour",
+        "forecast_price_plus_12h_per_kilowatt_hour",
+        "forecast_price_plus_24h_per_kilowatt_hour",
+        "minimum_price_next_6h_per_kilowatt_hour",
+        "maximum_price_next_6h_per_kilowatt_hour",
+        "minimum_price_next_24h_per_kilowatt_hour",
+        "maximum_price_next_24h_per_kilowatt_hour",
+        "current_carbon_intensity_kilograms_per_kilowatt_hour",
+        "forecast_carbon_intensity_plus_60m_kilograms_per_kilowatt_hour",
+        "forecast_carbon_intensity_plus_6h_kilograms_per_kilowatt_hour",
+        "demand_response_active_indicator",
+        "seconds_to_demand_response_transition",
+        "building_electric_demand_kilowatts",
+        "building_electric_demand_mean_15m_kilowatts",
+        "building_electric_demand_mean_60m_kilowatts",
+        "building_peak_window_demand_kilowatts",
+    ] {
+        builder.add(format!("utility.{name}"), None);
+    }
+
+    for measurement in [
+        "supply_air_temperature_celsius",
+        "return_air_temperature_celsius",
+        "mixed_air_temperature_celsius",
+        "supply_airflow_cubic_meters_per_second",
+        "outdoor_airflow_cubic_meters_per_second",
+        "supply_fan_speed_normalized",
+        "return_fan_speed_normalized",
+        "duct_static_pressure_pascals",
+        "duct_static_pressure_setpoint_pascals",
+        "outdoor_air_damper_position_normalized",
+        "return_air_damper_position_normalized",
+        "zone_damper_mean_position_normalized",
+        "heating_valve_position_normalized",
+        "cooling_valve_position_normalized",
+        "compressor_capacity_normalized",
+        "heating_stage",
+        "cooling_stage",
+        "supply_water_temperature_celsius",
+        "return_water_temperature_celsius",
+        "pump_speed_normalized",
+        "electric_power_kilowatts",
+        "electric_energy_kilowatt_hours",
+        "gas_power_kilowatts",
+        "gas_energy_kilowatt_hours",
+        "delivered_heating_power_kilowatts_thermal",
+        "delivered_cooling_power_kilowatts_thermal",
+        "coefficient_of_performance",
+        "active_fault_count",
+    ] {
+        builder.add(format!("equipment.central.current.{measurement}"), None);
+        builder.add(format!("equipment.central.mean_15m.{measurement}"), None);
+        builder.add(format!("equipment.central.mean_60m.{measurement}"), None);
+        builder.add(format!("equipment.central.change_15m.{measurement}"), None);
+    }
+
+    for input in &state.external_features.inputs {
+        if input.observed_at <= now
+            && input.valid_until > now
+            && input.is_well_formed()
+            && let Some(feature) = builder
+                .values
+                .iter_mut()
+                .find(|feature| feature.name == input.feature_name)
+            && feature.value.is_none()
+        {
+            feature.value = Some(input.value);
+        }
+    }
+    for suffix in ["override_active_indicator", "override_remaining_seconds"] {
+        let room_feature_name = format!("room.{target_endpoint}.{suffix}");
+        let target_feature_name = format!("target.{suffix}");
+        let value = builder
+            .values
+            .iter()
+            .find(|feature| feature.name == room_feature_name)
+            .and_then(|feature| feature.value);
+        if let Some(target) = builder
+            .values
+            .iter_mut()
+            .find(|feature| feature.name == target_feature_name)
+        {
+            target.value = value;
+        }
+    }
+
+    builder.finish()
 }
 
 fn update_machine_learning_samples(
@@ -2716,8 +4466,22 @@ fn update_machine_learning_samples(
         let Some(features) = machine_learning_features(state, room_index, now) else {
             continue;
         };
-        let current_temperature = features.room_temperature_celsius;
+        let Some(current_temperature) = features.value("target.temperature_celsius") else {
+            continue;
+        };
         let endpoint = state.rooms[room_index].configuration.control_endpoint;
+        let predictions = |horizon| {
+            state.rooms[room_index]
+                .machine_learning
+                .predictions
+                .iter()
+                .find(|prediction| prediction.horizon == horizon)
+                .map(|prediction| prediction.temperature_change_celsius)
+        };
+        let predicted_15 = predictions(BuildingHvacThermalPredictionHorizonV1::FifteenMinutes);
+        let predicted_30 = predictions(BuildingHvacThermalPredictionHorizonV1::ThirtyMinutes);
+        let predicted_60 = predictions(BuildingHvacThermalPredictionHorizonV1::SixtyMinutes);
+        let mut residuals = Vec::new();
         for pending in &mut state.rooms[room_index].pending_features {
             let elapsed = now.saturating_sub(pending.observed_at);
             let change = (current_temperature - pending.temperature_celsius).clamp(
@@ -2727,21 +4491,48 @@ fn update_machine_learning_samples(
             let mut sample = BuildingHvacMachineLearningSampleV1 {
                 observed_at: pending.observed_at,
                 room_endpoint: endpoint,
-                features: pending.features,
+                features: pending.features.clone(),
                 temperature_change_15_minutes_celsius: None,
                 temperature_change_30_minutes_celsius: None,
                 temperature_change_60_minutes_celsius: None,
             };
             if elapsed >= 15 * 60 && !pending.persisted_15 {
-                sample.temperature_change_15_minutes_celsius = Some(change);
+                if elapsed <= 15 * 60 + ML_TARGET_MAXIMUM_DELAY_SECONDS {
+                    sample.temperature_change_15_minutes_celsius = Some(change);
+                    if let Some(predicted) = pending.predicted_change_15_minutes_celsius {
+                        residuals.push(PredictionResidualObservation {
+                            observed_at: now,
+                            horizon: BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
+                            residual_celsius: change - predicted,
+                        });
+                    }
+                }
                 pending.persisted_15 = true;
             }
             if elapsed >= 30 * 60 && !pending.persisted_30 {
-                sample.temperature_change_30_minutes_celsius = Some(change);
+                if elapsed <= 30 * 60 + ML_TARGET_MAXIMUM_DELAY_SECONDS {
+                    sample.temperature_change_30_minutes_celsius = Some(change);
+                    if let Some(predicted) = pending.predicted_change_30_minutes_celsius {
+                        residuals.push(PredictionResidualObservation {
+                            observed_at: now,
+                            horizon: BuildingHvacThermalPredictionHorizonV1::ThirtyMinutes,
+                            residual_celsius: change - predicted,
+                        });
+                    }
+                }
                 pending.persisted_30 = true;
             }
             if elapsed >= 60 * 60 && !pending.persisted_60 {
-                sample.temperature_change_60_minutes_celsius = Some(change);
+                if elapsed <= 60 * 60 + ML_TARGET_MAXIMUM_DELAY_SECONDS {
+                    sample.temperature_change_60_minutes_celsius = Some(change);
+                    if let Some(predicted) = pending.predicted_change_60_minutes_celsius {
+                        residuals.push(PredictionResidualObservation {
+                            observed_at: now,
+                            horizon: BuildingHvacThermalPredictionHorizonV1::SixtyMinutes,
+                            residual_celsius: change - predicted,
+                        });
+                    }
+                }
                 pending.persisted_60 = true;
             }
             if sample.is_well_formed() {
@@ -2752,11 +4543,21 @@ fn update_machine_learning_samples(
             .pending_features
             .retain(|pending| !pending.persisted_60);
         state.rooms[room_index]
+            .prediction_residuals
+            .extend(residuals);
+        let oldest_residual = now.saturating_sub(24 * 60 * 60);
+        state.rooms[room_index]
+            .prediction_residuals
+            .retain(|residual| residual.observed_at >= oldest_residual);
+        state.rooms[room_index]
             .pending_features
             .push(PendingFeatures {
                 observed_at: now,
                 temperature_celsius: current_temperature,
-                features,
+                features: features.compact(),
+                predicted_change_15_minutes_celsius: predicted_15,
+                predicted_change_30_minutes_celsius: predicted_30,
+                predicted_change_60_minutes_celsius: predicted_60,
                 persisted_15: false,
                 persisted_30: false,
                 persisted_60: false,
@@ -2834,24 +4635,16 @@ fn queue_training(
     client: &BuildingHvacMachineLearningClient,
     endpoint: LibertasEndpoint,
     now: LibertasDateTime,
-) {
-    let samples = BuildingHvacMachineLearningHistory::load_recent_samples(
-        endpoint,
-        now,
-        BUILDING_HVAC_ML_MAXIMUM_TRAINING_SAMPLES_PER_ROOM,
-    );
+    feature_names: &[String],
+) -> bool {
+    let samples =
+        BuildingHvacMachineLearningHistory::load_training_samples(endpoint, now, feature_names);
     if samples.len() < BUILDING_HVAC_ML_MINIMUM_TRAINING_SAMPLES {
-        return;
+        return true;
     }
-    for horizon in [
-        BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
-        BuildingHvacThermalPredictionHorizonV1::ThirtyMinutes,
-        BuildingHvacThermalPredictionHorizonV1::SixtyMinutes,
-    ] {
-        if client.try_train(horizon, now, samples.clone()).is_err() {
-            break;
-        }
-    }
+    client
+        .try_train_all(now, feature_names.to_vec(), samples)
+        .is_ok()
 }
 
 fn evaluate_and_publish(shared: &Rc<RefCell<ControllerState>>) {
@@ -2894,6 +4687,7 @@ fn evaluate_and_publish(shared: &Rc<RefCell<ControllerState>>) {
                 state.rooms[room_index].machine_learning.predictions.clear();
             }
         }
+        capture_feature_observation(&mut state, now);
         let persistence = append_condition_periods(&mut state, now);
         let recipients = state.recipients.clone();
         let weather = state.weather.clone();
@@ -2919,19 +4713,36 @@ fn evaluate_and_publish(shared: &Rc<RefCell<ControllerState>>) {
             }
         }
         let sample_boundary = now - now % CONDITION_PERIOD_SECONDS;
-        let samples = if state.last_ml_sample_boundary != Some(sample_boundary) {
-            let samples = update_machine_learning_samples(&mut state, now);
-            state.last_ml_sample_boundary = Some(sample_boundary);
-            samples
-        } else {
-            Vec::new()
+        let samples = match state.last_ml_sample_boundary {
+            None => {
+                // Establish the cadence without labeling a startup observation
+                // against a shorter first interval.
+                state.last_ml_sample_boundary = Some(sample_boundary);
+                Vec::new()
+            }
+            Some(previous) if previous != sample_boundary => {
+                let samples = update_machine_learning_samples(&mut state, now);
+                state.last_ml_sample_boundary = Some(sample_boundary);
+                samples
+            }
+            Some(_) => Vec::new(),
         };
         let prediction_minute = now - now % 60;
         if state.last_prediction_minute != Some(prediction_minute) {
             request_predictions(&mut state, now);
             state.last_prediction_minute = Some(prediction_minute);
         }
-        let training = select_training_room(&mut state, now);
+        let training = (!state.machine_learning_client.training_pending())
+            .then(|| select_training_room(&mut state, now))
+            .flatten()
+            .and_then(|endpoint| {
+                let room_index = state
+                    .rooms
+                    .iter()
+                    .position(|room| room.configuration.control_endpoint == endpoint)?;
+                machine_learning_features(&state, room_index, now)
+                    .map(|features| (endpoint, features.feature_names()))
+            });
         let client = state.machine_learning_client.clone();
         (
             persistence,
@@ -2958,8 +4769,15 @@ fn evaluate_and_publish(shared: &Rc<RefCell<ControllerState>>) {
             libertas_log(LogLevel::Warn, "Could not persist an HVAC learning sample");
         }
     }
-    if let Some(endpoint) = training {
-        queue_training(&client, endpoint, now);
+    if let Some((endpoint, feature_names)) = training
+        && !queue_training(&client, endpoint, now, &feature_names)
+        && let Some(room) = shared
+            .borrow_mut()
+            .rooms
+            .iter_mut()
+            .find(|room| room.configuration.control_endpoint == endpoint)
+    {
+        room.last_training_at = None;
     }
     apply_thermostat_decisions(shared);
     report_changed_rooms(shared);
@@ -3074,6 +4892,17 @@ fn weather_retry_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
     libertas_timer_update_interval(timer, absolute_ticks(now_ticks, WEATHER_RETRY_SECONDS));
 }
 
+fn external_feature_retry_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
+    let shared = context
+        .downcast_mut::<Rc<RefCell<ControllerState>>>()
+        .expect("invalid smart building HVAC external-feature timer context");
+    subscribe_external_features(shared);
+    libertas_timer_update_interval(
+        timer,
+        absolute_ticks(now_ticks, EXTERNAL_FEATURE_RETRY_SECONDS),
+    );
+}
+
 fn evaluation_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
@@ -3146,6 +4975,7 @@ pub(super) fn start(
     machine_learning_results: Receiver<BuildingHvacMachineLearningResult>,
     model_sets: Vec<BuildingHvacMachineLearningModelSetV1>,
     active_models: Vec<BuildingHvacMachineLearningModelV1>,
+    external_feature_client: Option<BuildingHvacExternalFeatureClientV1>,
 ) {
     let thermostats: Vec<_> = building
         .thermostats
@@ -3192,6 +5022,7 @@ pub(super) fn start(
             last_report: None,
             last_condition_boundary: None,
             pending_features: Vec::new(),
+            prediction_residuals: Vec::new(),
             last_training_at: None,
         });
     }
@@ -3204,6 +5035,10 @@ pub(super) fn start(
         weather_stream_ready: false,
         weather_maximum_wait_seconds: BUILDING_HVAC_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
         weather_retry_timer: 0,
+        external_feature_endpoint: external_feature_client.map(|client| client.endpoint),
+        external_features: restore_external_features(),
+        external_feature_maximum_wait_seconds: EXTERNAL_FEATURE_RETRY_SECONDS,
+        external_feature_retry_timer: 0,
         local_outdoor: restore_local_outdoor(outdoor_configuration),
         thermostats,
         rooms,
@@ -3216,6 +5051,7 @@ pub(super) fn start(
         next_training_room: 0,
         last_ml_sample_boundary: None,
         last_prediction_minute: None,
+        feature_history: Vec::new(),
         outdoor_configuration,
     }));
 
@@ -3238,6 +5074,13 @@ pub(super) fn start(
         handle_weather_endpoint,
         Box::new(Rc::clone(&shared)),
     );
+    if let Some(client) = external_feature_client {
+        libertas_register_endpoint_status_listener::<BuildingHvacExternalFeatureProtocolV1, _>(
+            client.endpoint,
+            handle_external_feature_endpoint,
+            Box::new(Rc::clone(&shared)),
+        );
+    }
     libertas_register_wakeup_callback(handle_wakeup, Box::new(Rc::clone(&shared)));
     libertas_register_shutdown_handler(
         handle_shutdown,
@@ -3257,6 +5100,14 @@ pub(super) fn start(
     let weather_timer =
         libertas_timer_new_interval(0, weather_retry_timer, Box::new(Rc::clone(&shared)));
     shared.borrow_mut().weather_retry_timer = weather_timer;
+    if external_feature_client.is_some() {
+        let external_feature_timer = libertas_timer_new_interval(
+            0,
+            external_feature_retry_timer,
+            Box::new(Rc::clone(&shared)),
+        );
+        shared.borrow_mut().external_feature_retry_timer = external_feature_timer;
+    }
     let now_ticks = libertas_get_sys_ticks();
     libertas_timer_new_interval(
         absolute_ticks(now_ticks, EVALUATION_INTERVAL_SECONDS),
@@ -3265,6 +5116,7 @@ pub(super) fn start(
     );
     request_matter_subscriptions(&shared, outdoor_configuration);
     subscribe_weather(&shared);
+    subscribe_external_features(&shared);
     evaluate_and_publish(&shared);
 }
 
@@ -3283,6 +5135,8 @@ mod tests {
             wind_direction_degrees: 180,
             precipitation_millimeters: 0.0,
             precipitation_kind: BuildingHvacPrecipitationKindV1::None,
+            solar_elevation_degrees: 35.0,
+            solar_azimuth_degrees: 190.0,
             global_horizontal_irradiance_watts_per_square_meter: 500.0,
             direct_normal_irradiance_watts_per_square_meter: 600.0,
             diffuse_horizontal_irradiance_watts_per_square_meter: 100.0,
@@ -3294,6 +5148,92 @@ mod tests {
         assert_eq!(raw_setpoint(20.125), Some(2013));
         assert_eq!(setpoint_celsius(2013), 20.13);
         assert_eq!(raw_setpoint(f32::NAN), None);
+    }
+
+    #[test]
+    fn active_setpoint_delta_preserves_demand_direction_and_magnitude() {
+        assert_eq!(
+            active_thermostat_setpoint_delta_celsius(
+                BuildingHvacRoomActivityV1::Heating,
+                Some(21.0),
+                Some(24.0),
+                [20.0, 18.5].into_iter(),
+            ),
+            2.5
+        );
+        assert_eq!(
+            active_thermostat_setpoint_delta_celsius(
+                BuildingHvacRoomActivityV1::Cooling,
+                Some(21.0),
+                Some(24.0),
+                [25.0, 27.5].into_iter(),
+            ),
+            -3.5
+        );
+        for activity in [
+            BuildingHvacRoomActivityV1::Idle,
+            BuildingHvacRoomActivityV1::FanOnly,
+            BuildingHvacRoomActivityV1::Unknown,
+        ] {
+            assert_eq!(
+                active_thermostat_setpoint_delta_celsius(
+                    activity,
+                    Some(21.0),
+                    Some(24.0),
+                    [18.0, 28.0].into_iter(),
+                ),
+                0.0
+            );
+        }
+        assert_eq!(
+            active_thermostat_setpoint_delta_celsius(
+                BuildingHvacRoomActivityV1::Heating,
+                None,
+                Some(24.0),
+                [18.0].into_iter(),
+            ),
+            0.0
+        );
+    }
+
+    #[test]
+    fn solar_position_uses_elevation_and_cyclic_azimuth_features() {
+        let conditions = outdoor_conditions();
+        let mut builder = MachineLearningFeatureBuilder::new(1);
+        add_weather_conditions(&mut builder, "weather.test", Some(&conditions), None);
+        let features = builder.finish().expect("valid solar feature manifest");
+
+        assert_eq!(
+            features.value("weather.test.solar_elevation_degrees"),
+            Some(conditions.solar_elevation_degrees)
+        );
+        let radians = conditions.solar_azimuth_degrees.to_radians();
+        assert!(
+            (features.value("weather.test.solar_azimuth_sine").unwrap() - radians.sin()).abs()
+                < 0.000_001
+        );
+        assert!(
+            (features.value("weather.test.solar_azimuth_cosine").unwrap() - radians.cos()).abs()
+                < 0.000_001
+        );
+        assert!(
+            features
+                .value("weather.test.solar_azimuth_degrees")
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn day_of_year_uses_gregorian_day_and_365_25_cycle() {
+        assert_eq!(utc_day_of_year(1_704_067_200), 1);
+        assert_eq!(utc_day_of_year(1_709_164_800), 60);
+        assert_eq!(utc_day_of_year(1_735_603_200), 366);
+        assert_eq!(utc_day_of_year(1_735_689_600), 1);
+
+        let (_, _, sine, cosine) = cyclic_time(1_704_067_200);
+        let expected_angle = TAU / 365.25;
+        assert!((sine - expected_angle.sin()).abs() < 0.000_001);
+        assert!((cosine - expected_angle.cos()).abs() < 0.000_001);
     }
 
     #[test]
@@ -3351,6 +5291,12 @@ mod tests {
             }],
         };
         assert!(valid_current_weather(&current));
+        let mut invalid_solar = current.clone();
+        invalid_solar.conditions.solar_elevation_degrees = 91.0;
+        assert!(!valid_current_weather(&invalid_solar));
+        invalid_solar.conditions = outdoor_conditions();
+        invalid_solar.conditions.solar_azimuth_degrees = f32::NAN;
+        assert!(!valid_current_weather(&invalid_solar));
         assert!(!valid_weather_forecast(&invalid_forecast));
         assert!(!valid_weather_snapshot(&BuildingHvacWeatherSnapshotV1 {
             history: None,

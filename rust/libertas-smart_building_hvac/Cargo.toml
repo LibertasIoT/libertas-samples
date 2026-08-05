@@ -12,6 +12,7 @@ libertas-weather = { path = "../libertas-weather", package = "libertas-weather" 
 sha2 = "0.10"
 
 [target.'cfg(target_os = "linux")'.dependencies]
+rustix = { version = "1.1.4", features = ["process"] }
 xgb = { version = "3.0.5", default-features = false, features = ["local_build"] }
 
 [patch.crates-io]

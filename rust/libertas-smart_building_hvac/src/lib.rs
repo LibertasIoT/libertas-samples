@@ -1,9 +1,10 @@
 //! Libertas Smart Building HVAC
 //! Configures rooms, their Matter thermostats and environmental sensors, and a
-//! building-HVAC weather client. Every room exposes a Libertas endpoint that
-//! separates writable comfort intent from read-only observed state, statistics,
-//! and the controller's calculated schedule. The Hub build uses `std` and
-//! statically links a bounded CPU-only XGBoost thermal-prediction worker.
+//! building-HVAC weather client with an optional operational-feature client.
+//! Every room exposes a Libertas endpoint that separates writable comfort
+//! intent from read-only observed state, statistics, and the controller's
+//! calculated schedule. The Hub build uses `std` and statically links a bounded
+//! CPU-only XGBoost thermal-prediction worker.
 #![forbid(unsafe_code)]
 
 extern crate alloc;
@@ -198,7 +199,7 @@ pub const BUILDING_HVAC_EXCESSIVE_HEAT_RECOVERY_TEMPERATURE_CELSIUS: f32 = 32.0;
 /// `UnitUnsigned("duration-seconds")`; not-recovering resources receive room,
 /// duration, and temperature in that order. Recovery receives room,
 /// condition-name `ResourceText`, and current temperature.
-pub static APP_STRINGS: [(&str, &str); 32] = [
+pub static APP_STRINGS: [(&str, &str); 33] = [
     (
         "HVAC_ROOM_STATUS",
         "Room status: %1$s. HVAC: %2$s. Air quality: %3$s.",
@@ -317,6 +318,10 @@ pub static APP_STRINGS: [(&str, &str); 32] = [
     (
         "HVAC_OUTDOOR_AIR_QUALITY",
         "Modeled outdoor air quality for this building.",
+    ),
+    (
+        "HVAC_EXTERNAL_FEATURE_INPUTS",
+        "Optional building HVAC utility, equipment, occupancy, calendar, and metering inputs.",
     ),
 ];
 
@@ -1810,6 +1815,174 @@ pub struct BuildingHvacWeatherClientV1 {
     pub endpoint: LibertasEndpoint,
 }
 
+/// Maximum external feature inputs
+/// Bounds the optional operational-data snapshot used to populate features
+/// that standard Matter thermostats, room sensors, and weather cannot supply.
+pub const BUILDING_HVAC_MAX_EXTERNAL_FEATURE_INPUTS: usize = 2_048;
+
+/// External feature input V1
+/// Supplies one time-bounded numeric value for an existing machine-learning
+/// column. The input cannot add a new model column or override a value observed
+/// directly by this controller. It is intended for utility schedules, central
+/// equipment telemetry, occupancy and window state, local calendar context,
+/// thermostat PI demand, delivered thermal energy, and metered building energy.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+pub struct BuildingHvacExternalFeatureInputV1 {
+    /// Feature name
+    /// Exact stable name from the controller's machine-learning manifest, such
+    /// as `utility.current_price_per_kilowatt_hour` or
+    /// `equipment.central.current.electric_power_kilowatts`. Unknown names are
+    /// rejected rather than silently creating a different model shape.
+    #[libertas_size(min = 1, max = 192)]
+    pub feature_name: String,
+    /// Observed at
+    /// UTC timestamp represented by this value.
+    pub observed_at: LibertasDateTime,
+    /// Valid until
+    /// Exclusive UTC freshness deadline. Expired values remain persistently
+    /// recoverable but are passed to XGBoost as missing.
+    pub valid_until: LibertasDateTime,
+    /// Value
+    /// Finite value in the unit stated by `feature_name`. A semantic zero must
+    /// be sent as zero; omit an unavailable feature from the snapshot.
+    pub value: f32,
+}
+
+impl BuildingHvacExternalFeatureInputV1 {
+    /// Well-formed external input
+    /// Requires the same bounded lowercase feature-name grammar used by model
+    /// manifests, a forward freshness interval, and a finite numeric value.
+    pub fn is_well_formed(&self) -> bool {
+        !self.feature_name.is_empty()
+            && self.feature_name.len() <= BUILDING_HVAC_ML_MAXIMUM_FEATURE_NAME_BYTES
+            && self.feature_name.bytes().all(|byte| {
+                byte.is_ascii_lowercase()
+                    || byte.is_ascii_digit()
+                    || matches!(byte, b'.' | b'_' | b'-')
+            })
+            && self.valid_until > self.observed_at
+            && self.value.is_finite()
+    }
+}
+
+/// External feature snapshot V1
+/// Carries the complete currently known optional operational inputs. Values are
+/// sorted by feature name. `retrieved_at` advances for a changed replacement;
+/// an unchanged heartbeat repeats the complete prior snapshot. Provider
+/// failures, older reports, and conflicting reports with the same timestamp
+/// leave the controller's last valid independently persisted snapshot
+/// unchanged.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+pub struct BuildingHvacExternalFeatureSnapshotV1 {
+    /// Retrieved at
+    /// UTC time when the provider assembled and validated this complete
+    /// replacement snapshot. A changed replacement must use a newer value.
+    pub retrieved_at: LibertasDateTime,
+    /// Inputs
+    /// Complete sorted set of optional numeric inputs.
+    /// ----
+    /// External feature input
+    /// One time-bounded value for an existing machine-learning column.
+    #[libertas_size(max = 2048)]
+    pub inputs: Vec<BuildingHvacExternalFeatureInputV1>,
+}
+
+impl BuildingHvacExternalFeatureSnapshotV1 {
+    /// Well-formed external feature snapshot
+    /// Rejects invalid values, duplicates, and unordered names.
+    pub fn is_well_formed(&self) -> bool {
+        self.inputs.len() <= BUILDING_HVAC_MAX_EXTERNAL_FEATURE_INPUTS
+            && self
+                .inputs
+                .iter()
+                .all(|input| input.is_well_formed() && input.observed_at <= self.retrieved_at)
+            && self
+                .inputs
+                .windows(2)
+                .all(|pair| pair[0].feature_name < pair[1].feature_name)
+    }
+}
+
+/// External feature input error V1
+/// Explains why the optional operational-data stream cannot currently provide
+/// a complete snapshot.
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
+)]
+pub enum BuildingHvacExternalFeatureInputErrorV1 {
+    /// Temporarily unavailable
+    /// The provider cannot currently query its upstream utility, equipment, or
+    /// building-management source.
+    TemporarilyUnavailable,
+    /// Invalid source data
+    /// The upstream response could not be validated without guessing.
+    InvalidSourceData,
+}
+
+/// Building HVAC external-feature protocol V1
+/// Defines a full-snapshot one-shot and subscription contract for optional
+/// utility, equipment, occupancy, calendar, and metering inputs. The endpoint
+/// operation distinguishes a one-shot read from a subscription.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+pub enum BuildingHvacExternalFeatureProtocolV1 {
+    /// Get external features V1
+    /// Reads the current snapshot or starts a subscription.
+    #[libertas_request]
+    #[libertas_subscription_request]
+    #[libertas_next_response("ExternalFeaturesV1,ExternalFeaturesErrorV1")]
+    GetExternalFeaturesV1,
+    /// External features V1
+    /// Correlated complete snapshot response. Subscription clients restart
+    /// their timeout after this response and every later update.
+    #[libertas_response]
+    ExternalFeaturesV1 {
+        /// Maximum wait interval
+        /// Nonzero maximum seconds before a subscription client retries
+        /// `GetExternalFeaturesV1` after silence.
+        #[libertas_time_interval]
+        #[libertas_number(min = 1)]
+        maximum_wait_interval_seconds: u32,
+        /// Snapshot
+        /// Complete current optional-input replacement.
+        snapshot: BuildingHvacExternalFeatureSnapshotV1,
+    },
+    /// External feature update V1
+    /// Complete replacement reported to subscribers after any accepted change
+    /// or as an unchanged heartbeat before the maximum wait interval.
+    #[libertas_subscription_data]
+    ExternalFeatureUpdateV1 {
+        /// Snapshot
+        /// Complete current optional-input replacement.
+        snapshot: BuildingHvacExternalFeatureSnapshotV1,
+    },
+    /// External feature error V1
+    /// Correlated typed error. The previous persistent snapshot remains intact.
+    #[libertas_response]
+    ExternalFeaturesErrorV1 {
+        /// Error
+        /// Provider or validation failure.
+        error: BuildingHvacExternalFeatureInputErrorV1,
+        /// Retry after
+        /// Nonzero delay before retrying.
+        #[libertas_time_interval]
+        #[libertas_number(min = 1)]
+        retry_after_seconds: u32,
+    },
+}
+
+/// Building HVAC external-feature client V1
+/// Selects an optional full-snapshot endpoint for operational inputs not
+/// available through standard Matter devices or the weather endpoint.
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
+)]
+pub struct BuildingHvacExternalFeatureClientV1 {
+    /// External feature endpoint
+    /// Client endpoint implementing `BuildingHvacExternalFeatureProtocolV1`.
+    #[libertas_endpoint_schema(BuildingHvacExternalFeatureProtocolV1)]
+    pub endpoint: LibertasEndpoint,
+}
+
 /// Persisted room condition period V1
 /// Retains one bounded, time-aggregated room condition period so statistics and
 /// thermal-response calculations can continue after a restart without treating
@@ -2335,6 +2508,16 @@ pub enum BuildingHvacPersistentDataV1 {
         /// The last accepted modeled outdoor-air-quality periods.
         outdoor_air_quality: BuildingHvacOutdoorAirQualityV1,
     },
+    /// External feature inputs V1
+    /// Stores the last complete valid optional operational-input snapshot
+    /// independently from Matter and weather data. Expiration makes individual
+    /// values missing for inference but does not delete recoverable evidence.
+    ExternalFeatureInputsV1 {
+        /// External feature snapshot
+        /// Utility, equipment, occupancy, local-calendar, demand, and metering
+        /// inputs accepted from the configured optional endpoint.
+        snapshot: BuildingHvacExternalFeatureSnapshotV1,
+    },
     /// Room urgent notification state V1
     /// Stores bounded activation, reminder, and recovery state for one room.
     /// Persist each state transition before sending its notification so a
@@ -2362,7 +2545,9 @@ pub enum BuildingHvacPersistentDataV1 {
     /// Machine-learning sample V1
     /// One record in a room-keyed indexed history. Its database index is
     /// `sample.observed_at`; the value repeats the timestamp and stable room
-    /// endpoint so a mismatched or corrupt record can be rejected.
+    /// endpoint so a mismatched or corrupt record can be rejected. The
+    /// controller retains 400 days, then selects bounded recent and stratified
+    /// seasonal, outdoor-weather, and equipment-state evidence for training.
     MachineLearningSampleV1 {
         /// Training sample
         /// Validated features and any temperature-change labels that have
@@ -4060,8 +4245,25 @@ pub fn libertas_smart_building_hvac(
      * libertas-weather_server.
      */
     weather: BuildingHvacWeatherClientV1,
+    /*
+     * Optional operational inputs
+     * A full-snapshot endpoint for utility prices and carbon intensity, central
+     * equipment telemetry, occupancy and window state, local calendar context,
+     * PI demand, and energy or delivered-thermal metering. Leave absent when
+     * those sources do not exist; their model columns remain XGBoost missing
+     * values rather than guessed zeros.
+     */
+    external_features: Option<BuildingHvacExternalFeatureClientV1>,
 ) {
-    if validate_building_configuration(&building).is_err() {
+    if validate_building_configuration(&building).is_err()
+        || external_features.is_some_and(|external| {
+            external.endpoint == weather.endpoint
+                || building
+                    .rooms
+                    .iter()
+                    .any(|room| room.control_endpoint == external.endpoint)
+        })
+    {
         libertas_log(
             LogLevel::Error,
             "Smart building HVAC configuration is invalid",
@@ -4091,6 +4293,7 @@ pub fn libertas_smart_building_hvac(
         machine_learning_results,
         model_sets,
         active_models,
+        external_features,
     );
 }
 
@@ -4397,6 +4600,8 @@ mod tests {
             wind_direction_degrees: 180,
             precipitation_millimeters: 0.0,
             precipitation_kind: BuildingHvacPrecipitationKindV1::None,
+            solar_elevation_degrees: 40.0,
+            solar_azimuth_degrees: 185.0,
             global_horizontal_irradiance_watts_per_square_meter: 600.0,
             direct_normal_irradiance_watts_per_square_meter: 700.0,
             diffuse_horizontal_irradiance_watts_per_square_meter: 120.0,
@@ -4479,38 +4684,89 @@ mod tests {
     fn machine_learning_features(
         room_temperature_celsius: f32,
     ) -> BuildingHvacMachineLearningFeaturesV1 {
+        let mut values = vec![
+            BuildingHvacMachineLearningFeatureV1 {
+                name: String::from("target.temperature_celsius"),
+                value: Some(room_temperature_celsius),
+            },
+            BuildingHvacMachineLearningFeatureV1 {
+                name: String::from("thermostat.200.active_setpoint_delta_celsius"),
+                value: Some(2.0),
+            },
+            BuildingHvacMachineLearningFeatureV1 {
+                name: String::from("thermostat.201.active_setpoint_delta_celsius"),
+                value: Some(0.0),
+            },
+            BuildingHvacMachineLearningFeatureV1 {
+                name: String::from("time.day_of_year_cosine"),
+                value: Some(1.0),
+            },
+            BuildingHvacMachineLearningFeatureV1 {
+                name: String::from("time.day_of_year_sine"),
+                value: Some(0.0),
+            },
+            BuildingHvacMachineLearningFeatureV1 {
+                name: String::from("weather.current.dry_bulb_temperature_celsius"),
+                value: Some(5.0),
+            },
+            BuildingHvacMachineLearningFeatureV1 {
+                name: String::from(
+                    "weather.current.global_horizontal_irradiance_watts_per_square_meter",
+                ),
+                value: Some(150.0),
+            },
+            BuildingHvacMachineLearningFeatureV1 {
+                name: String::from("weather.current.humidity_ratio_kg_per_kg"),
+                value: Some(0.004),
+            },
+            BuildingHvacMachineLearningFeatureV1 {
+                name: String::from("weather.current.wind_speed_meters_per_second"),
+                value: Some(3.0),
+            },
+        ];
+        values.sort_by(|left, right| left.name.cmp(&right.name));
         BuildingHvacMachineLearningFeaturesV1 {
-            room_temperature_celsius,
-            room_relative_humidity_percent: Some(45.0),
-            outdoor_temperature_celsius: Some(5.0),
-            outdoor_humidity_ratio_kilograms_per_kilogram: Some(0.004),
-            outdoor_wind_speed_meters_per_second: Some(3.0),
-            global_horizontal_solar_irradiance_watts_per_square_meter: Some(150.0),
-            hour_of_day_sine: 0.0,
-            hour_of_day_cosine: 1.0,
-            day_of_year_sine: 0.0,
-            day_of_year_cosine: 1.0,
-            own_heating_runtime_fraction: 0.5,
-            own_cooling_runtime_fraction: 0.0,
-            other_zone_heating_runtime_fraction: 0.0,
-            other_zone_cooling_runtime_fraction: 0.0,
-            heating_setpoint_offset_celsius: Some(2.0),
-            cooling_setpoint_offset_celsius: Some(6.0),
+            target_room: 100,
+            values,
         }
+    }
+
+    fn set_machine_learning_feature(
+        features: &mut BuildingHvacMachineLearningFeaturesV1,
+        name: &str,
+        value: Option<f32>,
+    ) {
+        let index = features
+            .values
+            .binary_search_by(|feature| feature.name.as_str().cmp(name))
+            .unwrap();
+        features.values[index].value = value;
     }
 
     fn machine_learning_sample() -> BuildingHvacMachineLearningSampleV1 {
         BuildingHvacMachineLearningSampleV1 {
             observed_at: 1_785_059_200,
             room_endpoint: 100,
-            features: machine_learning_features(20.0),
+            features: machine_learning_features(20.0).compact(),
             temperature_change_15_minutes_celsius: Some(0.2),
             temperature_change_30_minutes_celsius: Some(0.35),
             temperature_change_60_minutes_celsius: Some(0.6),
         }
     }
 
-    fn persistent_values() -> [BuildingHvacPersistentDataV1; 14] {
+    fn external_feature_snapshot() -> BuildingHvacExternalFeatureSnapshotV1 {
+        BuildingHvacExternalFeatureSnapshotV1 {
+            retrieved_at: 1_785_059_200,
+            inputs: vec![BuildingHvacExternalFeatureInputV1 {
+                feature_name: String::from("utility.current_price_per_kilowatt_hour"),
+                observed_at: 1_785_059_200,
+                valid_until: 1_785_062_800,
+                value: 0.12,
+            }],
+        }
+    }
+
+    fn persistent_values() -> [BuildingHvacPersistentDataV1; 15] {
         [
             BuildingHvacPersistentDataV1::RoomControlV1 {
                 control_revision: 3,
@@ -4546,6 +4802,9 @@ mod tests {
             },
             BuildingHvacPersistentDataV1::OutdoorAirQualityV1 {
                 outdoor_air_quality: outdoor_air_quality(),
+            },
+            BuildingHvacPersistentDataV1::ExternalFeatureInputsV1 {
+                snapshot: external_feature_snapshot(),
             },
             BuildingHvacPersistentDataV1::RoomUrgentNotificationStateV1 {
                 conditions: vec![persisted_urgent_condition()],
@@ -5625,10 +5884,7 @@ mod tests {
             room_endpoint,
             horizon,
             feature_schema_version: BUILDING_HVAC_ML_FEATURE_SCHEMA_VERSION,
-            feature_names: BUILDING_HVAC_ML_FEATURE_NAMES
-                .iter()
-                .map(|name| String::from(*name))
-                .collect(),
+            feature_names: machine_learning_features(20.0).feature_names(),
             xgboost_version: String::from(BUILDING_HVAC_XGBOOST_VERSION),
             trained_at,
             training_range_starts_at: trained_at - 14 * 24 * 60 * 60,
@@ -5655,8 +5911,7 @@ mod tests {
         assert!(machine_learning_sample().is_well_formed());
 
         let mut invalid = features;
-        invalid.own_heating_runtime_fraction = 0.75;
-        invalid.own_cooling_runtime_fraction = 0.5;
+        invalid.values[0].value = Some(f32::NAN);
         assert!(!invalid.is_well_formed());
 
         let mut missing_targets = machine_learning_sample();
@@ -5726,12 +5981,56 @@ mod tests {
             machine_learning_features(20.0)
         );
         assert_round_trip!(
+            BuildingHvacMachineLearningFeatureV1,
+            BuildingHvacMachineLearningFeatureV1 {
+                name: String::from("target.temperature_celsius"),
+                value: Some(20.0),
+            }
+        );
+        assert_round_trip!(
+            BuildingHvacMachineLearningFeatureVectorV1,
+            machine_learning_features(20.0).compact()
+        );
+        assert_round_trip!(
+            BuildingHvacMachineLearningIndexedFeatureV1,
+            BuildingHvacMachineLearningIndexedFeatureV1 {
+                index: 3,
+                value: 1.0,
+            }
+        );
+        assert_round_trip!(
             BuildingHvacMachineLearningSampleV1,
             machine_learning_sample()
         );
         assert_round_trip!(BuildingHvacMachineLearningModelV1, model);
         assert_round_trip!(BuildingHvacMachineLearningModelSetV1, models);
         assert_round_trip!(BuildingHvacRoomMachineLearningV1, runtime);
+        assert_round_trip!(
+            BuildingHvacExternalFeatureSnapshotV1,
+            external_feature_snapshot()
+        );
+        assert_round_trip!(
+            BuildingHvacExternalFeatureInputV1,
+            external_feature_snapshot().inputs[0].clone()
+        );
+        assert_round_trip!(
+            BuildingHvacExternalFeatureInputErrorV1,
+            BuildingHvacExternalFeatureInputErrorV1::InvalidSourceData
+        );
+        assert_round_trip!(
+            BuildingHvacExternalFeatureProtocolV1,
+            BuildingHvacExternalFeatureProtocolV1::ExternalFeaturesV1 {
+                maximum_wait_interval_seconds: 300,
+                snapshot: external_feature_snapshot(),
+            }
+        );
+        assert_round_trip!(
+            BuildingHvacExternalFeatureProtocolV1,
+            BuildingHvacExternalFeatureProtocolV1::ExternalFeaturesErrorV1 {
+                error: BuildingHvacExternalFeatureInputErrorV1::TemporarilyUnavailable,
+                retry_after_seconds: 60,
+            }
+        );
     }
 
     fn no_op_worker_callback() {}
@@ -5769,22 +6068,42 @@ mod tests {
 
     #[cfg(target_os = "linux")]
     #[test]
-    fn statically_linked_xgboost_trains_serializes_and_predicts() {
+    fn statically_linked_xgboost_learns_a_thermostat_interaction() {
         let starts_at = 1_785_000_000;
         let samples: Vec<_> = (0..BUILDING_HVAC_ML_MINIMUM_TRAINING_SAMPLES)
             .map(|index| {
-                let heating = if index % 4 < 2 { 0.75 } else { 0.0 };
-                let cooling = if index % 4 == 3 { 0.5 } else { 0.0 };
+                let first_heating_delta = if matches!(index % 4, 1 | 3) { 2.0 } else { 0.0 };
+                let second_heating_delta = if matches!(index % 4, 2 | 3) { 3.0 } else { 0.0 };
                 let room_temperature = 18.0 + (index % 40) as f32 * 0.1;
                 let mut features = machine_learning_features(room_temperature);
-                features.own_heating_runtime_fraction = heating;
-                features.own_cooling_runtime_fraction = cooling;
-                features.outdoor_temperature_celsius = Some(2.0 + (index % 24) as f32 * 0.5);
-                let target = 0.7 * heating - 0.8 * cooling + (20.0 - room_temperature) * 0.03;
+                set_machine_learning_feature(
+                    &mut features,
+                    "thermostat.200.active_setpoint_delta_celsius",
+                    Some(first_heating_delta),
+                );
+                set_machine_learning_feature(
+                    &mut features,
+                    "thermostat.201.active_setpoint_delta_celsius",
+                    Some(second_heating_delta),
+                );
+                set_machine_learning_feature(
+                    &mut features,
+                    "weather.current.dry_bulb_temperature_celsius",
+                    Some(2.0 + (index % 24) as f32 * 0.5),
+                );
+                let target = 0.05 * first_heating_delta
+                    + 0.05 * second_heating_delta
+                    + 0.8
+                        * if first_heating_delta > 0.0 && second_heating_delta > 0.0 {
+                            1.0
+                        } else {
+                            0.0
+                        }
+                    + (20.0 - room_temperature) * 0.03;
                 BuildingHvacMachineLearningSampleV1 {
                     observed_at: starts_at + index as u64 * 900,
                     room_endpoint: 100,
-                    features,
+                    features: features.compact(),
                     temperature_change_15_minutes_celsius: Some(target),
                     temperature_change_30_minutes_celsius: None,
                     temperature_change_60_minutes_celsius: None,
@@ -5795,6 +6114,7 @@ mod tests {
         let model = BuildingHvacMachineLearningEngine::train_candidate(
             BuildingHvacThermalPredictionHorizonV1::FifteenMinutes,
             trained_at,
+            &machine_learning_features(20.0).feature_names(),
             &samples,
         )
         .unwrap();
@@ -5803,11 +6123,29 @@ mod tests {
             model.validation.candidate_rmse_celsius
                 < model.validation.deterministic_baseline_rmse_celsius
         );
-        let prediction =
-            BuildingHvacMachineLearningEngine::predict(&model, machine_learning_features(19.0))
-                .unwrap();
-        assert!(prediction.is_finite());
-        assert!(prediction.abs() <= BUILDING_HVAC_ML_MAXIMUM_PREDICTED_CHANGE_CELSIUS);
+        let mut first_only = machine_learning_features(19.0);
+        set_machine_learning_feature(
+            &mut first_only,
+            "thermostat.200.active_setpoint_delta_celsius",
+            Some(2.0),
+        );
+        set_machine_learning_feature(
+            &mut first_only,
+            "thermostat.201.active_setpoint_delta_celsius",
+            Some(0.0),
+        );
+        let mut both = first_only.clone();
+        set_machine_learning_feature(
+            &mut both,
+            "thermostat.201.active_setpoint_delta_celsius",
+            Some(3.0),
+        );
+        let first_only_prediction =
+            BuildingHvacMachineLearningEngine::predict(&model, first_only).unwrap();
+        let both_prediction = BuildingHvacMachineLearningEngine::predict(&model, both).unwrap();
+        assert!(first_only_prediction.is_finite());
+        assert!(both_prediction.is_finite());
+        assert!(both_prediction > first_only_prediction + 0.4);
     }
 
     #[test]
@@ -6003,6 +6341,7 @@ mod tests {
         assert_eq!(BUILDING_HVAC_MAX_AIR_MEASUREMENTS, 10);
         assert_eq!(BUILDING_HVAC_MAX_ROOM_PLAN_PERIODS, 96);
         assert_eq!(BUILDING_HVAC_MAX_PERSISTED_ROOM_CONDITION_PERIODS, 96);
+        assert_eq!(BUILDING_HVAC_MAX_EXTERNAL_FEATURE_INPUTS, 2_048);
         assert_eq!(BUILDING_HVAC_MAX_URGENT_NOTIFICATION_RECIPIENTS, 16);
         assert_eq!(BUILDING_HVAC_MAX_URGENT_ROOM_CONDITIONS, 5);
         assert_eq!(BUILDING_HVAC_ROOM_MAXIMUM_WAIT_INTERVAL_SECONDS, 300);
@@ -6044,12 +6383,15 @@ mod tests {
             BUILDING_HVAC_CROSS_ZONE_LEARNING_HALF_LIFE_SECONDS,
             30 * 24 * 60 * 60
         );
-        assert_eq!(BUILDING_HVAC_ML_FEATURE_COUNT, 16);
+        assert_eq!(BUILDING_HVAC_ML_MAXIMUM_FEATURE_COUNT, 8_192);
+        assert_eq!(BUILDING_HVAC_ML_MAXIMUM_FEATURE_NAME_BYTES, 192);
         assert_eq!(BUILDING_HVAC_ML_MINIMUM_TRAINING_SAMPLES, 14 * 24 * 4);
         assert_eq!(
             BUILDING_HVAC_ML_MAXIMUM_TRAINING_SAMPLES_PER_ROOM,
             91 * 24 * 4
         );
+        assert_eq!(BUILDING_HVAC_ML_XGBOOST_THREADS, 1);
+        assert_eq!(BUILDING_HVAC_ML_WORKER_NICE_INCREMENT, 10);
         assert_eq!(BUILDING_HVAC_ML_COMMAND_CAPACITY, 8);
         assert_eq!(BUILDING_HVAC_ML_RESULT_CAPACITY, 16);
     }
