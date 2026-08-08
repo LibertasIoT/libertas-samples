@@ -572,7 +572,7 @@ fn status_for_handler_error(error: Error) -> IMStatusCode {
 pub fn virtual_irrigation_controller(
     /*
      * A list of sprinkler valves.
-     * #[libertas_array(sizeMin=1)]
+     * #[libertas_size(min=1)]
      * ----
      * A sprinkler valve.
      * #[libertas_virtual_device_type("BQEBQAEBgQEBAQAABQABAwQFAAIAAQA=")]
