@@ -1812,7 +1812,6 @@ pub struct BuildingHvacWeatherClientV1 {
     /// current conditions, recent history, forecast, outdoor air quality, and
     /// incremental recovery.
     #[libertas_endpoint_schema(BuildingHvacWeatherProtocolV1)]
-    #[libertas_foreign_type("libertas-weather::BuildingHvacWeatherProtocolV1")]
     pub endpoint: LibertasEndpoint,
 }
 
