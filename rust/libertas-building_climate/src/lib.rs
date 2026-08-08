@@ -62,12 +62,12 @@ pub use libertas_weather::{
 };
 
 /// Maximum configured rooms
-/// The largest room list accepted by the V1 controller and its bounded runtime
+/// The largest room list accepted by the controller and its bounded runtime
 /// data structures.
 pub const BUILDING_HVAC_MAX_ROOMS: usize = 64;
 
 /// Maximum configured thermostats
-/// The largest Matter thermostat list accepted by the V1 controller and its
+/// The largest Matter thermostat list accepted by the controller and its
 /// bounded Matter subscription.
 pub const BUILDING_HVAC_MAX_THERMOSTATS: usize = 16;
 
@@ -78,12 +78,12 @@ pub const BUILDING_HVAC_MAX_SENSORS_PER_ROOM: usize = 8;
 
 /// Maximum air measurements
 /// The number of standard Matter concentration-measurement cluster kinds the
-/// V1 controller can expose from one indoor or outdoor Air Quality Sensor.
+/// controller can expose from one indoor or outdoor Air Quality Sensor.
 pub const BUILDING_HVAC_MAX_AIR_MEASUREMENTS: usize = 10;
 
 /// Room runtime maximum wait interval
 /// The maximum number of seconds a subscribed room client waits after a
-/// snapshot or change report before retrying `GetRoomV1`.
+/// snapshot or change report before requesting the room again.
 pub const BUILDING_HVAC_ROOM_MAXIMUM_WAIT_INTERVAL_SECONDS: u32 = 5 * 60;
 
 /// Maximum room plan periods
@@ -112,7 +112,7 @@ pub const BUILDING_HVAC_CROSS_ZONE_MINIMUM_EFFECTIVE_SAMPLE_WEIGHT: f64 = 4.0;
 pub const BUILDING_HVAC_MAX_URGENT_NOTIFICATION_RECIPIENTS: usize = 16;
 
 /// Maximum simultaneous urgent room conditions
-/// The complete set of distinct V1 urgent HVAC conditions that one room can
+/// The complete set of distinct urgent HVAC conditions that one room can
 /// expose and persist without duplicate entries.
 pub const BUILDING_HVAC_MAX_URGENT_ROOM_CONDITIONS: usize = 5;
 
@@ -374,7 +374,7 @@ const MATTER_HUMIDITY_SENSOR_DEVICE_DESCRIPTOR: &str = "BQEBAYcGAA==";
 #[cfg(test)]
 const MATTER_AIR_QUALITY_SENSOR_DEVICE_DESCRIPTOR: &str = "BQEBASwA";
 
-/// Room operating preference V1
+/// Room operating preference
 /// Describes the heating and cooling demand a user permits for one room. The
 /// physical thermostat remains responsible for equipment protection and for
 /// enforcing capabilities it actually supports.
@@ -398,7 +398,7 @@ pub enum BuildingHvacRoomOperatingPreferenceV1 {
     Off,
 }
 
-/// Room control V1
+/// Room control
 /// Contains the writable user intent for one room. The controller validates it
 /// against the associated thermostat's reported limits and shared-system
 /// constraints before changing a physical setpoint.
@@ -454,7 +454,7 @@ impl BuildingHvacRoomControlV1 {
     }
 }
 
-/// Room data quality V1
+/// Room data quality
 /// Summarizes whether the controller has enough recent Matter reports to
 /// calculate and safely apply supervisory room setpoints.
 #[derive(
@@ -474,7 +474,7 @@ pub enum BuildingHvacRoomDataQualityV1 {
     Unavailable,
 }
 
-/// Urgent HVAC condition V1
+/// Urgent HVAC condition
 /// Identifies time-sensitive supervisory conditions that warrant direct user
 /// attention. These warnings help protect comfort, equipment, and property;
 /// they are not certified smoke, fire, carbon-monoxide, medical, or other
@@ -549,7 +549,7 @@ impl BuildingHvacUrgentConditionV1 {
     }
 }
 
-/// Urgent HVAC notification severity V1
+/// Urgent HVAC notification severity
 /// Maps an application-specific urgency decision to the Libertas notification
 /// framework. Severity describes delivery priority and does not turn a
 /// supervisory HVAC warning into a certified life-safety alarm.
@@ -579,7 +579,7 @@ impl BuildingHvacUrgentNotificationSeverityV1 {
     }
 }
 
-/// Active urgent HVAC condition V1
+/// Active urgent HVAC condition
 /// Exposes one confirmed condition in a room runtime snapshot. A condition
 /// remains active during its recovery-confirmation interval so stale or
 /// oscillating data cannot falsely clear an urgent warning.
@@ -631,7 +631,7 @@ impl BuildingHvacActiveUrgentConditionV1 {
     }
 }
 
-/// Urgent-condition tracking phase V1
+/// Urgent-condition tracking phase
 /// Persists activation and recovery debounce across application restarts so a
 /// restart neither immediately clears a warning nor creates a burst of
 /// duplicate notifications.
@@ -652,7 +652,7 @@ pub enum BuildingHvacUrgentConditionPhaseV1 {
     RecoveryPending,
 }
 
-/// Persisted urgent-condition tracker V1
+/// Persisted urgent-condition tracker
 /// Stores one room condition's debounce, reminder, recovery, and last qualifying
 /// temperature evidence. Current sensor truth remains in the independently
 /// persisted sensor record.
@@ -707,7 +707,7 @@ impl BuildingHvacPersistedUrgentConditionV1 {
     }
 }
 
-/// Sensor air quality V1
+/// Sensor air quality
 /// Maps the standard Matter Air Quality cluster's overall classification. This
 /// classification is descriptive sensor output; stale or missing data is never
 /// evidence that outdoor air is safe for ventilation.
@@ -738,7 +738,7 @@ pub enum BuildingHvacAirQualityV1 {
     ExtremelyPoor,
 }
 
-/// Sensor concentration level V1
+/// Sensor concentration level
 /// Maps the optional qualitative level reported by one standard Matter
 /// concentration-measurement cluster.
 #[derive(
@@ -762,7 +762,7 @@ pub enum BuildingHvacConcentrationLevelV1 {
     Critical,
 }
 
-/// Sensor air measurement kind V1
+/// Sensor air measurement kind
 /// Identifies one optional standard Matter concentration-measurement cluster
 /// discovered on the configured outdoor Air Quality Sensor. The controller
 /// does not require every sensor to implement every kind.
@@ -812,7 +812,7 @@ pub enum BuildingHvacAirMeasurementKindV1 {
     Radon,
 }
 
-/// Sensor air measurement unit V1
+/// Sensor air measurement unit
 /// Preserves the standard Matter unit reported with a concentration. Consumers
 /// must interpret `measured_value_in_reported_unit` together with this unit and
 /// must not convert mass concentration to a mixing ratio without the required
@@ -847,7 +847,7 @@ pub enum BuildingHvacAirMeasurementUnitV1 {
     BecquerelsPerCubicMeter,
 }
 
-/// Sensor air measurement V1
+/// Sensor air measurement
 /// Carries one current concentration discovered from an optional cluster on
 /// the configured Matter Air Quality Sensor. The runtime accepts only finite,
 /// nonnegative measurements whose Matter measurement medium is air.
@@ -884,7 +884,7 @@ impl BuildingHvacAirMeasurementV1 {
     }
 }
 
-/// Temperature reading V1
+/// Temperature reading
 /// Caches one accepted reading from a standard Matter Temperature Sensor
 /// logical device.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -908,7 +908,7 @@ pub struct BuildingHvacTemperatureReadingV1 {
 impl BuildingHvacTemperatureReadingV1 {
     /// Valid temperature reading
     /// Returns `true` when the freshness interval is nonempty and the
-    /// temperature is finite and inside the V1 outdoor range.
+    /// temperature is finite and inside the outdoor range.
     pub fn is_well_formed(&self) -> bool {
         self.valid_until > self.observed_at
             && self.temperature_celsius.is_finite()
@@ -916,7 +916,7 @@ impl BuildingHvacTemperatureReadingV1 {
     }
 }
 
-/// Humidity reading V1
+/// Humidity reading
 /// Caches one accepted reading from a standard Matter Humidity Sensor logical
 /// device.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -948,7 +948,7 @@ impl BuildingHvacHumidityReadingV1 {
     }
 }
 
-/// Sensor air quality reading V1
+/// Sensor air quality reading
 /// Caches the last accepted overall classification and every supported current
 /// concentration from the optional Matter Air Quality Sensor. Optional cluster
 /// discovery makes PM2.5, carbon dioxide, and other supported measurements
@@ -1013,7 +1013,7 @@ impl BuildingHvacAirQualityReadingV1 {
     }
 }
 
-/// Local outdoor sensor state V1
+/// Local outdoor sensor state
 /// Exposes the independently available sections of the optional outdoor Matter
 /// station. `None` for this whole value means no station is configured; a
 /// present state with a missing section means that section is unavailable or
@@ -1035,7 +1035,7 @@ pub struct BuildingHvacLocalOutdoorSensorStateV1 {
     pub air_quality: Option<BuildingHvacAirQualityReadingV1>,
 }
 
-/// Indoor sensor state V1
+/// Indoor sensor state
 /// Exposes independently fresh readings from one configured indoor Matter
 /// sensor station. Temperature identifies the station; optional humidity and
 /// Air Quality Sensor logical devices may report on different schedules.
@@ -1101,7 +1101,7 @@ impl BuildingHvacIndoorSensorStateV1 {
     }
 }
 
-/// Room HVAC activity V1
+/// Room HVAC activity
 /// Describes the observed or inferred current activity affecting one room.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
@@ -1125,7 +1125,7 @@ pub enum BuildingHvacRoomActivityV1 {
     FanOnly,
 }
 
-/// Room observed state V1
+/// Room observed state
 /// Contains read-only current room measurements, sensor availability, physical
 /// thermostat association, and the effective setpoints chosen after arbitration
 /// with other rooms sharing that thermostat.
@@ -1204,7 +1204,7 @@ pub struct BuildingHvacRoomObservedStateV1 {
     pub configured_humidity_sensor_count: u16,
 }
 
-/// Outdoor air analytics V1
+/// Outdoor air analytics
 /// Contains psychrometric values derived from one fresh, internally consistent
 /// building-HVAC current-weather section. These values support sensible and
 /// latent load calculations without persisting redundant weather fields.
@@ -1250,7 +1250,7 @@ impl BuildingHvacOutdoorAirAnalyticsV1 {
     }
 }
 
-/// Room statistics V1
+/// Room statistics
 /// Contains read-only comfort and sensor-availability statistics for one room
 /// over a documented half-open collection window. Shared equipment runtime and
 /// energy are not attributed to individual rooms without an explicit metering
@@ -1331,7 +1331,7 @@ pub struct BuildingHvacRoomStatisticsV1 {
     pub fan_only_active_seconds: u64,
 }
 
-/// Room plan reason V1
+/// Room plan reason
 /// Explains the principal reason for one calculated room schedule period.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
@@ -1360,7 +1360,7 @@ pub enum BuildingHvacRoomPlanReasonV1 {
     DegradedFallback,
 }
 
-/// Room plan period V1
+/// Room plan period
 /// Contains the read-only effective room targets calculated for one future
 /// period.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -1391,7 +1391,7 @@ pub struct BuildingHvacRoomPlanPeriodV1 {
     pub reason: BuildingHvacRoomPlanReasonV1,
 }
 
-/// Room plan V1
+/// Room plan
 /// Contains the current read-only calculated schedule for one room. It exposes
 /// user-visible decisions without claiming that rooms sharing one physical
 /// thermostat can be actuated independently.
@@ -1425,7 +1425,7 @@ pub struct BuildingHvacRoomPlanV1 {
     pub periods: Vec<BuildingHvacRoomPlanPeriodV1>,
 }
 
-/// Room control error V1
+/// Room control error
 /// Explains why a room-control replacement was not accepted.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
@@ -1451,7 +1451,7 @@ pub enum BuildingHvacRoomControlErrorV1 {
     TemporarilyUnavailable,
 }
 
-/// Cross-zone influence V1
+/// Cross-zone influence
 /// Exposes the learned read-only effect of one other thermostat-zone operating
 /// while this room's own thermostat-zone is inactive. The values are
 /// supervisory predictions, never equipment or life-safety limits.
@@ -1491,20 +1491,20 @@ pub struct BuildingHvacCrossZoneInfluenceV1 {
     pub learned_at: Option<LibertasDateTime>,
 }
 
-/// Building HVAC room protocol V1
+/// Building HVAC room protocol
 /// Defines every externally visible runtime request, response, and subscription
 /// report for one room. The configured endpoint identifies the room, so messages
 /// never carry a reorder-sensitive room-array index.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum BuildingHvacRoomProtocolV1 {
-    /// Get room V1
+    /// Get room
     /// Reads the current room runtime or starts a subscription. The endpoint
     /// operation selects one-shot or subscription behavior.
     #[libertas_request]
     #[libertas_subscription_request]
     #[libertas_next_response(RoomDataV1)]
     GetRoomV1,
-    /// Replace room control V1
+    /// Replace room control
     /// Atomically replaces all writable room intent when `expected_revision`
     /// still matches the server's current room revision.
     #[libertas_request]
@@ -1518,11 +1518,11 @@ pub enum BuildingHvacRoomProtocolV1 {
         /// The complete replacement writable intent.
         control: BuildingHvacRoomControlV1,
     },
-    /// Room data V1
-    /// Carries the complete authoritative room runtime. It is returned by
-    /// `GetRoomV1`, returned after an accepted control replacement, and reported
-    /// to subscribers after any visible control, state, statistics, or plan
-    /// change. An unchanged report is a valid subscription heartbeat.
+    /// Room data
+    /// Carries the complete authoritative room runtime. It is returned for a
+    /// room request or accepted control replacement, and reported to subscribers
+    /// after any visible control, state, statistics, or plan change. An unchanged
+    /// report is a valid subscription heartbeat.
     #[libertas_response]
     #[libertas_subscription_data]
     RoomDataV1 {
@@ -1539,9 +1539,9 @@ pub enum BuildingHvacRoomProtocolV1 {
         formatted_room_status: Vec<u8>,
         /// Maximum wait interval
         /// The maximum number of seconds a subscribed client waits after this
-        /// response or report before retrying `GetRoomV1`. The server sends a
-        /// changed or unchanged `RoomDataV1` report before this interval
-        /// expires. A one-shot client ignores the value.
+        /// response or report before requesting the room again. The server sends
+        /// a changed or unchanged room-data report before this interval expires.
+        /// A one-shot client ignores the value.
         #[libertas_time_interval]
         #[libertas_number(min = 1)]
         maximum_wait_interval_seconds: u32,
@@ -1571,7 +1571,7 @@ pub enum BuildingHvacRoomProtocolV1 {
         /// Local outdoor sensor state
         /// Independently available current readings from the optional local
         /// Matter outdoor station. The same read-only building-level state is
-        /// included on every room endpoint so a runtime `GetRoomV1` query can
+        /// included on every room endpoint so a runtime room query can
         /// discover PM2.5, carbon dioxide, and other supported measurements.
         #[libertas_read_only]
         local_outdoor_sensor: Option<Box<BuildingHvacLocalOutdoorSensorStateV1>>,
@@ -1621,7 +1621,7 @@ pub enum BuildingHvacRoomProtocolV1 {
         #[libertas_read_only]
         plan: Option<Box<BuildingHvacRoomPlanV1>>,
     },
-    /// Room control rejected V1
+    /// Room control rejected
     /// Rejects a control replacement without changing persistent or runtime
     /// state. The current revision and control let a client reconcile before
     /// retrying.
@@ -1650,7 +1650,7 @@ pub enum BuildingHvacRoomProtocolV1 {
     },
 }
 
-/// Building HVAC room V1
+/// Building HVAC room
 /// Defines one user-visible room and its stable runtime-control endpoint. The
 /// room name is the label shown by `EnumSource` when thermostats select rooms.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -1673,7 +1673,7 @@ pub struct BuildingHvacRoomV1 {
     pub control_endpoint: LibertasEndpoint,
 }
 
-/// Indoor sensor V1
+/// Indoor sensor
 /// Configures one indoor Matter environmental station. Temperature is required;
 /// humidity and air quality are optional capabilities of the same physical
 /// station represented by their standard Matter logical devices.
@@ -1705,7 +1705,7 @@ pub struct BuildingHvacIndoorSensorV1 {
     pub air_quality_sensor: Option<LibertasDevice>,
 }
 
-/// Outdoor sensor V1
+/// Outdoor sensor
 /// Configures an optional local outdoor sensing station. Temperature is
 /// required whenever the station is present; relative humidity and air quality
 /// are optional additional Matter logical devices.
@@ -1732,7 +1732,7 @@ pub struct BuildingHvacOutdoorSensorV1 {
     pub air_quality_sensor: Option<LibertasDevice>,
 }
 
-/// Thermostat room association V1
+/// Thermostat room association
 /// Associates one room with its serving physical thermostat and with the
 /// room-specific Matter sensors used to evaluate that room's comfort demand.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -1755,7 +1755,7 @@ pub struct BuildingHvacThermostatRoomV1 {
     pub sensors: Vec<BuildingHvacIndoorSensorV1>,
 }
 
-/// Building thermostat V1
+/// Building thermostat
 /// Configures one standard Matter Thermostat logical device and every room it
 /// serves. Multiple rooms may share one thermostat, but their runtime room
 /// controls are comfort demands reconciled into common physical setpoints.
@@ -1779,7 +1779,7 @@ pub struct BuildingHvacThermostatV1 {
     pub rooms: Vec<BuildingHvacThermostatRoomV1>,
 }
 
-/// Building climate configuration V1
+/// Building climate configuration
 /// Contains the complete physical room, thermostat, and sensor topology. Rooms
 /// and thermostats share one schema-data tree so nested room references can use
 /// `EnumSource("$.rooms")`.
@@ -1823,7 +1823,7 @@ pub struct BuildingHvacBuildingV1 {
     pub urgent_notification_recipients: Vec<LibertasUser>,
 }
 
-/// Building HVAC weather client V1
+/// Building HVAC weather client
 /// Selects the typed building-HVAC endpoint expected from
 /// `libertas-weather_server`. The controller is only a client and never
 /// performs provider HTTP requests itself.
@@ -1832,9 +1832,8 @@ pub struct BuildingHvacBuildingV1 {
 )]
 pub struct BuildingHvacWeatherClientV1 {
     /// Weather server endpoint
-    /// A client endpoint implementing `BuildingHvacWeatherProtocolV1` for
-    /// current conditions, recent history, forecast, outdoor air quality, and
-    /// incremental recovery.
+    /// A client endpoint providing current conditions, recent history, forecast,
+    /// outdoor air quality, and incremental recovery.
     #[libertas_endpoint_schema(BuildingHvacWeatherProtocolV1)]
     pub endpoint: LibertasEndpoint,
 }
@@ -1844,7 +1843,7 @@ pub struct BuildingHvacWeatherClientV1 {
 /// that standard Matter thermostats, room sensors, and weather cannot supply.
 pub const BUILDING_HVAC_MAX_EXTERNAL_FEATURE_INPUTS: usize = 2_048;
 
-/// External feature input V1
+/// External feature input
 /// Supplies one time-bounded numeric value for an existing machine-learning
 /// column. The input cannot add a new model column or override a value observed
 /// directly by this controller. It is intended for utility schedules, central
@@ -1889,7 +1888,7 @@ impl BuildingHvacExternalFeatureInputV1 {
     }
 }
 
-/// External feature snapshot V1
+/// External feature snapshot
 /// Carries the complete currently known optional operational inputs. Values are
 /// sorted by feature name. `retrieved_at` advances for a changed replacement;
 /// an unchanged heartbeat repeats the complete prior snapshot. Provider
@@ -1927,7 +1926,7 @@ impl BuildingHvacExternalFeatureSnapshotV1 {
     }
 }
 
-/// External feature input error V1
+/// External feature input error
 /// Explains why the optional operational-data stream cannot currently provide
 /// a complete snapshot.
 #[derive(
@@ -1943,26 +1942,26 @@ pub enum BuildingHvacExternalFeatureInputErrorV1 {
     InvalidSourceData,
 }
 
-/// Building HVAC external-feature protocol V1
+/// Building HVAC external-feature protocol
 /// Defines a full-snapshot one-shot and subscription contract for optional
 /// utility, equipment, occupancy, calendar, and metering inputs. The endpoint
 /// operation distinguishes a one-shot read from a subscription.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum BuildingHvacExternalFeatureProtocolV1 {
-    /// Get external features V1
+    /// Get external features
     /// Reads the current snapshot or starts a subscription.
     #[libertas_request]
     #[libertas_subscription_request]
     #[libertas_next_response("ExternalFeaturesV1,ExternalFeaturesErrorV1")]
     GetExternalFeaturesV1,
-    /// External features V1
+    /// External features
     /// Correlated complete snapshot response. Subscription clients restart
     /// their timeout after this response and every later update.
     #[libertas_response]
     ExternalFeaturesV1 {
         /// Maximum wait interval
         /// Nonzero maximum seconds before a subscription client retries
-        /// `GetExternalFeaturesV1` after silence.
+        /// another external-feature request after silence.
         #[libertas_time_interval]
         #[libertas_number(min = 1)]
         maximum_wait_interval_seconds: u32,
@@ -1970,7 +1969,7 @@ pub enum BuildingHvacExternalFeatureProtocolV1 {
         /// Complete current optional-input replacement.
         snapshot: BuildingHvacExternalFeatureSnapshotV1,
     },
-    /// External feature update V1
+    /// External feature update
     /// Complete replacement reported to subscribers after any accepted change
     /// or as an unchanged heartbeat before the maximum wait interval.
     #[libertas_subscription_data]
@@ -1979,7 +1978,7 @@ pub enum BuildingHvacExternalFeatureProtocolV1 {
         /// Complete current optional-input replacement.
         snapshot: BuildingHvacExternalFeatureSnapshotV1,
     },
-    /// External feature error V1
+    /// External feature error
     /// Correlated typed error. The previous persistent snapshot remains intact.
     #[libertas_response]
     ExternalFeaturesErrorV1 {
@@ -1994,7 +1993,7 @@ pub enum BuildingHvacExternalFeatureProtocolV1 {
     },
 }
 
-/// Building HVAC external-feature client V1
+/// Building HVAC external-feature client
 /// Selects an optional full-snapshot endpoint for operational inputs not
 /// available through standard Matter devices or the weather endpoint.
 #[derive(
@@ -2002,12 +2001,12 @@ pub enum BuildingHvacExternalFeatureProtocolV1 {
 )]
 pub struct BuildingHvacExternalFeatureClientV1 {
     /// External feature endpoint
-    /// Client endpoint implementing `BuildingHvacExternalFeatureProtocolV1`.
+    /// Client endpoint for optional external features.
     #[libertas_endpoint_schema(BuildingHvacExternalFeatureProtocolV1)]
     pub endpoint: LibertasEndpoint,
 }
 
-/// Persisted room condition period V1
+/// Persisted room condition period
 /// Retains one bounded, time-aggregated room condition period so statistics and
 /// thermal-response calculations can continue after a restart without treating
 /// a last-known instantaneous sensor value as current.
@@ -2046,7 +2045,7 @@ pub struct BuildingHvacPersistedRoomConditionPeriodV1 {
     pub outdoor_dry_bulb_temperature_celsius: Option<f32>,
 }
 
-/// Online regression state V1
+/// Online regression state
 /// Stores sufficient statistics for one continuously learned scalar
 /// relationship. The controller decays old weight in completed half-life steps,
 /// then adds each accepted observation without retaining an unbounded raw
@@ -2201,7 +2200,7 @@ impl Default for BuildingHvacOnlineRegressionStateV1 {
     }
 }
 
-/// Persisted cross-zone learner V1
+/// Persisted cross-zone learner
 /// Stores separate continuously learned heating and cooling sufficient
 /// statistics for one directional source-thermostat to affected-room edge.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -2219,7 +2218,7 @@ pub struct BuildingHvacPersistedCrossZoneLearnerV1 {
     pub cooling: BuildingHvacOnlineRegressionStateV1,
 }
 
-/// Room learning state V1
+/// Room learning state
 /// Persists bounded continuous-learning state for one affected room. The record
 /// is keyed by that room's stable endpoint; each list item is one directional
 /// influence from another thermostat-zone.
@@ -2409,14 +2408,14 @@ impl BuildingHvacRoomLearningStateV1 {
     }
 }
 
-/// Building climate persistent data V1
+/// Building climate persistent data
 /// Defines every database record written by the controller. Room records use
 /// the configured room endpoint as their stable key. Local outdoor sensor and
 /// weather records are singleton sections. No record contains subscription
 /// cursors, peer state, or transaction identifiers.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum BuildingHvacPersistentDataV1 {
-    /// Room control V1
+    /// Room control
     /// Stores the last accepted writable room intent and its optimistic
     /// concurrency revision. It is written before publishing accepted runtime
     /// data.
@@ -2428,7 +2427,7 @@ pub enum BuildingHvacPersistentDataV1 {
         /// The complete last accepted writable room intent.
         control: BuildingHvacRoomControlV1,
     },
-    /// Room statistics V1
+    /// Room statistics
     /// Stores the latest bounded room comfort and data-availability statistics
     /// and its recent condition periods so a restart does not silently reset
     /// the visible collection window or short-term thermal context.
@@ -2447,7 +2446,7 @@ pub enum BuildingHvacPersistentDataV1 {
         #[libertas_size(max = 96)]
         recent_conditions: Vec<BuildingHvacPersistedRoomConditionPeriodV1>,
     },
-    /// Room learning V1
+    /// Room learning
     /// Stores continuous cross-zone learning sufficient statistics for one
     /// affected room. Persist this record after each accepted learning update
     /// before exposing the newly derived influence.
@@ -2456,7 +2455,7 @@ pub enum BuildingHvacPersistentDataV1 {
         /// The complete bounded source-zone influence learner for this room.
         learning: BuildingHvacRoomLearningStateV1,
     },
-    /// Room sensor state V1
+    /// Room sensor state
     /// Stores the independently last accepted readings for each configured
     /// indoor sensor station. The record is keyed by room endpoint; stale data
     /// remains historical context and is not treated as current after restart.
@@ -2471,7 +2470,7 @@ pub enum BuildingHvacPersistentDataV1 {
         #[libertas_size(min = 1, max = 8)]
         sensors: Vec<BuildingHvacIndoorSensorStateV1>,
     },
-    /// Local outdoor temperature V1
+    /// Local outdoor temperature
     /// Stores the last valid reading from the configured local outdoor
     /// temperature sensor independently from weather and other station
     /// sections. A failed or invalid Matter report leaves this record unchanged.
@@ -2480,7 +2479,7 @@ pub enum BuildingHvacPersistentDataV1 {
         /// The accepted temperature value and its freshness deadline.
         temperature: BuildingHvacTemperatureReadingV1,
     },
-    /// Local outdoor humidity V1
+    /// Local outdoor humidity
     /// Stores the last valid reading from the optional local outdoor humidity
     /// sensor independently. Absence of this record means no reading is
     /// available and does not clear temperature or air quality.
@@ -2489,7 +2488,7 @@ pub enum BuildingHvacPersistentDataV1 {
         /// The accepted relative-humidity value and its freshness deadline.
         humidity: BuildingHvacHumidityReadingV1,
     },
-    /// Local outdoor air quality V1
+    /// Local outdoor air quality
     /// Stores the last valid overall air-quality classification and supported
     /// concentration readings from the optional Matter Air Quality Sensor.
     /// Missing or stale values remain unknown, not safe.
@@ -2498,7 +2497,7 @@ pub enum BuildingHvacPersistentDataV1 {
         /// The accepted bounded air-quality reading and its freshness deadline.
         air_quality: BuildingHvacAirQualityReadingV1,
     },
-    /// Weather history V1
+    /// Weather history
     /// Stores the last accepted building-HVAC physical weather history section.
     /// A failed refresh leaves this record unchanged.
     WeatherHistoryV1 {
@@ -2506,7 +2505,7 @@ pub enum BuildingHvacPersistentDataV1 {
         /// Recent outdoor physical conditions used for load-model context.
         history: BuildingHvacWeatherHistoryV1,
     },
-    /// Current weather V1
+    /// Current weather
     /// Stores the last accepted building-HVAC current physical weather section.
     /// Stale data remains available but is not evidence that outdoor-air or
     /// economizer operation is safe.
@@ -2515,7 +2514,7 @@ pub enum BuildingHvacPersistentDataV1 {
         /// The last accepted current outdoor physical conditions.
         current: BuildingHvacCurrentWeatherV1,
     },
-    /// Weather forecast V1
+    /// Weather forecast
     /// Stores the last accepted building-HVAC physical forecast section for
     /// restart-time preheating and precooling calculations.
     WeatherForecastV1 {
@@ -2523,7 +2522,7 @@ pub enum BuildingHvacPersistentDataV1 {
         /// The last accepted outdoor physical forecast.
         forecast: BuildingHvacWeatherForecastV1,
     },
-    /// Outdoor air quality V1
+    /// Outdoor air quality
     /// Stores the last accepted modeled outdoor-air-quality section separately
     /// from physical weather. Missing or stale model data remains unknown, not
     /// safe.
@@ -2532,7 +2531,7 @@ pub enum BuildingHvacPersistentDataV1 {
         /// The last accepted modeled outdoor-air-quality periods.
         outdoor_air_quality: BuildingHvacOutdoorAirQualityV1,
     },
-    /// External feature inputs V1
+    /// External feature inputs
     /// Stores the last complete valid optional operational-input snapshot
     /// independently from Matter and weather data. Expiration makes individual
     /// values missing for inference but does not delete recoverable evidence.
@@ -2542,14 +2541,14 @@ pub enum BuildingHvacPersistentDataV1 {
         /// inputs accepted from the configured optional endpoint.
         snapshot: BuildingHvacExternalFeatureSnapshotV1,
     },
-    /// Room urgent notification state V1
+    /// Room urgent notification state
     /// Stores bounded activation, reminder, and recovery state for one room.
     /// Persist each state transition before sending its notification so a
     /// restart does not reset confirmation intervals or create an avoidable
     /// duplicate-warning burst.
     RoomUrgentNotificationStateV1 {
         /// Urgent-condition trackers
-        /// At most one tracker exists for each V1 condition. An absent tracker
+        /// At most one tracker exists for each condition. An absent tracker
         /// means that condition is inactive with no pending transition.
         /// ----
         /// Urgent-condition tracker
@@ -2557,7 +2556,7 @@ pub enum BuildingHvacPersistentDataV1 {
         #[libertas_size(max = 5)]
         conditions: Vec<BuildingHvacPersistedUrgentConditionV1>,
     },
-    /// Machine-learning models V1
+    /// Machine-learning models
     /// Stores every accepted thermal model together with one rollback artifact
     /// per horizon. A candidate is persisted here before it is activated on the
     /// XGBoost worker.
@@ -2566,7 +2565,7 @@ pub enum BuildingHvacPersistentDataV1 {
         /// Complete bounded active and rollback model state.
         models: BuildingHvacMachineLearningModelSetV1,
     },
-    /// Machine-learning sample V1
+    /// Machine-learning sample
     /// One record in a room-keyed indexed history. Its database index is
     /// `sample.observed_at`; the value repeats the timestamp and stable room
     /// endpoint so a mismatched or corrupt record can be rejected. The
@@ -2753,7 +2752,7 @@ impl BuildingHvacUrgentNotificationEngine {
     }
 
     /// Restore urgent notification engine
-    /// Keeps only well-formed unique V1 trackers and orders them by condition.
+    /// Keeps only well-formed unique trackers and orders them by condition.
     /// Invalid or duplicate decoded records are ignored rather than exposed.
     pub fn restore(
         conditions: Vec<BuildingHvacPersistedUrgentConditionV1>,
@@ -2779,7 +2778,7 @@ impl BuildingHvacUrgentNotificationEngine {
 
     /// Persisted urgent conditions
     /// Returns the complete validated tracker list to store in
-    /// `RoomUrgentNotificationStateV1`.
+    /// the room's urgent-notification state.
     pub fn persisted_conditions(&self) -> &[BuildingHvacPersistedUrgentConditionV1] {
         &self.conditions
     }
@@ -3264,7 +3263,7 @@ pub struct BuildingHvacAnalyticsEngine;
 
 impl BuildingHvacAnalyticsEngine {
     /// New analytics engine
-    /// Creates the stateless V1 analytics implementation.
+    /// Creates the stateless analytics implementation.
     pub const fn new() -> Self {
         Self
     }
@@ -3859,7 +3858,7 @@ pub struct BuildingHvacControlEngine;
 
 impl BuildingHvacControlEngine {
     /// New control engine
-    /// Creates the stateless V1 shared-zone arbitration implementation.
+    /// Creates the stateless shared-zone arbitration implementation.
     pub const fn new() -> Self {
         Self
     }

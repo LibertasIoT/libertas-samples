@@ -1,6 +1,6 @@
 //! Bounded XGBoost thermal prediction for the Hub runtime.
 //!
-//! The public V1 values in this module describe training evidence, persisted
+//! The public values in this module describe training evidence, persisted
 //! model artifacts, and user-visible prediction state. XGBoost itself stays
 //! behind the safe `xgb` wrapper and is owned by one worker thread.
 
@@ -32,7 +32,7 @@ use xgb::{
 };
 
 /// Machine-learning feature schema version
-/// Identifies the exact ordered V1 thermal feature vector. A persisted model is
+/// Identifies the exact ordered thermal feature vector. A persisted model is
 /// rejected rather than interpreted with a different feature order.
 pub const BUILDING_HVAC_ML_FEATURE_SCHEMA_VERSION: u32 = 1;
 
@@ -133,7 +133,7 @@ pub const BUILDING_HVAC_XGBOOST_VERSION: &str = "3.0.0";
 
 pub(crate) const BUILDING_HVAC_ML_SAMPLE_RESOURCE: &str = "HVAC_ML_SAMPLE";
 
-/// Thermal prediction horizon V1
+/// Thermal prediction horizon
 /// Selects one independently trained room-temperature-change model. Separate
 /// models avoid silently combining targets with different error distributions.
 #[derive(
@@ -172,7 +172,7 @@ impl BuildingHvacThermalPredictionHorizonV1 {
     }
 }
 
-/// Named machine-learning feature V1
+/// Named machine-learning feature
 /// Defines one stable column in the building-specific XGBoost matrix. The name
 /// includes its family, stable device or room identity when applicable,
 /// measurement, unit, and lookback or forecast horizon. `None` is encoded as
@@ -204,7 +204,7 @@ impl BuildingHvacMachineLearningFeatureV1 {
     }
 }
 
-/// XGBoost thermal features V1
+/// XGBoost thermal features
 /// Contains the exact ordered inputs for one target-room observation. Every
 /// configured room and thermostat receives its own stable columns so XGBoost
 /// can learn shared-source and cross-zone correlations without a configured
@@ -294,7 +294,7 @@ impl BuildingHvacMachineLearningFeaturesV1 {
     }
 }
 
-/// Indexed machine-learning feature V1
+/// Indexed machine-learning feature
 /// Stores one present value from a compact sparse observation. Missing columns
 /// are omitted; semantic zeros remain present entries.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -307,7 +307,7 @@ pub struct BuildingHvacMachineLearningIndexedFeatureV1 {
     pub value: f32,
 }
 
-/// Compact machine-learning feature vector V1
+/// Compact machine-learning feature vector
 /// Stores one ordered observation without repeating thousands of feature-name
 /// strings in every indexed record. The corresponding full ordered names are
 /// regenerated from configuration and checked against `manifest_sha256` before
@@ -400,7 +400,7 @@ fn feature_manifest_is_well_formed(names: &[String]) -> bool {
         && names.windows(2).all(|pair| pair[0] < pair[1])
 }
 
-/// Machine-learning training sample V1
+/// Machine-learning training sample
 /// One indexed room observation and the temperature changes later measured at
 /// each supported horizon. It is written only after at least one target becomes
 /// known; missing targets remain available for later completion.
@@ -414,7 +414,7 @@ pub struct BuildingHvacMachineLearningSampleV1 {
     /// room history.
     pub room_endpoint: LibertasEndpoint,
     /// Features
-    /// Compact sparse V1 thermal feature values at `observed_at`. The manifest
+    /// Compact sparse thermal feature values at `observed_at`. The manifest
     /// hash must match the full ordered names regenerated for this building.
     pub features: BuildingHvacMachineLearningFeatureVectorV1,
     /// Fifteen-minute temperature change
@@ -469,7 +469,7 @@ impl BuildingHvacMachineLearningSampleV1 {
     }
 }
 
-/// Machine-learning validation metrics V1
+/// Machine-learning validation metrics
 /// Time-forward validation evidence used to decide whether a model may replace
 /// the deterministic fallback or an older accepted model.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -496,7 +496,7 @@ pub struct BuildingHvacMachineLearningValidationV1 {
 
 impl BuildingHvacMachineLearningValidationV1 {
     /// Promotion quality
-    /// Returns true only for finite metrics that meet the V1 sample and
+    /// Returns true only for finite metrics that meet the sample and
     /// improvement requirements.
     pub fn permits_promotion(&self) -> bool {
         self.training_sample_count as usize + self.validation_sample_count as usize
@@ -512,7 +512,7 @@ impl BuildingHvacMachineLearningValidationV1 {
     }
 }
 
-/// Persisted XGBoost thermal model V1
+/// Persisted XGBoost thermal model
 /// Self-describing accepted model artifact. The UBJSON bytes are loaded only
 /// after the manifest, validation evidence, feature order, and checksum pass.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -548,10 +548,10 @@ pub struct BuildingHvacMachineLearningModelV1 {
     /// Latest feature timestamp included in candidate fitting.
     pub training_range_ends_at: LibertasDateTime,
     /// Boost rounds
-    /// Number of shallow trees fitted by the bounded V1 training policy.
+    /// Number of shallow trees fitted by the bounded training policy.
     pub boost_rounds: u32,
     /// Maximum tree depth
-    /// Maximum depth allowed by the bounded V1 training policy.
+    /// Maximum depth allowed by the bounded training policy.
     pub maximum_tree_depth: u32,
     /// Learning rate
     /// XGBoost shrinkage used during fitting.
@@ -591,7 +591,7 @@ impl BuildingHvacMachineLearningModelV1 {
     }
 }
 
-/// Persisted model slot V1
+/// Persisted model slot
 /// Keeps one active model and one immediate rollback artifact for a prediction
 /// horizon. The previous model is never used unless explicitly restored.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -607,7 +607,7 @@ pub struct BuildingHvacMachineLearningModelSlotV1 {
     pub previous_model: Option<BuildingHvacMachineLearningModelV1>,
 }
 
-/// Persisted model set V1
+/// Persisted model set
 /// Complete bounded set of independently promoted thermal models.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct BuildingHvacMachineLearningModelSetV1 {
@@ -615,7 +615,7 @@ pub struct BuildingHvacMachineLearningModelSetV1 {
     /// Stable room identity used as the persistent database key.
     pub room_endpoint: LibertasEndpoint,
     /// Model slots
-    /// At most one active and one rollback model for each V1 horizon.
+    /// At most one active and one rollback model for each horizon.
     /// ----
     /// Model slot
     /// One independently validated thermal horizon.
@@ -685,7 +685,7 @@ impl BuildingHvacMachineLearningModelSetV1 {
     }
 }
 
-/// Thermal prediction source V1
+/// Thermal prediction source
 /// Makes deterministic fallback explicit rather than presenting it as a
 /// learned result.
 #[derive(
@@ -701,7 +701,7 @@ pub enum BuildingHvacThermalPredictionSourceV1 {
     DeterministicFallback,
 }
 
-/// Room thermal prediction V1
+/// Room thermal prediction
 /// One bounded read-only near-term prediction used as an input to deterministic
 /// planning and shared-thermostat arbitration.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -725,8 +725,8 @@ pub struct BuildingHvacThermalPredictionV1 {
     pub model_trained_at: Option<LibertasDateTime>,
 }
 
-/// Room machine-learning state V1
-/// Read-only model state and latest predictions exposed inside `RoomDataV1`.
+/// Room machine-learning state
+/// Read-only model state and latest predictions exposed with room data.
 #[derive(
     Clone, Debug, Default, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
@@ -820,7 +820,7 @@ pub enum BuildingHvacMachineLearningQueueError {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum BuildingHvacMachineLearningHistoryError {
     /// Invalid sample
-    /// A feature, target, room identity, or timestamp violates the V1 contract.
+    /// A feature, target, room identity, or timestamp violates the contract.
     InvalidSample,
     /// Conflicting observation
     /// A record already exists at this room timestamp with different features
@@ -831,7 +831,7 @@ pub enum BuildingHvacMachineLearningHistoryError {
 /// Machine-learning indexed history
 /// Libertas-thread helpers for merging labeled samples and loading an ordered
 /// bounded training window. Values are always persisted through
-/// `BuildingHvacPersistentDataV1::MachineLearningSampleV1`.
+/// the application's machine-learning sample record.
 pub struct BuildingHvacMachineLearningHistory;
 
 impl BuildingHvacMachineLearningHistory {

@@ -83,7 +83,7 @@ pub const APP_STRINGS: [(&str, &str); 1] = [(
 )];
 const ZONE_DATA_RESOURCE: &str = APP_STRINGS[0].0;
 
-/// Sprinkler time slot V1
+/// Sprinkler time slot
 /// Defines one half-open schedule or hold-off interval.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
@@ -112,7 +112,7 @@ impl SprinklerTimeSlotV1 {
     }
 }
 
-/// Sprinkler soil type V1
+/// Sprinkler soil type
 /// Selects a curated plant-available water capacity. The controller combines
 /// this profile with the planting's effective root depth; users do not enter a
 /// raw field-capacity value.
@@ -143,7 +143,7 @@ pub enum SprinklerSoilTypeV1 {
     SiltyClay,
 }
 
-/// Sprinkler planting type V1
+/// Sprinkler planting type
 /// Selects the effective root depth and weather crop coefficient used by the
 /// zone's water-balance calculation.
 #[derive(
@@ -173,7 +173,7 @@ pub enum SprinklerPlantingTypeV1 {
     Xeriscape,
 }
 
-/// Sprinkler schedule condition V1
+/// Sprinkler schedule condition
 /// Explains the current calculated schedule and why watering may be deferred.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
@@ -216,7 +216,7 @@ pub enum SprinklerScheduleConditionV1 {
     ValveFault,
 }
 
-/// Sprinkler zone schedule V1
+/// Sprinkler zone schedule
 /// Exposes the complete current calculation for one zone, including its next
 /// watering slot, user constraints, recent water, and valve state.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -277,19 +277,19 @@ pub struct SprinklerZoneScheduleV1 {
     pub valve_fault_bitmap: u16,
 }
 
-/// Sprinkler zone protocol V1
+/// Sprinkler zone protocol
 /// Reads or subscribes to the calculated schedule and updates the zone's one
 /// normalized watering preference or hold-off constraints.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerZoneProtocolV1 {
-    /// Get schedule V1
+    /// Get schedule
     /// Requests the current calculated schedule. The same message may establish
     /// a subscription because the endpoint operation is outside this value.
     #[libertas_request]
     #[libertas_subscription_request]
     #[libertas_next_response(ScheduleV1)]
     GetScheduleV1,
-    /// Set more or less water V1
+    /// Set more or less water
     /// Updates the one normalized user tuning parameter for this zone.
     #[libertas_request]
     #[libertas_next_response(ScheduleV1)]
@@ -301,7 +301,7 @@ pub enum SprinklerZoneProtocolV1 {
         #[libertas_number(min = -1, max = 1, step = 0.05)]
         more_or_less_water_normalized: f32,
     },
-    /// Replace hold-off periods V1
+    /// Replace hold-off periods
     /// Replaces all scheduling constraints for this zone. Overlapping or
     /// touching periods are normalized into sorted merged intervals.
     #[libertas_request]
@@ -315,7 +315,7 @@ pub enum SprinklerZoneProtocolV1 {
         #[libertas_size(max = 64)]
         hold_off_periods: Vec<SprinklerTimeSlotV1>,
     },
-    /// Schedule V1
+    /// Schedule
     /// Returns the current calculation or reports a later schedule change.
     #[libertas_response]
     #[libertas_subscription_data]
@@ -326,12 +326,12 @@ pub enum SprinklerZoneProtocolV1 {
     },
 }
 
-/// Recent sprinkler water event V1
+/// Recent sprinkler water event
 /// Stores one independently correctable weather period or one observed
 /// irrigation interval in the persisted seven-day water ledger.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerRecentWaterEventV1 {
-    /// Weather period V1
+    /// Weather period
     /// Records provider precipitation and reference evapotranspiration for one
     /// completed historical period.
     WeatherV1 {
@@ -353,7 +353,7 @@ pub enum SprinklerRecentWaterEventV1 {
         #[libertas_number(min = 0)]
         reference_evapotranspiration_millimeters: f32,
     },
-    /// Irrigation interval V1
+    /// Irrigation interval
     /// Records water inferred from actual Matter Valve open time, including
     /// manual openings.
     IrrigationV1 {
@@ -396,7 +396,7 @@ impl SprinklerRecentWaterEventV1 {
     }
 }
 
-/// Sprinkler zone memory V1
+/// Sprinkler zone memory
 /// Persists the complete restart-safe user preference and water-balance input
 /// history for one configured valve.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -430,12 +430,12 @@ pub struct SprinklerZoneMemoryV1 {
     pub recent_water_events: Vec<SprinklerRecentWaterEventV1>,
 }
 
-/// Sprinkler persistent data V1
+/// Sprinkler persistent data
 /// Defines every value written by the sprinkler application. Each zone is
 /// stored independently under its Matter Valve object key.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerDataV1 {
-    /// Zone memory V1
+    /// Zone memory
     /// Stores one zone's runtime preference, constraints, and water ledger.
     ZoneMemoryV1 {
         /// Zone memory
@@ -444,7 +444,7 @@ pub enum SprinklerDataV1 {
     },
 }
 
-/// Sprinkler zone V1
+/// Sprinkler zone
 /// Configures the physical facts needed to calculate and execute watering for
 /// one area. User preferences and hold-offs are runtime data, not configuration.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]

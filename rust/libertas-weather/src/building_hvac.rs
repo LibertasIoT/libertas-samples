@@ -1,4 +1,4 @@
-//! Building HVAC weather V1 definitions.
+//! Building HVAC weather definitions.
 //!
 //! This family serves whole-house and whole-building HVAC applications. It
 //! carries the outdoor conditions needed for supervisory control and predictive
@@ -92,7 +92,7 @@ pub const BUILDING_HVAC_SUBSCRIPTION_REPLAY_WINDOW_SECONDS: u32 = 24 * 60 * 60;
 /// applied cursor. The server reports a change or empty heartbeat first.
 pub const BUILDING_HVAC_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS: u32 = 20 * 60;
 
-/// Building HVAC precipitation kind V1
+/// Building HVAC precipitation kind
 /// Classifies precipitation when its phase can affect outdoor coils, air
 /// intakes, dampers, or other exposed HVAC equipment.
 #[derive(
@@ -120,7 +120,7 @@ pub enum BuildingHvacPrecipitationKindV1 {
     Unknown,
 }
 
-/// Building HVAC outdoor conditions V1
+/// Building HVAC outdoor conditions
 /// Contains the physical outdoor inputs required for HVAC load prediction,
 /// psychrometric calculations, economizer decisions, infiltration estimation,
 /// and weather-aware operation of exposed equipment.
@@ -207,7 +207,7 @@ pub struct BuildingHvacOutdoorConditionsV1 {
     pub diffuse_horizontal_irradiance_watts_per_square_meter: f32,
 }
 
-/// Building HVAC historical weather period V1
+/// Building HVAC historical weather period
 /// Contains the outdoor conditions for one completed period used to restore or
 /// update a building thermal-state estimate.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -226,7 +226,7 @@ pub struct BuildingHvacWeatherHistoryPeriodV1 {
     pub conditions: BuildingHvacOutdoorConditionsV1,
 }
 
-/// Building HVAC weather history V1
+/// Building HVAC weather history
 /// Contains recent completed outdoor-condition periods used for short-term
 /// thermal-state recovery. Long-term building learning belongs to the HVAC
 /// application's own telemetry and model persistence.
@@ -259,7 +259,7 @@ impl BuildingHvacWeatherHistoryV1 {
     }
 }
 
-/// Building HVAC current weather V1
+/// Building HVAC current weather
 /// Contains the latest modeled outdoor conditions used by supervisory HVAC
 /// control. It does not replace a local outdoor sensor used for equipment or
 /// freeze protection.
@@ -299,7 +299,7 @@ impl BuildingHvacCurrentWeatherV1 {
     }
 }
 
-/// Building HVAC forecast period V1
+/// Building HVAC forecast period
 /// Contains predicted outdoor conditions for one model-predictive HVAC planning
 /// period.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -323,7 +323,7 @@ pub struct BuildingHvacWeatherForecastPeriodV1 {
     pub conditions: BuildingHvacOutdoorConditionsV1,
 }
 
-/// Building HVAC weather forecast V1
+/// Building HVAC weather forecast
 /// Contains future outdoor conditions for load prediction, preheating,
 /// precooling, thermal storage, and weather-aware ventilation planning.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -356,7 +356,7 @@ impl BuildingHvacWeatherForecastV1 {
     }
 }
 
-/// Building HVAC outdoor-air-quality period V1
+/// Building HVAC outdoor-air-quality period
 /// Contains modeled outdoor pollutant concentrations used to avoid increasing
 /// mechanical outdoor-air intake during unhealthy conditions. These regional
 /// model values do not replace local safety sensors or official emergency
@@ -390,7 +390,7 @@ pub struct BuildingHvacOutdoorAirQualityPeriodV1 {
     pub nitrogen_dioxide_micrograms_per_cubic_meter: f32,
 }
 
-/// Building HVAC outdoor air quality V1
+/// Building HVAC outdoor air quality
 /// Contains current and forecast modeled outdoor pollutant periods for
 /// ventilation planning. It is independently optional and independently cached
 /// from physical weather.
@@ -423,7 +423,7 @@ impl BuildingHvacOutdoorAirQualityV1 {
     }
 }
 
-/// Building HVAC weather cursor V1
+/// Building HVAC weather cursor
 /// Identifies one fully applied state in an incremental building-HVAC weather
 /// stream. Clients compare the epoch timestamp and sequence together.
 #[derive(
@@ -465,7 +465,7 @@ impl BuildingHvacWeatherCursorV1 {
     }
 }
 
-/// Building HVAC weather time range V1
+/// Building HVAC weather time range
 /// Selects a half-open interval of history, forecast, or outdoor-air-quality
 /// periods by their start times.
 #[derive(
@@ -491,7 +491,7 @@ impl BuildingHvacWeatherTimeRangeV1 {
     }
 }
 
-/// Building HVAC weather snapshot V1
+/// Building HVAC weather snapshot
 /// Contains the last successfully accepted value of each requested section.
 /// Missing sections have no usable cache; stale sections remain present with
 /// their original freshness deadlines.
@@ -515,7 +515,7 @@ pub struct BuildingHvacWeatherSnapshotV1 {
     pub outdoor_air_quality: Option<BuildingHvacOutdoorAirQualityV1>,
 }
 
-/// Building HVAC weather section V1
+/// Building HVAC weather section
 /// Identifies one independently cached building-HVAC weather section.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
@@ -535,12 +535,12 @@ pub enum BuildingHvacWeatherSectionV1 {
     OutdoorAirQuality,
 }
 
-/// Building HVAC weather change V1
+/// Building HVAC weather change
 /// Defines one atomic mutation in the incremental building-HVAC weather stream.
 /// Variant and field order are part of the Avro wire contract.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum BuildingHvacWeatherChangeV1 {
-    /// Upsert historical periods V1
+    /// Upsert historical periods
     /// Inserts or replaces completed periods by `starts_at` after a successful
     /// history refresh.
     HistoryPeriodsUpsertV1 {
@@ -557,7 +557,7 @@ pub enum BuildingHvacWeatherChangeV1 {
         /// One completed outdoor-condition period keyed by `starts_at`.
         periods: Vec<BuildingHvacWeatherHistoryPeriodV1>,
     },
-    /// Remove historical periods V1
+    /// Remove historical periods
     /// Removes historical periods whose start times fall within the supplied
     /// half-open range.
     HistoryPeriodsRemoveV1 {
@@ -565,7 +565,7 @@ pub enum BuildingHvacWeatherChangeV1 {
         /// The half-open range of historical period start times to remove.
         range: BuildingHvacWeatherTimeRangeV1,
     },
-    /// Replace current conditions V1
+    /// Replace current conditions
     /// Replaces the complete current-condition section after successful
     /// retrieval, validation, and persistence.
     CurrentReplaceV1 {
@@ -573,7 +573,7 @@ pub enum BuildingHvacWeatherChangeV1 {
         /// The complete newly accepted current-condition section.
         current: BuildingHvacCurrentWeatherV1,
     },
-    /// Upsert forecast periods V1
+    /// Upsert forecast periods
     /// Inserts or replaces future periods by `starts_at` after a successful
     /// forecast refresh.
     ForecastPeriodsUpsertV1 {
@@ -590,7 +590,7 @@ pub enum BuildingHvacWeatherChangeV1 {
         /// One future outdoor-condition period keyed by `starts_at`.
         periods: Vec<BuildingHvacWeatherForecastPeriodV1>,
     },
-    /// Remove forecast periods V1
+    /// Remove forecast periods
     /// Removes forecast periods whose start times fall within the supplied
     /// half-open range.
     ForecastPeriodsRemoveV1 {
@@ -598,7 +598,7 @@ pub enum BuildingHvacWeatherChangeV1 {
         /// The half-open range of forecast period start times to remove.
         range: BuildingHvacWeatherTimeRangeV1,
     },
-    /// Upsert outdoor-air-quality periods V1
+    /// Upsert outdoor-air-quality periods
     /// Inserts or replaces pollutant periods by `starts_at` after a successful
     /// air-quality refresh.
     OutdoorAirQualityPeriodsUpsertV1 {
@@ -616,7 +616,7 @@ pub enum BuildingHvacWeatherChangeV1 {
         /// One modeled pollutant period keyed by `starts_at`.
         periods: Vec<BuildingHvacOutdoorAirQualityPeriodV1>,
     },
-    /// Remove outdoor-air-quality periods V1
+    /// Remove outdoor-air-quality periods
     /// Removes pollutant periods whose start times fall within the supplied
     /// half-open range.
     OutdoorAirQualityPeriodsRemoveV1 {
@@ -624,7 +624,7 @@ pub enum BuildingHvacWeatherChangeV1 {
         /// The half-open range of air-quality period start times to remove.
         range: BuildingHvacWeatherTimeRangeV1,
     },
-    /// Clear weather section V1
+    /// Clear weather section
     /// Clears one section only after its cached value is proven invalid. A
     /// provider, internet, or refresh failure alone must not clear a section.
     SectionClearV1 {
@@ -632,21 +632,21 @@ pub enum BuildingHvacWeatherChangeV1 {
         /// The independently cached section to clear.
         section: BuildingHvacWeatherSectionV1,
     },
-    /// Replace history V1
+    /// Replace history
     /// Replaces the complete historical section after a successful refresh.
     HistoryReplaceV1 {
         /// History
         /// The complete newly accepted history section.
         history: BuildingHvacWeatherHistoryV1,
     },
-    /// Replace forecast V1
+    /// Replace forecast
     /// Replaces the complete forecast section after a successful refresh.
     ForecastReplaceV1 {
         /// Forecast
         /// The complete newly accepted forecast section.
         forecast: BuildingHvacWeatherForecastV1,
     },
-    /// Replace outdoor air quality V1
+    /// Replace outdoor air quality
     /// Replaces the complete modeled pollutant section after a successful
     /// refresh.
     OutdoorAirQualityReplaceV1 {
@@ -656,7 +656,7 @@ pub enum BuildingHvacWeatherChangeV1 {
     },
 }
 
-/// Building HVAC weather incremental report V1
+/// Building HVAC weather incremental report
 /// Carries an ordered, atomic range of building-HVAC weather changes. A client
 /// applies it only when `from_cursor` exactly matches the last fully applied
 /// cursor. An empty report is a cursor-preserving heartbeat.
@@ -702,7 +702,7 @@ impl BuildingHvacWeatherIncrementalReportV1 {
     }
 }
 
-/// Building HVAC weather reset reason V1
+/// Building HVAC weather reset reason
 /// Explains why recovery established state from a range-limited snapshot instead
 /// of replaying incremental changes.
 #[derive(
@@ -721,7 +721,7 @@ pub enum BuildingHvacWeatherResetReasonV1 {
     ServerCursorReset,
 }
 
-/// Building HVAC weather recovery error V1
+/// Building HVAC weather recovery error
 /// Identifies a recovery request that cannot be satisfied by replay or a
 /// range-limited cached snapshot.
 #[derive(
@@ -744,12 +744,12 @@ pub enum BuildingHvacWeatherRecoveryErrorV1 {
     TemporarilyUnavailable,
 }
 
-/// Building HVAC weather recovery V1
+/// Building HVAC weather recovery
 /// Replays retained changes, establishes a new cursor and snapshot, or reports a
 /// recoverable request error.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum BuildingHvacWeatherRecoveryV1 {
-    /// Replayed changes V1
+    /// Replayed changes
     /// Continues the stream with every retained change after the supplied
     /// cursor. An empty report means the client is caught up.
     ReplayedV1 {
@@ -757,7 +757,7 @@ pub enum BuildingHvacWeatherRecoveryV1 {
         /// The contiguous retained change range beginning at the request cursor.
         report: BuildingHvacWeatherIncrementalReportV1,
     },
-    /// Reset with snapshot V1
+    /// Reset with snapshot
     /// Establishes state from independently cached sections when replay is
     /// impossible or no cursor was supplied.
     ResetV1 {
@@ -771,7 +771,7 @@ pub enum BuildingHvacWeatherRecoveryV1 {
         /// The available cached sections constrained by requested ranges.
         snapshot: BuildingHvacWeatherSnapshotV1,
     },
-    /// Recovery error V1
+    /// Recovery error
     /// Rejects the request without changing client cursor or cached weather.
     ErrorV1 {
         /// Error
@@ -784,13 +784,13 @@ pub enum BuildingHvacWeatherRecoveryV1 {
     },
 }
 
-/// Building HVAC weather protocol V1
+/// Building HVAC weather protocol
 /// Defines one-shot and subscription transactions for whole-house or
 /// whole-building HVAC weather. The Libertas endpoint operation, not a field in
 /// this arbitrary message contract, selects one-shot or subscription behavior.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum BuildingHvacWeatherProtocolV1 {
-    /// Get building HVAC weather V1
+    /// Get building HVAC weather
     /// Performs a one-shot incremental read or starts or resumes a subscription.
     /// The server replays retained changes after `after_cursor` when possible or
     /// returns independently cached sections constrained to the requested
@@ -820,7 +820,7 @@ pub enum BuildingHvacWeatherProtocolV1 {
         /// impossible. `None` excludes modeled outdoor air quality.
         outdoor_air_quality_range: Option<BuildingHvacWeatherTimeRangeV1>,
     },
-    /// Building HVAC weather recovery V1
+    /// Building HVAC weather recovery
     /// Responds to every valid get request with replay, a reset snapshot, or a
     /// typed error. Subscription clients restart their timeout after successful
     /// recovery and every later data report.
@@ -838,7 +838,7 @@ pub enum BuildingHvacWeatherProtocolV1 {
         /// The replay, reset snapshot, or typed error result.
         recovery: BuildingHvacWeatherRecoveryV1,
     },
-    /// Building HVAC weather increment V1
+    /// Building HVAC weather increment
     /// Reports changes following successful subscription recovery. A client
     /// applies the complete contiguous range or applies none of it.
     #[libertas_subscription_data]
@@ -849,7 +849,7 @@ pub enum BuildingHvacWeatherProtocolV1 {
     },
 }
 
-/// Building HVAC weather location V1
+/// Building HVAC weather location
 /// Stores the Libertas Hub location used to retrieve weather for one whole
 /// house or building.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -865,21 +865,21 @@ pub struct BuildingHvacWeatherLocationV1 {
     pub latitude_degrees: f64,
 }
 
-/// Building HVAC weather persistent data V1
+/// Building HVAC weather persistent data
 /// Defines every value a building-HVAC weather server may write to the Libertas
 /// database. Each variant is stored under its own stable resource identifier so
 /// partial provider failure cannot erase another section. Subscription cursors,
 /// journals, peers, and heartbeat deadlines are deliberately not persistent.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum BuildingHvacWeatherPersistentDataV1 {
-    /// Building location V1
+    /// Building location
     /// Stores the last valid site coordinates received from the Libertas Hub.
     LocationV1 {
         /// Location
         /// The WGS84 site coordinates used for provider requests.
         location: BuildingHvacWeatherLocationV1,
     },
-    /// Recent history V1
+    /// Recent history
     /// Stores the last successfully accepted physical-weather history.
     HistoryV1 {
         /// History
@@ -887,21 +887,21 @@ pub enum BuildingHvacWeatherPersistentDataV1 {
         /// timestamps.
         history: BuildingHvacWeatherHistoryV1,
     },
-    /// Current conditions V1
+    /// Current conditions
     /// Stores the last successfully accepted current physical weather.
     CurrentV1 {
         /// Current conditions
         /// Current outdoor HVAC inputs with validity and retrieval timestamps.
         current: BuildingHvacCurrentWeatherV1,
     },
-    /// Forecast V1
+    /// Forecast
     /// Stores the last successfully accepted physical-weather forecast.
     ForecastV1 {
         /// Forecast
         /// Future outdoor HVAC inputs with retrieval and freshness timestamps.
         forecast: BuildingHvacWeatherForecastV1,
     },
-    /// Outdoor air quality V1
+    /// Outdoor air quality
     /// Stores the last successfully accepted modeled pollutant data separately
     /// from physical weather.
     OutdoorAirQualityV1 {
