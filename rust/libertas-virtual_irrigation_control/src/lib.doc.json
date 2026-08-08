@@ -6,7 +6,7 @@
     {
       "Name": "virtual_irrigation_controller",
       "DisplayName": "Emulate a multi-zone sprinkler.",
-      "Description": "",
+      "Description": "Each valve is a binary Matter Valve Configuration and Control server. The\ncontroller permits only one valve to be open at a time.",
       "List": [
         {
           "Type": 0,
@@ -19,8 +19,34 @@
           "Description": ""
         }
       ],
-      "Strings": {}
+      "Strings": {
+        "Default open duration for %1$s.": ""
+      }
     }
   ],
-  "Types": []
+  "Types": [
+    {
+      "Name": "ValveData",
+      "DisplayName": "Persistent valve data.",
+      "Description": "Every data shape written to the Libertas database is defined inline in\nthis union.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Persistent valve data.",
+          "Description": "Every data shape written to the Libertas database is defined inline in\nthis union."
+        },
+        {
+          "Type": 1,
+          "Name": "Matter DefaultOpenDuration attribute.",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "DefaultOpenDuration, in seconds.",
+          "Description": ""
+        }
+      ],
+      "Strings": {}
+    }
+  ]
 }

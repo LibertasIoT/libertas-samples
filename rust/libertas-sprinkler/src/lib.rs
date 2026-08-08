@@ -2005,7 +2005,6 @@ pub fn libertas_sprinkler(
      * safe current conditions.
      */
     #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)]
-    #[libertas_foreign_type("libertas-weather::SprinklerWeatherProtocolV1")]
     weather_endpoint: LibertasEndpoint,
     /*
      * Sprinkler zones
