@@ -114,14 +114,14 @@ const CURRENT_RESOURCE: &str = APP_STRINGS[1].0;
 const FORECAST_RESOURCE: &str = APP_STRINGS[2].0;
 const LOCATION_RESOURCE: &str = APP_STRINGS[3].0;
 
-/// Sprinkler weather endpoint server V1
+/// Sprinkler weather endpoint server
 /// Configures the one server endpoint through which sprinkler applications
 /// request current data or establish incremental subscriptions.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWeatherEndpointServerV1 {
     /// Sprinkler weather endpoint
-    /// The server endpoint exposing `SprinklerWeatherProtocolV1`. Both one-shot
-    /// and subscription clients send `GetWeatherV1` to this endpoint.
+    /// The server endpoint for sprinkler weather. Both one-shot and
+    /// subscription clients request weather through this endpoint.
     #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)]
     #[libertas_endpoint_server]
     #[libertas_ui_header]

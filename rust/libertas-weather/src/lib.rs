@@ -1,5 +1,5 @@
 //! Libertas Weather
-//! Defines versioned weather data tailored to the decisions made by Libertas
+//! Defines weather data tailored to the decisions made by Libertas
 //! applications.
 //! #[libertas_types_only]
 //!
@@ -104,12 +104,12 @@ pub const SPRINKLER_SUBSCRIPTION_REPLAY_WINDOW_SECONDS: u32 = 24 * 60 * 60;
 
 /// Subscription maximum wait interval
 /// The default maximum number of seconds a subscribed client waits after a
-/// response or data report before retrying `GetWeatherV1` with its last
+/// response or data report before requesting weather again with its last
 /// applied cursor. The server sends an incremental report, including an empty
 /// heartbeat report when necessary, before this interval expires.
 pub const SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS: u32 = 20 * 60;
 
-/// Sprinkler weather history period V1
+/// Sprinkler weather history period
 /// Contains the precipitation input and reference evapotranspiration loss for
 /// one completed period in a sprinkler irrigation water balance.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -136,7 +136,7 @@ pub struct SprinklerWeatherHistoryPeriodV1 {
     pub reference_evapotranspiration_millimeters: f32,
 }
 
-/// Sprinkler weather history V1
+/// Sprinkler weather history
 /// Contains recent completed hourly periods used to reconstruct and update the
 /// sprinkler irrigation water balance. The last successful value is retained
 /// when a later history refresh fails.
@@ -171,7 +171,7 @@ impl SprinklerWeatherHistoryV1 {
     }
 }
 
-/// Sprinkler current weather V1
+/// Sprinkler current weather
 /// Contains immediate rain, freeze, wind, and water-balance inputs used to
 /// decide whether an otherwise scheduled watering operation may safely start or
 /// continue.
@@ -235,7 +235,7 @@ impl SprinklerCurrentWeatherV1 {
     }
 }
 
-/// Sprinkler weather forecast period V1
+/// Sprinkler weather forecast period
 /// Contains predicted water input, water loss, temperature, and wind hazards
 /// used to decide when and how much to water during one planning period.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -282,7 +282,7 @@ pub struct SprinklerWeatherForecastPeriodV1 {
     pub wind_gust_meters_per_second: f32,
 }
 
-/// Sprinkler weather forecast V1
+/// Sprinkler weather forecast
 /// Contains future hourly weather inputs used to plan sprinkler irrigation over
 /// the next seven days. The last successful value is retained when a later
 /// forecast refresh fails.
@@ -318,7 +318,7 @@ impl SprinklerWeatherForecastV1 {
     }
 }
 
-/// Sprinkler weather cursor V1
+/// Sprinkler weather cursor
 /// Identifies one applied state in an incremental sprinkler-weather stream. A
 /// client compares both fields and must not interpret a smaller sequence alone
 /// as a server reset.
@@ -338,7 +338,7 @@ pub struct SprinklerWeatherCursorV1 {
     pub epoch_timestamp: LibertasDateTime,
     /// Sequence
     /// Identifies the latest applied state change. The server increments this
-    /// value once for every `SprinklerWeatherChangeV1`. It resets this value to
+    /// value once for every accepted weather change. It resets this value to
     /// zero when the transient server cursor is reset, then increments it for
     /// later changes; a reset does not clear historical, current, or forecast
     /// weather data.
@@ -371,7 +371,7 @@ impl SprinklerWeatherCursorV1 {
     }
 }
 
-/// Sprinkler weather time range V1
+/// Sprinkler weather time range
 /// Selects a half-open interval of historical or forecast periods for recovery.
 /// A period is selected when its start time is at least `starts_at` and earlier
 /// than `ends_before`.
@@ -398,7 +398,7 @@ impl SprinklerWeatherTimeRangeV1 {
     }
 }
 
-/// Sprinkler weather snapshot V1
+/// Sprinkler weather snapshot
 /// Contains the last successfully accepted value of each requested weather
 /// section. Missing sections have no usable cached value; stale sections remain
 /// present with their original `valid_until` timestamps.
@@ -415,7 +415,7 @@ pub struct SprinklerWeatherSnapshotV1 {
     pub forecast: Option<SprinklerWeatherForecastV1>,
 }
 
-/// Sprinkler weather section V1
+/// Sprinkler weather section
 /// Identifies one independently cached sprinkler-weather section.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
@@ -432,12 +432,12 @@ pub enum SprinklerWeatherSectionV1 {
     Forecast,
 }
 
-/// Sprinkler weather change V1
+/// Sprinkler weather change
 /// Defines one atomic mutation in the incremental sprinkler-weather stream.
 /// Variant order and field order are part of the append-only Avro wire format.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerWeatherChangeV1 {
-    /// Upsert historical periods V1
+    /// Upsert historical periods
     /// Marks a successful history refresh and inserts or replaces periods by
     /// `starts_at`. An empty period list updates only retrieval and freshness
     /// metadata.
@@ -455,7 +455,7 @@ pub enum SprinklerWeatherChangeV1 {
         /// One completed water-balance period keyed by `starts_at`.
         periods: Vec<SprinklerWeatherHistoryPeriodV1>,
     },
-    /// Remove historical periods V1
+    /// Remove historical periods
     /// Removes cached historical periods whose start times fall within the
     /// supplied half-open range.
     HistoryPeriodsRemoveV1 {
@@ -463,7 +463,7 @@ pub enum SprinklerWeatherChangeV1 {
         /// The half-open range of historical period start times to remove.
         range: SprinklerWeatherTimeRangeV1,
     },
-    /// Replace current conditions V1
+    /// Replace current conditions
     /// Replaces the complete current-condition section after a successful
     /// retrieval and validation.
     CurrentReplaceV1 {
@@ -471,7 +471,7 @@ pub enum SprinklerWeatherChangeV1 {
         /// The newly accepted current-condition section.
         current: SprinklerCurrentWeatherV1,
     },
-    /// Upsert forecast periods V1
+    /// Upsert forecast periods
     /// Marks a successful forecast refresh and inserts or replaces periods by
     /// `starts_at`. An empty period list updates only retrieval and freshness
     /// metadata.
@@ -490,7 +490,7 @@ pub enum SprinklerWeatherChangeV1 {
         /// One irrigation-planning period keyed by `starts_at`.
         periods: Vec<SprinklerWeatherForecastPeriodV1>,
     },
-    /// Remove forecast periods V1
+    /// Remove forecast periods
     /// Removes cached forecast periods whose start times fall within the
     /// supplied half-open range.
     ForecastPeriodsRemoveV1 {
@@ -498,7 +498,7 @@ pub enum SprinklerWeatherChangeV1 {
         /// The half-open range of forecast period start times to remove.
         range: SprinklerWeatherTimeRangeV1,
     },
-    /// Clear weather section V1
+    /// Clear weather section
     /// Clears one section only when its cached value is known to be invalid,
     /// such as after failed validation or an incompatible migration. A provider
     /// refresh failure by itself must not emit this change.
@@ -507,7 +507,7 @@ pub enum SprinklerWeatherChangeV1 {
         /// The independently cached section to clear.
         section: SprinklerWeatherSectionV1,
     },
-    /// Replace history V1
+    /// Replace history
     /// Replaces the complete historical section after a successful provider
     /// refresh. Periods absent from the replacement are no longer cached.
     HistoryReplaceV1 {
@@ -515,7 +515,7 @@ pub enum SprinklerWeatherChangeV1 {
         /// The complete newly accepted historical section.
         history: SprinklerWeatherHistoryV1,
     },
-    /// Replace forecast V1
+    /// Replace forecast
     /// Replaces the complete forecast section after a successful provider
     /// refresh. Periods absent from the replacement are no longer cached.
     ForecastReplaceV1 {
@@ -525,7 +525,7 @@ pub enum SprinklerWeatherChangeV1 {
     },
 }
 
-/// Sprinkler weather incremental report V1
+/// Sprinkler weather incremental report
 /// Carries an ordered, atomic range of weather changes. A client applies the
 /// report only when its stored cursor equals `from_cursor`; after applying every
 /// change, it stores `through_cursor`. An empty report is a heartbeat that
@@ -540,7 +540,7 @@ pub struct SprinklerWeatherIncrementalReportV1 {
     /// The inclusive upper cursor reached after applying every change in this
     /// report. It must retain the same epoch timestamp as `from_cursor`. A
     /// server cursor reset is never carried as an incremental report; it
-    /// requires `ResetV1`.
+    /// requires a full reset.
     pub through_cursor: SprinklerWeatherCursorV1,
     /// Weather changes
     /// Ordered changes to apply atomically. Each item advances the sequence by
@@ -578,7 +578,7 @@ impl SprinklerWeatherIncrementalReportV1 {
     }
 }
 
-/// Sprinkler weather reset reason V1
+/// Sprinkler weather reset reason
 /// Explains why recovery returned a range-limited snapshot instead of replaying
 /// incremental changes after the requested cursor.
 #[derive(
@@ -598,7 +598,7 @@ pub enum SprinklerWeatherResetReasonV1 {
     ServerCursorReset,
 }
 
-/// Sprinkler weather recovery error V1
+/// Sprinkler weather recovery error
 /// Identifies a recovery request that cannot be satisfied with either replayed
 /// changes or a range-limited cached snapshot.
 #[derive(
@@ -622,12 +622,12 @@ pub enum SprinklerWeatherRecoveryErrorV1 {
     TemporarilyUnavailable,
 }
 
-/// Sprinkler weather recovery V1
+/// Sprinkler weather recovery
 /// Returns replayed changes, establishes a new cursor with a range-limited
 /// snapshot, or reports a recoverable request error.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerWeatherRecoveryV1 {
-    /// Replayed changes V1
+    /// Replayed changes
     /// Continues the requested stream by replaying every retained change after
     /// the supplied cursor. An empty report means the client is already caught
     /// up.
@@ -636,7 +636,7 @@ pub enum SprinklerWeatherRecoveryV1 {
         /// The contiguous change range beginning at the requested cursor.
         report: SprinklerWeatherIncrementalReportV1,
     },
-    /// Reset with snapshot V1
+    /// Reset with snapshot
     /// Establishes a new cursor when replay is impossible or no cursor was
     /// supplied. History and forecast sections are limited to the fallback
     /// ranges requested by the client. A server cursor reset changes only
@@ -658,7 +658,7 @@ pub enum SprinklerWeatherRecoveryV1 {
         /// ranges.
         snapshot: SprinklerWeatherSnapshotV1,
     },
-    /// Recovery error V1
+    /// Recovery error
     /// Rejects the request without changing the client's cursor or local
     /// weather state.
     ErrorV1 {
@@ -672,7 +672,7 @@ pub enum SprinklerWeatherRecoveryV1 {
     },
 }
 
-/// Sprinkler weather protocol V1
+/// Sprinkler weather protocol
 /// Defines the typed Libertas endpoint transaction for requesting or subscribing
 /// to sprinkler weather. Responses expose independently available history,
 /// current, and forecast sections so an outage does not hide usable cached data.
@@ -680,7 +680,7 @@ pub enum SprinklerWeatherRecoveryV1 {
 /// in the wrong message role; those transport errors are not recovery variants.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerWeatherProtocolV1 {
-    /// Get sprinkler weather V1
+    /// Get sprinkler weather
     /// Performs a one-shot incremental read or starts or resumes an incremental
     /// subscription. The Libertas endpoint operation selects the behavior; it is
     /// not encoded in this message. The server replays retained changes after
@@ -709,10 +709,10 @@ pub enum SprinklerWeatherProtocolV1 {
         /// snapshot.
         forecast_range: Option<SprinklerWeatherTimeRangeV1>,
     },
-    /// Sprinkler weather recovery V1
-    /// Responds to `GetWeatherV1` with replayed changes, a reset snapshot, or
-    /// a recoverable error. Every response supplies a maximum wait interval. A
-    /// subscription client uses it after a successful replay or reset; a
+    /// Sprinkler weather recovery
+    /// Responds to a weather request with replayed changes, a reset snapshot,
+    /// or a recoverable error. Every response supplies a maximum wait interval.
+    /// A subscription client uses it after a successful replay or reset; a
     /// one-shot client ignores it. After an error, the recovery error and retry
     /// delay take precedence.
     #[libertas_response]
@@ -730,12 +730,12 @@ pub enum SprinklerWeatherProtocolV1 {
         /// The replay, reset, or error result for the resume request.
         recovery: SprinklerWeatherRecoveryV1,
     },
-    /// Sprinkler weather increment V1
-    /// Reports only state changes after a successful `GetWeatherV1`
-    /// transaction. A cursor mismatch or non-contiguous range requires another
+    /// Sprinkler weather increment
+    /// Reports only state changes after a successful weather request. A cursor
+    /// mismatch or non-contiguous range requires another
     /// subscription request; the client must not apply the report partially.
     /// Receipt of any report, including an empty heartbeat, restarts the
-    /// maximum-wait timer supplied by `WeatherRecoveryV1`.
+    /// maximum-wait timer supplied by the recovery response.
     #[libertas_subscription_data]
     WeatherIncrementV1 {
         /// Incremental report
@@ -744,7 +744,7 @@ pub enum SprinklerWeatherProtocolV1 {
     },
 }
 
-/// Sprinkler weather location V1
+/// Sprinkler weather location
 /// Stores the Libertas Hub location used to obtain weather for one sprinkler
 /// site. It is cached independently from provider data so the weather server can
 /// continue refreshing during a temporary Hub outage.
@@ -761,17 +761,17 @@ pub struct SprinklerWeatherLocationV1 {
     pub latitude_degrees: f64,
 }
 
-/// Sprinkler weather persistent data V1
+/// Sprinkler weather persistent data
 /// Defines the complete set of values that the sprinkler weather server may
 /// write to the Libertas database. The consuming application links this union
-/// with `#[libertas_data_schema(SprinklerWeatherPersistentDataV1)]` and stores
-/// each variant under its own stable resource identifier so the location and
-/// weather sections can be updated independently. Subscription cursors and
+/// with its data schema and stores each variant under its own stable resource
+/// identifier so the location and weather sections can be updated independently.
+/// Subscription cursors and
 /// replay journals are intentionally absent: resetting them must not erase
 /// these records.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerWeatherPersistentDataV1 {
-    /// Sprinkler site location V1
+    /// Sprinkler site location
     /// Stores the last valid location reported by the Libertas Hub. The cached
     /// value lets provider refreshes continue while the Hub is temporarily
     /// unavailable.
@@ -780,7 +780,7 @@ pub enum SprinklerWeatherPersistentDataV1 {
         /// The WGS84 coordinates used for provider requests.
         location: SprinklerWeatherLocationV1,
     },
-    /// Recent history V1
+    /// Recent history
     /// Stores the last successfully retrieved and validated recent-history
     /// section. A failed refresh leaves the existing database record unchanged.
     HistoryV1 {
@@ -789,7 +789,7 @@ pub enum SprinklerWeatherPersistentDataV1 {
         /// including their retrieval and freshness timestamps.
         history: SprinklerWeatherHistoryV1,
     },
-    /// Current conditions V1
+    /// Current conditions
     /// Stores the last successfully retrieved and validated current-condition
     /// section. A failed refresh leaves the existing database record unchanged.
     CurrentV1 {
@@ -798,7 +798,7 @@ pub enum SprinklerWeatherPersistentDataV1 {
         /// their retrieval and freshness timestamps.
         current: SprinklerCurrentWeatherV1,
     },
-    /// Forecast V1
+    /// Forecast
     /// Stores the last successfully retrieved and validated forecast section. A
     /// failed refresh leaves the existing database record unchanged.
     ForecastV1 {
