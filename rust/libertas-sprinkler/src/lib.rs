@@ -74,14 +74,14 @@ const SAFE_MAXIMUM_WIND_METERS_PER_SECOND: f32 = 10.0;
 const SAFE_MAXIMUM_GUST_METERS_PER_SECOND: f32 = 15.0;
 const HIGH_RAIN_PROBABILITY_PERCENT: u8 = 50;
 const FORECAST_LOOKAHEAD_SECONDS: u64 = 12 * 60 * 60;
-const ZONE_DATA_RESOURCE: &str = "SPRINKLER_ZONE_MEMORY_V1";
 
 /// Sprinkler database names
 /// Stable resource identifiers and their user-facing descriptions.
-pub static APP_STRINGS: [(&str, &str); 1] = [(
-    ZONE_DATA_RESOURCE,
+pub const APP_STRINGS: [(&str, &str); 1] = [(
+    "SPRINKLER_ZONE_MEMORY_V1",
     "Persisted sprinkler water balance and preferences for %1$s.",
 )];
+const ZONE_DATA_RESOURCE: &str = APP_STRINGS[0].0;
 
 /// Sprinkler time slot V1
 /// Defines one half-open schedule or hold-off interval.
@@ -989,11 +989,16 @@ fn shift_after_hold_offs(
 }
 
 fn watering_duration_seconds(zone: &SprinklerZoneV1, water_millimeters: f32) -> u32 {
-    let seconds = (water_millimeters / zone.application_rate_millimeters_per_hour * 3_600.0).ceil();
+    let seconds = water_millimeters / zone.application_rate_millimeters_per_hour * 3_600.0;
     if !seconds.is_finite() || seconds <= 0.0 {
         return 0;
     }
-    (seconds as u32).clamp(MIN_WATERING_DURATION_SECONDS, MAX_WATERING_DURATION_SECONDS)
+    if seconds >= MAX_WATERING_DURATION_SECONDS as f32 {
+        return MAX_WATERING_DURATION_SECONDS;
+    }
+    let whole_seconds = seconds as u32;
+    let rounded_up = whole_seconds + u32::from((whole_seconds as f32) < seconds);
+    rounded_up.clamp(MIN_WATERING_DURATION_SECONDS, MAX_WATERING_DURATION_SECONDS)
 }
 
 fn calculate_schedule(
@@ -2004,8 +2009,7 @@ pub fn libertas_sprinkler(
      * subscribes at startup and will not automatically water without fresh
      * safe current conditions.
      */
-    #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)]
-    weather_endpoint: LibertasEndpoint,
+    #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)] weather_endpoint: LibertasEndpoint,
     /*
      * Sprinkler zones
      * One or more independently scheduled Matter Valve zones.
@@ -2386,6 +2390,19 @@ mod tests {
             panic!("expected irrigation event");
         };
         assert!((applied_water_millimeters - 2.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn watering_duration_rounds_up_and_respects_runtime_bounds() {
+        let zone = zone();
+        assert_eq!(watering_duration_seconds(&zone, 0.0), 0);
+        assert_eq!(watering_duration_seconds(&zone, 0.001), 60);
+        assert_eq!(watering_duration_seconds(&zone, 12.0 * 60.5 / 3_600.0), 61);
+        assert_eq!(
+            watering_duration_seconds(&zone, 25.0),
+            MAX_WATERING_DURATION_SECONDS
+        );
+        assert_eq!(watering_duration_seconds(&zone, f32::MAX), 0);
     }
 
     #[test]

@@ -23,7 +23,31 @@ use libertas_macros::{
 
 mod machine_learning;
 mod runtime;
-pub use machine_learning::*;
+use machine_learning::start_machine_learning_worker;
+pub use machine_learning::{
+    BUILDING_HVAC_ML_BOOST_ROUNDS, BUILDING_HVAC_ML_COMMAND_CAPACITY,
+    BUILDING_HVAC_ML_FEATURE_SCHEMA_VERSION, BUILDING_HVAC_ML_HISTORY_RETENTION_SECONDS,
+    BUILDING_HVAC_ML_MAXIMUM_FEATURE_COUNT, BUILDING_HVAC_ML_MAXIMUM_FEATURE_NAME_BYTES,
+    BUILDING_HVAC_ML_MAXIMUM_MODEL_BYTES, BUILDING_HVAC_ML_MAXIMUM_PREDICTED_CHANGE_CELSIUS,
+    BUILDING_HVAC_ML_MAXIMUM_RETAINED_SAMPLES_PER_ROOM,
+    BUILDING_HVAC_ML_MAXIMUM_TRAINING_SAMPLES_PER_ROOM, BUILDING_HVAC_ML_MAXIMUM_TREE_DEPTH,
+    BUILDING_HVAC_ML_MINIMUM_PROMOTION_IMPROVEMENT_NORMALIZED,
+    BUILDING_HVAC_ML_MINIMUM_TRAINING_SAMPLES, BUILDING_HVAC_ML_MINIMUM_VALIDATION_SAMPLES,
+    BUILDING_HVAC_ML_RECENT_TRAINING_PERCENT, BUILDING_HVAC_ML_RECENT_WINDOW_SECONDS,
+    BUILDING_HVAC_ML_RESULT_CAPACITY, BUILDING_HVAC_ML_VALIDATION_PERCENT,
+    BUILDING_HVAC_ML_WORKER_NICE_INCREMENT, BUILDING_HVAC_ML_XGBOOST_THREADS,
+    BUILDING_HVAC_XGBOOST_VERSION, BuildingHvacMachineLearningClient,
+    BuildingHvacMachineLearningEngine, BuildingHvacMachineLearningFeatureV1,
+    BuildingHvacMachineLearningFeatureVectorV1, BuildingHvacMachineLearningFeaturesV1,
+    BuildingHvacMachineLearningHistory, BuildingHvacMachineLearningHistoryError,
+    BuildingHvacMachineLearningIndexedFeatureV1, BuildingHvacMachineLearningModelSetV1,
+    BuildingHvacMachineLearningModelSlotV1, BuildingHvacMachineLearningModelV1,
+    BuildingHvacMachineLearningQueueError, BuildingHvacMachineLearningRejection,
+    BuildingHvacMachineLearningResult, BuildingHvacMachineLearningSampleV1,
+    BuildingHvacMachineLearningValidationV1, BuildingHvacRoomMachineLearningV1,
+    BuildingHvacThermalPredictionHorizonV1, BuildingHvacThermalPredictionSourceV1,
+    BuildingHvacThermalPredictionV1,
+};
 
 pub use libertas_weather::{
     BuildingHvacCurrentWeatherV1, BuildingHvacOutdoorAirQualityPeriodV1,
@@ -1792,10 +1816,10 @@ pub struct BuildingHvacBuildingV1 {
     /// HVAC recovery failures; they are not life-safety alarms.
     /// ----
     /// Notification recipient
-    /// One unique Libertas user authorized to receive building HVAC warnings.
+    /// One Libertas user authorized to receive building HVAC warnings. Runtime
+    /// configuration validation rejects duplicate recipients.
     #[libertas_size(min = 1, max = 16)]
     #[libertas_unordered]
-    #[libertas_unique]
     pub urgent_notification_recipients: Vec<LibertasUser>,
 }
 
@@ -4728,6 +4752,7 @@ mod tests {
         }
     }
 
+    #[cfg(target_os = "linux")]
     fn set_machine_learning_feature(
         features: &mut BuildingHvacMachineLearningFeaturesV1,
         name: &str,

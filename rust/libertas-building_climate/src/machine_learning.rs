@@ -1940,10 +1940,6 @@ fn optional_finite(value: Option<f32>) -> bool {
     value.is_none_or(f32::is_finite)
 }
 
-fn optional_in_range(value: Option<f32>, minimum: f32, maximum: f32) -> bool {
-    value.is_none_or(|value| in_range(value, minimum, maximum))
-}
-
 fn in_range(value: f32, minimum: f32, maximum: f32) -> bool {
     value.is_finite() && value >= minimum && value <= maximum
 }

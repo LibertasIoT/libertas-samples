@@ -89,31 +89,30 @@ const HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS: u32 = 60 * 60;
 const HUB_LOCATION_RETRY_SECONDS: u32 = 60;
 const LOCATION_EQUALITY_TOLERANCE_DEGREES: f64 = 0.000_001;
 
-const HISTORY_RESOURCE: &str = "SPRINKLER_WEATHER_HISTORY_V1";
-const CURRENT_RESOURCE: &str = "SPRINKLER_CURRENT_WEATHER_V1";
-const FORECAST_RESOURCE: &str = "SPRINKLER_WEATHER_FORECAST_V1";
-const LOCATION_RESOURCE: &str = "SPRINKLER_WEATHER_LOCATION_V1";
-
 /// Weather server database names
 /// Stable resource identifiers and their user-facing descriptions.
-pub static APP_STRINGS: [(&str, &str); 4] = [
+pub const APP_STRINGS: [(&str, &str); 4] = [
     (
-        HISTORY_RESOURCE,
+        "SPRINKLER_WEATHER_HISTORY_V1",
         "Persisted sprinkler weather history for %1$s.",
     ),
     (
-        CURRENT_RESOURCE,
+        "SPRINKLER_CURRENT_WEATHER_V1",
         "Persisted current sprinkler weather for %1$s.",
     ),
     (
-        FORECAST_RESOURCE,
+        "SPRINKLER_WEATHER_FORECAST_V1",
         "Persisted sprinkler weather forecast for %1$s.",
     ),
     (
-        LOCATION_RESOURCE,
+        "SPRINKLER_WEATHER_LOCATION_V1",
         "Persisted sprinkler weather location for %1$s.",
     ),
 ];
+const HISTORY_RESOURCE: &str = APP_STRINGS[0].0;
+const CURRENT_RESOURCE: &str = APP_STRINGS[1].0;
+const FORECAST_RESOURCE: &str = APP_STRINGS[2].0;
+const LOCATION_RESOURCE: &str = APP_STRINGS[3].0;
 
 /// Sprinkler weather endpoint server V1
 /// Configures the one server endpoint through which sprinkler applications

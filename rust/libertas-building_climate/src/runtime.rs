@@ -3651,18 +3651,20 @@ fn add_weather_features(
     }
 }
 
-fn thermostat_window_statistics(
-    state: &ControllerState,
-    thermostat: LibertasDevice,
-    now: LibertasDateTime,
-    window_seconds: u64,
-) -> (
+type ThermostatWindowStatistics = (
     Option<f32>,
     Option<f32>,
     Option<f32>,
     Option<f32>,
     Option<u32>,
-) {
+);
+
+fn thermostat_window_statistics(
+    state: &ControllerState,
+    thermostat: LibertasDevice,
+    now: LibertasDateTime,
+    window_seconds: u64,
+) -> ThermostatWindowStatistics {
     let starts_at = now.saturating_sub(window_seconds);
     let samples: Vec<_> = state
         .feature_history
@@ -4151,7 +4153,7 @@ fn machine_learning_features(
                         .map(|(current, previous)| (current - previous) * 3_600.0 / seconds as f32),
                 );
             }
-            if matches!(seconds, 15 * 60 | 60 * 60) {
+            if seconds == 15 * 60 || seconds == 60 * 60 {
                 builder.add(
                     format!("{prefix}.relative_humidity_slope_percent_per_hour_{label}"),
                     humidity
@@ -4159,7 +4161,7 @@ fn machine_learning_features(
                         .map(|(current, previous)| (current - previous) * 3_600.0 / seconds as f32),
                 );
             }
-            if matches!(seconds, 15 * 60 | 60 * 60) {
+            if seconds == 15 * 60 || seconds == 60 * 60 {
                 builder.add(
                     format!("{prefix}.heating_setpoint_change_celsius_{label}"),
                     room.state
@@ -5291,7 +5293,7 @@ mod tests {
             }],
         };
         assert!(valid_current_weather(&current));
-        let mut invalid_solar = current.clone();
+        let mut invalid_solar = current;
         invalid_solar.conditions.solar_elevation_degrees = 91.0;
         assert!(!valid_current_weather(&invalid_solar));
         invalid_solar.conditions = outdoor_conditions();
