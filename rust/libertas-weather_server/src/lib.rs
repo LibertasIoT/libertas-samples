@@ -124,7 +124,6 @@ pub struct SprinklerWeatherEndpointServerV1 {
     /// The server endpoint exposing `SprinklerWeatherProtocolV1`. Both one-shot
     /// and subscription clients send `GetWeatherV1` to this endpoint.
     #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)]
-    #[libertas_foreign_type("libertas-weather::SprinklerWeatherProtocolV1")]
     #[libertas_endpoint_server]
     #[libertas_ui_header]
     pub endpoint: LibertasEndpoint,
