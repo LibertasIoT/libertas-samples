@@ -38,12 +38,10 @@ use libertas_matter::{
 
 const DEFAULT_OPEN_DURATION_SECONDS: u32 = 10 * 60;
 const MICROSECONDS_PER_SECOND: u64 = 1_000_000;
-const DEFAULT_OPEN_DURATION_RESOURCE: &str = "DEFAULT_OPEN_DURATION";
 
-pub static APP_STRINGS: [(&str, &str); 1] = [(
-    DEFAULT_OPEN_DURATION_RESOURCE,
-    "Default open duration for %1$s.",
-)];
+pub const APP_STRINGS: [(&str, &str); 1] =
+    [("DEFAULT_OPEN_DURATION", "Default open duration for %1$s.")];
+const DEFAULT_OPEN_DURATION_RESOURCE: &str = APP_STRINGS[0].0;
 
 /// Persistent valve data.
 ///
