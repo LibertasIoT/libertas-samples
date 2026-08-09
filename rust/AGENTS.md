@@ -510,11 +510,14 @@ endpoint operation as another protocol field.
   and call `libertas_endpoint_remove_subscriber`. Remove peer-specific state on
   `OP_ENDPOINT_PEER_DOWN`. Preserve it on `OP_ENDPOINT_PEER_TIMEOUT`, where peer
   liveness is uncertain.
-- Restore history, current conditions, and forecast from their independent
-  stable database resources. Validate decoded timestamps, ordering, durations,
-  ranges, probabilities, and finite nonnegative measurements before exposing a
-  record. A missing or invalid section remains `None` without hiding valid
-  sections.
+- Persist history freshness as one standalone metadata record and every
+  completed history period as a separate indexed record keyed by `starts_at`.
+  On startup, validate each value against its index, reconstruct the bounded
+  ordered history dynamically, and remove invalid or out-of-window records.
+  Keep current conditions and forecast as independent replaceable singleton
+  records. Validate decoded timestamps, ordering, durations, ranges,
+  probabilities, and finite nonnegative measurements before exposing a record.
+  A missing or invalid section remains `None` without hiding valid sections.
 - Never persist the cursor, replay journal, subscriber list, transaction IDs, or
   heartbeat deadlines. Startup creates a current-time epoch timestamp with
   sequence zero while preserving the validated weather snapshot.
@@ -537,10 +540,13 @@ endpoint operation as another protocol field.
   Database, timer, logging, endpoint, cursor, journal, and subscriber APIs stay
   on the Libertas application thread.
 - Refresh current conditions every 15 minutes and combined history/forecast
-  data every hour. Validate a complete provider section before acceptance.
-  Persist an accepted section before changing runtime state or publishing its
-  incremental report. A provider, internet, HTTP, JSON, or validation failure
-  leaves the existing persistent and runtime section unchanged.
+  data every hour. Validate a complete provider section before acceptance. For
+  accepted history, upsert only new or corrected indexed periods, delete only
+  periods absent from the replacement window, and submit the standalone
+  metadata write after those indexed changes. Persist every accepted section
+  before changing runtime state or publishing its incremental report. A
+  provider, internet, HTTP, JSON, or validation failure leaves the existing
+  persistent and runtime section unchanged.
 - Preserve refresh timing across application restarts. For each valid cached
   section, derive its next due time from `retrieved_at + refresh_interval`.
   Refresh missing, overdue, future-dated, or unschedulable sections immediately;

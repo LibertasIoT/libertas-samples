@@ -761,14 +761,29 @@ pub struct SprinklerWeatherLocationV1 {
     pub latitude_degrees: f64,
 }
 
+/// Sprinkler weather history metadata
+/// Stores the freshness timestamps for dynamically reconstructed indexed
+/// history periods.
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
+)]
+pub struct SprinklerWeatherHistoryMetadataV1 {
+    /// Retrieved at
+    /// The date and time when the complete indexed history set was last
+    /// retrieved, validated, and accepted.
+    pub retrieved_at: LibertasDateTime,
+    /// Valid until
+    /// The exclusive freshness deadline for the reconstructed history section.
+    pub valid_until: LibertasDateTime,
+}
+
 /// Sprinkler weather persistent data
 /// Defines the complete set of values that the sprinkler weather server may
-/// write to the Libertas database. The consuming application links this union
-/// with its data schema and stores each variant under its own stable resource
-/// identifier so the location and weather sections can be updated independently.
-/// Subscription cursors and
-/// replay journals are intentionally absent: resetting them must not erase
-/// these records.
+/// write to the Libertas database. History metadata, current conditions,
+/// forecast, and location are independent standalone records. Every completed
+/// history period is an indexed record keyed by its start timestamp.
+/// Subscription cursors and replay journals are intentionally absent: resetting
+/// them must not erase these records.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerWeatherPersistentDataV1 {
     /// Sprinkler site location
@@ -780,14 +795,20 @@ pub enum SprinklerWeatherPersistentDataV1 {
         /// The WGS84 coordinates used for provider requests.
         location: SprinklerWeatherLocationV1,
     },
-    /// Recent history
-    /// Stores the last successfully retrieved and validated recent-history
-    /// section. A failed refresh leaves the existing database record unchanged.
-    HistoryV1 {
-        /// History
-        /// Recent hourly precipitation and reference-evapotranspiration inputs,
-        /// including their retrieval and freshness timestamps.
-        history: SprinklerWeatherHistoryV1,
+    /// History metadata
+    /// Stores freshness for the dynamically reconstructed indexed history.
+    HistoryMetadataV1 {
+        /// History metadata
+        /// Retrieval and freshness timestamps for the accepted indexed set.
+        metadata: SprinklerWeatherHistoryMetadataV1,
+    },
+    /// History period
+    /// Stores one completed hourly period in indexed data, keyed by its start
+    /// timestamp so corrections replace only that hour.
+    HistoryPeriodV1 {
+        /// History period
+        /// One completed precipitation and reference-evapotranspiration input.
+        period: SprinklerWeatherHistoryPeriodV1,
     },
     /// Current conditions
     /// Stores the last successfully retrieved and validated current-condition
@@ -986,7 +1007,15 @@ mod tests {
     #[test]
     fn persistent_sections_round_trip_independently() {
         let values = [
-            SprinklerWeatherPersistentDataV1::HistoryV1 { history: history() },
+            SprinklerWeatherPersistentDataV1::HistoryMetadataV1 {
+                metadata: SprinklerWeatherHistoryMetadataV1 {
+                    retrieved_at: history().retrieved_at,
+                    valid_until: history().valid_until,
+                },
+            },
+            SprinklerWeatherPersistentDataV1::HistoryPeriodV1 {
+                period: history().periods[0],
+            },
             SprinklerWeatherPersistentDataV1::CurrentV1 { current: current() },
             SprinklerWeatherPersistentDataV1::ForecastV1 {
                 forecast: forecast(),
@@ -1044,16 +1073,29 @@ mod tests {
             Some(&0)
         );
         assert_eq!(
-            SprinklerWeatherPersistentDataV1::HistoryV1 { history: history() }
-                .to_avro()
-                .first(),
+            SprinklerWeatherPersistentDataV1::HistoryMetadataV1 {
+                metadata: SprinklerWeatherHistoryMetadataV1 {
+                    retrieved_at: history().retrieved_at,
+                    valid_until: history().valid_until,
+                },
+            }
+            .to_avro()
+            .first(),
             Some(&2)
+        );
+        assert_eq!(
+            SprinklerWeatherPersistentDataV1::HistoryPeriodV1 {
+                period: history().periods[0],
+            }
+            .to_avro()
+            .first(),
+            Some(&4)
         );
         assert_eq!(
             SprinklerWeatherPersistentDataV1::CurrentV1 { current: current() }
                 .to_avro()
                 .first(),
-            Some(&4)
+            Some(&6)
         );
         assert_eq!(
             SprinklerWeatherPersistentDataV1::ForecastV1 {
@@ -1061,7 +1103,7 @@ mod tests {
             }
             .to_avro()
             .first(),
-            Some(&6)
+            Some(&8)
         );
     }
 
