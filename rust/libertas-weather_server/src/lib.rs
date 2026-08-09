@@ -46,14 +46,15 @@ use std::{
 
 use libertas::{
     IndexDirection, IndexedData, LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasEndpoint,
-    LibertasEndpointHandlerResult, LibertasEndpointMessage, LibertasEndpointStatus, LogLevel,
-    NotificationArgument, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_TIMEOUT,
-    OP_ENDPOINT_REQ, OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_data_open_indexed,
-    libertas_data_read, libertas_data_read_indexed_range, libertas_data_remove,
-    libertas_data_remove_indexed_records, libertas_data_write, libertas_data_write_indexed,
-    libertas_endpoint_remove_subscriber, libertas_endpoint_report, libertas_endpoint_response,
-    libertas_endpoint_subscribe_request, libertas_get_sys_ticks, libertas_get_utc_time,
-    libertas_log, libertas_register_endpoint_listener, libertas_register_endpoint_status_listener,
+    LibertasEndpointHandlerResult, LibertasEndpointMessage, LibertasEndpointStandardStatus,
+    LibertasEndpointStatus, LogLevel, NotificationArgument, OP_ENDPOINT_DATA,
+    OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ, OP_ENDPOINT_RSP,
+    OP_ENDPOINT_SUB_REQ, libertas_data_open_indexed, libertas_data_read,
+    libertas_data_read_indexed_range, libertas_data_remove, libertas_data_remove_indexed_records,
+    libertas_data_write, libertas_data_write_indexed, libertas_endpoint_remove_subscriber,
+    libertas_endpoint_report, libertas_endpoint_response, libertas_endpoint_subscribe_request,
+    libertas_get_sys_ticks, libertas_get_utc_time, libertas_log,
+    libertas_register_endpoint_listener, libertas_register_endpoint_status_listener,
     libertas_register_shutdown_handler, libertas_register_wakeup_callback,
     libertas_shutdown_complete, libertas_timer_cancel, libertas_timer_new_interval,
     libertas_timer_update_interval, libertas_wake_up,
@@ -214,6 +215,7 @@ struct LocationSubscriptionState {
     provider: Option<ProviderControl>,
     location: Option<SprinklerWeatherLocationV1>,
     retry_timer: u32,
+    hub_server_up: bool,
 }
 
 #[derive(Serialize)]
@@ -248,6 +250,7 @@ struct OpenMeteoCurrent {
     time: u64,
     interval: u32,
     temperature_2m: Option<f32>,
+    relative_humidity_2m: Option<f32>,
     precipitation: Option<f32>,
     et0_fao_evapotranspiration: Option<f32>,
     wind_speed_10m: Option<f32>,
@@ -263,6 +266,7 @@ struct OpenMeteoHourlyResponse {
 struct OpenMeteoHourly {
     time: Vec<u64>,
     temperature_2m: Vec<Option<f32>>,
+    relative_humidity_2m: Vec<Option<f32>>,
     precipitation_probability: Vec<Option<f32>>,
     precipitation: Vec<Option<f32>>,
     et0_fao_evapotranspiration: Vec<Option<f32>>,
@@ -276,19 +280,13 @@ struct JournalEntry {
     report: SprinklerWeatherIncrementalReportV1,
 }
 
-#[derive(Clone, Copy)]
-struct Subscriber {
-    peer: u32,
-    last_report_ticks: u64,
-}
-
 struct WeatherServerState {
     endpoint: LibertasEndpoint,
     cursor: Option<SprinklerWeatherCursorV1>,
     snapshot: SprinklerWeatherSnapshotV1,
     journal: Vec<JournalEntry>,
-    subscribers: Vec<Subscriber>,
     heartbeat_timer: u32,
+    next_heartbeat_ticks: Option<u64>,
 }
 
 struct PreparedResponse {
@@ -297,8 +295,7 @@ struct PreparedResponse {
 }
 
 struct ChangePublication {
-    reports: Vec<(u32, SprinklerWeatherProtocolV1)>,
-    subscribers_to_remove: Vec<u32>,
+    report: Option<SprinklerWeatherProtocolV1>,
 }
 
 fn unix_time_seconds() -> Result<u64, String> {
@@ -368,6 +365,14 @@ fn required_nonnegative_measurement(value: Option<f32>, name: &str) -> Result<f3
     }
 }
 
+fn required_percentage(value: Option<f32>, name: &str) -> Result<u8, String> {
+    let value = required_nonnegative_measurement(value, name)?;
+    if value > 100.0 {
+        return Err(format!("Open-Meteo {name} exceeds 100 percent"));
+    }
+    Ok(value.round() as u8)
+}
+
 fn build_current(
     current: OpenMeteoCurrent,
     retrieved_at: u64,
@@ -378,6 +383,10 @@ fn build_current(
         valid_at: current.time,
         interval_seconds: current.interval,
         temperature_celsius: required_measurement(current.temperature_2m, "temperature_2m")?,
+        relative_humidity_percent: required_percentage(
+            current.relative_humidity_2m,
+            "relative_humidity_2m",
+        )?,
         precipitation_millimeters: required_nonnegative_measurement(
             current.precipitation,
             "precipitation",
@@ -409,7 +418,7 @@ fn fetch_current_weather(
     let query = OpenMeteoCurrentQuery {
         latitude: location.latitude_degrees,
         longitude: location.longitude_degrees,
-        current: "temperature_2m,precipitation,et0_fao_evapotranspiration,wind_speed_10m,wind_gusts_10m",
+        current: "temperature_2m,relative_humidity_2m,precipitation,et0_fao_evapotranspiration,wind_speed_10m,wind_gusts_10m",
         timeformat: "unixtime",
         wind_speed_unit: "ms",
         precipitation_unit: "mm",
@@ -484,6 +493,7 @@ fn build_forecast(
 ) -> Result<SprinklerWeatherForecastV1, String> {
     let expected_len = hourly.time.len();
     if hourly.temperature_2m.len() != expected_len
+        || hourly.relative_humidity_2m.len() != expected_len
         || hourly.precipitation_probability.len() != expected_len
         || hourly.precipitation.len() != expected_len
         || hourly.et0_fao_evapotranspiration.len() != expected_len
@@ -506,15 +516,10 @@ fn build_forecast(
         if starts_at < forecast_starts_at || starts_at >= forecast_end {
             continue;
         }
-        let probability = required_nonnegative_measurement(
+        let probability = required_percentage(
             hourly.precipitation_probability[index],
             "precipitation_probability",
         )?;
-        if probability > 100.0 {
-            return Err(String::from(
-                "Open-Meteo precipitation probability exceeds 100 percent",
-            ));
-        }
         periods.push(SprinklerWeatherForecastPeriodV1 {
             starts_at,
             duration_seconds: 3_600,
@@ -522,7 +527,11 @@ fn build_forecast(
                 hourly.temperature_2m[index],
                 "forecast temperature_2m",
             )?,
-            precipitation_probability_percent: probability.round() as u8,
+            relative_humidity_percent: required_percentage(
+                hourly.relative_humidity_2m[index],
+                "forecast relative_humidity_2m",
+            )?,
+            precipitation_probability_percent: probability,
             expected_precipitation_millimeters: required_nonnegative_measurement(
                 hourly.precipitation[index],
                 "forecast precipitation",
@@ -569,7 +578,7 @@ fn fetch_hourly_weather(
     let query = OpenMeteoHourlyQuery {
         latitude: location.latitude_degrees,
         longitude: location.longitude_degrees,
-        hourly: "temperature_2m,precipitation_probability,precipitation,et0_fao_evapotranspiration,wind_speed_10m,wind_gusts_10m",
+        hourly: "temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,et0_fao_evapotranspiration,wind_speed_10m,wind_gusts_10m",
         past_hours: MAX_RECOVERY_PERIODS as u16,
         // Open-Meteo includes the current hour in `forecast_hours`. Request two
         // extra timesteps so a mid-hour retrieval still yields 168 periods
@@ -689,8 +698,8 @@ impl WeatherServerState {
             }),
             snapshot,
             journal: Vec::new(),
-            subscribers: Vec::new(),
             heartbeat_timer: 0,
+            next_heartbeat_ticks: None,
         }
     }
 
@@ -904,14 +913,11 @@ impl WeatherServerState {
         now_ticks: u64,
         now_utc: LibertasDateTime,
     ) -> ChangePublication {
-        let mut subscribers_to_remove = Vec::new();
         let mut from_cursor = self.cursor.unwrap_or(SprinklerWeatherCursorV1 {
             epoch_timestamp: now_utc,
             sequence: 0,
         });
         if from_cursor.sequence == u64::MAX {
-            subscribers_to_remove.extend(self.subscribers.iter().map(|subscriber| subscriber.peer));
-            self.subscribers.clear();
             self.journal.clear();
             from_cursor = SprinklerWeatherCursorV1 {
                 epoch_timestamp: now_utc.max(from_cursor.epoch_timestamp.saturating_add(1)),
@@ -939,10 +945,7 @@ impl WeatherServerState {
                 SprinklerWeatherSectionV1::Forecast => self.snapshot.forecast = None,
             },
             _ => {
-                return ChangePublication {
-                    reports: Vec::new(),
-                    subscribers_to_remove,
-                };
+                return ChangePublication { report: None };
             }
         }
 
@@ -958,77 +961,47 @@ impl WeatherServerState {
         });
         self.prune_journal(now_ticks);
 
-        let reports = self
-            .subscribers
-            .iter_mut()
-            .map(|subscriber| {
-                subscriber.last_report_ticks = now_ticks;
-                (
-                    subscriber.peer,
-                    SprinklerWeatherProtocolV1::WeatherIncrementV1 {
-                        report: report.clone(),
-                    },
-                )
-            })
-            .collect();
-
         ChangePublication {
-            reports,
-            subscribers_to_remove,
+            report: Some(SprinklerWeatherProtocolV1::WeatherIncrementV1 { report }),
         }
     }
 
-    fn add_or_replace_subscriber(&mut self, peer: u32, now_ticks: u64) {
-        if let Some(subscriber) = self
-            .subscribers
-            .iter_mut()
-            .find(|subscriber| subscriber.peer == peer)
-        {
-            subscriber.last_report_ticks = now_ticks;
-        } else {
-            self.subscribers.push(Subscriber {
-                peer,
-                last_report_ticks: now_ticks,
-            });
-        }
+    fn heartbeat_interval_ticks() -> u64 {
+        u64::from(SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS)
+            .saturating_mul(MICROSECONDS_PER_SECOND)
     }
 
-    fn remove_subscriber(&mut self, peer: u32) {
-        self.subscribers
-            .retain(|subscriber| subscriber.peer != peer);
+    // This is only process-local scheduling state. The host owns the client
+    // list, so observing one subscription merely enables a shared heartbeat;
+    // it does not create a server-side peer roster.
+    fn note_subscription(&mut self, now_ticks: u64) {
+        let deadline = now_ticks.saturating_add(Self::heartbeat_interval_ticks());
+        self.next_heartbeat_ticks = Some(
+            self.next_heartbeat_ticks
+                .map_or(deadline, |current| current.min(deadline)),
+        );
     }
 
     fn next_heartbeat_ticks(&self) -> Option<u64> {
-        let maximum_wait = u64::from(SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS)
-            .saturating_mul(MICROSECONDS_PER_SECOND);
-        self.subscribers
-            .iter()
-            .map(|subscriber| subscriber.last_report_ticks.saturating_add(maximum_wait))
-            .min()
+        self.next_heartbeat_ticks
     }
 
-    fn due_heartbeats(&mut self, now_ticks: u64) -> Vec<(u32, SprinklerWeatherProtocolV1)> {
-        let Some(cursor) = self.cursor else {
-            return Vec::new();
-        };
-        let maximum_wait = u64::from(SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS)
-            .saturating_mul(MICROSECONDS_PER_SECOND);
-        let mut reports = Vec::new();
+    fn note_broadcast(&mut self, now_ticks: u64) {
+        self.next_heartbeat_ticks =
+            Some(now_ticks.saturating_add(Self::heartbeat_interval_ticks()));
+    }
 
-        for subscriber in &mut self.subscribers {
-            let deadline = subscriber.last_report_ticks.saturating_add(maximum_wait);
-            if now_ticks >= deadline {
-                subscriber.last_report_ticks = now_ticks;
-                reports.push((
-                    subscriber.peer,
-                    SprinklerWeatherProtocolV1::WeatherIncrementV1 {
-                        report: empty_report(cursor),
-                    },
-                ));
-            }
+    fn due_heartbeat(&mut self, now_ticks: u64) -> Option<SprinklerWeatherProtocolV1> {
+        let deadline = self.next_heartbeat_ticks?;
+        if now_ticks < deadline {
+            return None;
         }
-
-        reports
+        self.next_heartbeat_ticks =
+            Some(now_ticks.saturating_add(Self::heartbeat_interval_ticks()));
+        self.cursor
+            .map(|cursor| SprinklerWeatherProtocolV1::WeatherIncrementV1 {
+                report: empty_report(cursor),
+            })
     }
 }
 
@@ -1259,15 +1232,17 @@ fn publish_change(
     change: SprinklerWeatherChangeV1,
     now_utc: LibertasDateTime,
 ) {
-    let endpoint = shared.borrow().endpoint;
-    let publication = shared
-        .borrow_mut()
-        .apply_change(change, libertas_get_sys_ticks(), now_utc);
-    for peer in publication.subscribers_to_remove {
-        libertas_endpoint_remove_subscriber(endpoint, peer);
-    }
-    for (peer, report) in publication.reports {
-        libertas_endpoint_report(endpoint, &report, Some(peer));
+    let now_ticks = libertas_get_sys_ticks();
+    let (endpoint, publication) = {
+        let mut state = shared.borrow_mut();
+        let publication = state.apply_change(change, now_ticks, now_utc);
+        if publication.report.is_some() {
+            state.note_broadcast(now_ticks);
+        }
+        (state.endpoint, publication)
+    };
+    if let Some(report) = publication.report {
+        libertas_endpoint_report(endpoint, &report, None);
     }
     update_heartbeat_timer(shared);
 }
@@ -1712,6 +1687,7 @@ fn valid_current(current: &SprinklerCurrentWeatherV1) -> bool {
     current.valid_until > current.retrieved_at
         && current.interval_seconds > 0
         && current.temperature_celsius.is_finite()
+        && current.relative_humidity_percent <= 100
         && valid_nonnegative(current.precipitation_millimeters)
         && valid_nonnegative(current.reference_evapotranspiration_millimeters)
         && valid_nonnegative(current.wind_speed_meters_per_second)
@@ -1723,6 +1699,7 @@ fn valid_forecast(forecast: &SprinklerWeatherForecastV1) -> bool {
         && forecast.periods.iter().all(|period| {
             period.duration_seconds > 0
                 && period.temperature_celsius.is_finite()
+                && period.relative_humidity_percent <= 100
                 && period.precipitation_probability_percent <= 100
                 && valid_nonnegative(period.expected_precipitation_millimeters)
                 && valid_nonnegative(period.reference_evapotranspiration_millimeters)
@@ -1818,13 +1795,23 @@ fn accept_hub_location(
 }
 
 fn arm_location_watchdog(state: &Rc<RefCell<LocationSubscriptionState>>, delay_seconds: u32) {
-    let timer = state.borrow().retry_timer;
+    let (timer, server_up) = {
+        let state = state.borrow();
+        (state.retry_timer, state.hub_server_up)
+    };
     if timer != 0 {
+        if !server_up {
+            libertas_timer_cancel(timer);
+            return;
+        }
         rearm_refresh_timer(timer, delay_seconds, libertas_get_sys_ticks());
     }
 }
 
 fn subscribe_to_hub_location(state: &Rc<RefCell<LocationSubscriptionState>>) {
+    if !state.borrow().hub_server_up {
+        return;
+    }
     libertas_endpoint_subscribe_request(
         LIBERTAS_HUB_ENDPOINT,
         &HubProtocol::LocationReq {
@@ -1834,7 +1821,14 @@ fn subscribe_to_hub_location(state: &Rc<RefCell<LocationSubscriptionState>>) {
     arm_location_watchdog(state, HUB_LOCATION_RETRY_SECONDS);
 }
 
-fn location_watchdog_fired(timer: u32, now_ticks: u64, _context: &mut Box<dyn core::any::Any>) {
+fn location_watchdog_fired(timer: u32, now_ticks: u64, context: &mut Box<dyn core::any::Any>) {
+    let state = context
+        .downcast_mut::<Rc<RefCell<LocationSubscriptionState>>>()
+        .unwrap();
+    if !state.borrow().hub_server_up {
+        libertas_timer_cancel(timer);
+        return;
+    }
     libertas_endpoint_subscribe_request(
         LIBERTAS_HUB_ENDPOINT,
         &HubProtocol::LocationReq {
@@ -1865,13 +1859,13 @@ fn handle_hub_location_event(
         if let LibertasEndpointMessage::Data(HubProtocol::LocationRsp {
             longitude,
             latitude,
-        }) = message
+        }) = &message
         {
             let accepted = accept_hub_location(
                 state,
                 SprinklerWeatherLocationV1 {
-                    longitude_degrees: longitude,
-                    latitude_degrees: latitude,
+                    longitude_degrees: *longitude,
+                    latitude_degrees: *latitude,
                 },
             );
             arm_location_watchdog(
@@ -1884,15 +1878,45 @@ fn handle_hub_location_event(
             );
             return LibertasEndpointHandlerResult::Handled;
         }
+        match message {
+            LibertasEndpointMessage::Status(LibertasEndpointStandardStatus::PermissionDenied) => {
+                libertas_log(
+                    LogLevel::Error,
+                    "Libertas Hub denied location access; the task requires ACCESS_FINE_LOCATION",
+                )
+            }
+            LibertasEndpointMessage::Status(_) => libertas_log(
+                LogLevel::Warn,
+                "Libertas Hub location subscription returned a failure status",
+            ),
+            LibertasEndpointMessage::InvalidMessage => libertas_log(
+                LogLevel::Warn,
+                "Libertas Hub location subscription returned an invalid message",
+            ),
+            LibertasEndpointMessage::Data(_) | LibertasEndpointMessage::NoPayload => libertas_log(
+                LogLevel::Warn,
+                "Libertas Hub location subscription returned an unexpected protocol value",
+            ),
+        }
+    } else if opcode == OP_ENDPOINT_PEER_DOWN {
+        let timer = {
+            let mut state = state.borrow_mut();
+            state.hub_server_up = false;
+            state.retry_timer
+        };
+        if timer != 0 {
+            libertas_timer_cancel(timer);
+        }
         libertas_log(
             LogLevel::Warn,
-            "Libertas Hub location subscription returned an unexpected message",
+            "Libertas Hub location server is down; subscription retry is suspended",
         );
-    } else if opcode == OP_ENDPOINT_PEER_DOWN || opcode == OP_ENDPOINT_PEER_TIMEOUT {
-        libertas_log(
-            LogLevel::Warn,
-            "Libertas Hub location subscription became unavailable",
-        );
+        return LibertasEndpointHandlerResult::Handled;
+    } else if opcode == OP_ENDPOINT_PEER_UP {
+        // Every delivered Up represents a newer server startup.
+        state.borrow_mut().hub_server_up = true;
+        subscribe_to_hub_location(state);
+        return LibertasEndpointHandlerResult::Handled;
     }
 
     arm_location_watchdog(state, HUB_LOCATION_RETRY_SECONDS);
@@ -1927,11 +1951,9 @@ fn handle_endpoint_event(
         .unwrap();
 
     if opcode == OP_ENDPOINT_PEER_DOWN {
-        shared.borrow_mut().remove_subscriber(peer);
-        update_heartbeat_timer(shared);
-        return LibertasEndpointStatus::Success;
-    }
-    if opcode == OP_ENDPOINT_PEER_TIMEOUT {
+        // The host has confirmed this client is currently stopped or absent.
+        // No ephemeral per-client state is kept here, and host-owned
+        // membership continues to drive the shared broadcast heartbeat.
         return LibertasEndpointStatus::Success;
     }
     if opcode != OP_ENDPOINT_REQ && opcode != OP_ENDPOINT_SUB_REQ {
@@ -1950,9 +1972,7 @@ fn handle_endpoint_event(
 
     if is_subscription {
         if prepared.accepted {
-            shared
-                .borrow_mut()
-                .add_or_replace_subscriber(peer, now_ticks);
+            shared.borrow_mut().note_subscription(now_ticks);
             update_heartbeat_timer(shared);
         } else {
             libertas_endpoint_remove_subscriber(endpoint, peer);
@@ -1976,8 +1996,9 @@ fn handle_endpoint_event(
 /// Persisted retrieval timestamps preserve refresh schedules across restarts,
 /// avoiding immediate rewrites while cached sections are not yet due. The
 /// transient cursor and replay journal intentionally restart at sequence zero;
-/// accepted subscriptions receive periodic heartbeat reports and can recover
-/// with epoch-timestamp-and-sequence reset detection.
+/// the server publishes each change and a single shared heartbeat through the
+/// host-owned client set, without keeping a peer roster. Clients recover with
+/// epoch-timestamp-and-sequence reset detection.
 #[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentDataV1")]
 #[libertas_permissions(WEATHER_SERVER_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]
@@ -2020,12 +2041,12 @@ pub fn libertas_weather_server(server: SprinklerWeatherEndpointServerV1) {
             let shared = context
                 .downcast_mut::<Rc<RefCell<WeatherServerState>>>()
                 .unwrap();
-            let (endpoint, reports) = {
+            let (endpoint, report) = {
                 let mut state = shared.borrow_mut();
-                (state.endpoint, state.due_heartbeats(now_ticks))
+                (state.endpoint, state.due_heartbeat(now_ticks))
             };
-            for (peer, report) in reports {
-                libertas_endpoint_report(endpoint, &report, Some(peer));
+            if let Some(report) = report {
+                libertas_endpoint_report(endpoint, &report, None);
             }
             let next_ticks = shared.borrow().next_heartbeat_ticks();
             if let Some(next_ticks) = next_ticks {
@@ -2054,6 +2075,7 @@ pub fn libertas_weather_server(server: SprinklerWeatherEndpointServerV1) {
         provider: provider.clone(),
         location: cached_location,
         retry_timer: 0,
+        hub_server_up: true,
     }));
     let location_retry_timer = libertas_timer_new_interval(
         0,
@@ -2128,6 +2150,7 @@ mod tests {
             valid_at: OLD_EPOCH,
             interval_seconds: 900,
             temperature_celsius: 21.0,
+            relative_humidity_percent: 67,
             precipitation_millimeters: 0.1,
             reference_evapotranspiration_millimeters: 0.05,
             wind_speed_meters_per_second: 2.5,
@@ -2144,6 +2167,7 @@ mod tests {
                     starts_at: OLD_EPOCH,
                     duration_seconds: 3_600,
                     temperature_celsius: 22.0,
+                    relative_humidity_percent: 65,
                     precipitation_probability_percent: 20,
                     expected_precipitation_millimeters: 0.0,
                     reference_evapotranspiration_millimeters: 0.3,
@@ -2154,6 +2178,7 @@ mod tests {
                     starts_at: OLD_EPOCH + 3_600,
                     duration_seconds: 3_600,
                     temperature_celsius: 23.0,
+                    relative_humidity_percent: 62,
                     precipitation_probability_percent: 50,
                     expected_precipitation_millimeters: 1.0,
                     reference_evapotranspiration_millimeters: 0.25,
@@ -2212,6 +2237,7 @@ mod tests {
                 "hourly": {{
                     "time": [{}, {}, {}, {}],
                     "temperature_2m": [19.0, 20.0, 21.0, 22.0],
+                    "relative_humidity_2m": [82, 76, 69, 64],
                     "precipitation_probability": [10, 20, 30, 40],
                     "precipitation": [0.4, 0.2, 0.0, 1.0],
                     "et0_fao_evapotranspiration": [0.1, 0.2, 0.3, 0.4],
@@ -2237,6 +2263,7 @@ mod tests {
                     "time": 1784972800,
                     "interval": 900,
                     "temperature_2m": 21.5,
+                    "relative_humidity_2m": 73,
                     "precipitation": 0.4,
                     "et0_fao_evapotranspiration": 0.05,
                     "wind_speed_10m": 3.2,
@@ -2251,6 +2278,7 @@ mod tests {
         assert_eq!(current.valid_at, 1_784_972_800);
         assert_eq!(current.interval_seconds, 900);
         assert_eq!(current.temperature_celsius, 21.5);
+        assert_eq!(current.relative_humidity_percent, 73);
         assert_eq!(current.precipitation_millimeters, 0.4);
         assert_eq!(current.wind_speed_meters_per_second, 3.2);
         assert_eq!(
@@ -2272,6 +2300,7 @@ mod tests {
         assert_eq!(forecast.periods.len(), 2);
         assert_eq!(forecast.periods[0].starts_at, OLD_EPOCH);
         assert_eq!(forecast.periods[1].starts_at, OLD_EPOCH + 3_600);
+        assert_eq!(forecast.periods[0].relative_humidity_percent, 69);
         assert_eq!(forecast.periods[0].precipitation_probability_percent, 30);
     }
 
@@ -2279,9 +2308,19 @@ mod tests {
     fn incomplete_provider_section_is_rejected_without_partial_acceptance() {
         let mut hourly = open_meteo_hourly();
         hourly.et0_fao_evapotranspiration[1] = None;
+        hourly.relative_humidity_2m[2] = None;
         hourly.wind_gusts_10m.pop();
 
         assert!(build_history(&hourly, OLD_EPOCH, OLD_EPOCH).is_err());
+        assert!(build_forecast(&hourly, OLD_EPOCH, OLD_EPOCH).is_err());
+    }
+
+    #[test]
+    fn invalid_forecast_humidity_does_not_invalidate_history() {
+        let mut hourly = open_meteo_hourly();
+        hourly.relative_humidity_2m[2] = Some(101.0);
+
+        assert!(build_history(&hourly, OLD_EPOCH, OLD_EPOCH).is_ok());
         assert!(build_forecast(&hourly, OLD_EPOCH, OLD_EPOCH).is_err());
     }
 
@@ -2392,7 +2431,7 @@ mod tests {
     }
 
     #[test]
-    fn provider_change_advances_cursor_journal_and_subscriber_report_atomically() {
+    fn provider_change_advances_cursor_journal_and_broadcast_atomically() {
         let replacement = history();
         let mut state = WeatherServerState::new(
             ENDPOINT,
@@ -2403,8 +2442,6 @@ mod tests {
                 forecast: None,
             },
         );
-        state.add_or_replace_subscriber(7, 0);
-
         let publication = state.apply_change(
             SprinklerWeatherChangeV1::HistoryReplaceV1 {
                 history: replacement.clone(),
@@ -2416,11 +2453,9 @@ mod tests {
         assert_eq!(state.snapshot.history, Some(replacement.clone()));
         assert_eq!(state.cursor, Some(cursor(NEW_EPOCH, 1)));
         assert_eq!(state.journal.len(), 1);
-        assert_eq!(publication.reports.len(), 1);
-        assert_eq!(publication.reports[0].0, 7);
-        let SprinklerWeatherProtocolV1::WeatherIncrementV1 { report } = &publication.reports[0].1
+        let Some(SprinklerWeatherProtocolV1::WeatherIncrementV1 { report }) = &publication.report
         else {
-            panic!("expected incremental provider report");
+            panic!("expected incremental broadcast report");
         };
         assert_eq!(report.from_cursor, cursor(NEW_EPOCH, 0));
         assert_eq!(report.through_cursor, cursor(NEW_EPOCH, 1));
@@ -2435,8 +2470,6 @@ mod tests {
     #[test]
     fn location_change_clear_is_an_incremental_weather_change() {
         let mut state = WeatherServerState::new(ENDPOINT, Some(NEW_EPOCH), snapshot());
-        state.add_or_replace_subscriber(7, 0);
-
         let publication = state.apply_change(
             SprinklerWeatherChangeV1::SectionClearV1 {
                 section: SprinklerWeatherSectionV1::Current,
@@ -2449,10 +2482,9 @@ mod tests {
         assert!(state.snapshot.current.is_none());
         assert!(state.snapshot.forecast.is_some());
         assert_eq!(state.cursor, Some(cursor(NEW_EPOCH, 1)));
-        assert_eq!(publication.reports.len(), 1);
-        let SprinklerWeatherProtocolV1::WeatherIncrementV1 { report } = &publication.reports[0].1
+        let Some(SprinklerWeatherProtocolV1::WeatherIncrementV1 { report }) = &publication.report
         else {
-            panic!("expected incremental clear report");
+            panic!("expected incremental clear broadcast");
         };
         assert_eq!(
             report.changes,
@@ -2657,10 +2689,16 @@ mod tests {
         let mut invalid_current = current();
         invalid_current.wind_speed_meters_per_second = f32::NAN;
         assert!(!valid_current(&invalid_current));
+        let mut invalid_current_humidity = current();
+        invalid_current_humidity.relative_humidity_percent = 101;
+        assert!(!valid_current(&invalid_current_humidity));
 
         let mut invalid_forecast = forecast();
         invalid_forecast.periods[0].duration_seconds = 0;
         assert!(!valid_forecast(&invalid_forecast));
+        let mut invalid_forecast_humidity = forecast();
+        invalid_forecast_humidity.periods[0].relative_humidity_percent = 101;
+        assert!(!valid_forecast(&invalid_forecast_humidity));
     }
 
     #[test]
@@ -2735,17 +2773,16 @@ mod tests {
         let maximum_wait = u64::from(SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS)
             * MICROSECONDS_PER_SECOND;
         let mut state = WeatherServerState::new(ENDPOINT, Some(NEW_EPOCH), snapshot());
-        state.add_or_replace_subscriber(7, start_ticks);
+        state.note_subscription(start_ticks);
 
         assert!(
             state
-                .due_heartbeats(start_ticks + maximum_wait - 1)
-                .is_empty()
+                .due_heartbeat(start_ticks + maximum_wait - 1)
+                .is_none()
         );
-        let reports = state.due_heartbeats(start_ticks + maximum_wait);
-        assert_eq!(reports.len(), 1);
-        assert_eq!(reports[0].0, 7);
-        let SprinklerWeatherProtocolV1::WeatherIncrementV1 { report } = &reports[0].1 else {
+        let Some(SprinklerWeatherProtocolV1::WeatherIncrementV1 { report }) =
+            state.due_heartbeat(start_ticks + maximum_wait)
+        else {
             panic!("expected heartbeat report");
         };
         assert!(report.changes.is_empty());
@@ -2757,29 +2794,21 @@ mod tests {
     }
 
     #[test]
-    fn peer_timeout_preserves_subscription_and_peer_down_removes_it() {
+    fn confirmed_client_down_does_not_mutate_host_owned_membership_or_shared_heartbeat() {
         let shared = Rc::new(RefCell::new(WeatherServerState::new(
             ENDPOINT,
             Some(NEW_EPOCH),
             snapshot(),
         )));
-        shared.borrow_mut().add_or_replace_subscriber(7, 100);
-        shared.borrow_mut().add_or_replace_subscriber(7, 200);
+        shared.borrow_mut().note_subscription(100);
+        let deadline = shared.borrow().next_heartbeat_ticks();
         let mut context: Box<dyn Any> = Box::new(Rc::clone(&shared));
-
-        assert_eq!(
-            handle_endpoint_event(ENDPOINT, OP_ENDPOINT_PEER_TIMEOUT, None, &mut context, 0, 7),
-            LibertasEndpointStatus::Success
-        );
-        assert_eq!(shared.borrow().subscribers.len(), 1);
-        assert_eq!(shared.borrow().subscribers[0].last_report_ticks, 200);
 
         assert_eq!(
             handle_endpoint_event(ENDPOINT, OP_ENDPOINT_PEER_DOWN, None, &mut context, 0, 7),
             LibertasEndpointStatus::Success
         );
-        assert!(shared.borrow().subscribers.is_empty());
-        assert_eq!(shared.borrow().next_heartbeat_ticks(), None);
+        assert_eq!(shared.borrow().next_heartbeat_ticks(), deadline);
     }
 
     #[test]

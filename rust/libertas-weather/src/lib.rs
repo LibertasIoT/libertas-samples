@@ -172,9 +172,9 @@ impl SprinklerWeatherHistoryV1 {
 }
 
 /// Sprinkler current weather
-/// Contains immediate rain, freeze, wind, and water-balance inputs used to
-/// decide whether an otherwise scheduled watering operation may safely start or
-/// continue.
+/// Contains immediate rain, freeze, humidity, wind, and water-balance inputs
+/// used to decide whether an otherwise scheduled watering operation may safely
+/// start or continue.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerCurrentWeatherV1 {
     /// Retrieved at
@@ -201,6 +201,12 @@ pub struct SprinklerCurrentWeatherV1 {
     /// Air temperature at two meters above ground in degrees Celsius. The
     /// sprinkler uses it to inhibit watering near or below freezing.
     pub temperature_celsius: f32,
+    /// Relative humidity
+    /// Relative humidity at two meters above ground, expressed as a percentage
+    /// from 0 through 100. The sprinkler uses it to avoid unnecessarily long
+    /// foliage-wetness periods when overhead watering is required.
+    #[libertas_number(min = 0, max = 100)]
+    pub relative_humidity_percent: u8,
     /// Precipitation
     /// Total rain, showers, and water-equivalent frozen precipitation
     /// accumulated during `interval_seconds`, in millimeters. The sprinkler uses
@@ -236,8 +242,9 @@ impl SprinklerCurrentWeatherV1 {
 }
 
 /// Sprinkler weather forecast period
-/// Contains predicted water input, water loss, temperature, and wind hazards
-/// used to decide when and how much to water during one planning period.
+/// Contains predicted water input, water loss, temperature, humidity, and wind
+/// hazards used to decide when and how much to water during one planning
+/// period.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWeatherForecastPeriodV1 {
     /// Start time
@@ -253,6 +260,12 @@ pub struct SprinklerWeatherForecastPeriodV1 {
     /// The sprinkler uses it to avoid watering during forecast freezing
     /// conditions.
     pub temperature_celsius: f32,
+    /// Relative humidity
+    /// Predicted relative humidity at two meters above ground, expressed as an
+    /// integer percentage from 0 through 100. Together with solar position and
+    /// sprinkler-head type, this helps avoid prolonged foliage wetness.
+    #[libertas_number(min = 0, max = 100)]
+    pub relative_humidity_percent: u8,
     /// Precipitation probability
     /// Probability of measurable precipitation during this period, expressed as
     /// an integer percentage from 0 through 100. This expresses forecast
@@ -303,8 +316,8 @@ pub struct SprinklerWeatherForecastV1 {
     /// partial forecast.
     /// ----
     /// Forecast period
-    /// Predicted precipitation, reference evapotranspiration, temperature, and
-    /// wind for one planning period.
+    /// Predicted precipitation, reference evapotranspiration, temperature,
+    /// humidity, and wind for one planning period.
     pub periods: Vec<SprinklerWeatherForecastPeriodV1>,
 }
 
@@ -815,8 +828,8 @@ pub enum SprinklerWeatherPersistentDataV1 {
     /// section. A failed refresh leaves the existing database record unchanged.
     CurrentV1 {
         /// Current conditions
-        /// Immediate rain, freeze, wind, and water-balance inputs, including
-        /// their retrieval and freshness timestamps.
+        /// Immediate rain, freeze, humidity, wind, and water-balance inputs,
+        /// including their retrieval and freshness timestamps.
         current: SprinklerCurrentWeatherV1,
     },
     /// Forecast
@@ -824,8 +837,9 @@ pub enum SprinklerWeatherPersistentDataV1 {
     /// failed refresh leaves the existing database record unchanged.
     ForecastV1 {
         /// Forecast
-        /// Future precipitation, reference-evapotranspiration, temperature, and
-        /// wind inputs, including their retrieval and freshness timestamps.
+        /// Future precipitation, reference-evapotranspiration, temperature,
+        /// humidity, and wind inputs, including their retrieval and freshness
+        /// timestamps.
         forecast: SprinklerWeatherForecastV1,
     },
 }
@@ -859,6 +873,7 @@ mod tests {
             valid_at: 1_784_972_800,
             interval_seconds: 900,
             temperature_celsius: 22.5,
+            relative_humidity_percent: 68,
             precipitation_millimeters: 0.4,
             reference_evapotranspiration_millimeters: 0.05,
             wind_speed_meters_per_second: 3.2,
@@ -874,6 +889,7 @@ mod tests {
                 starts_at: 1_784_972_800,
                 duration_seconds: 3_600,
                 temperature_celsius: 23.0,
+                relative_humidity_percent: 64,
                 precipitation_probability_percent: 70,
                 expected_precipitation_millimeters: 2.5,
                 reference_evapotranspiration_millimeters: 0.3,
