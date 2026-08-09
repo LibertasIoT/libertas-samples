@@ -186,7 +186,7 @@ pub fn application(/* configuration */) {
 
 The function-level `#[libertas_data_schema(AppData)]` links the union to the
 application and marks it as Libertas data in generated schema. All values passed
-to `libertas_data_write` must be `AppData` variants. Do not store an unlisted
+to `libertas_data_write_single` must be `AppData` variants. Do not store an unlisted
 struct or primitive directly.
 
 Use stable resource identifiers plus typed `NotificationArgument` values as
@@ -199,8 +199,8 @@ pub static APP_STRINGS: [(&str, &str); 1] = [
 
 let key = [NotificationArgument::Object(device)];
 let value = AppData::Settings { timeout_seconds: 600 };
-libertas_data_write("APP_SETTINGS", &key, &value);
-let saved: Option<AppData> = libertas_data_read("APP_SETTINGS", &key);
+libertas_data_write_single("APP_SETTINGS", &key, &value);
+let saved: Option<AppData> = libertas_data_read_single("APP_SETTINGS", &key);
 ```
 
 Attach `#[libertas_string_resources(APP_STRINGS)]` to the application function.
@@ -212,14 +212,14 @@ Persistence rules:
 - Treat enum variant order and variant-field order as an on-disk ABI: Avro
   encoding is positional. Never reorder or repurpose existing variants/fields.
   Append compatible variants or implement an explicit migration.
-- `libertas_data_read` returns `None` for a missing record. Initialize every
+- `libertas_data_read_single` returns `None` for a missing record. Initialize every
   required record immediately with a documented default.
 - Validate decoded values before use. Repair or reject values that violate
   current invariants.
 - Persist configuration after a successful write and before reporting it
   changed. Do not persist transient timers, subscriptions, transaction IDs, or
   derived attributes unless explicitly required.
-- Use standalone data for one current value per key. Use indexed data APIs only
+- Use single-record data for one current value per key. Use indexed data APIs only
   for ordered histories or multiple records.
 - Keep database calls outside active `RefCell` mutable borrows when practical.
 
@@ -572,11 +572,11 @@ endpoint operation as another protocol field.
   Down is only an
   opportunistic confirmed result after a failed delivery, not a complete
   liveness stream.
-- Persist history freshness as one standalone metadata record and every
+- Persist history freshness as one single metadata record and every
   completed history period as a separate indexed record keyed by `starts_at`.
   On startup, validate each value against its index, reconstruct the bounded
   ordered history dynamically, and remove invalid or out-of-window records.
-  Keep current conditions and forecast as independent replaceable singleton
+  Keep current conditions and forecast as independent replaceable single
   records. Validate decoded timestamps, ordering, durations, ranges,
   probabilities, and finite nonnegative measurements before exposing a record.
   A missing or invalid section remains `None` without hiding valid sections.
@@ -604,7 +604,7 @@ endpoint operation as another protocol field.
 - Refresh current conditions every 15 minutes and combined history/forecast
   data every hour. Validate a complete provider section before acceptance. For
   accepted history, upsert only new or corrected indexed periods, delete only
-  periods absent from the replacement window, and submit the standalone
+  periods absent from the replacement window, and submit the single
   metadata write after those indexed changes. Persist every accepted section
   before changing runtime state or publishing its incremental report. A
   provider, internet, HTTP, JSON, or validation failure leaves the existing
