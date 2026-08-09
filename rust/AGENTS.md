@@ -120,6 +120,40 @@ Common schema attributes:
   `#[libertas_endpoint_server]`,
   `#[libertas_endpoint_base_objects("path")]`
 
+Functions that require platform permissions must declare them with a const
+string array and `#[libertas_permissions(...)]`. Every permission must also be
+a key in that function's `#[libertas_string_resources(...)]` constant, with a
+non-empty default-locale explanation of why access is needed:
+
+```rust
+const WEATHER_PERMISSIONS: &[&str] = &["libertas.permission.ACCESS_FINE_LOCATION"];
+const APP_STRINGS: &[(&str, &str)] = &[
+    (
+        "libertas.permission.ACCESS_FINE_LOCATION",
+        "Use the Hub's location to request the correct local weather forecast.",
+    ),
+];
+
+#[libertas_permissions(WEATHER_PERMISSIONS)]
+#[libertas_string_resources(APP_STRINGS)]
+pub fn weather_service() {}
+```
+
+An Endpoint server may declare the same permission constant as a downstream
+access requirement. It does not need matching string-resource keys. When a
+client task selects that endpoint, the Hub checks once during task
+approval/configuration that the client function has every required permission;
+there is no per-message permission check:
+
+```rust
+#[derive(LibertasExport, LibertasAvroDecode)]
+pub struct WeatherServer {
+    #[libertas_endpoint_server]
+    #[libertas_permissions(WEATHER_PERMISSIONS)]
+    pub endpoint: LibertasEndpoint,
+}
+```
+
 Endpoint protocol schemas must be payload unions derived with
 `LibertasAvroEncode`, `LibertasAvroDecode`, and `LibertasExport`. Mark variants
 with the appropriate roles: `#[libertas_request]`, `#[libertas_response]`,

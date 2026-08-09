@@ -18,7 +18,7 @@ use libertas::{
 };
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
-    libertas_string_resources,
+    libertas_permissions, libertas_string_resources,
 };
 
 mod machine_learning;
@@ -223,7 +223,10 @@ pub const BUILDING_HVAC_EXCESSIVE_HEAT_RECOVERY_TEMPERATURE_CELSIUS: f32 = 32.0;
 /// `UnitUnsigned("duration-seconds")`; not-recovering resources receive room,
 /// duration, and temperature in that order. Recovery receives room,
 /// condition-name `ResourceText`, and current temperature.
-pub static APP_STRINGS: [(&str, &str); 33] = [
+#[allow(dead_code)]
+const BUILDING_CLIMATE_PERMISSIONS: &[&str] = &["libertas.permission.ACCESS_FINE_LOCATION"];
+
+pub static APP_STRINGS: [(&str, &str); 34] = [
     (
         "HVAC_ROOM_STATUS",
         "Room status: %1$s. HVAC: %2$s. Air quality: %3$s.",
@@ -346,6 +349,10 @@ pub static APP_STRINGS: [(&str, &str); 33] = [
     (
         "HVAC_EXTERNAL_FEATURE_INPUTS",
         "Optional building HVAC utility, equipment, occupancy, calendar, and metering inputs.",
+    ),
+    (
+        "libertas.permission.ACCESS_FINE_LOCATION",
+        "Allow the building climate task to receive location-specific outdoor conditions and forecasts from the weather server.",
     ),
 ];
 
@@ -4249,6 +4256,7 @@ fn restore_machine_learning_models(
 /// conditions, learn cross-zone effects, and use the bounded statically linked
 /// XGBoost worker for optional near-term predictions.
 #[libertas_data_schema(BuildingHvacPersistentDataV1)]
+#[libertas_permissions(BUILDING_CLIMATE_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]
 pub fn libertas_building_climate(
     /*
