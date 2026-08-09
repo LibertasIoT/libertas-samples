@@ -11,13 +11,13 @@ use std::sync::mpsc::Receiver;
 
 use libertas::{
     LibertasEndpointHandlerResult, LibertasEndpointMessage, LibertasEndpointStandardStatus,
-    LibertasTransId, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_TIMEOUT,
-    OP_ENDPOINT_REQ, OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_data_remove,
-    libertas_endpoint_report, libertas_endpoint_response, libertas_endpoint_subscribe_request,
-    libertas_formatted_text, libertas_get_sys_ticks, libertas_get_utc_time,
-    libertas_register_device_listener, libertas_register_endpoint_status_listener,
-    libertas_register_shutdown_handler, libertas_register_wakeup_callback,
-    libertas_timer_new_interval, libertas_timer_update_interval,
+    LibertasTransId, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ,
+    OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_data_remove, libertas_endpoint_report,
+    libertas_endpoint_response, libertas_endpoint_subscribe_request, libertas_formatted_text,
+    libertas_get_sys_ticks, libertas_get_utc_time, libertas_register_device_listener,
+    libertas_register_endpoint_status_listener, libertas_register_shutdown_handler,
+    libertas_register_wakeup_callback, libertas_timer_cancel, libertas_timer_new_interval,
+    libertas_timer_update_interval,
 };
 use libertas_matter::{
     InlineByteBuffer, MatterDevice, MatterDeviceSubscription, MatterResponse,
@@ -55,12 +55,6 @@ const WEATHER_CURRENT_RESOURCE: &str = "HVAC_WEATHER_CURRENT";
 const WEATHER_FORECAST_RESOURCE: &str = "HVAC_WEATHER_FORECAST";
 const OUTDOOR_AIR_QUALITY_RESOURCE: &str = "HVAC_OUTDOOR_AIR_QUALITY";
 const EXTERNAL_FEATURE_INPUTS_RESOURCE: &str = "HVAC_EXTERNAL_FEATURE_INPUTS";
-
-#[derive(Clone)]
-struct Subscriber {
-    peer: u32,
-    last_report_ticks: u64,
-}
 
 #[derive(Clone, Copy, Default)]
 struct ConcentrationDraft {
@@ -235,8 +229,8 @@ struct RoomRuntime {
     urgent: BuildingHvacUrgentNotificationEngine,
     machine_learning: BuildingHvacRoomMachineLearningV1,
     plan: Option<BuildingHvacRoomPlanV1>,
-    subscribers: Vec<Subscriber>,
     last_report: Option<BuildingHvacRoomProtocolV1>,
+    last_endpoint_report_ticks: Option<u64>,
     last_condition_boundary: Option<LibertasDateTime>,
     pending_features: Vec<PendingFeatures>,
     prediction_residuals: Vec<PredictionResidualObservation>,
@@ -249,9 +243,11 @@ struct ControllerState {
     weather: BuildingHvacWeatherSnapshotV1,
     weather_cursor: Option<BuildingHvacWeatherCursorV1>,
     weather_stream_ready: bool,
+    weather_server_up: bool,
     weather_maximum_wait_seconds: u32,
     weather_retry_timer: u32,
     external_feature_endpoint: Option<LibertasEndpoint>,
+    external_feature_server_up: bool,
     external_features: BuildingHvacExternalFeatureSnapshotV1,
     external_feature_maximum_wait_seconds: u32,
     external_feature_retry_timer: u32,
@@ -1691,29 +1687,19 @@ fn report_changed_rooms(shared: &Rc<RefCell<ControllerState>>) {
         for index in 0..state.rooms.len() {
             let report = room_report(&state, index, now);
             if state.rooms[index].last_report.as_ref() != Some(&report) {
-                let peers: Vec<_> = state.rooms[index]
-                    .subscribers
-                    .iter()
-                    .map(|subscriber| subscriber.peer)
-                    .collect();
                 reports.push((
                     index,
                     state.rooms[index].configuration.control_endpoint,
-                    peers,
                     report,
                 ));
             }
         }
     }
-    for (index, endpoint, peers, report) in reports {
-        for peer in peers {
-            libertas_endpoint_report(endpoint, &report, Some(peer));
-        }
+    for (index, endpoint, report) in reports {
+        libertas_endpoint_report(endpoint, &report, None);
         let mut state = shared.borrow_mut();
         state.rooms[index].last_report = Some(report);
-        for subscriber in &mut state.rooms[index].subscribers {
-            subscriber.last_report_ticks = now_ticks;
-        }
+        state.rooms[index].last_endpoint_report_ticks = Some(now_ticks);
     }
 }
 
@@ -1725,34 +1711,22 @@ fn report_due_heartbeats(shared: &Rc<RefCell<ControllerState>>, now_ticks: u64) 
     {
         let state = shared.borrow();
         for (index, room) in state.rooms.iter().enumerate() {
-            let due: Vec<_> = room
-                .subscribers
-                .iter()
-                .filter(|subscriber| {
-                    now_ticks.saturating_sub(subscriber.last_report_ticks) >= interval
-                })
-                .map(|subscriber| subscriber.peer)
-                .collect();
-            if !due.is_empty() {
+            if room
+                .last_endpoint_report_ticks
+                .is_some_and(|last_report| now_ticks.saturating_sub(last_report) >= interval)
+            {
                 reports.push((
                     index,
                     room.configuration.control_endpoint,
-                    due,
                     room_report(&state, index, now),
                 ));
             }
         }
     }
-    for (index, endpoint, peers, report) in reports {
-        for peer in &peers {
-            libertas_endpoint_report(endpoint, &report, Some(*peer));
-        }
+    for (index, endpoint, report) in reports {
+        libertas_endpoint_report(endpoint, &report, None);
         let mut state = shared.borrow_mut();
-        for subscriber in &mut state.rooms[index].subscribers {
-            if peers.contains(&subscriber.peer) {
-                subscriber.last_report_ticks = now_ticks;
-            }
-        }
+        state.rooms[index].last_endpoint_report_ticks = Some(now_ticks);
     }
 }
 
@@ -1852,12 +1826,9 @@ fn handle_room_endpoint(
         .downcast_mut::<RoomContext>()
         .expect("invalid building climate room context");
     if opcode == OP_ENDPOINT_PEER_DOWN {
-        context.shared.borrow_mut().rooms[context.room_index]
-            .subscribers
-            .retain(|subscriber| subscriber.peer != peer);
-        return LibertasEndpointHandlerResult::Handled;
-    }
-    if opcode == OP_ENDPOINT_PEER_TIMEOUT {
+        // The host has confirmed this client is currently stopped or absent.
+        // No ephemeral per-client state is kept here, and the host still owns
+        // permanent-until-changed membership.
         return LibertasEndpointHandlerResult::Handled;
     }
     if opcode != OP_ENDPOINT_REQ && opcode != OP_ENDPOINT_SUB_REQ {
@@ -1876,17 +1847,8 @@ fn handle_room_endpoint(
                 let now_ticks = libertas_get_sys_ticks();
                 let mut state = context.shared.borrow_mut();
                 let room = &mut state.rooms[context.room_index];
-                if let Some(subscriber) = room
-                    .subscribers
-                    .iter_mut()
-                    .find(|subscriber| subscriber.peer == peer)
-                {
-                    subscriber.last_report_ticks = now_ticks;
-                } else {
-                    room.subscribers.push(Subscriber {
-                        peer,
-                        last_report_ticks: now_ticks,
-                    });
+                if room.last_endpoint_report_ticks.is_none() {
+                    room.last_endpoint_report_ticks = Some(now_ticks);
                 }
                 room.last_report = Some(response);
             }
@@ -2224,8 +2186,15 @@ fn weather_request(shared: &Rc<RefCell<ControllerState>>) -> BuildingHvacWeather
 }
 
 fn arm_weather_retry(shared: &Rc<RefCell<ControllerState>>, seconds: u32) {
-    let timer = shared.borrow().weather_retry_timer;
+    let (timer, server_up) = {
+        let state = shared.borrow();
+        (state.weather_retry_timer, state.weather_server_up)
+    };
     if timer != 0 {
+        if !server_up {
+            libertas_timer_cancel(timer);
+            return;
+        }
         libertas_timer_update_interval(
             timer,
             absolute_ticks(libertas_get_sys_ticks(), seconds.max(1)),
@@ -2234,6 +2203,9 @@ fn arm_weather_retry(shared: &Rc<RefCell<ControllerState>>, seconds: u32) {
 }
 
 fn subscribe_weather(shared: &Rc<RefCell<ControllerState>>) {
+    if !shared.borrow().weather_server_up {
+        return;
+    }
     let endpoint = shared.borrow().weather_endpoint;
     libertas_endpoint_subscribe_request(endpoint, &weather_request(shared));
     arm_weather_retry(shared, WEATHER_RETRY_SECONDS);
@@ -2250,10 +2222,23 @@ fn handle_weather_endpoint(
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .expect("invalid building climate weather context");
-    if opcode == OP_ENDPOINT_PEER_DOWN || opcode == OP_ENDPOINT_PEER_TIMEOUT {
-        shared.borrow_mut().weather_stream_ready = false;
-        arm_weather_retry(shared, WEATHER_RETRY_SECONDS);
+    if opcode == OP_ENDPOINT_PEER_DOWN {
+        let timer = {
+            let mut state = shared.borrow_mut();
+            state.weather_stream_ready = false;
+            state.weather_server_up = false;
+            state.weather_retry_timer
+        };
+        if timer != 0 {
+            libertas_timer_cancel(timer);
+        }
         evaluate_and_publish(shared);
+        return LibertasEndpointHandlerResult::Handled;
+    }
+    if opcode == OP_ENDPOINT_PEER_UP {
+        // Every delivered Up represents a newer server startup.
+        shared.borrow_mut().weather_server_up = true;
+        subscribe_weather(shared);
         return LibertasEndpointHandlerResult::Handled;
     }
     let mut retry_seconds = WEATHER_RETRY_SECONDS;
@@ -2484,8 +2469,18 @@ fn accept_external_features(
 }
 
 fn arm_external_feature_retry(shared: &Rc<RefCell<ControllerState>>, seconds: u32) {
-    let timer = shared.borrow().external_feature_retry_timer;
+    let (timer, server_up) = {
+        let state = shared.borrow();
+        (
+            state.external_feature_retry_timer,
+            state.external_feature_server_up,
+        )
+    };
     if timer != 0 {
+        if !server_up {
+            libertas_timer_cancel(timer);
+            return;
+        }
         libertas_timer_update_interval(
             timer,
             absolute_ticks(libertas_get_sys_ticks(), seconds.max(1)),
@@ -2494,6 +2489,9 @@ fn arm_external_feature_retry(shared: &Rc<RefCell<ControllerState>>, seconds: u3
 }
 
 fn subscribe_external_features(shared: &Rc<RefCell<ControllerState>>) {
+    if !shared.borrow().external_feature_server_up {
+        return;
+    }
     let Some(endpoint) = shared.borrow().external_feature_endpoint else {
         return;
     };
@@ -2515,8 +2513,21 @@ fn handle_external_feature_endpoint(
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .expect("invalid building climate external-feature context");
-    if opcode == OP_ENDPOINT_PEER_DOWN || opcode == OP_ENDPOINT_PEER_TIMEOUT {
-        arm_external_feature_retry(shared, EXTERNAL_FEATURE_RETRY_SECONDS);
+    if opcode == OP_ENDPOINT_PEER_DOWN {
+        let timer = {
+            let mut state = shared.borrow_mut();
+            state.external_feature_server_up = false;
+            state.external_feature_retry_timer
+        };
+        if timer != 0 {
+            libertas_timer_cancel(timer);
+        }
+        return LibertasEndpointHandlerResult::Handled;
+    }
+    if opcode == OP_ENDPOINT_PEER_UP {
+        // Every delivered Up represents a newer server startup.
+        shared.borrow_mut().external_feature_server_up = true;
+        subscribe_external_features(shared);
         return LibertasEndpointHandlerResult::Handled;
     }
     let mut retry_seconds = EXTERNAL_FEATURE_RETRY_SECONDS;
@@ -4889,6 +4900,10 @@ fn weather_retry_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .expect("invalid building climate weather timer context");
+    if !shared.borrow().weather_server_up {
+        libertas_timer_cancel(timer);
+        return;
+    }
     let endpoint = shared.borrow().weather_endpoint;
     libertas_endpoint_subscribe_request(endpoint, &weather_request(shared));
     libertas_timer_update_interval(timer, absolute_ticks(now_ticks, WEATHER_RETRY_SECONDS));
@@ -4898,6 +4913,10 @@ fn external_feature_retry_timer(timer: u32, now_ticks: u64, context: &mut Box<dy
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .expect("invalid building climate external-feature timer context");
+    if !shared.borrow().external_feature_server_up {
+        libertas_timer_cancel(timer);
+        return;
+    }
     subscribe_external_features(shared);
     libertas_timer_update_interval(
         timer,
@@ -5020,8 +5039,8 @@ pub(super) fn start(
             urgent: restore_urgent(building.rooms[room_index].control_endpoint),
             machine_learning: BuildingHvacRoomMachineLearningV1::default(),
             plan: None,
-            subscribers: Vec::new(),
             last_report: None,
+            last_endpoint_report_ticks: None,
             last_condition_boundary: None,
             pending_features: Vec::new(),
             prediction_residuals: Vec::new(),
@@ -5035,9 +5054,11 @@ pub(super) fn start(
         weather: restore_weather(),
         weather_cursor: None,
         weather_stream_ready: false,
+        weather_server_up: true,
         weather_maximum_wait_seconds: BUILDING_HVAC_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
         weather_retry_timer: 0,
         external_feature_endpoint: external_feature_client.map(|client| client.endpoint),
+        external_feature_server_up: true,
         external_features: restore_external_features(),
         external_feature_maximum_wait_seconds: EXTERNAL_FEATURE_RETRY_SECONDS,
         external_feature_retry_timer: 0,
