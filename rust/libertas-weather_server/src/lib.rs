@@ -61,7 +61,7 @@ use libertas::{
 use libertas_hub::HubProtocol;
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
-    libertas_string_resources,
+    libertas_permissions, libertas_string_resources,
 };
 use libertas_weather::{
     SPRINKLER_CURRENT_FRESHNESS_SECONDS, SPRINKLER_CURRENT_REFRESH_INTERVAL_SECONDS,
@@ -81,6 +81,8 @@ use reqwest::{blocking::Client, redirect::Policy};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 const MICROSECONDS_PER_SECOND: u64 = 1_000_000;
+#[allow(dead_code)]
+const WEATHER_SERVER_PERMISSIONS: &[&str] = &["libertas.permission.ACCESS_FINE_LOCATION"];
 const OPEN_METEO_URL: &str = "https://api.open-meteo.com/v1/forecast";
 const HTTP_CONNECT_TIMEOUT_SECONDS: u64 = 5;
 const HTTP_REQUEST_TIMEOUT_SECONDS: u64 = 20;
@@ -97,7 +99,7 @@ const LOCATION_EQUALITY_TOLERANCE_DEGREES: f64 = 0.000_001;
 
 /// Weather server database names
 /// Stable resource identifiers and their user-facing descriptions.
-pub const APP_STRINGS: [(&str, &str); 5] = [
+pub const APP_STRINGS: [(&str, &str); 6] = [
     (
         "SPRINKLER_WEATHER_HISTORY_METADATA_V1",
         "Sprinkler weather history freshness for %1$s.",
@@ -118,6 +120,10 @@ pub const APP_STRINGS: [(&str, &str); 5] = [
         "SPRINKLER_WEATHER_LOCATION_V1",
         "Persisted sprinkler weather location for %1$s.",
     ),
+    (
+        "libertas.permission.ACCESS_FINE_LOCATION",
+        "Use the Hub's location to request the correct local weather forecast.",
+    ),
 ];
 const HISTORY_METADATA_RESOURCE: &str = APP_STRINGS[0].0;
 const HISTORY_PERIODS_RESOURCE: &str = APP_STRINGS[1].0;
@@ -135,6 +141,7 @@ pub struct SprinklerWeatherEndpointServerV1 {
     /// subscription clients request weather through this endpoint.
     #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)]
     #[libertas_endpoint_server]
+    #[libertas_permissions(WEATHER_SERVER_PERMISSIONS)]
     #[libertas_ui_header]
     pub endpoint: LibertasEndpoint,
 }
@@ -1972,6 +1979,7 @@ fn handle_endpoint_event(
 /// accepted subscriptions receive periodic heartbeat reports and can recover
 /// with epoch-timestamp-and-sequence reset detection.
 #[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentDataV1")]
+#[libertas_permissions(WEATHER_SERVER_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]
 pub fn libertas_weather_server(server: SprinklerWeatherEndpointServerV1) {
     let endpoint = server.endpoint;

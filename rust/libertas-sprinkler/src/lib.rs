@@ -40,7 +40,7 @@ use libertas::{
 use libertas_hub::HubProtocol;
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema, libertas_export,
-    libertas_string_resources,
+    libertas_permissions, libertas_string_resources,
 };
 use libertas_matter::{
     MatterDevice, MatterDeviceSubscription, MatterResponse, MatterSubscriptionBatch,
@@ -65,6 +65,8 @@ use libertas_weather::{
 };
 
 const MICROSECONDS_PER_SECOND: u64 = 1_000_000;
+#[allow(dead_code)]
+const SPRINKLER_PERMISSIONS: &[&str] = &["libertas.permission.ACCESS_FINE_LOCATION"];
 const RECENT_WATER_WINDOW_SECONDS: u64 = 7 * 24 * 60 * 60;
 const WEATHER_RETRY_SECONDS: u32 = 60;
 const VALVE_COMMAND_TIMEOUT_SECONDS: u32 = 60;
@@ -97,7 +99,7 @@ const SOUTHERN_WINTERIZATION_SEASON_END_DAY: u16 = 273;
 
 /// Sprinkler database names
 /// Stable resource identifiers and their user-facing descriptions.
-pub const APP_STRINGS: [(&str, &str); 7] = [
+pub const APP_STRINGS: [(&str, &str); 8] = [
     (
         "SPRINKLER_ZONE_MEMORY_V1",
         "Sprinkler water balance and settings for %1$s.",
@@ -125,6 +127,10 @@ pub const APP_STRINGS: [(&str, &str); 7] = [
     (
         "SPRINKLER_WINTERIZATION_SEASON_REMINDER",
         "Cold season is approaching at this location. Winterize your sprinkler system, then set Watering mode to Winterization.",
+    ),
+    (
+        "libertas.permission.ACCESS_FINE_LOCATION",
+        "Allow the sprinkler task to receive location-specific conditions and forecasts from the weather server.",
     ),
 ];
 const ZONE_DATA_RESOURCE: &str = APP_STRINGS[0].0;
@@ -3002,6 +3008,7 @@ fn initial_active_state(
 /// shared by all zones. Each zone exposes its complete current state and
 /// persists its own recent-water state.
 #[libertas_data_schema(SprinklerDataV1)]
+#[libertas_permissions(SPRINKLER_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]
 #[libertas_export]
 pub fn libertas_sprinkler(
