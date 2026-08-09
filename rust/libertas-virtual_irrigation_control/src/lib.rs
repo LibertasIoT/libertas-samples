@@ -9,9 +9,9 @@ use core::cell::RefCell;
 
 use libertas::{
     InlineByteBuffer, LIBERTAS_BROADCAST_DEST, LibertasDevice, LibertasVirtualDevice,
-    NotificationArgument, libertas_data_read, libertas_data_write, libertas_device_send_response,
-    libertas_get_sys_ticks, libertas_register_device_listener, libertas_timer_cancel,
-    libertas_timer_new_interval, libertas_timer_update_interval,
+    NotificationArgument, libertas_data_read_single, libertas_data_write_single,
+    libertas_device_send_response, libertas_get_sys_ticks, libertas_register_device_listener,
+    libertas_timer_cancel, libertas_timer_new_interval, libertas_timer_update_interval,
 };
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
@@ -120,14 +120,14 @@ fn remaining_duration_seconds(expiration_ticks: Option<u64>, now: u64) -> Option
 }
 
 fn read_default_open_duration(device: LibertasDevice) -> Option<ValveData> {
-    libertas_data_read(
+    libertas_data_read_single(
         DEFAULT_OPEN_DURATION_RESOURCE,
         &[NotificationArgument::Object(device)],
     )
 }
 
 fn persist_default_open_duration(device: LibertasDevice, value: u32) {
-    libertas_data_write(
+    libertas_data_write_single(
         DEFAULT_OPEN_DURATION_RESOURCE,
         &[NotificationArgument::Object(device)],
         &ValveData::DefaultOpenDuration { value },

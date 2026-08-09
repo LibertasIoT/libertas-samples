@@ -13,8 +13,9 @@ use alloc::{boxed::Box, string::String, vec::Vec};
 
 use libertas::{
     LibertasDateTime, LibertasDevice, LibertasEndpoint, LibertasUser, LogLevel,
-    NotificationArgument, NotificationImportance, libertas_data_read, libertas_data_write,
-    libertas_log, libertas_notification_send, libertas_shutdown_complete, libertas_wake_up,
+    NotificationArgument, NotificationImportance, libertas_data_read_single,
+    libertas_data_write_single, libertas_log, libertas_notification_send,
+    libertas_shutdown_complete, libertas_wake_up,
 };
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
@@ -2868,7 +2869,7 @@ impl BuildingHvacUrgentNotificationEngine {
         let value = BuildingHvacPersistentDataV1::RoomUrgentNotificationStateV1 {
             conditions: self.conditions.clone(),
         };
-        libertas_data_write("HVAC_ROOM_URGENT_NOTIFICATION_STATE", &key, &value);
+        libertas_data_write_single("HVAC_ROOM_URGENT_NOTIFICATION_STATE", &key, &value);
         evaluation
             .actions
             .iter()
@@ -4226,7 +4227,7 @@ fn restore_machine_learning_models(
         .map(|room| {
             let key = [NotificationArgument::Object(room.control_endpoint)];
             if let Some(BuildingHvacPersistentDataV1::MachineLearningModelsV1 { models }) =
-                libertas_data_read(BUILDING_HVAC_ML_MODELS_RESOURCE, &key)
+                libertas_data_read_single(BUILDING_HVAC_ML_MODELS_RESOURCE, &key)
                 && models.room_endpoint == room.control_endpoint
                 && models.is_well_formed()
             {
@@ -4237,7 +4238,7 @@ fn restore_machine_learning_models(
             let value = BuildingHvacPersistentDataV1::MachineLearningModelsV1 {
                 models: models.clone(),
             };
-            libertas_data_write(BUILDING_HVAC_ML_MODELS_RESOURCE, &key, &value);
+            libertas_data_write_single(BUILDING_HVAC_ML_MODELS_RESOURCE, &key, &value);
             models
         })
         .collect()

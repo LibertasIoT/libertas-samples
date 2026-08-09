@@ -49,9 +49,9 @@ use libertas::{
     LibertasEndpointHandlerResult, LibertasEndpointMessage, LibertasEndpointStandardStatus,
     LibertasEndpointStatus, LogLevel, NotificationArgument, OP_ENDPOINT_DATA,
     OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ, OP_ENDPOINT_RSP,
-    OP_ENDPOINT_SUB_REQ, libertas_data_open_indexed, libertas_data_read,
-    libertas_data_read_indexed_range, libertas_data_remove, libertas_data_remove_indexed_records,
-    libertas_data_write, libertas_data_write_indexed, libertas_endpoint_remove_subscriber,
+    OP_ENDPOINT_SUB_REQ, libertas_data_open_indexed, libertas_data_read_indexed_range,
+    libertas_data_read_single, libertas_data_remove_indexed_records, libertas_data_remove_single,
+    libertas_data_write_indexed, libertas_data_write_single, libertas_endpoint_remove_subscriber,
     libertas_endpoint_report, libertas_endpoint_response, libertas_endpoint_subscribe_request,
     libertas_get_sys_ticks, libertas_get_utc_time, libertas_log,
     libertas_register_endpoint_listener, libertas_register_endpoint_status_listener,
@@ -1042,7 +1042,7 @@ fn persistent_key(endpoint: LibertasEndpoint) -> [NotificationArgument<'static>;
 
 fn load_location(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherLocationV1> {
     let key = persistent_key(endpoint);
-    match libertas_data_read(LOCATION_RESOURCE, &key) {
+    match libertas_data_read_single(LOCATION_RESOURCE, &key) {
         Some(SprinklerWeatherPersistentDataV1::LocationV1 { location })
             if valid_weather_location(location) =>
         {
@@ -1053,7 +1053,7 @@ fn load_location(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherLocationV
                 LogLevel::Warn,
                 "Discarding an invalid persisted sprinkler weather location",
             );
-            libertas_data_remove(LOCATION_RESOURCE, &key);
+            libertas_data_remove_single(LOCATION_RESOURCE, &key);
             None
         }
         None => None,
@@ -1151,7 +1151,7 @@ fn reconstruct_indexed_history(
 
 fn clear_indexed_history(endpoint: LibertasEndpoint) {
     let key = persistent_key(endpoint);
-    libertas_data_remove(HISTORY_METADATA_RESOURCE, &key);
+    libertas_data_remove_single(HISTORY_METADATA_RESOURCE, &key);
     let database = libertas_data_open_indexed(HISTORY_PERIODS_RESOURCE, &key);
     if database.count > 0 {
         libertas_data_remove_indexed_records(
@@ -1164,7 +1164,7 @@ fn clear_indexed_history(endpoint: LibertasEndpoint) {
 
 fn load_indexed_history(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherHistoryV1> {
     let key = persistent_key(endpoint);
-    let metadata = match libertas_data_read(HISTORY_METADATA_RESOURCE, &key) {
+    let metadata = match libertas_data_read_single(HISTORY_METADATA_RESOURCE, &key) {
         Some(SprinklerWeatherPersistentDataV1::HistoryMetadataV1 { metadata })
             if valid_history_metadata(metadata) =>
         {
@@ -1203,7 +1203,7 @@ fn load_indexed_history(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherHi
 fn load_snapshot(endpoint: LibertasEndpoint) -> SprinklerWeatherSnapshotV1 {
     let key = persistent_key(endpoint);
     let history = load_indexed_history(endpoint);
-    let current = match libertas_data_read(CURRENT_RESOURCE, &key) {
+    let current = match libertas_data_read_single(CURRENT_RESOURCE, &key) {
         Some(SprinklerWeatherPersistentDataV1::CurrentV1 { current })
             if valid_current(&current) =>
         {
@@ -1211,7 +1211,7 @@ fn load_snapshot(endpoint: LibertasEndpoint) -> SprinklerWeatherSnapshotV1 {
         }
         _ => None,
     };
-    let forecast = match libertas_data_read(FORECAST_RESOURCE, &key) {
+    let forecast = match libertas_data_read_single(FORECAST_RESOURCE, &key) {
         Some(SprinklerWeatherPersistentDataV1::ForecastV1 { forecast })
             if valid_forecast(&forecast) =>
         {
@@ -1302,7 +1302,7 @@ fn persist_indexed_history(
     for index in delta.removals {
         libertas_data_remove_indexed_records(database.handle, index, index);
     }
-    libertas_data_write(
+    libertas_data_write_single(
         HISTORY_METADATA_RESOURCE,
         &key,
         &SprinklerWeatherPersistentDataV1::HistoryMetadataV1 {
@@ -1337,7 +1337,7 @@ fn publish_persisted_change(
 ) {
     let endpoint = shared.borrow().endpoint;
     let key = persistent_key(endpoint);
-    libertas_data_write(resource, &key, &persistent);
+    libertas_data_write_single(resource, &key, &persistent);
 
     publish_change(shared, change, now_utc);
 }
@@ -1736,8 +1736,8 @@ fn clear_weather_for_location_change(shared: &Rc<RefCell<WeatherServerState>>) {
     };
     let key = persistent_key(endpoint);
     clear_indexed_history(endpoint);
-    libertas_data_remove(CURRENT_RESOURCE, &key);
-    libertas_data_remove(FORECAST_RESOURCE, &key);
+    libertas_data_remove_single(CURRENT_RESOURCE, &key);
+    libertas_data_remove_single(FORECAST_RESOURCE, &key);
 
     let now_utc = weather_change_timestamp(shared);
     for section in sections {
@@ -1775,7 +1775,7 @@ fn accept_hub_location(
     }
 
     let key = persistent_key(endpoint);
-    libertas_data_write(
+    libertas_data_write_single(
         LOCATION_RESOURCE,
         &key,
         &SprinklerWeatherPersistentDataV1::LocationV1 { location },
@@ -1913,7 +1913,8 @@ fn handle_hub_location_event(
         );
         return LibertasEndpointHandlerResult::Handled;
     } else if opcode == OP_ENDPOINT_PEER_UP {
-        // Every delivered Up represents a newer server startup.
+        // Up can arrive without the preceding Down. Re-establish the
+        // subscription for this newer Hub endpoint startup.
         state.borrow_mut().hub_server_up = true;
         subscribe_to_hub_location(state);
         return LibertasEndpointHandlerResult::Handled;
@@ -2015,8 +2016,8 @@ pub fn libertas_weather_server(server: SprinklerWeatherEndpointServerV1) {
         );
         let key = persistent_key(endpoint);
         clear_indexed_history(endpoint);
-        libertas_data_remove(CURRENT_RESOURCE, &key);
-        libertas_data_remove(FORECAST_RESOURCE, &key);
+        libertas_data_remove_single(CURRENT_RESOURCE, &key);
+        libertas_data_remove_single(FORECAST_RESOURCE, &key);
         snapshot = SprinklerWeatherSnapshotV1 {
             history: None,
             current: None,

@@ -793,7 +793,7 @@ pub struct SprinklerWeatherHistoryMetadataV1 {
 /// Sprinkler weather persistent data
 /// Defines the complete set of values that the sprinkler weather server may
 /// write to the Libertas database. History metadata, current conditions,
-/// forecast, and location are independent standalone records. Every completed
+/// forecast, and location are independent single records. Every completed
 /// history period is an indexed record keyed by its start timestamp.
 /// Subscription cursors and replay journals are intentionally absent: resetting
 /// them must not erase these records.

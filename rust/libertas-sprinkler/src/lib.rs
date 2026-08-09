@@ -40,10 +40,10 @@ use libertas::{
     LibertasEndpointStandardStatus, LibertasUser, LogLevel, NotificationArgument,
     NotificationImportance, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP,
     OP_ENDPOINT_REQ, OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_data_open_indexed,
-    libertas_data_read, libertas_data_read_indexed_range, libertas_data_remove_indexed_records,
-    libertas_data_write, libertas_data_write_indexed, libertas_endpoint_report,
-    libertas_endpoint_response, libertas_endpoint_subscribe_request, libertas_get_sys_ticks,
-    libertas_get_utc_time, libertas_log, libertas_notification_send,
+    libertas_data_read_indexed_range, libertas_data_read_single,
+    libertas_data_remove_indexed_records, libertas_data_write_indexed, libertas_data_write_single,
+    libertas_endpoint_report, libertas_endpoint_response, libertas_endpoint_subscribe_request,
+    libertas_get_sys_ticks, libertas_get_utc_time, libertas_log, libertas_notification_send,
     libertas_register_device_listener, libertas_register_endpoint_status_listener,
     libertas_timer_cancel, libertas_timer_new_interval, libertas_timer_update_interval,
 };
@@ -1309,7 +1309,7 @@ fn valid_site_location(location: SprinklerWeatherLocationV1) -> bool {
 }
 
 fn persist_site_location(weather_endpoint: LibertasEndpoint, location: SprinklerWeatherLocationV1) {
-    libertas_data_write(
+    libertas_data_write_single(
         SITE_LOCATION_RESOURCE,
         &system_key(weather_endpoint),
         &SprinklerDataV1::SiteLocationV1 { location },
@@ -1317,7 +1317,7 @@ fn persist_site_location(weather_endpoint: LibertasEndpoint, location: Sprinkler
 }
 
 fn load_site_location(weather_endpoint: LibertasEndpoint) -> Option<SprinklerWeatherLocationV1> {
-    match libertas_data_read(SITE_LOCATION_RESOURCE, &system_key(weather_endpoint)) {
+    match libertas_data_read_single(SITE_LOCATION_RESOURCE, &system_key(weather_endpoint)) {
         Some(SprinklerDataV1::SiteLocationV1 { location }) if valid_site_location(location) => {
             Some(location)
         }
@@ -1326,7 +1326,7 @@ fn load_site_location(weather_endpoint: LibertasEndpoint) -> Option<SprinklerWea
 }
 
 fn persist_watering_mode(weather_endpoint: LibertasEndpoint, mode: SprinklerWateringModeV1) {
-    libertas_data_write(
+    libertas_data_write_single(
         WATERING_MODE_RESOURCE,
         &system_key(weather_endpoint),
         &SprinklerDataV1::WateringModeV1 { mode },
@@ -1334,7 +1334,7 @@ fn persist_watering_mode(weather_endpoint: LibertasEndpoint, mode: SprinklerWate
 }
 
 fn load_watering_mode(weather_endpoint: LibertasEndpoint) -> SprinklerWateringModeV1 {
-    match libertas_data_read(WATERING_MODE_RESOURCE, &system_key(weather_endpoint)) {
+    match libertas_data_read_single(WATERING_MODE_RESOURCE, &system_key(weather_endpoint)) {
         Some(SprinklerDataV1::WateringModeV1 { mode }) => mode,
         _ => {
             let mode = SprinklerWateringModeV1::Active;
@@ -1348,7 +1348,7 @@ fn persist_winterization_reminder(
     weather_endpoint: LibertasEndpoint,
     memory: SprinklerWinterizationReminderMemoryV1,
 ) {
-    libertas_data_write(
+    libertas_data_write_single(
         WINTERIZATION_REMINDER_RESOURCE,
         &system_key(weather_endpoint),
         &SprinklerDataV1::WinterizationReminderV1 { memory },
@@ -1358,7 +1358,7 @@ fn persist_winterization_reminder(
 fn load_winterization_reminder(
     weather_endpoint: LibertasEndpoint,
 ) -> Option<SprinklerWinterizationReminderMemoryV1> {
-    match libertas_data_read(
+    match libertas_data_read_single(
         WINTERIZATION_REMINDER_RESOURCE,
         &system_key(weather_endpoint),
     ) {
@@ -1372,7 +1372,7 @@ fn load_winterization_reminder(
 }
 
 fn persist_zone_memory(valve: LibertasDevice, memory: &SprinklerZoneMemoryV1) {
-    libertas_data_write(
+    libertas_data_write_single(
         ZONE_DATA_RESOURCE,
         &zone_key(valve),
         &SprinklerDataV1::ZoneMemoryV1 {
@@ -1382,7 +1382,7 @@ fn persist_zone_memory(valve: LibertasDevice, memory: &SprinklerZoneMemoryV1) {
 }
 
 fn load_zone_memory(valve: LibertasDevice, now: LibertasDateTime) -> SprinklerZoneMemoryV1 {
-    match libertas_data_read(ZONE_DATA_RESOURCE, &zone_key(valve)) {
+    match libertas_data_read_single(ZONE_DATA_RESOURCE, &zone_key(valve)) {
         Some(SprinklerDataV1::ZoneMemoryV1 { memory }) if valid_memory(&memory) => {
             let Ok(hold_off_periods) = normalize_hold_offs(memory.hold_off_periods.clone()) else {
                 let memory = default_memory(now);
@@ -3297,7 +3297,8 @@ fn handle_site_location_event(
         return LibertasEndpointHandlerResult::Handled;
     }
     if opcode == OP_ENDPOINT_PEER_UP {
-        // Every delivered Up represents a newer server startup.
+        // Up can arrive without the preceding Down. Re-establish the
+        // subscription for this newer Hub endpoint startup.
         shared.borrow_mut().hub_location_server_up = true;
         request_site_location(shared);
         return LibertasEndpointHandlerResult::Handled;
@@ -3344,6 +3345,12 @@ fn handle_zone_endpoint(
     peer: u32,
 ) -> LibertasEndpointHandlerResult {
     let context = context.downcast_mut::<ZoneContext>().unwrap();
+    if opcode == OP_ENDPOINT_PEER_DOWN {
+        // The host has confirmed this client is currently stopped or absent.
+        // The server keeps no per-client state; durable membership and common
+        // report fan-out remain host-owned.
+        return LibertasEndpointHandlerResult::Handled;
+    }
     if opcode != OP_ENDPOINT_REQ && opcode != OP_ENDPOINT_SUB_REQ {
         return LibertasEndpointHandlerResult::Handled;
     }
@@ -3725,8 +3732,13 @@ fn handle_weather_event(
         return LibertasEndpointHandlerResult::Handled;
     }
     if opcode == OP_ENDPOINT_PEER_UP {
-        // Every delivered Up represents a newer server startup.
-        shared.borrow_mut().weather_server_up = true;
+        // Up can arrive without the preceding Down. It always represents a
+        // newer server startup, so the old subscription is no longer ready.
+        {
+            let mut state = shared.borrow_mut();
+            state.weather_stream_ready = false;
+            state.weather_server_up = true;
+        }
         subscribe_weather(shared);
         return LibertasEndpointHandlerResult::Handled;
     }
