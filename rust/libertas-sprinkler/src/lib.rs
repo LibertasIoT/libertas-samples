@@ -7,6 +7,15 @@
 //! sprinkler-head type, and state endpoint. The controller adapts each watering
 //! run from weather, observed valve time, and one user-facing water amount
 //! adjuster. Hold-off periods remain runtime schedule constraints.
+//! When a fresh forecast and site location are available, the controller moves
+//! a run into the best nearby morning window. It derives solar position from
+//! UTC and the site coordinates, prefers low evapotranspiration and wind, and
+//! avoids prolonged foliage wetness for overhead watering. A critically dry
+//! zone still uses the first weather-safe opportunity.
+//! Hold-offs remain hard constraints. The controller waters before one only
+//! when a fresh continuous forecast shows a safe, rain-free opportunity and
+//! delaying would produce a critical deficit; otherwise it recalculates the
+//! make-up amount and duration at the first legal post-hold-off start.
 //!
 //! Each zone persists compact settings and a folded water-balance baseline.
 //! Recent precipitation, evapotranspiration, and actual valve-open irrigation
@@ -23,19 +32,20 @@ extern crate alloc;
 
 use alloc::{boxed::Box, rc::Rc, vec::Vec};
 use core::{any::Any, cell::RefCell};
+use libm::{asin, cos, floor, sin};
 
 use libertas::{
     IndexDirection, IndexedData, LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasDevice,
     LibertasEndpoint, LibertasEndpointHandlerResult, LibertasEndpointMessage,
     LibertasEndpointStandardStatus, LibertasUser, LogLevel, NotificationArgument,
-    NotificationImportance, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_TIMEOUT,
+    NotificationImportance, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP,
     OP_ENDPOINT_REQ, OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_data_open_indexed,
     libertas_data_read, libertas_data_read_indexed_range, libertas_data_remove_indexed_records,
     libertas_data_write, libertas_data_write_indexed, libertas_endpoint_report,
     libertas_endpoint_response, libertas_endpoint_subscribe_request, libertas_get_sys_ticks,
     libertas_get_utc_time, libertas_log, libertas_notification_send,
     libertas_register_device_listener, libertas_register_endpoint_status_listener,
-    libertas_timer_new_interval, libertas_timer_update_interval,
+    libertas_timer_cancel, libertas_timer_new_interval, libertas_timer_update_interval,
 };
 use libertas_hub::HubProtocol;
 use libertas_macros::{
@@ -72,6 +82,7 @@ const WEATHER_RETRY_SECONDS: u32 = 60;
 const VALVE_COMMAND_TIMEOUT_SECONDS: u32 = 60;
 const VALVE_ACCOUNTING_INTERVAL_SECONDS: u32 = 60;
 const SCHEDULE_EVALUATION_INTERVAL_SECONDS: u32 = 60;
+const SCHEDULE_CANDIDATE_INTERVAL_SECONDS: u64 = 15 * 60;
 const VALVE_SUBSCRIPTION_MAX_INTERVAL_SECONDS: u16 = 30;
 const VALVE_SUBSCRIPTION_STALE_SECONDS: u32 = (VALVE_SUBSCRIPTION_MAX_INTERVAL_SECONDS as u32) * 3;
 const MAX_HOLD_OFFS: usize = 64;
@@ -92,6 +103,28 @@ const SAFE_MAXIMUM_WIND_METERS_PER_SECOND: f32 = 10.0;
 const SAFE_MAXIMUM_GUST_METERS_PER_SECOND: f32 = 15.0;
 const HIGH_RAIN_PROBABILITY_PERCENT: u8 = 50;
 const FORECAST_LOOKAHEAD_SECONDS: u64 = 12 * 60 * 60;
+const PREFERRED_DEFICIT_RATIO: f32 = 0.40;
+const TARGET_DEFICIT_RATIO: f32 = 0.50;
+const CRITICAL_DEFICIT_RATIO: f32 = 0.65;
+const REPLENISHED_DEFICIT_RATIO: f32 = 0.20;
+const OVERHEAD_MINIMUM_SOLAR_ELEVATION_DEGREES: f64 = -6.0;
+const OVERHEAD_MAXIMUM_SOLAR_ELEVATION_DEGREES: f64 = 10.0;
+const TARGET_SOLAR_ELEVATION_DEGREES: f64 = -1.0;
+const HIGH_HUMIDITY_TARGET_SOLAR_ELEVATION_DEGREES: f64 = 3.0;
+const BRIGHT_FINISH_SOLAR_ELEVATION_DEGREES: f64 = 25.0;
+const HIGH_HUMIDITY_PERCENT: f32 = 85.0;
+const DEFICIT_PENALTY_WEIGHT: f64 = 120.0;
+const OVERHEAD_SOLAR_PENALTY_WEIGHT: f64 = 1.25;
+const NON_OVERHEAD_SOLAR_PENALTY_WEIGHT: f64 = 0.35;
+const EVAPOTRANSPIRATION_PENALTY_WEIGHT: f64 = 45.0;
+const RAIN_PROBABILITY_PENALTY_WEIGHT: f64 = 0.15;
+const RAIN_AMOUNT_PENALTY_WEIGHT: f64 = 100.0;
+const HEAT_PENALTY_START_CELSIUS: f32 = 20.0;
+const HEAT_PENALTY_WEIGHT: f64 = 0.4;
+const FOLIAGE_WETNESS_PENALTY_WEIGHT: f64 = 0.8;
+const BRIGHT_FINISH_PENALTY_WEIGHT: f64 = 1.5;
+const DEGREES_TO_RADIANS: f64 = core::f64::consts::PI / 180.0;
+const RADIANS_TO_DEGREES: f64 = 180.0 / core::f64::consts::PI;
 const WINTERIZATION_REMINDER_LATITUDE_CUTOFF_DEGREES: f64 = 35.0;
 const WINTERIZATION_REMINDER_INTERVAL_SECONDS: u64 = 30 * SECONDS_PER_DAY;
 const NORTHERN_WINTERIZATION_SEASON_END_DAY: u16 = 90;
@@ -246,11 +279,21 @@ pub enum SprinklerScheduleConditionV1 {
     /// Rain, freezing temperature, or excessive wind currently prevents
     /// watering; the displayed future slot is forecast-derived.
     WaitingForSafeWeather,
+    /// Preempting a hold-off
+    /// Watering is scheduled before a user hold-off because waiting until the
+    /// first legal slot afterward would reach the critical plant-deficit
+    /// threshold. Preemption requires a fresh, safe forecast whose expected
+    /// rain cannot replace enough of the planned water.
+    PreemptiveHoldOff,
     /// Held off
-    /// A user hold-off moved the calculated watering slot.
+    /// A user hold-off moved watering to the first legal slot afterward. The
+    /// displayed amount and duration are recalculated for that delayed start.
     HeldOff,
     /// Scheduled
-    /// A watering slot has been calculated and is waiting to begin.
+    /// A watering slot has been calculated and is waiting to begin. With a
+    /// fresh forecast and known location, this is the best nearby rising-sun
+    /// period after considering plant demand, humidity, evapotranspiration,
+    /// precipitation, temperature, sprinkler-head drift, and hold-offs.
     Scheduled,
     /// Valve command pending
     /// A Matter Valve command was sent and is awaiting confirmation.
@@ -448,6 +491,7 @@ pub enum SprinklerZoneProtocolV1 {
         /// the adaptive amount, less than 100% for less water, and more than
         /// 100% for more water.
         #[libertas_number(min = 20, max = 200, step = 10)]
+        #[libertas_copy_from("$.state.current.watering_percent")]
         watering_percent: u16,
     },
     /// Replace hold-off periods
@@ -462,6 +506,7 @@ pub enum SprinklerZoneProtocolV1 {
         /// Hold-off period
         /// A half-open interval during which the schedule cannot water.
         #[libertas_size(max = 64)]
+        #[libertas_copy_from("$.state.current.hold_off_periods")]
         hold_off_periods: Vec<SprinklerTimeSlotV1>,
     },
     /// Set watering mode
@@ -472,6 +517,7 @@ pub enum SprinklerZoneProtocolV1 {
     SetWateringModeV1 {
         /// Watering mode
         /// Active enables automatic watering. Winterization shuts it down.
+        #[libertas_copy_from("$.mode")]
         mode: SprinklerWateringModeV1,
     },
     /// State
@@ -479,6 +525,10 @@ pub enum SprinklerZoneProtocolV1 {
     #[libertas_response]
     #[libertas_subscription_data]
     StateV1 {
+        /// Watering mode
+        /// The current system-wide mode, exposed explicitly so runtime control
+        /// requests can initialize their GUI field from this response.
+        mode: SprinklerWateringModeV1,
         /// Sprinkler state
         /// The active zone data or the Winterization state.
         state: SprinklerZoneStateV1,
@@ -514,7 +564,8 @@ pub enum SprinklerWaterEventV1 {
     },
     /// Irrigation interval
     /// Records water inferred from actual Matter Valve open time, including
-    /// manual openings.
+    /// manual openings, together with the zone's water amount adjuster during
+    /// that observed interval.
     IrrigationV1 {
         /// Start time
         /// The inclusive start of the accounted valve-open interval.
@@ -523,6 +574,12 @@ pub enum SprinklerWaterEventV1 {
         /// The observed valve-open interval length in seconds.
         #[libertas_time_interval]
         duration_seconds: u32,
+        /// Water amount adjuster
+        /// The zone's configured watering percentage while this valve-open
+        /// interval was observed. If the setting changes while the valve is
+        /// open, the history uses separate adjacent intervals.
+        #[libertas_number(min = 20, max = 200, step = 10)]
+        watering_percent: u16,
         /// Applied water
         /// Estimated water depth calculated from observed open time and the
         /// configured sprinkler-head profile, in millimeters.
@@ -660,6 +717,7 @@ pub struct SprinklerZoneV1 {
 struct PlantProfile {
     water_capacity_millimeters: f32,
     crop_coefficient: f32,
+    foliage_wetness_sensitivity: f32,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -680,7 +738,6 @@ struct ZoneRuntime {
     memory: SprinklerZoneMemoryV1,
     water_events: Vec<SprinklerWaterEventV1>,
     active_state: SprinklerZoneActiveStateV1,
-    subscribers: Vec<u32>,
     valve_state_known: bool,
     valve_is_open: bool,
     valve_opened_automatically: bool,
@@ -697,9 +754,12 @@ struct ControllerState {
     watering_mode: SprinklerWateringModeV1,
     winterization_reminder: Option<SprinklerWinterizationReminderMemoryV1>,
     site_location: Option<SprinklerWeatherLocationV1>,
+    hub_location_server_up: bool,
+    site_location_retry_timer: u32,
     weather: SprinklerWeatherSnapshotV1,
     weather_cursor: Option<SprinklerWeatherCursorV1>,
     weather_stream_ready: bool,
+    weather_server_up: bool,
     weather_maximum_wait_seconds: u32,
     weather_retry_timer: u32,
     zones: Vec<ZoneRuntime>,
@@ -723,6 +783,7 @@ enum ControllerAction {
 
 struct EvaluationOutcome {
     changed_zones: Vec<usize>,
+    zone_memories_to_persist: Vec<(LibertasDevice, SprinklerZoneMemoryV1)>,
     action: Option<ControllerAction>,
 }
 
@@ -792,30 +853,37 @@ fn plant_profile(plant: SprinklerPlantTypeV1) -> PlantProfile {
         SprinklerPlantTypeV1::Lawn => PlantProfile {
             water_capacity_millimeters: 32.0,
             crop_coefficient: 0.80,
+            foliage_wetness_sensitivity: 0.8,
         },
         SprinklerPlantTypeV1::Flowers => PlantProfile {
             water_capacity_millimeters: 48.0,
             crop_coefficient: 0.70,
+            foliage_wetness_sensitivity: 1.0,
         },
         SprinklerPlantTypeV1::Vegetables => PlantProfile {
             water_capacity_millimeters: 72.0,
             crop_coefficient: 0.90,
+            foliage_wetness_sensitivity: 1.0,
         },
         SprinklerPlantTypeV1::FruitTrees => PlantProfile {
             water_capacity_millimeters: 128.0,
             crop_coefficient: 0.75,
+            foliage_wetness_sensitivity: 0.4,
         },
         SprinklerPlantTypeV1::Citrus => PlantProfile {
             water_capacity_millimeters: 120.0,
             crop_coefficient: 0.80,
+            foliage_wetness_sensitivity: 0.4,
         },
         SprinklerPlantTypeV1::TreesAndBushes => PlantProfile {
             water_capacity_millimeters: 160.0,
             crop_coefficient: 0.60,
+            foliage_wetness_sensitivity: 0.25,
         },
         SprinklerPlantTypeV1::Xeriscape => PlantProfile {
             water_capacity_millimeters: 80.0,
             crop_coefficient: 0.30,
+            foliage_wetness_sensitivity: 0.1,
         },
     }
 }
@@ -831,6 +899,38 @@ fn nominal_delivery_millimeters_per_hour(head: SprinklerHeadTypeV1) -> f32 {
         SprinklerHeadTypeV1::PopupSpray => 40.0,
         SprinklerHeadTypeV1::RotorsLowRate => 12.0,
         SprinklerHeadTypeV1::RotorsHighRate => 20.0,
+    }
+}
+
+fn head_exposes_foliage(head: SprinklerHeadTypeV1) -> bool {
+    matches!(
+        head,
+        SprinklerHeadTypeV1::PopupSpray
+            | SprinklerHeadTypeV1::RotorsLowRate
+            | SprinklerHeadTypeV1::RotorsHighRate
+    )
+}
+
+fn head_wind_sensitivity(head: SprinklerHeadTypeV1) -> f32 {
+    match head {
+        SprinklerHeadTypeV1::SurfaceDrip => 0.05,
+        SprinklerHeadTypeV1::Bubblers => 0.20,
+        SprinklerHeadTypeV1::PopupSpray => 1.0,
+        SprinklerHeadTypeV1::RotorsLowRate => 0.75,
+        SprinklerHeadTypeV1::RotorsHighRate => 0.90,
+    }
+}
+
+fn preferred_solar_elevation_range(head: SprinklerHeadTypeV1) -> (f64, f64) {
+    match head {
+        SprinklerHeadTypeV1::SurfaceDrip => (-12.0, 15.0),
+        SprinklerHeadTypeV1::Bubblers => (-9.0, 12.0),
+        SprinklerHeadTypeV1::PopupSpray
+        | SprinklerHeadTypeV1::RotorsLowRate
+        | SprinklerHeadTypeV1::RotorsHighRate => (
+            OVERHEAD_MINIMUM_SOLAR_ELEVATION_DEGREES,
+            OVERHEAD_MAXIMUM_SOLAR_ELEVATION_DEGREES,
+        ),
     }
 }
 
@@ -871,6 +971,14 @@ fn normalize_hold_offs(
     Ok(normalized)
 }
 
+fn prune_expired_hold_offs(memory: &mut SprinklerZoneMemoryV1, now: LibertasDateTime) -> bool {
+    let previous_len = memory.hold_off_periods.len();
+    memory
+        .hold_off_periods
+        .retain(|hold_off| hold_off.ends_at().is_some_and(|ends_at| ends_at > now));
+    memory.hold_off_periods.len() != previous_len
+}
+
 fn water_event_index(event: &SprinklerWaterEventV1) -> Option<i64> {
     let kind = match event {
         SprinklerWaterEventV1::WeatherV1 { .. } => 0,
@@ -897,8 +1005,12 @@ fn valid_water_event(event: &SprinklerWaterEventV1) -> bool {
         }
         SprinklerWaterEventV1::IrrigationV1 {
             applied_water_millimeters,
+            watering_percent,
             ..
-        } => valid_nonnegative(*applied_water_millimeters),
+        } => {
+            valid_nonnegative(*applied_water_millimeters)
+                && valid_watering_percent(*watering_percent)
+        }
     };
     amounts_are_valid && water_event_index(event).is_some()
 }
@@ -967,6 +1079,53 @@ fn utc_day_of_year(now: LibertasDateTime) -> u16 {
         .min(11);
     let leap_offset = i64::from(leap_year && month > 2);
     u16::try_from(month_offsets[month_index] + day + leap_offset).unwrap_or(1)
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct SolarPosition {
+    elevation_degrees: f64,
+    rising: bool,
+}
+
+fn solar_position(
+    location: SprinklerWeatherLocationV1,
+    at: LibertasDateTime,
+) -> Option<SolarPosition> {
+    if !valid_site_location(location) || at == 0 {
+        return None;
+    }
+
+    // NOAA's fractional-year approximation is accurate enough for selecting a
+    // 15-minute irrigation window. UTC and longitude produce apparent solar
+    // time directly, so no civil timezone or daylight-saving rule is needed.
+    let day = f64::from(utc_day_of_year(at));
+    let utc_hour = (at % SECONDS_PER_DAY) as f64 / 3_600.0;
+    let gamma = 2.0 * core::f64::consts::PI / 365.0 * (day - 1.0 + (utc_hour - 12.0) / 24.0);
+    let equation_of_time_minutes = 229.18
+        * (0.000_075 + 0.001_868 * cos(gamma)
+            - 0.032_077 * sin(gamma)
+            - 0.014_615 * cos(2.0 * gamma)
+            - 0.040_849 * sin(2.0 * gamma));
+    let declination = 0.006_918 - 0.399_912 * cos(gamma) + 0.070_257 * sin(gamma)
+        - 0.006_758 * cos(2.0 * gamma)
+        + 0.000_907 * sin(2.0 * gamma)
+        - 0.002_697 * cos(3.0 * gamma)
+        + 0.001_480 * sin(3.0 * gamma);
+    let utc_minutes = (at % SECONDS_PER_DAY) as f64 / 60.0;
+    let unwrapped_solar_minutes =
+        utc_minutes + equation_of_time_minutes + 4.0 * location.longitude_degrees;
+    let true_solar_minutes =
+        unwrapped_solar_minutes - floor(unwrapped_solar_minutes / 1_440.0) * 1_440.0;
+    let hour_angle_degrees = true_solar_minutes / 4.0 - 180.0;
+    let hour_angle = hour_angle_degrees * DEGREES_TO_RADIANS;
+    let latitude = location.latitude_degrees * DEGREES_TO_RADIANS;
+    let sine_elevation = (sin(latitude) * sin(declination)
+        + cos(latitude) * cos(declination) * cos(hour_angle))
+    .clamp(-1.0, 1.0);
+    Some(SolarPosition {
+        elevation_degrees: asin(sine_elevation) * RADIANS_TO_DEGREES,
+        rising: hour_angle_degrees <= 0.0,
+    })
 }
 
 fn location_is_in_winterization_season(
@@ -1614,9 +1773,11 @@ fn add_irrigation_event(
     if !valid_nonnegative(applied_water_millimeters) {
         return;
     }
+    let watering_percent = zone.memory.watering_percent;
     if let Some(SprinklerWaterEventV1::IrrigationV1 {
         starts_at: previous_starts_at,
         duration_seconds: previous_duration_seconds,
+        watering_percent: previous_watering_percent,
         applied_water_millimeters: previous_applied_water_millimeters,
     }) = zone
         .water_events
@@ -1624,6 +1785,7 @@ fn add_irrigation_event(
         .rev()
         .find(|event| matches!(event, SprinklerWaterEventV1::IrrigationV1 { .. }))
         && previous_starts_at.checked_add(u64::from(*previous_duration_seconds)) == Some(starts_at)
+        && *previous_watering_percent == watering_percent
         && let Some(merged_duration_seconds) =
             previous_duration_seconds.checked_add(duration_seconds)
     {
@@ -1640,6 +1802,7 @@ fn add_irrigation_event(
     zone.water_events.push(SprinklerWaterEventV1::IrrigationV1 {
         starts_at,
         duration_seconds,
+        watering_percent,
         applied_water_millimeters,
     });
     prune_water_events(
@@ -1650,26 +1813,50 @@ fn add_irrigation_event(
     );
 }
 
-fn current_is_safe(current: &SprinklerCurrentWeatherV1, now: LibertasDateTime) -> bool {
+fn safe_wind_limits(head: SprinklerHeadTypeV1) -> (f32, f32) {
+    match head {
+        SprinklerHeadTypeV1::SurfaceDrip => (15.0, 25.0),
+        SprinklerHeadTypeV1::Bubblers => (12.0, 20.0),
+        SprinklerHeadTypeV1::PopupSpray
+        | SprinklerHeadTypeV1::RotorsLowRate
+        | SprinklerHeadTypeV1::RotorsHighRate => (
+            SAFE_MAXIMUM_WIND_METERS_PER_SECOND,
+            SAFE_MAXIMUM_GUST_METERS_PER_SECOND,
+        ),
+    }
+}
+
+fn current_is_safe(
+    current: &SprinklerCurrentWeatherV1,
+    now: LibertasDateTime,
+    head: SprinklerHeadTypeV1,
+) -> bool {
+    let (maximum_wind, maximum_gust) = safe_wind_limits(head);
     current.is_fresh_at(now)
         && current.temperature_celsius.is_finite()
         && current.temperature_celsius > SAFE_MINIMUM_TEMPERATURE_CELSIUS
+        && current.relative_humidity_percent <= 100
         && current.precipitation_millimeters == 0.0
         && current.wind_speed_meters_per_second.is_finite()
-        && current.wind_speed_meters_per_second <= SAFE_MAXIMUM_WIND_METERS_PER_SECOND
+        && current.wind_speed_meters_per_second <= maximum_wind
         && current.wind_gust_meters_per_second.is_finite()
-        && current.wind_gust_meters_per_second <= SAFE_MAXIMUM_GUST_METERS_PER_SECOND
+        && current.wind_gust_meters_per_second <= maximum_gust
 }
 
-fn forecast_period_is_safe(period: &SprinklerWeatherForecastPeriodV1) -> bool {
+fn forecast_period_is_safe(
+    period: &SprinklerWeatherForecastPeriodV1,
+    head: SprinklerHeadTypeV1,
+) -> bool {
+    let (maximum_wind, maximum_gust) = safe_wind_limits(head);
     period.temperature_celsius.is_finite()
         && period.temperature_celsius > SAFE_MINIMUM_TEMPERATURE_CELSIUS
+        && period.relative_humidity_percent <= 100
         && period.precipitation_probability_percent < HIGH_RAIN_PROBABILITY_PERCENT
         && period.expected_precipitation_millimeters <= 0.1
         && period.wind_speed_meters_per_second.is_finite()
-        && period.wind_speed_meters_per_second <= SAFE_MAXIMUM_WIND_METERS_PER_SECOND
+        && period.wind_speed_meters_per_second <= maximum_wind
         && period.wind_gust_meters_per_second.is_finite()
-        && period.wind_gust_meters_per_second <= SAFE_MAXIMUM_GUST_METERS_PER_SECOND
+        && period.wind_gust_meters_per_second <= maximum_gust
 }
 
 fn forecast_rain_delay(
@@ -1702,14 +1889,56 @@ fn forecast_rain_delay(
     (weighted_rain >= required_water_millimeters * 0.5).then_some(rainy_until)
 }
 
+fn weighted_forecast_rain_between(
+    forecast: &SprinklerWeatherForecastV1,
+    starts_at: LibertasDateTime,
+    ends_at: LibertasDateTime,
+) -> Option<f32> {
+    if ends_at <= starts_at {
+        return Some(0.0);
+    }
+    let mut covered_through = starts_at;
+    let mut weighted_rain = 0.0_f32;
+    for period in &forecast.periods {
+        let period_ends_at = period
+            .starts_at
+            .checked_add(u64::from(period.duration_seconds))?;
+        if period_ends_at <= covered_through {
+            continue;
+        }
+        if period.starts_at > covered_through {
+            return None;
+        }
+        let overlap_ends_at = period_ends_at.min(ends_at);
+        let overlap_seconds = overlap_ends_at.saturating_sub(covered_through);
+        if overlap_seconds == 0 {
+            continue;
+        }
+        let overlap_fraction = overlap_seconds as f32 / period.duration_seconds as f32;
+        weighted_rain += period.expected_precipitation_millimeters
+            * f32::from(period.precipitation_probability_percent)
+            / 100.0
+            * overlap_fraction;
+        if !weighted_rain.is_finite() {
+            return None;
+        }
+        covered_through = overlap_ends_at;
+        if covered_through >= ends_at {
+            return Some(weighted_rain);
+        }
+    }
+    None
+}
+
 fn next_safe_forecast_start(
     forecast: Option<&SprinklerWeatherForecastV1>,
     not_before: LibertasDateTime,
+    head: SprinklerHeadTypeV1,
 ) -> Option<LibertasDateTime> {
     forecast?
         .periods
         .iter()
-        .find(|period| period.starts_at >= not_before && forecast_period_is_safe(period))
+        .find(|period| period.starts_at >= not_before && forecast_period_is_safe(period, head))
         .map(|period| period.starts_at)
 }
 
@@ -1752,6 +1981,509 @@ fn watering_duration_seconds(zone: &SprinklerZoneV1, water_millimeters: f32) -> 
     let whole_seconds = seconds as u32;
     let rounded_up = whole_seconds + u32::from((whole_seconds as f32) < seconds);
     rounded_up.clamp(MIN_WATERING_DURATION_SECONDS, MAX_WATERING_DURATION_SECONDS)
+}
+
+fn planned_water_millimeters(
+    capacity_millimeters: f32,
+    planning_deficit_millimeters: f32,
+    watering_percent: u16,
+) -> f32 {
+    let replenishment =
+        (planning_deficit_millimeters - capacity_millimeters * REPLENISHED_DEFICIT_RATIO).max(0.0);
+    let multiplier = f32::from(watering_percent) / 100.0;
+    (replenishment * multiplier).clamp(0.0, capacity_millimeters)
+}
+
+#[derive(Clone, Copy)]
+struct SlotForecast {
+    temperature_celsius: f32,
+    relative_humidity_percent: f32,
+    precipitation_probability_percent: u8,
+    expected_precipitation_millimeters: f32,
+    reference_evapotranspiration_millimeters: f32,
+    maximum_wind_meters_per_second: f32,
+    maximum_gust_meters_per_second: f32,
+}
+
+fn forecast_for_slot(
+    forecast: &SprinklerWeatherForecastV1,
+    starts_at: LibertasDateTime,
+    duration_seconds: u32,
+    head: SprinklerHeadTypeV1,
+) -> Option<SlotForecast> {
+    let ends_at = starts_at.checked_add(u64::from(duration_seconds))?;
+    if duration_seconds == 0 {
+        return None;
+    }
+
+    let mut covered_through = starts_at;
+    let mut covered_seconds = 0_u64;
+    let mut weighted_temperature = 0.0_f32;
+    let mut weighted_humidity = 0.0_f32;
+    let mut probability = 0_u8;
+    let mut expected_precipitation = 0.0_f32;
+    let mut reference_evapotranspiration = 0.0_f32;
+    let mut maximum_wind = 0.0_f32;
+    let mut maximum_gust = 0.0_f32;
+
+    for period in &forecast.periods {
+        let period_ends_at = period
+            .starts_at
+            .checked_add(u64::from(period.duration_seconds))?;
+        if period_ends_at <= covered_through {
+            continue;
+        }
+        if period.starts_at >= ends_at {
+            break;
+        }
+        if period.starts_at > covered_through || !forecast_period_is_safe(period, head) {
+            return None;
+        }
+
+        let overlap_starts_at = covered_through.max(period.starts_at);
+        let overlap_ends_at = ends_at.min(period_ends_at);
+        let overlap_seconds = overlap_ends_at.saturating_sub(overlap_starts_at);
+        if overlap_seconds == 0 {
+            continue;
+        }
+        let overlap_fraction = overlap_seconds as f32 / period.duration_seconds as f32;
+        weighted_temperature += period.temperature_celsius * overlap_seconds as f32;
+        weighted_humidity += f32::from(period.relative_humidity_percent) * overlap_seconds as f32;
+        probability = probability.max(period.precipitation_probability_percent);
+        expected_precipitation += period.expected_precipitation_millimeters * overlap_fraction;
+        reference_evapotranspiration +=
+            period.reference_evapotranspiration_millimeters * overlap_fraction;
+        maximum_wind = maximum_wind.max(period.wind_speed_meters_per_second);
+        maximum_gust = maximum_gust.max(period.wind_gust_meters_per_second);
+        covered_seconds = covered_seconds.saturating_add(overlap_seconds);
+        covered_through = overlap_ends_at;
+        if covered_through >= ends_at {
+            break;
+        }
+    }
+
+    if covered_through < ends_at || covered_seconds != u64::from(duration_seconds) {
+        return None;
+    }
+    Some(SlotForecast {
+        temperature_celsius: weighted_temperature / covered_seconds as f32,
+        relative_humidity_percent: weighted_humidity / covered_seconds as f32,
+        precipitation_probability_percent: probability,
+        expected_precipitation_millimeters: expected_precipitation,
+        reference_evapotranspiration_millimeters: reference_evapotranspiration,
+        maximum_wind_meters_per_second: maximum_wind,
+        maximum_gust_meters_per_second: maximum_gust,
+    })
+}
+
+#[derive(Clone, Copy)]
+struct MorningCandidate {
+    starts_at: LibertasDateTime,
+    penalty: f64,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct WateringPlan {
+    starts_at: LibertasDateTime,
+    planning_deficit_millimeters: f32,
+    planned_water_millimeters: f32,
+    duration_seconds: u32,
+}
+
+struct CandidateConditions {
+    starts_at: LibertasDateTime,
+    duration_seconds: u32,
+    planning_deficit_millimeters: f32,
+    solar: SolarPosition,
+    slot_weather: SlotForecast,
+}
+
+struct MorningSearch<'a> {
+    forecast: Option<&'a SprinklerWeatherForecastV1>,
+    location: Option<SprinklerWeatherLocationV1>,
+    now: LibertasDateTime,
+    current_deficit_millimeters: f32,
+    capacity_millimeters: f32,
+    crop_coefficient: f32,
+    demand_estimate: WaterDemandEstimate,
+}
+
+fn align_candidate_time(at: LibertasDateTime) -> LibertasDateTime {
+    let remainder = at % SCHEDULE_CANDIDATE_INTERVAL_SECONDS;
+    if remainder == 0 {
+        at
+    } else {
+        at.saturating_add(SCHEDULE_CANDIDATE_INTERVAL_SECONDS - remainder)
+    }
+}
+
+fn candidate_penalty(
+    zone: &SprinklerZoneV1,
+    capacity_millimeters: f32,
+    location: SprinklerWeatherLocationV1,
+    candidate: CandidateConditions,
+) -> Option<f64> {
+    let CandidateConditions {
+        starts_at,
+        duration_seconds,
+        planning_deficit_millimeters,
+        solar,
+        slot_weather,
+    } = candidate;
+    let end_solar = solar_position(
+        location,
+        starts_at.checked_add(u64::from(duration_seconds))?,
+    )?;
+    let profile = plant_profile(zone.plant_type);
+    let exposes_foliage = head_exposes_foliage(zone.sprinkler_head_type);
+    let humidity = f64::from(slot_weather.relative_humidity_percent);
+    let solar_target = if exposes_foliage && humidity >= f64::from(HIGH_HUMIDITY_PERCENT) {
+        HIGH_HUMIDITY_TARGET_SOLAR_ELEVATION_DEGREES
+    } else {
+        TARGET_SOLAR_ELEVATION_DEGREES
+    };
+    let deficit_ratio = f64::from(planning_deficit_millimeters / capacity_millimeters);
+    let deficit_penalty =
+        (deficit_ratio - f64::from(TARGET_DEFICIT_RATIO)).abs() * DEFICIT_PENALTY_WEIGHT;
+    let solar_penalty = (solar.elevation_degrees - solar_target).abs()
+        * if exposes_foliage {
+            OVERHEAD_SOLAR_PENALTY_WEIGHT
+        } else {
+            NON_OVERHEAD_SOLAR_PENALTY_WEIGHT
+        };
+    let evaporation_penalty = f64::from(slot_weather.reference_evapotranspiration_millimeters)
+        * EVAPOTRANSPIRATION_PENALTY_WEIGHT;
+    let wind_penalty = f64::from(head_wind_sensitivity(zone.sprinkler_head_type))
+        * f64::from(
+            slot_weather.maximum_wind_meters_per_second * 2.0
+                + slot_weather.maximum_gust_meters_per_second,
+        );
+    let rain_penalty = f64::from(slot_weather.precipitation_probability_percent)
+        * RAIN_PROBABILITY_PENALTY_WEIGHT
+        + f64::from(slot_weather.expected_precipitation_millimeters) * RAIN_AMOUNT_PENALTY_WEIGHT;
+    let heat_penalty =
+        f64::from((slot_weather.temperature_celsius - HEAT_PENALTY_START_CELSIUS).max(0.0))
+            * HEAT_PENALTY_WEIGHT;
+    let humidity_excess = (humidity - f64::from(HIGH_HUMIDITY_PERCENT)).max(0.0);
+    let predawn_darkness = (-solar.elevation_degrees / 6.0).clamp(0.0, 1.0);
+    let foliage_wetness_penalty = if exposes_foliage {
+        humidity_excess
+            * predawn_darkness
+            * f64::from(profile.foliage_wetness_sensitivity)
+            * FOLIAGE_WETNESS_PENALTY_WEIGHT
+    } else {
+        0.0
+    };
+    let bright_finish_penalty = if exposes_foliage {
+        (end_solar.elevation_degrees - BRIGHT_FINISH_SOLAR_ELEVATION_DEGREES).max(0.0)
+            * BRIGHT_FINISH_PENALTY_WEIGHT
+    } else {
+        0.0
+    };
+    let penalty = deficit_penalty
+        + solar_penalty
+        + evaporation_penalty
+        + wind_penalty
+        + rain_penalty
+        + heat_penalty
+        + foliage_wetness_penalty
+        + bright_finish_penalty;
+    penalty.is_finite().then_some(penalty)
+}
+
+fn optimized_morning_candidate(
+    zone: &ZoneRuntime,
+    search: MorningSearch<'_>,
+) -> Option<MorningCandidate> {
+    let MorningSearch {
+        forecast,
+        location,
+        now,
+        current_deficit_millimeters,
+        capacity_millimeters,
+        crop_coefficient,
+        demand_estimate,
+    } = search;
+    let location = location.filter(|location| valid_site_location(*location))?;
+    let forecast = forecast.filter(|forecast| forecast.is_fresh_at(now))?;
+    let critical_deficit = capacity_millimeters * CRITICAL_DEFICIT_RATIO;
+    if current_deficit_millimeters >= critical_deficit {
+        return None;
+    }
+
+    let preferred_deficit = capacity_millimeters * PREFERRED_DEFICIT_RATIO;
+    let search_starts_at = now.saturating_add(seconds_until_deficit(
+        current_deficit_millimeters,
+        preferred_deficit,
+        crop_coefficient,
+        demand_estimate,
+    ));
+    let critical_at = now.saturating_add(seconds_until_deficit(
+        current_deficit_millimeters,
+        critical_deficit,
+        crop_coefficient,
+        demand_estimate,
+    ));
+    let forecast_ends_at = forecast
+        .periods
+        .iter()
+        .filter_map(|period| {
+            period
+                .starts_at
+                .checked_add(u64::from(period.duration_seconds))
+        })
+        .max()?;
+    let search_ends_at = critical_at
+        .min(forecast_ends_at)
+        .min(now.saturating_add(u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS)));
+    let (minimum_solar, maximum_solar) =
+        preferred_solar_elevation_range(zone.configuration.sprinkler_head_type);
+    let mut candidate_at = align_candidate_time(search_starts_at.max(now));
+    let mut best_preferred: Option<MorningCandidate> = None;
+    let mut best_rising: Option<MorningCandidate> = None;
+
+    while candidate_at <= search_ends_at {
+        let planning_deficit = projected_deficit_millimeters(
+            &zone.configuration,
+            &zone.memory,
+            &zone.water_events,
+            candidate_at,
+            demand_estimate,
+        );
+        let planned_water = planned_water_millimeters(
+            capacity_millimeters,
+            planning_deficit,
+            zone.memory.watering_percent,
+        );
+        let duration = watering_duration_seconds(&zone.configuration, planned_water)
+            .max(MIN_WATERING_DURATION_SECONDS);
+        let solar = solar_position(location, candidate_at);
+        let weather = forecast_for_slot(
+            forecast,
+            candidate_at,
+            duration,
+            zone.configuration.sprinkler_head_type,
+        );
+        if let (Some(solar), Some(weather)) = (solar, weather)
+            && solar.rising
+            && let Some(penalty) = candidate_penalty(
+                &zone.configuration,
+                capacity_millimeters,
+                location,
+                CandidateConditions {
+                    starts_at: candidate_at,
+                    duration_seconds: duration,
+                    planning_deficit_millimeters: planning_deficit,
+                    solar,
+                    slot_weather: weather,
+                },
+            )
+        {
+            let candidate = MorningCandidate {
+                starts_at: candidate_at,
+                penalty,
+            };
+            if best_rising.is_none_or(|best| penalty < best.penalty) {
+                best_rising = Some(candidate);
+            }
+            if (minimum_solar..=maximum_solar).contains(&solar.elevation_degrees)
+                && best_preferred.is_none_or(|best| penalty < best.penalty)
+            {
+                best_preferred = Some(candidate);
+            }
+        }
+        let next = candidate_at.saturating_add(SCHEDULE_CANDIDATE_INTERVAL_SECONDS);
+        if next <= candidate_at {
+            break;
+        }
+        candidate_at = next;
+    }
+    // At extreme latitudes the sun may never enter the normal dawn elevation
+    // band. In that case use the lowest-penalty rising-sun slot instead of
+    // reverting to an arbitrary wall-clock time.
+    best_preferred.or(best_rising)
+}
+
+fn watering_plan_at(
+    zone: &ZoneRuntime,
+    starts_at: LibertasDateTime,
+    capacity_millimeters: f32,
+    demand_estimate: WaterDemandEstimate,
+) -> WateringPlan {
+    let planning_deficit_millimeters = projected_deficit_millimeters(
+        &zone.configuration,
+        &zone.memory,
+        &zone.water_events,
+        starts_at,
+        demand_estimate,
+    );
+    let planned_water_millimeters = planned_water_millimeters(
+        capacity_millimeters,
+        planning_deficit_millimeters,
+        zone.memory.watering_percent,
+    );
+    let duration_seconds =
+        watering_duration_seconds(&zone.configuration, planned_water_millimeters)
+            .max(MIN_WATERING_DURATION_SECONDS);
+    WateringPlan {
+        starts_at,
+        planning_deficit_millimeters,
+        planned_water_millimeters,
+        duration_seconds,
+    }
+}
+
+fn first_post_hold_off_plan(
+    zone: &ZoneRuntime,
+    starts_at: LibertasDateTime,
+    capacity_millimeters: f32,
+    demand_estimate: WaterDemandEstimate,
+    hold_offs: &[SprinklerTimeSlotV1],
+) -> (WateringPlan, Option<SprinklerTimeSlotV1>) {
+    let mut candidate_at = starts_at;
+    let mut first_blocking_hold_off = None;
+    for _ in 0..=hold_offs.len() {
+        let plan = watering_plan_at(zone, candidate_at, capacity_millimeters, demand_estimate);
+        let slot = SprinklerTimeSlotV1 {
+            starts_at: plan.starts_at,
+            duration_seconds: plan.duration_seconds,
+        };
+        let Some(blocking_hold_off) = hold_offs
+            .iter()
+            .copied()
+            .find(|hold_off| slot.overlaps(*hold_off))
+        else {
+            return (plan, first_blocking_hold_off);
+        };
+        first_blocking_hold_off.get_or_insert(blocking_hold_off);
+        candidate_at = blocking_hold_off.ends_at().unwrap_or(LibertasDateTime::MAX);
+    }
+    (
+        watering_plan_at(
+            zone,
+            LibertasDateTime::MAX,
+            capacity_millimeters,
+            demand_estimate,
+        ),
+        first_blocking_hold_off,
+    )
+}
+
+struct PreemptiveHoldOffSearch<'a> {
+    weather: &'a SprinklerWeatherSnapshotV1,
+    location: Option<SprinklerWeatherLocationV1>,
+    hold_offs: &'a [SprinklerTimeSlotV1],
+    now: LibertasDateTime,
+    current_deficit_millimeters: f32,
+    capacity_millimeters: f32,
+    crop_coefficient: f32,
+    demand_estimate: WaterDemandEstimate,
+}
+
+fn best_preemptive_hold_off_plan(
+    zone: &ZoneRuntime,
+    blocking_hold_off: SprinklerTimeSlotV1,
+    post_hold_off_plan: WateringPlan,
+    search: PreemptiveHoldOffSearch<'_>,
+) -> Option<WateringPlan> {
+    let PreemptiveHoldOffSearch {
+        weather,
+        location,
+        hold_offs,
+        now,
+        current_deficit_millimeters,
+        capacity_millimeters,
+        crop_coefficient,
+        demand_estimate,
+    } = search;
+    let forecast = weather
+        .forecast
+        .as_ref()
+        .filter(|forecast| forecast.is_fresh_at(now))?;
+    let location = location.filter(|location| valid_site_location(*location))?;
+    let critical_deficit = capacity_millimeters * CRITICAL_DEFICIT_RATIO;
+    if post_hold_off_plan.planning_deficit_millimeters < critical_deficit {
+        return None;
+    }
+    if post_hold_off_plan.starts_at
+        > now.saturating_add(u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS))
+    {
+        return None;
+    }
+    let weighted_rain =
+        weighted_forecast_rain_between(forecast, now, post_hold_off_plan.starts_at)?;
+
+    let preferred_deficit = capacity_millimeters * PREFERRED_DEFICIT_RATIO;
+    let search_starts_at = now.saturating_add(seconds_until_deficit(
+        current_deficit_millimeters,
+        preferred_deficit,
+        crop_coefficient,
+        demand_estimate,
+    ));
+    let mut candidate_at = align_candidate_time(search_starts_at.max(now));
+    let (minimum_solar, maximum_solar) =
+        preferred_solar_elevation_range(zone.configuration.sprinkler_head_type);
+    let mut best_preferred: Option<(WateringPlan, f64)> = None;
+    let mut best_safe: Option<(WateringPlan, f64)> = None;
+
+    while candidate_at < blocking_hold_off.starts_at {
+        let plan = watering_plan_at(zone, candidate_at, capacity_millimeters, demand_estimate);
+        let slot = SprinklerTimeSlotV1 {
+            starts_at: plan.starts_at,
+            duration_seconds: plan.duration_seconds,
+        };
+        let current_is_safe_for_slot = candidate_at > now
+            || weather.current.as_ref().is_some_and(|current| {
+                current_is_safe(current, now, zone.configuration.sprinkler_head_type)
+            });
+        if plan.planning_deficit_millimeters >= preferred_deficit
+            && slot
+                .ends_at()
+                .is_some_and(|ends_at| ends_at <= blocking_hold_off.starts_at)
+            && !hold_offs
+                .iter()
+                .copied()
+                .any(|hold_off| slot.overlaps(hold_off))
+            && current_is_safe_for_slot
+            && let Some(solar) = solar_position(location, candidate_at)
+            && let Some(slot_weather) = forecast_for_slot(
+                forecast,
+                candidate_at,
+                plan.duration_seconds,
+                zone.configuration.sprinkler_head_type,
+            )
+            && let Some(penalty) = candidate_penalty(
+                &zone.configuration,
+                capacity_millimeters,
+                location,
+                CandidateConditions {
+                    starts_at: candidate_at,
+                    duration_seconds: plan.duration_seconds,
+                    planning_deficit_millimeters: plan.planning_deficit_millimeters,
+                    solar,
+                    slot_weather,
+                },
+            )
+        {
+            if best_safe.is_none_or(|(_, best_penalty)| penalty < best_penalty) {
+                best_safe = Some((plan, penalty));
+            }
+            if solar.rising
+                && (minimum_solar..=maximum_solar).contains(&solar.elevation_degrees)
+                && best_preferred.is_none_or(|(_, best_penalty)| penalty < best_penalty)
+            {
+                best_preferred = Some((plan, penalty));
+            }
+        }
+        let next = candidate_at.saturating_add(SCHEDULE_CANDIDATE_INTERVAL_SECONDS);
+        if next <= candidate_at {
+            break;
+        }
+        candidate_at = next;
+    }
+
+    let plan = best_preferred.or(best_safe)?.0;
+    (weighted_rain < plan.planned_water_millimeters * 0.5).then_some(plan)
 }
 
 fn calculate_active_state(
@@ -1797,25 +2529,32 @@ fn calculate_active_state(
         valve_fault_bitmap: zone.valve_fault_bitmap,
     };
 
-    let trigger_deficit = capacity * 0.50;
-    let (mut candidate, planning_deficit) = if deficit < trigger_deficit {
-        (
-            now.saturating_add(seconds_until_deficit(
-                deficit,
-                trigger_deficit,
-                crop_coefficient,
-                demand_estimate,
-            )),
+    let trigger_deficit = capacity * TARGET_DEFICIT_RATIO;
+    let mut candidate = if deficit < trigger_deficit {
+        now.saturating_add(seconds_until_deficit(
+            deficit,
             trigger_deficit,
-        )
+            crop_coefficient,
+            demand_estimate,
+        ))
     } else {
-        (now, deficit)
+        now
     };
-    let replenishment = (planning_deficit - capacity * 0.20).max(0.0);
-    let multiplier = f32::from(zone.memory.watering_percent) / 100.0;
-    let planned_water = (replenishment * multiplier).clamp(0.0, capacity);
-    let duration = watering_duration_seconds(&zone.configuration, planned_water)
-        .max(MIN_WATERING_DURATION_SECONDS);
+    if let Some(optimized) = optimized_morning_candidate(
+        zone,
+        MorningSearch {
+            forecast: weather.forecast.as_ref(),
+            location: site_location,
+            now,
+            current_deficit_millimeters: deficit,
+            capacity_millimeters: capacity,
+            crop_coefficient,
+            demand_estimate,
+        },
+    ) {
+        candidate = optimized.starts_at;
+    }
+    let mut plan = watering_plan_at(zone, candidate, capacity, demand_estimate);
 
     let live_weather_ready = weather_stream_ready
         && weather
@@ -1837,21 +2576,59 @@ fn calculate_active_state(
             .forecast
             .as_ref()
             .filter(|forecast| forecast.is_fresh_at(now))
-            .and_then(|forecast| forecast_rain_delay(Some(forecast), now, planned_water))
+            .and_then(|forecast| {
+                forecast_rain_delay(Some(forecast), now, plan.planned_water_millimeters)
+            })
         {
-            candidate = next_safe_forecast_start(weather.forecast.as_ref(), rainy_until)
-                .unwrap_or(rainy_until);
+            candidate = next_safe_forecast_start(
+                weather.forecast.as_ref(),
+                rainy_until,
+                zone.configuration.sprinkler_head_type,
+            )
+            .unwrap_or(rainy_until);
             condition = SprinklerScheduleConditionV1::ForecastRain;
-        } else if fresh_current.is_some_and(|current| !current_is_safe(current, now)) {
-            candidate = next_safe_forecast_start(weather.forecast.as_ref(), now)
-                .unwrap_or_else(|| now.saturating_add(UNSAFE_WEATHER_RETRY_SECONDS));
+        } else if fresh_current.is_some_and(|current| {
+            !current_is_safe(current, now, zone.configuration.sprinkler_head_type)
+        }) {
+            candidate = next_safe_forecast_start(
+                weather.forecast.as_ref(),
+                now,
+                zone.configuration.sprinkler_head_type,
+            )
+            .unwrap_or_else(|| now.saturating_add(UNSAFE_WEATHER_RETRY_SECONDS));
             condition = SprinklerScheduleConditionV1::WaitingForSafeWeather;
         }
     }
 
-    let (candidate, held_off) = shift_after_hold_offs(candidate, duration, &active_hold_offs);
-    if held_off {
-        condition = SprinklerScheduleConditionV1::HeldOff;
+    let (post_hold_off_plan, blocking_hold_off) = first_post_hold_off_plan(
+        zone,
+        candidate,
+        capacity,
+        demand_estimate,
+        &active_hold_offs,
+    );
+    plan = post_hold_off_plan;
+    if let Some(blocking_hold_off) = blocking_hold_off {
+        if let Some(preemptive_plan) = best_preemptive_hold_off_plan(
+            zone,
+            blocking_hold_off,
+            post_hold_off_plan,
+            PreemptiveHoldOffSearch {
+                weather,
+                location: site_location,
+                hold_offs: &active_hold_offs,
+                now,
+                current_deficit_millimeters: deficit,
+                capacity_millimeters: capacity,
+                crop_coefficient,
+                demand_estimate,
+            },
+        ) {
+            plan = preemptive_plan;
+            condition = SprinklerScheduleConditionV1::PreemptiveHoldOff;
+        } else {
+            condition = SprinklerScheduleConditionV1::HeldOff;
+        }
     }
     condition = if zone.valve_fault_bitmap != 0 {
         SprinklerScheduleConditionV1::ValveFault
@@ -1867,22 +2644,23 @@ fn calculate_active_state(
     base(
         condition,
         SprinklerTimeSlotV1 {
-            starts_at: candidate,
-            duration_seconds: duration,
+            starts_at: plan.starts_at,
+            duration_seconds: plan.duration_seconds,
         },
-        planned_water,
+        plan.planned_water_millimeters,
     )
 }
 
 fn weather_permits_immediate_watering(
     weather: &SprinklerWeatherSnapshotV1,
+    head: SprinklerHeadTypeV1,
     now: LibertasDateTime,
 ) -> bool {
     weather
         .current
         .as_ref()
         .filter(|current| current.is_fresh_at(now))
-        .is_none_or(|current| current_is_safe(current, now))
+        .is_none_or(|current| current_is_safe(current, now, head))
 }
 
 fn valve_permits_automatic_watering(
@@ -1924,12 +2702,17 @@ fn evaluate_controller(shared: &Rc<RefCell<ControllerState>>) -> EvaluationOutco
     let now_ticks = libertas_get_sys_ticks();
     let mut state = shared.borrow_mut();
     let mut changed_zones = Vec::new();
-    for zone in &mut state.zones {
+    let mut zone_memories_to_persist = Vec::new();
+    for (zone_index, zone) in state.zones.iter_mut().enumerate() {
         if zone.pending_command.is_some_and(|pending| {
             now_ticks.saturating_sub(pending.sent_at_ticks)
                 >= u64::from(VALVE_COMMAND_TIMEOUT_SECONDS).saturating_mul(MICROSECONDS_PER_SECOND)
         }) {
             zone.pending_command = None;
+        }
+        if prune_expired_hold_offs(&mut zone.memory, now) {
+            zone_memories_to_persist.push((zone.configuration.valve, zone.memory.clone()));
+            changed_zones.push(zone_index);
         }
     }
     let watering_mode = state.watering_mode;
@@ -1941,7 +2724,6 @@ fn evaluate_controller(shared: &Rc<RefCell<ControllerState>>) -> EvaluationOutco
         .zones
         .iter()
         .any(|zone| zone.pending_command.is_some());
-    let weather_safe = weather_permits_immediate_watering(&weather, now);
     for (zone_index, zone) in state.zones.iter_mut().enumerate() {
         if watering_mode == SprinklerWateringModeV1::Winterization {
             continue;
@@ -1961,15 +2743,30 @@ fn evaluate_controller(shared: &Rc<RefCell<ControllerState>>) -> EvaluationOutco
             .zones
             .iter()
             .enumerate()
-            .find(|(_, zone)| automatic_valve_must_close(zone, weather_safe, watering_mode))
+            .find(|(_, zone)| {
+                automatic_valve_must_close(
+                    zone,
+                    weather_permits_immediate_watering(
+                        &weather,
+                        zone.configuration.sprinkler_head_type,
+                        now,
+                    ),
+                    watering_mode,
+                )
+            })
             .map(|(zone_index, _)| ControllerAction::Close { zone_index })
-    } else if !any_open && !any_pending && weather_safe {
+    } else if !any_open && !any_pending {
         state
             .zones
             .iter()
             .enumerate()
             .find_map(|(zone_index, zone)| {
                 (valve_permits_automatic_watering(zone, watering_mode)
+                    && weather_permits_immediate_watering(
+                        &weather,
+                        zone.configuration.sprinkler_head_type,
+                        now,
+                    )
                     && zone.active_state.next_watering.starts_at <= now)
                     .then_some(ControllerAction::Open {
                         zone_index,
@@ -1982,27 +2779,26 @@ fn evaluate_controller(shared: &Rc<RefCell<ControllerState>>) -> EvaluationOutco
 
     EvaluationOutcome {
         changed_zones,
+        zone_memories_to_persist,
         action,
     }
 }
 
 fn publish_zone_state(shared: &Rc<RefCell<ControllerState>>, zone_index: usize) {
-    let (endpoint, peers, message) = {
+    let (endpoint, message) = {
         let state = shared.borrow();
         let Some(zone) = state.zones.get(zone_index) else {
             return;
         };
         (
             zone.configuration.state_endpoint,
-            zone.subscribers.clone(),
             SprinklerZoneProtocolV1::StateV1 {
+                mode: state.watering_mode,
                 state: public_zone_state(zone, state.watering_mode),
             },
         )
     };
-    for peer in peers {
-        libertas_endpoint_report(endpoint, &message, Some(peer));
-    }
+    libertas_endpoint_report(endpoint, &message, None);
 }
 
 fn execute_controller_action(shared: &Rc<RefCell<ControllerState>>, action: ControllerAction) {
@@ -2060,16 +2856,24 @@ fn execute_controller_action(shared: &Rc<RefCell<ControllerState>>, action: Cont
     }
 }
 
-fn dispatch_evaluation(shared: &Rc<RefCell<ControllerState>>, outcome: EvaluationOutcome) {
+fn apply_evaluation_outcome(
+    shared: &Rc<RefCell<ControllerState>>,
+    outcome: EvaluationOutcome,
+) -> Option<ControllerAction> {
+    for (valve, memory) in outcome.zone_memories_to_persist {
+        persist_zone_memory(valve, &memory);
+    }
     for zone_index in outcome.changed_zones {
         publish_zone_state(shared, zone_index);
     }
-    if let Some(action) = outcome.action {
+    outcome.action
+}
+
+fn dispatch_evaluation(shared: &Rc<RefCell<ControllerState>>, outcome: EvaluationOutcome) {
+    if let Some(action) = apply_evaluation_outcome(shared, outcome) {
         execute_controller_action(shared, action);
         let follow_up = evaluate_controller(shared);
-        for zone_index in follow_up.changed_zones {
-            publish_zone_state(shared, zone_index);
-        }
+        let _ = apply_evaluation_outcome(shared, follow_up);
     }
 }
 
@@ -2416,12 +3220,57 @@ fn refresh_valve_subscriptions(shared: &Rc<RefCell<ControllerState>>, now_ticks:
     }
 }
 
-fn request_site_location() {
+fn arm_site_location_retry(shared: &Rc<RefCell<ControllerState>>, delay_seconds: u32) {
+    let (timer, server_up) = {
+        let state = shared.borrow();
+        (
+            state.site_location_retry_timer,
+            state.hub_location_server_up,
+        )
+    };
+    if timer == 0 {
+        return;
+    }
+    if !server_up {
+        libertas_timer_cancel(timer);
+        return;
+    }
+    libertas_timer_update_interval(
+        timer,
+        absolute_interval_ticks(libertas_get_sys_ticks(), delay_seconds.max(1)),
+    );
+}
+
+fn request_site_location(shared: &Rc<RefCell<ControllerState>>) {
+    if !shared.borrow().hub_location_server_up {
+        return;
+    }
     libertas_endpoint_subscribe_request(
         LIBERTAS_HUB_ENDPOINT,
         &HubProtocol::LocationReq {
             max_report_interval_seconds: HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS,
         },
+    );
+    arm_site_location_retry(shared, HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS);
+}
+
+fn site_location_retry_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
+    let shared = context
+        .downcast_mut::<Rc<RefCell<ControllerState>>>()
+        .unwrap();
+    if !shared.borrow().hub_location_server_up {
+        libertas_timer_cancel(timer);
+        return;
+    }
+    libertas_endpoint_subscribe_request(
+        LIBERTAS_HUB_ENDPOINT,
+        &HubProtocol::LocationReq {
+            max_report_interval_seconds: HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS,
+        },
+    );
+    libertas_timer_update_interval(
+        timer,
+        absolute_interval_ticks(now_ticks, HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS),
     );
 }
 
@@ -2436,6 +3285,23 @@ fn handle_site_location_event(
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .unwrap();
+    if opcode == OP_ENDPOINT_PEER_DOWN {
+        let timer = {
+            let mut state = shared.borrow_mut();
+            state.hub_location_server_up = false;
+            state.site_location_retry_timer
+        };
+        if timer != 0 {
+            libertas_timer_cancel(timer);
+        }
+        return LibertasEndpointHandlerResult::Handled;
+    }
+    if opcode == OP_ENDPOINT_PEER_UP {
+        // Every delivered Up represents a newer server startup.
+        shared.borrow_mut().hub_location_server_up = true;
+        request_site_location(shared);
+        return LibertasEndpointHandlerResult::Handled;
+    }
     if opcode == OP_ENDPOINT_RSP || opcode == OP_ENDPOINT_DATA {
         if let LibertasEndpointMessage::Data(HubProtocol::LocationRsp {
             longitude,
@@ -2461,20 +3327,12 @@ fn handle_site_location_event(
                 shared.borrow_mut().site_location = Some(location);
                 evaluate_and_publish(shared);
             }
+            arm_site_location_retry(shared, HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS);
             return LibertasEndpointHandlerResult::Handled;
         }
         return LibertasEndpointHandlerResult::InvalidMessage;
     }
-    if opcode == OP_ENDPOINT_PEER_DOWN || opcode == OP_ENDPOINT_PEER_TIMEOUT {
-        request_site_location();
-    }
     LibertasEndpointHandlerResult::Handled
-}
-
-fn add_or_replace_subscriber(zone: &mut ZoneRuntime, peer: u32) {
-    if !zone.subscribers.contains(&peer) {
-        zone.subscribers.push(peer);
-    }
 }
 
 fn handle_zone_endpoint(
@@ -2486,20 +3344,6 @@ fn handle_zone_endpoint(
     peer: u32,
 ) -> LibertasEndpointHandlerResult {
     let context = context.downcast_mut::<ZoneContext>().unwrap();
-    if opcode == OP_ENDPOINT_PEER_DOWN {
-        if let Some(zone) = context
-            .shared
-            .borrow_mut()
-            .zones
-            .get_mut(context.zone_index)
-        {
-            zone.subscribers.retain(|subscriber| *subscriber != peer);
-        }
-        return LibertasEndpointHandlerResult::Handled;
-    }
-    if opcode == OP_ENDPOINT_PEER_TIMEOUT {
-        return LibertasEndpointHandlerResult::Handled;
-    }
     if opcode != OP_ENDPOINT_REQ && opcode != OP_ENDPOINT_SUB_REQ {
         return LibertasEndpointHandlerResult::Handled;
     }
@@ -2509,6 +3353,7 @@ fn handle_zone_endpoint(
 
     let is_subscription = opcode == OP_ENDPOINT_SUB_REQ;
     let mut persist = None;
+    let mut persist_runtime = None;
     let mut persist_mode = None;
     let mut force_all_reports = false;
     match message {
@@ -2519,10 +3364,23 @@ fn handle_zone_endpoint(
                     LibertasEndpointStandardStatus::InvalidArgument,
                 );
             }
+            let now_ticks = libertas_get_sys_ticks();
+            let now_utc = utc_seconds();
             let mut state = context.shared.borrow_mut();
             let zone = &mut state.zones[context.zone_index];
-            zone.memory.watering_percent = watering_percent;
-            persist = Some((zone.configuration.valve, zone.memory.clone()));
+            if zone.memory.watering_percent != watering_percent {
+                let previous_memory = zone.memory.clone();
+                let previous_events = zone.water_events.clone();
+                account_open_zone(zone, now_ticks, now_utc);
+                zone.memory.watering_percent = watering_percent;
+                persist_runtime = Some((
+                    zone.configuration.valve,
+                    previous_memory,
+                    zone.memory.clone(),
+                    previous_events,
+                    zone.water_events.clone(),
+                ));
+            }
         }
         SprinklerZoneProtocolV1::ReplaceHoldOffPeriodsV1 { hold_off_periods } => {
             if is_subscription {
@@ -2560,6 +3418,15 @@ fn handle_zone_endpoint(
     if let Some((valve, memory)) = persist {
         persist_zone_memory(valve, &memory);
     }
+    if let Some((valve, previous_memory, memory, previous_events, water_events)) = persist_runtime {
+        persist_zone_runtime_change(
+            valve,
+            &previous_memory,
+            &memory,
+            &previous_events,
+            &water_events,
+        );
+    }
     if let Some((weather_endpoint, mode)) = persist_mode {
         persist_watering_mode(weather_endpoint, mode);
     }
@@ -2573,25 +3440,22 @@ fn handle_zone_endpoint(
             }
         }
     }
-    let state = {
+    let (mode, state) = {
         let controller = context.shared.borrow();
-        public_zone_state(
-            &controller.zones[context.zone_index],
+        (
             controller.watering_mode,
+            public_zone_state(
+                &controller.zones[context.zone_index],
+                controller.watering_mode,
+            ),
         )
     };
     libertas_endpoint_response(
         endpoint,
-        &SprinklerZoneProtocolV1::StateV1 { state },
+        &SprinklerZoneProtocolV1::StateV1 { mode, state },
         transaction_id,
         peer,
     );
-    if is_subscription {
-        add_or_replace_subscriber(
-            &mut context.shared.borrow_mut().zones[context.zone_index],
-            peer,
-        );
-    }
     dispatch_evaluation(&context.shared, outcome);
     LibertasEndpointHandlerResult::Handled
 }
@@ -2796,8 +3660,15 @@ fn weather_request(shared: &Rc<RefCell<ControllerState>>) -> SprinklerWeatherPro
 }
 
 fn arm_weather_retry(shared: &Rc<RefCell<ControllerState>>, delay_seconds: u32) {
-    let timer = shared.borrow().weather_retry_timer;
+    let (timer, server_up) = {
+        let state = shared.borrow();
+        (state.weather_retry_timer, state.weather_server_up)
+    };
     if timer != 0 {
+        if !server_up {
+            libertas_timer_cancel(timer);
+            return;
+        }
         libertas_timer_update_interval(
             timer,
             absolute_interval_ticks(libertas_get_sys_ticks(), delay_seconds.max(1)),
@@ -2806,6 +3677,9 @@ fn arm_weather_retry(shared: &Rc<RefCell<ControllerState>>, delay_seconds: u32) 
 }
 
 fn subscribe_weather(shared: &Rc<RefCell<ControllerState>>) {
+    if !shared.borrow().weather_server_up {
+        return;
+    }
     let endpoint = shared.borrow().weather_endpoint;
     let request = weather_request(shared);
     libertas_endpoint_subscribe_request(endpoint, &request);
@@ -2837,10 +3711,23 @@ fn handle_weather_event(
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .unwrap();
-    if opcode == OP_ENDPOINT_PEER_DOWN || opcode == OP_ENDPOINT_PEER_TIMEOUT {
-        shared.borrow_mut().weather_stream_ready = false;
-        arm_weather_retry(shared, WEATHER_RETRY_SECONDS);
+    if opcode == OP_ENDPOINT_PEER_DOWN {
+        let timer = {
+            let mut state = shared.borrow_mut();
+            state.weather_stream_ready = false;
+            state.weather_server_up = false;
+            state.weather_retry_timer
+        };
+        if timer != 0 {
+            libertas_timer_cancel(timer);
+        }
         evaluate_and_publish(shared);
+        return LibertasEndpointHandlerResult::Handled;
+    }
+    if opcode == OP_ENDPOINT_PEER_UP {
+        // Every delivered Up represents a newer server startup.
+        shared.borrow_mut().weather_server_up = true;
+        subscribe_weather(shared);
         return LibertasEndpointHandlerResult::Handled;
     }
 
@@ -2905,6 +3792,10 @@ fn weather_retry_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .unwrap();
+    if !shared.borrow().weather_server_up {
+        libertas_timer_cancel(timer);
+        return;
+    }
     let endpoint = shared.borrow().weather_endpoint;
     let request = weather_request(shared);
     libertas_endpoint_subscribe_request(endpoint, &request);
@@ -2954,7 +3845,7 @@ fn initial_active_state(
     let deficit = projected_deficit_millimeters(configuration, memory, &[], now, demand_estimate);
     let capacity = root_zone_capacity_millimeters(configuration);
     let crop_coefficient = plant_profile(configuration.plant_type).crop_coefficient;
-    let trigger_deficit = capacity * 0.50;
+    let trigger_deficit = capacity * TARGET_DEFICIT_RATIO;
     let (candidate, planning_deficit) = if deficit < trigger_deficit {
         (
             now.saturating_add(seconds_until_deficit(
@@ -2968,9 +3859,8 @@ fn initial_active_state(
     } else {
         (now, deficit)
     };
-    let planned_water = ((planning_deficit - capacity * 0.20).max(0.0)
-        * (f32::from(memory.watering_percent) / 100.0))
-        .clamp(0.0, capacity);
+    let planned_water =
+        planned_water_millimeters(capacity, planning_deficit, memory.watering_percent);
     let duration =
         watering_duration_seconds(configuration, planned_water).max(MIN_WATERING_DURATION_SECONDS);
     let active_hold_offs: Vec<_> = memory
@@ -3071,7 +3961,6 @@ pub fn libertas_sprinkler(
             memory,
             water_events,
             active_state,
-            subscribers: Vec::new(),
             valve_state_known: false,
             valve_is_open: false,
             valve_opened_automatically: false,
@@ -3093,6 +3982,8 @@ pub fn libertas_sprinkler(
         watering_mode,
         winterization_reminder,
         site_location,
+        hub_location_server_up: true,
+        site_location_retry_timer: 0,
         weather: SprinklerWeatherSnapshotV1 {
             history: None,
             current: None,
@@ -3100,6 +3991,7 @@ pub fn libertas_sprinkler(
         },
         weather_cursor: None,
         weather_stream_ready: false,
+        weather_server_up: true,
         weather_maximum_wait_seconds: WEATHER_RETRY_SECONDS,
         weather_retry_timer: 0,
         zones: runtime_zones,
@@ -3140,6 +4032,9 @@ pub fn libertas_sprinkler(
         Box::new(Rc::clone(&shared)),
     );
 
+    let site_location_timer =
+        libertas_timer_new_interval(0, site_location_retry_timer, Box::new(Rc::clone(&shared)));
+    shared.borrow_mut().site_location_retry_timer = site_location_timer;
     let weather_timer =
         libertas_timer_new_interval(0, weather_retry_timer, Box::new(Rc::clone(&shared)));
     shared.borrow_mut().weather_retry_timer = weather_timer;
@@ -3156,7 +4051,7 @@ pub fn libertas_sprinkler(
     );
 
     request_valve_subscriptions(&shared);
-    request_site_location();
+    request_site_location(&shared);
     subscribe_weather(&shared);
     evaluate_and_publish(&shared);
 }
@@ -3168,6 +4063,7 @@ mod tests {
     use libertas_matter::{InlineByteBuffer, decode_command, encode_command};
 
     const NOW: LibertasDateTime = 1_800_000_000;
+    const EQUINOX_DAY_START: LibertasDateTime = 1_773_964_800;
 
     fn zone() -> SprinklerZoneV1 {
         SprinklerZoneV1 {
@@ -3189,6 +4085,7 @@ mod tests {
             valid_at: NOW,
             interval_seconds: 900,
             temperature_celsius: 20.0,
+            relative_humidity_percent: 70,
             precipitation_millimeters: 0.0,
             reference_evapotranspiration_millimeters: 0.1,
             wind_speed_meters_per_second: 2.0,
@@ -3211,6 +4108,68 @@ mod tests {
         }
     }
 
+    fn equator_location() -> SprinklerWeatherLocationV1 {
+        SprinklerWeatherLocationV1 {
+            longitude_degrees: 0.0,
+            latitude_degrees: 0.0,
+        }
+    }
+
+    fn morning_forecast(
+        retrieved_at: LibertasDateTime,
+        relative_humidity_percent: u8,
+    ) -> SprinklerWeatherForecastV1 {
+        let mut periods = Vec::new();
+        for hour in 4..=10 {
+            periods.push(SprinklerWeatherForecastPeriodV1 {
+                starts_at: EQUINOX_DAY_START + hour * 3_600,
+                duration_seconds: 3_600,
+                temperature_celsius: 18.0,
+                relative_humidity_percent,
+                precipitation_probability_percent: 5,
+                expected_precipitation_millimeters: 0.0,
+                reference_evapotranspiration_millimeters: 0.02,
+                wind_speed_meters_per_second: 1.0,
+                wind_gust_meters_per_second: 2.0,
+            });
+        }
+        SprinklerWeatherForecastV1 {
+            retrieved_at,
+            valid_until: retrieved_at + 10_800,
+            periods,
+        }
+    }
+
+    fn safe_hourly_forecast(starts_at: LibertasDateTime, hours: u64) -> SprinklerWeatherForecastV1 {
+        let periods = (0..hours)
+            .map(|hour| SprinklerWeatherForecastPeriodV1 {
+                starts_at: starts_at + hour * 3_600,
+                duration_seconds: 3_600,
+                temperature_celsius: 18.0,
+                relative_humidity_percent: 60,
+                precipitation_probability_percent: 0,
+                expected_precipitation_millimeters: 0.0,
+                reference_evapotranspiration_millimeters: 0.02,
+                wind_speed_meters_per_second: 1.0,
+                wind_gust_meters_per_second: 2.0,
+            })
+            .collect();
+        SprinklerWeatherForecastV1 {
+            retrieved_at: starts_at,
+            valid_until: starts_at + 1_800,
+            periods,
+        }
+    }
+
+    fn current_at(now: LibertasDateTime) -> SprinklerCurrentWeatherV1 {
+        SprinklerCurrentWeatherV1 {
+            retrieved_at: now,
+            valid_until: now + 1_800,
+            valid_at: now,
+            ..current()
+        }
+    }
+
     fn runtime(memory: SprinklerZoneMemoryV1) -> ZoneRuntime {
         let configuration = zone();
         let active_state = initial_active_state(NOW, &memory, &configuration);
@@ -3219,7 +4178,6 @@ mod tests {
             memory,
             water_events: Vec::new(),
             active_state,
-            subscribers: Vec::new(),
             valve_state_known: true,
             valve_is_open: false,
             valve_opened_automatically: false,
@@ -3257,7 +4215,10 @@ mod tests {
             SprinklerZoneProtocolV1::SetWateringModeV1 {
                 mode: SprinklerWateringModeV1::Winterization,
             },
-            SprinklerZoneProtocolV1::StateV1 { state: active },
+            SprinklerZoneProtocolV1::StateV1 {
+                mode: SprinklerWateringModeV1::Active,
+                state: active,
+            },
         ];
         for value in values {
             let encoded = value.to_avro();
@@ -3297,6 +4258,18 @@ mod tests {
         assert_eq!(encoded.first(), Some(&2));
         assert_eq!(SprinklerDataV1::from_avro(&encoded), Ok(value));
 
+        let value = SprinklerDataV1::WaterEventV1 {
+            event: SprinklerWaterEventV1::IrrigationV1 {
+                starts_at: NOW,
+                duration_seconds: 600,
+                watering_percent: 80,
+                applied_water_millimeters: 2.0,
+            },
+        };
+        let encoded = value.to_avro();
+        assert_eq!(encoded.first(), Some(&2));
+        assert_eq!(SprinklerDataV1::from_avro(&encoded), Ok(value));
+
         let value = SprinklerDataV1::SiteLocationV1 {
             location: location(),
         };
@@ -3326,6 +4299,7 @@ mod tests {
                 mode: SprinklerWateringModeV1::Winterization,
             },
             SprinklerZoneProtocolV1::StateV1 {
+                mode: SprinklerWateringModeV1::Active,
                 state: SprinklerZoneStateV1::ActiveV1 {
                     current: initial_active_state(NOW, &memory(), &zone()),
                 },
@@ -3372,6 +4346,7 @@ mod tests {
             SprinklerScheduleConditionV1::WaterNotNeeded,
             SprinklerScheduleConditionV1::ForecastRain,
             SprinklerScheduleConditionV1::WaitingForSafeWeather,
+            SprinklerScheduleConditionV1::PreemptiveHoldOff,
             SprinklerScheduleConditionV1::HeldOff,
             SprinklerScheduleConditionV1::Scheduled,
             SprinklerScheduleConditionV1::ValveCommandPending,
@@ -3394,6 +4369,7 @@ mod tests {
             SprinklerWaterEventV1::IrrigationV1 {
                 starts_at: NOW,
                 duration_seconds: 600,
+                watering_percent: 100,
                 applied_water_millimeters: 2.0,
             },
         ];
@@ -3423,6 +4399,7 @@ mod tests {
         let irrigation = SprinklerWaterEventV1::IrrigationV1 {
             starts_at: NOW - 1_800,
             duration_seconds: 600,
+            watering_percent: 100,
             applied_water_millimeters: 2.0,
         };
         let folded = SprinklerWaterEventV1::WeatherV1 {
@@ -3434,6 +4411,7 @@ mod tests {
         let mismatched = SprinklerWaterEventV1::IrrigationV1 {
             starts_at: NOW - 900,
             duration_seconds: 60,
+            watering_percent: 100,
             applied_water_millimeters: 0.2,
         };
         let records = vec![
@@ -3477,11 +4455,13 @@ mod tests {
         let irrigation = SprinklerWaterEventV1::IrrigationV1 {
             starts_at: NOW - 120,
             duration_seconds: 60,
+            watering_percent: 100,
             applied_water_millimeters: 0.2,
         };
         let merged = SprinklerWaterEventV1::IrrigationV1 {
             starts_at: NOW - 120,
             duration_seconds: 120,
+            watering_percent: 100,
             applied_water_millimeters: 0.4,
         };
 
@@ -3649,6 +4629,7 @@ mod tests {
                     starts_at: NOW + 3_600,
                     duration_seconds: 3_600,
                     temperature_celsius: -1.0,
+                    relative_humidity_percent: 80,
                     precipitation_probability_percent: 0,
                     expected_precipitation_millimeters: 0.0,
                     reference_evapotranspiration_millimeters: 0.0,
@@ -3740,6 +4721,349 @@ mod tests {
         );
         assert_eq!(catch_up.next_watering.starts_at, NOW);
         assert!(catch_up.planned_water_millimeters > 0.0);
+    }
+
+    #[test]
+    fn solar_position_uses_utc_and_location_without_a_timezone() {
+        let dawn = solar_position(equator_location(), EQUINOX_DAY_START + 6 * 3_600).unwrap();
+        let noon = solar_position(equator_location(), EQUINOX_DAY_START + 12 * 3_600).unwrap();
+
+        assert!(dawn.rising);
+        assert!(dawn.elevation_degrees.abs() < 5.0);
+        assert!(noon.elevation_degrees > 85.0);
+    }
+
+    #[test]
+    fn forecast_moves_a_noncritical_run_into_a_rising_sun_window() {
+        let now = EQUINOX_DAY_START + 4 * 3_600;
+        let mut memory = default_memory(now);
+        memory.baseline_deficit_millimeters = 14.0;
+        memory.balance_baseline_at = now;
+        let zone = runtime(memory);
+        let weather = SprinklerWeatherSnapshotV1 {
+            history: None,
+            current: None,
+            forecast: Some(morning_forecast(now, 70)),
+        };
+
+        let state = calculate_active_state(&zone, &weather, true, Some(equator_location()), now);
+        let solar = solar_position(equator_location(), state.next_watering.starts_at).unwrap();
+
+        assert!(state.next_watering.starts_at > now);
+        assert!(solar.rising);
+        assert!(
+            (OVERHEAD_MINIMUM_SOLAR_ELEVATION_DEGREES..=OVERHEAD_MAXIMUM_SOLAR_ELEVATION_DEGREES)
+                .contains(&solar.elevation_degrees)
+        );
+    }
+
+    #[test]
+    fn high_humidity_moves_overhead_watering_closer_to_sunrise() {
+        let now = EQUINOX_DAY_START + 4 * 3_600;
+        let mut memory = default_memory(now);
+        memory.baseline_deficit_millimeters = 14.0;
+        memory.balance_baseline_at = now;
+        let zone = runtime(memory);
+        let scheduled_at = |relative_humidity_percent| {
+            calculate_active_state(
+                &zone,
+                &SprinklerWeatherSnapshotV1 {
+                    history: None,
+                    current: None,
+                    forecast: Some(morning_forecast(now, relative_humidity_percent)),
+                },
+                true,
+                Some(equator_location()),
+                now,
+            )
+            .next_watering
+            .starts_at
+        };
+
+        assert!(scheduled_at(95) > scheduled_at(55));
+    }
+
+    #[test]
+    fn optimized_morning_search_skips_hold_offs() {
+        let now = EQUINOX_DAY_START + 4 * 3_600;
+        let weather = SprinklerWeatherSnapshotV1 {
+            history: None,
+            current: None,
+            forecast: Some(morning_forecast(now, 70)),
+        };
+        let base_memory = || {
+            let mut memory = default_memory(now);
+            memory.baseline_deficit_millimeters = 14.0;
+            memory.balance_baseline_at = now;
+            memory
+        };
+        let unheld = calculate_active_state(
+            &runtime(base_memory()),
+            &weather,
+            true,
+            Some(equator_location()),
+            now,
+        );
+        let hold_off = SprinklerTimeSlotV1 {
+            starts_at: unheld.next_watering.starts_at.saturating_sub(900),
+            duration_seconds: 3_600,
+        };
+        let mut held_memory = base_memory();
+        held_memory.hold_off_periods = vec![hold_off];
+        let held = calculate_active_state(
+            &runtime(held_memory),
+            &weather,
+            true,
+            Some(equator_location()),
+            now,
+        );
+
+        assert_ne!(held.next_watering.starts_at, unheld.next_watering.starts_at);
+        assert!(!held.next_watering.overlaps(hold_off));
+    }
+
+    #[test]
+    fn hold_off_preemption_requires_a_critical_post_hold_off_deficit() {
+        let now = EQUINOX_DAY_START + 4 * 3_600;
+        let hold_off = SprinklerTimeSlotV1 {
+            starts_at: now + 2 * 3_600,
+            duration_seconds: 72 * 3_600,
+        };
+        let mut memory = default_memory(now);
+        memory.baseline_deficit_millimeters = 13.0;
+        memory.balance_baseline_at = now;
+        memory.hold_off_periods = vec![hold_off];
+        let weather = SprinklerWeatherSnapshotV1 {
+            history: None,
+            current: Some(current_at(now)),
+            forecast: Some(safe_hourly_forecast(now, 80)),
+        };
+
+        let state = calculate_active_state(
+            &runtime(memory),
+            &weather,
+            true,
+            Some(equator_location()),
+            now,
+        );
+
+        assert_eq!(
+            state.condition,
+            SprinklerScheduleConditionV1::PreemptiveHoldOff
+        );
+        assert!(state.next_watering.ends_at().unwrap() <= hold_off.starts_at);
+        assert!(state.estimated_deficit_millimeters >= 13.0);
+    }
+
+    #[test]
+    fn noncritical_post_hold_off_deficit_does_not_preempt() {
+        let now = EQUINOX_DAY_START + 4 * 3_600;
+        let hold_off = SprinklerTimeSlotV1 {
+            starts_at: now + 2 * 3_600,
+            duration_seconds: 36 * 3_600,
+        };
+        let mut memory = default_memory(now);
+        memory.baseline_deficit_millimeters = 13.0;
+        memory.balance_baseline_at = now;
+        memory.hold_off_periods = vec![hold_off];
+        let weather = SprinklerWeatherSnapshotV1 {
+            history: None,
+            current: Some(current_at(now)),
+            forecast: Some(safe_hourly_forecast(now, 42)),
+        };
+
+        let state = calculate_active_state(
+            &runtime(memory),
+            &weather,
+            true,
+            Some(equator_location()),
+            now,
+        );
+
+        assert_eq!(state.condition, SprinklerScheduleConditionV1::HeldOff);
+        assert!(state.next_watering.starts_at >= hold_off.ends_at().unwrap());
+    }
+
+    #[test]
+    fn hold_off_does_not_preempt_before_the_preferred_deficit() {
+        let now = EQUINOX_DAY_START + 4 * 3_600;
+        let hold_off = SprinklerTimeSlotV1 {
+            starts_at: now + 2 * 3_600,
+            duration_seconds: 96 * 3_600,
+        };
+        let mut memory = default_memory(now);
+        memory.baseline_deficit_millimeters = 10.0;
+        memory.balance_baseline_at = now;
+        memory.hold_off_periods = vec![hold_off];
+        let weather = SprinklerWeatherSnapshotV1 {
+            history: None,
+            current: Some(current_at(now)),
+            forecast: Some(safe_hourly_forecast(now, 104)),
+        };
+
+        let state = calculate_active_state(
+            &runtime(memory),
+            &weather,
+            true,
+            Some(equator_location()),
+            now,
+        );
+
+        assert_eq!(state.condition, SprinklerScheduleConditionV1::HeldOff);
+        assert!(state.next_watering.starts_at >= hold_off.ends_at().unwrap());
+    }
+
+    #[test]
+    fn expected_rain_rejects_hold_off_preemption() {
+        let now = EQUINOX_DAY_START + 4 * 3_600;
+        let hold_off = SprinklerTimeSlotV1 {
+            starts_at: now + 2 * 3_600,
+            duration_seconds: 72 * 3_600,
+        };
+        let mut memory = default_memory(now);
+        memory.baseline_deficit_millimeters = 13.0;
+        memory.balance_baseline_at = now;
+        memory.hold_off_periods = vec![hold_off];
+        let mut forecast = safe_hourly_forecast(now, 80);
+        forecast.periods[10].precipitation_probability_percent = 90;
+        forecast.periods[10].expected_precipitation_millimeters = 20.0;
+        let weather = SprinklerWeatherSnapshotV1 {
+            history: None,
+            current: Some(current_at(now)),
+            forecast: Some(forecast),
+        };
+
+        let state = calculate_active_state(
+            &runtime(memory),
+            &weather,
+            true,
+            Some(equator_location()),
+            now,
+        );
+
+        assert_eq!(state.condition, SprinklerScheduleConditionV1::HeldOff);
+        assert!(state.next_watering.starts_at >= hold_off.ends_at().unwrap());
+    }
+
+    #[test]
+    fn unsafe_forecast_rejects_hold_off_preemption() {
+        let now = EQUINOX_DAY_START + 4 * 3_600;
+        let hold_off = SprinklerTimeSlotV1 {
+            starts_at: now + 2 * 3_600,
+            duration_seconds: 72 * 3_600,
+        };
+        let mut memory = default_memory(now);
+        memory.baseline_deficit_millimeters = 13.0;
+        memory.balance_baseline_at = now;
+        memory.hold_off_periods = vec![hold_off];
+        let mut forecast = safe_hourly_forecast(now, 80);
+        for period in &mut forecast.periods[..2] {
+            period.wind_speed_meters_per_second = 20.0;
+            period.wind_gust_meters_per_second = 30.0;
+        }
+        let weather = SprinklerWeatherSnapshotV1 {
+            history: None,
+            current: Some(current_at(now)),
+            forecast: Some(forecast),
+        };
+
+        let state = calculate_active_state(
+            &runtime(memory),
+            &weather,
+            true,
+            Some(equator_location()),
+            now,
+        );
+
+        assert_eq!(state.condition, SprinklerScheduleConditionV1::HeldOff);
+        assert!(state.next_watering.starts_at >= hold_off.ends_at().unwrap());
+    }
+
+    #[test]
+    fn post_hold_off_make_up_is_sized_at_its_delayed_start() {
+        let hold_off = SprinklerTimeSlotV1 {
+            starts_at: NOW,
+            duration_seconds: 3 * SECONDS_PER_DAY as u32,
+        };
+        let mut memory = memory();
+        memory.baseline_deficit_millimeters = 16.0;
+        memory.balance_baseline_at = NOW;
+        memory.hold_off_periods = vec![hold_off];
+        let zone = runtime(memory);
+        let demand_estimate = water_demand_estimate(&zone.water_events, None, NOW);
+        let capacity = root_zone_capacity_millimeters(&zone.configuration);
+        let expected = watering_plan_at(
+            &zone,
+            hold_off.ends_at().unwrap(),
+            capacity,
+            demand_estimate,
+        );
+
+        let state = calculate_active_state(
+            &zone,
+            &SprinklerWeatherSnapshotV1 {
+                history: None,
+                current: None,
+                forecast: None,
+            },
+            false,
+            None,
+            NOW,
+        );
+
+        assert_eq!(state.condition, SprinklerScheduleConditionV1::HeldOff);
+        assert_eq!(state.next_watering.starts_at, expected.starts_at);
+        assert_eq!(
+            state.next_watering.duration_seconds,
+            expected.duration_seconds
+        );
+        assert_eq!(
+            state.planned_water_millimeters,
+            expected.planned_water_millimeters
+        );
+        assert!(state.planned_water_millimeters > 9.6);
+    }
+
+    #[test]
+    fn critical_deficit_uses_the_first_safe_opportunity() {
+        let now = EQUINOX_DAY_START + 12 * 3_600;
+        let mut memory = default_memory(now);
+        memory.baseline_deficit_millimeters =
+            root_zone_capacity_millimeters(&zone()) * CRITICAL_DEFICIT_RATIO;
+        memory.balance_baseline_at = now;
+        let zone = runtime(memory);
+        let weather = SprinklerWeatherSnapshotV1 {
+            history: None,
+            current: None,
+            forecast: Some(morning_forecast(now, 60)),
+        };
+
+        let state = calculate_active_state(&zone, &weather, true, Some(equator_location()), now);
+
+        assert_eq!(state.next_watering.starts_at, now);
+    }
+
+    #[test]
+    fn drip_watering_tolerates_wind_that_blocks_overhead_heads() {
+        let mut windy = current();
+        windy.wind_speed_meters_per_second = 12.0;
+        windy.wind_gust_meters_per_second = 18.0;
+        let weather = SprinklerWeatherSnapshotV1 {
+            history: None,
+            current: Some(windy),
+            forecast: None,
+        };
+
+        assert!(!weather_permits_immediate_watering(
+            &weather,
+            SprinklerHeadTypeV1::PopupSpray,
+            NOW,
+        ));
+        assert!(weather_permits_immediate_watering(
+            &weather,
+            SprinklerHeadTypeV1::SurfaceDrip,
+            NOW,
+        ));
     }
 
     #[test]
@@ -3836,6 +5160,30 @@ mod tests {
     }
 
     #[test]
+    fn expired_hold_offs_are_pruned_once_at_the_end_boundary() {
+        let active = SprinklerTimeSlotV1 {
+            starts_at: NOW + 1,
+            duration_seconds: 300,
+        };
+        let mut memory = memory();
+        memory.hold_off_periods = vec![
+            SprinklerTimeSlotV1 {
+                starts_at: NOW - 300,
+                duration_seconds: 299,
+            },
+            SprinklerTimeSlotV1 {
+                starts_at: NOW - 300,
+                duration_seconds: 300,
+            },
+            active,
+        ];
+
+        assert!(prune_expired_hold_offs(&mut memory, NOW));
+        assert_eq!(memory.hold_off_periods, vec![active]);
+        assert!(!prune_expired_hold_offs(&mut memory, NOW));
+    }
+
+    #[test]
     fn water_balance_combines_weather_and_observed_irrigation() {
         let memory = memory();
         let water_events = vec![
@@ -3848,6 +5196,7 @@ mod tests {
             SprinklerWaterEventV1::IrrigationV1 {
                 starts_at: NOW - 1_800,
                 duration_seconds: 900,
+                watering_percent: 100,
                 applied_water_millimeters: 3.0,
             },
         ];
@@ -3860,12 +5209,14 @@ mod tests {
         let mut runtime = runtime(memory());
         add_irrigation_event(&mut runtime, NOW - 600, 600, NOW);
         let SprinklerWaterEventV1::IrrigationV1 {
+            watering_percent,
             applied_water_millimeters,
             ..
         } = runtime.water_events[0]
         else {
             panic!("expected irrigation event");
         };
+        assert_eq!(watering_percent, 100);
         assert!((applied_water_millimeters - 2.0).abs() < 0.001);
     }
 
@@ -3890,6 +5241,7 @@ mod tests {
         assert_eq!(runtime.water_events.len(), 1);
         let SprinklerWaterEventV1::IrrigationV1 {
             duration_seconds,
+            watering_percent,
             applied_water_millimeters,
             ..
         } = runtime.water_events[0]
@@ -3897,7 +5249,39 @@ mod tests {
             panic!("expected irrigation event");
         };
         assert_eq!(duration_seconds, 120);
+        assert_eq!(watering_percent, 100);
         assert!((applied_water_millimeters - 0.4).abs() < 0.001);
+    }
+
+    #[test]
+    fn watering_percentage_change_splits_adjacent_irrigation_events() {
+        let mut runtime = runtime(memory());
+        add_irrigation_event(&mut runtime, NOW - 120, 60, NOW - 60);
+        runtime.memory.watering_percent = 80;
+        add_irrigation_event(&mut runtime, NOW - 60, 60, NOW);
+
+        assert_eq!(runtime.water_events.len(), 2);
+        let percentages: Vec<_> = runtime
+            .water_events
+            .iter()
+            .map(|event| match event {
+                SprinklerWaterEventV1::IrrigationV1 {
+                    watering_percent, ..
+                } => *watering_percent,
+                SprinklerWaterEventV1::WeatherV1 { .. } => 0,
+            })
+            .collect();
+        assert_eq!(percentages, vec![100, 80]);
+    }
+
+    #[test]
+    fn irrigation_event_rejects_invalid_watering_percentage() {
+        assert!(!valid_water_event(&SprinklerWaterEventV1::IrrigationV1 {
+            starts_at: NOW,
+            duration_seconds: 60,
+            watering_percent: 25,
+            applied_water_millimeters: 0.2,
+        }));
     }
 
     #[test]
@@ -3944,6 +5328,8 @@ mod tests {
             watering_mode: SprinklerWateringModeV1::Active,
             winterization_reminder: None,
             site_location: None,
+            hub_location_server_up: true,
+            site_location_retry_timer: 0,
             weather: SprinklerWeatherSnapshotV1 {
                 history: None,
                 current: None,
@@ -3951,6 +5337,7 @@ mod tests {
             },
             weather_cursor: Some(previous),
             weather_stream_ready: true,
+            weather_server_up: true,
             weather_maximum_wait_seconds: WEATHER_RETRY_SECONDS,
             weather_retry_timer: 0,
             zones: Vec::new(),
@@ -3989,6 +5376,8 @@ mod tests {
             watering_mode: SprinklerWateringModeV1::Active,
             winterization_reminder: None,
             site_location: None,
+            hub_location_server_up: true,
+            site_location_retry_timer: 0,
             weather: SprinklerWeatherSnapshotV1 {
                 history: None,
                 current: None,
@@ -3999,6 +5388,7 @@ mod tests {
                 sequence: 10,
             }),
             weather_stream_ready: true,
+            weather_server_up: true,
             weather_maximum_wait_seconds: WEATHER_RETRY_SECONDS,
             weather_retry_timer: 0,
             zones: Vec::new(),
@@ -4022,7 +5412,11 @@ mod tests {
             current: Some(current()),
             forecast: None,
         };
-        assert!(weather_permits_immediate_watering(&weather, NOW));
+        assert!(weather_permits_immediate_watering(
+            &weather,
+            SprinklerHeadTypeV1::RotorsLowRate,
+            NOW
+        ));
         assert!(!weather_permits_immediate_watering(
             &SprinklerWeatherSnapshotV1 {
                 current: Some(SprinklerCurrentWeatherV1 {
@@ -4031,15 +5425,21 @@ mod tests {
                 }),
                 ..weather.clone()
             },
+            SprinklerHeadTypeV1::RotorsLowRate,
             NOW
         ));
-        assert!(weather_permits_immediate_watering(&weather, NOW + 1_800));
+        assert!(weather_permits_immediate_watering(
+            &weather,
+            SprinklerHeadTypeV1::RotorsLowRate,
+            NOW + 1_800
+        ));
         assert!(weather_permits_immediate_watering(
             &SprinklerWeatherSnapshotV1 {
                 history: None,
                 current: None,
                 forecast: None,
             },
+            SprinklerHeadTypeV1::RotorsLowRate,
             NOW
         ));
     }
@@ -4129,6 +5529,7 @@ mod tests {
                     starts_at: NOW,
                     duration_seconds: 3_600,
                     temperature_celsius: 20.0,
+                    relative_humidity_percent: 70,
                     precipitation_probability_percent: 90,
                     expected_precipitation_millimeters: 20.0,
                     reference_evapotranspiration_millimeters: 0.2,
