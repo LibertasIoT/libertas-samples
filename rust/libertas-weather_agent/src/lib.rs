@@ -1985,7 +1985,7 @@ fn handle_endpoint_event(
     LibertasEndpointStatus::Success
 }
 
-/// Libertas weather agent
+/// Weather server
 /// Provides application-tailored weather services. This initial version exposes
 /// one sprinkler-weather server endpoint; future application protocols can add
 /// their own typed endpoints and independently cached data. On startup it
@@ -2008,7 +2008,7 @@ fn handle_endpoint_event(
 #[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentDataV1")]
 #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]
-pub fn libertas_weather_agent(sprinkler_weather: SprinklerWeatherEndpointServerV1) {
+pub fn libertas_weather_server(sprinkler_weather: SprinklerWeatherEndpointServerV1) {
     let endpoint = sprinkler_weather.endpoint;
     let cached_location = load_location(endpoint);
     let mut snapshot = load_snapshot(endpoint);
