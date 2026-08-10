@@ -2,8 +2,8 @@
 //! Calculates and executes weather-aware watering schedules for sprinkler zones
 //! controlled by Matter Valve Configuration and Control devices.
 //!
-//! Configuration identifies the shared sprinkler weather endpoint, one
-//! winterization-reminder recipient, and, for each zone, its valve, plant type,
+//! Configuration identifies the shared sprinkler weather endpoint, reminder
+//! recipients, and, for each zone, its valve, plant type,
 //! sprinkler-head type, and state endpoint. The controller adapts each watering
 //! run from weather, observed valve time, and one user-facing water amount
 //! adjuster. Hold-off periods remain runtime schedule constraints.
@@ -88,6 +88,8 @@ const VALVE_SUBSCRIPTION_STALE_SECONDS: u32 = (VALVE_SUBSCRIPTION_MAX_INTERVAL_S
 const MAX_HOLD_OFFS: usize = 64;
 const MAX_WATER_EVENTS: usize = 512;
 const MAX_WATER_EVENT_RECORDS_SCANNED: usize = MAX_WATER_EVENTS * 2;
+const MAX_REMINDER_RECIPIENTS: usize = 16;
+const MAX_SPRINKLER_ZONES: usize = 32;
 const WATER_EVENT_INDEX_KIND_COUNT: i64 = 2;
 const MIN_RECENT_WEATHER_COVERAGE_SECONDS: u64 = 24 * 60 * 60;
 const SECONDS_PER_DAY: u64 = 24 * 60 * 60;
@@ -710,6 +712,7 @@ pub struct SprinklerZoneV1 {
     #[libertas_endpoint_schema(SprinklerZoneProtocolV1)]
     #[libertas_endpoint_server]
     #[libertas_endpoint_base_objects("^.valve")]
+    #[libertas_unique]
     pub state_endpoint: LibertasEndpoint,
 }
 
@@ -750,7 +753,7 @@ struct ZoneRuntime {
 
 struct ControllerState {
     weather_endpoint: LibertasEndpoint,
-    winterization_notification_recipient: LibertasUser,
+    reminder_recipients: Vec<LibertasUser>,
     watering_mode: SprinklerWateringModeV1,
     winterization_reminder: Option<SprinklerWinterizationReminderMemoryV1>,
     site_location: Option<SprinklerWeatherLocationV1>,
@@ -802,16 +805,19 @@ impl WinterizationReminderEvidence {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 struct WinterizationReminderAction {
-    recipient: LibertasUser,
+    recipients: Vec<LibertasUser>,
     evidence: WinterizationReminderEvidence,
 }
 
 impl WinterizationReminderAction {
     fn submit(self) {
-        let recipients = [self.recipient];
-        match self.evidence {
+        let Self {
+            recipients,
+            evidence,
+        } = self;
+        match evidence {
             WinterizationReminderEvidence::LocationAndSeason => libertas_notification_send(
                 &recipients,
                 NotificationImportance::Info,
@@ -936,6 +942,25 @@ fn preferred_solar_elevation_range(head: SprinklerHeadTypeV1) -> (f64, f64) {
 
 fn valid_watering_percent(value: u16) -> bool {
     (20..=200).contains(&value) && value.is_multiple_of(10)
+}
+
+fn valid_reminder_recipients(recipients: &[LibertasUser]) -> bool {
+    !recipients.is_empty()
+        && recipients.len() <= MAX_REMINDER_RECIPIENTS
+        && recipients
+            .iter()
+            .enumerate()
+            .all(|(index, recipient)| !recipients[..index].contains(recipient))
+}
+
+fn valid_zones(zones: &[SprinklerZoneV1]) -> bool {
+    !zones.is_empty()
+        && zones.len() <= MAX_SPRINKLER_ZONES
+        && zones.iter().enumerate().all(|(index, zone)| {
+            zones[..index].iter().all(|previous| {
+                previous.valve != zone.valve && previous.state_endpoint != zone.state_endpoint
+            })
+        })
 }
 
 fn valid_nonnegative(value: f32) -> bool {
@@ -2904,7 +2929,7 @@ fn evaluate_winterization_reminder(
         state.weather_endpoint,
         memory,
         WinterizationReminderAction {
-            recipient: state.winterization_notification_recipient,
+            recipients: state.reminder_recipients.clone(),
             evidence,
         },
     ))
@@ -3904,7 +3929,7 @@ fn initial_active_state(
     }
 }
 
-/// Libertas sprinkler
+/// Sprinkler agent
 /// Runs a weather-aware multi-zone sprinkler controller. The weather endpoint
 /// supplies the tailored sprinkler history, current conditions, and forecast
 /// shared by all zones. Each zone exposes its complete current state and
@@ -3915,46 +3940,56 @@ fn initial_active_state(
 #[libertas_export]
 pub fn libertas_sprinkler(
     /*
-     * Sprinkler weather
+     * Weather server
      * The client endpoint for `SprinklerWeatherProtocolV1`. The application
      * subscribes at startup for more precise planning. Missing or stale weather
      * falls back to an offline estimate; fresh unsafe conditions delay watering.
      */
-    #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)] weather_endpoint: LibertasEndpoint,
+    #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)] weather_server: LibertasEndpoint,
     /*
-     * Winterization reminder recipient
-     * The Libertas user who receives the system-wide cold-season reminder.
+     * Reminder recipients
+     * One or more Libertas users who receive application reminders. The
+     * current version sends winterization reminders; the shared list can also
+     * serve future reminder types.
+     * #[libertas_size(min=1, max=16)]
+     * #[libertas_unordered]
+     * ----
+     * Reminder recipient
+     * One Libertas user authorized to receive sprinkler reminders.
+     * #[libertas_unique]
      */
-    winterization_notification_recipient: LibertasUser,
+    reminder_recipients: Vec<LibertasUser>,
     /*
      * Sprinkler zones
      * One or more independently scheduled Matter Valve zones.
+     * #[libertas_size(min=1, max=32)]
      * ----
      * Sprinkler zone
      * The physical and endpoint configuration for one watered area.
-     * #[libertas_size(min=1, max=32)]
      */
     zones: Vec<SprinklerZoneV1>,
 ) {
+    let weather_endpoint = weather_server;
+    if !valid_reminder_recipients(&reminder_recipients) {
+        libertas_log(
+            LogLevel::Error,
+            "Reminder recipients must contain 1 to 16 unique users",
+        );
+        return;
+    }
+    if !valid_zones(&zones) {
+        libertas_log(
+            LogLevel::Error,
+            "Sprinkler zones must contain 1 to 32 entries with unique valves and state endpoints",
+        );
+        return;
+    }
     let now = utc_seconds().unwrap_or_default();
     let watering_mode = load_watering_mode(weather_endpoint);
     let winterization_reminder = load_winterization_reminder(weather_endpoint);
     let site_location = load_site_location(weather_endpoint);
     let mut runtime_zones = Vec::with_capacity(zones.len());
-    let mut valves = Vec::new();
-    let mut state_endpoints = Vec::new();
     for configuration in zones {
-        if valves.contains(&configuration.valve)
-            || state_endpoints.contains(&configuration.state_endpoint)
-        {
-            libertas_log(
-                LogLevel::Error,
-                "Skipping duplicate sprinkler valve or state endpoint",
-            );
-            continue;
-        }
-        valves.push(configuration.valve);
-        state_endpoints.push(configuration.state_endpoint);
         let mut memory = load_zone_memory(configuration.valve, now);
         let mut water_events = load_water_events(configuration.valve, &memory);
         let restored_memory = memory.clone();
@@ -3983,14 +4018,9 @@ pub fn libertas_sprinkler(
             pending_command: None,
         });
     }
-    if runtime_zones.is_empty() {
-        libertas_log(LogLevel::Error, "No valid sprinkler zones were configured");
-        return;
-    }
-
     let shared = Rc::new(RefCell::new(ControllerState {
         weather_endpoint,
-        winterization_notification_recipient,
+        reminder_recipients,
         watering_mode,
         winterization_reminder,
         site_location,
@@ -4118,6 +4148,50 @@ mod tests {
             longitude_degrees: -74.006,
             latitude_degrees: 40.7128,
         }
+    }
+
+    #[test]
+    fn reminder_recipients_require_one_to_sixteen_unique_users() {
+        assert!(!valid_reminder_recipients(&[]));
+        assert!(valid_reminder_recipients(&[1]));
+        assert!(valid_reminder_recipients(&[1, 2]));
+        assert!(!valid_reminder_recipients(&[1, 1]));
+
+        let maximum: Vec<LibertasUser> = (1..=MAX_REMINDER_RECIPIENTS as LibertasUser).collect();
+        assert!(valid_reminder_recipients(&maximum));
+        let mut too_many = maximum;
+        too_many.push(MAX_REMINDER_RECIPIENTS as LibertasUser + 1);
+        assert!(!valid_reminder_recipients(&too_many));
+    }
+
+    #[test]
+    fn zones_require_one_to_thirty_two_unique_valves_and_endpoints() {
+        assert!(!valid_zones(&[]));
+        assert!(valid_zones(&[zone()]));
+
+        let mut duplicate_valve = zone();
+        duplicate_valve.state_endpoint += 1;
+        assert!(!valid_zones(&[zone(), duplicate_valve]));
+
+        let mut duplicate_endpoint = zone();
+        duplicate_endpoint.valve += 1;
+        assert!(!valid_zones(&[zone(), duplicate_endpoint]));
+
+        let maximum: Vec<_> = (0..MAX_SPRINKLER_ZONES)
+            .map(|index| {
+                let mut zone = zone();
+                zone.valve += index as LibertasDevice;
+                zone.state_endpoint += index as LibertasEndpoint;
+                zone
+            })
+            .collect();
+        assert!(valid_zones(&maximum));
+        let mut too_many = maximum;
+        let mut extra = zone();
+        extra.valve += MAX_SPRINKLER_ZONES as LibertasDevice;
+        extra.state_endpoint += MAX_SPRINKLER_ZONES as LibertasEndpoint;
+        too_many.push(extra);
+        assert!(!valid_zones(&too_many));
     }
 
     fn equator_location() -> SprinklerWeatherLocationV1 {
@@ -5336,7 +5410,7 @@ mod tests {
         };
         let shared = Rc::new(RefCell::new(ControllerState {
             weather_endpoint: 1,
-            winterization_notification_recipient: 2,
+            reminder_recipients: vec![2, 3],
             watering_mode: SprinklerWateringModeV1::Active,
             winterization_reminder: None,
             site_location: None,
@@ -5384,7 +5458,7 @@ mod tests {
     fn cursor_ahead_error_restarts_weather_recovery_without_a_cursor() {
         let mut state = ControllerState {
             weather_endpoint: 1,
-            winterization_notification_recipient: 2,
+            reminder_recipients: vec![2, 3],
             watering_mode: SprinklerWateringModeV1::Active,
             winterization_reminder: None,
             site_location: None,

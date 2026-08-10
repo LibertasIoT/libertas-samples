@@ -667,21 +667,23 @@ used for freeze, equipment, smoke, or life-safety protection.
   heating or cooling out of this weather family. They are HVAC application
   state and persistence inputs.
 
-## Weather-aware sprinkler controller (`libertas-sprinkler`)
+## Weather-aware sprinkler controller (`libertas-sprinkler_agent`)
 
-`libertas-sprinkler` is a `no_std` Libertas application library that calculates,
-exposes, and executes application-tailored irrigation schedules. Treat its V1
-schema and database layout as unpublished design-time contracts. Reshape V1
-directly when the design changes; do not retain old configuration fields,
-protocol variants, sidecar schema files, or migration code for compatibility.
+`libertas-sprinkler_agent` is a `no_std` Libertas application library that
+calculates, exposes, and executes application-tailored irrigation schedules.
+Treat its V1 schema and database layout as unpublished design-time contracts.
+Reshape V1 directly when the design changes; do not retain old configuration
+fields, protocol variants, sidecar schema files, or migration code for
+compatibility.
 
 - Configuration contains one shared `SprinklerWeatherProtocolV1` client
-  endpoint, one system-wide `LibertasUser` winterization-reminder recipient,
-  and one or more `SprinklerZoneV1` values. A zone contains exactly one Matter
-  Irrigation System valve, one curated plant type, one curated sprinkler-head
-  type, and one state server endpoint. Do not restore soil, raw
-  `field_capacity`, measured application-rate configuration, per-zone or
-  multi-recipient notification lists, or another watering adjustment.
+  endpoint, one to 16 unique `LibertasUser` reminder recipients, and one or more
+  `SprinklerZoneV1` values. The current reminders cover winterization; the
+  recipient list may serve future reminder types. A zone contains exactly one
+  Matter Irrigation System valve, one curated plant type, one curated
+  sprinkler-head type, and one state server endpoint. Do not restore soil, raw
+  `field_capacity`, measured application-rate configuration, per-zone
+  reminder-recipient lists, or another watering adjustment.
 - Use the Device Type Editor descriptor for a Matter Irrigation System device
   with the Valve Configuration and Control server cluster. Control the valve
   with the generated typed `Open` and `Close` commands, and observe generated
