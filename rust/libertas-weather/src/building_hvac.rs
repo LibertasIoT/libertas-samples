@@ -866,7 +866,7 @@ pub struct BuildingHvacWeatherLocationV1 {
 }
 
 /// Building HVAC weather persistent data
-/// Defines every value a building-HVAC weather server may write to the Libertas
+/// Defines every value a building-HVAC weather agent may write to the Libertas
 /// database. Each variant is stored under its own stable resource identifier so
 /// partial provider failure cannot erase another section. Subscription cursors,
 /// journals, peers, and heartbeat deadlines are deliberately not persistent.

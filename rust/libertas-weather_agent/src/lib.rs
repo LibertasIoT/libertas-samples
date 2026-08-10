@@ -1,7 +1,10 @@
-//! Libertas Weather Server
-//! Serves application-tailored sprinkler weather through one typed Libertas
+//! Libertas Weather Agent
+//! Provides application-tailored weather services for Libertas applications.
+//! The first implemented service exposes sprinkler weather through a typed
 //! endpoint while retaining independently persisted weather sections across
-//! provider outages and server cursor resets.
+//! provider outages and cursor resets. Future application-specific weather
+//! protocols can be added alongside it without turning this crate into a
+//! universal weather model.
 //!
 //! A dedicated standard-library worker owns the reusable HTTPS client and
 //! communicates through bounded channels. During normal operation the worker's
@@ -83,7 +86,7 @@ use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 const MICROSECONDS_PER_SECOND: u64 = 1_000_000;
 #[allow(dead_code)]
-const WEATHER_SERVER_PERMISSIONS: &[&str] = &["libertas.permission.ACCESS_FINE_LOCATION"];
+const WEATHER_AGENT_PERMISSIONS: &[&str] = &["libertas.permission.ACCESS_FINE_LOCATION"];
 const OPEN_METEO_URL: &str = "https://api.open-meteo.com/v1/forecast";
 const HTTP_CONNECT_TIMEOUT_SECONDS: u64 = 5;
 const HTTP_REQUEST_TIMEOUT_SECONDS: u64 = 20;
@@ -98,7 +101,7 @@ const HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS: u32 = 60 * 60;
 const HUB_LOCATION_RETRY_SECONDS: u32 = 60;
 const LOCATION_EQUALITY_TOLERANCE_DEGREES: f64 = 0.000_001;
 
-/// Weather server database names
+/// Weather agent database names
 /// Stable resource identifiers and their user-facing descriptions.
 pub const APP_STRINGS: [(&str, &str); 6] = [
     (
@@ -133,8 +136,8 @@ const FORECAST_RESOURCE: &str = APP_STRINGS[3].0;
 const LOCATION_RESOURCE: &str = APP_STRINGS[4].0;
 
 /// Sprinkler weather endpoint server
-/// Configures the one server endpoint through which sprinkler applications
-/// request current data or establish incremental subscriptions.
+/// Configures the agent's sprinkler endpoint through which applications request
+/// current data or establish incremental subscriptions.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWeatherEndpointServerV1 {
     /// Sprinkler weather endpoint
@@ -142,7 +145,7 @@ pub struct SprinklerWeatherEndpointServerV1 {
     /// subscription clients request weather through this endpoint.
     #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)]
     #[libertas_endpoint_server]
-    #[libertas_permissions(WEATHER_SERVER_PERMISSIONS)]
+    #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
     #[libertas_ui_header]
     pub endpoint: LibertasEndpoint,
 }
@@ -1982,8 +1985,10 @@ fn handle_endpoint_event(
     LibertasEndpointStatus::Success
 }
 
-/// Libertas sprinkler weather server
-/// Exposes exactly one sprinkler-weather server endpoint. On startup it
+/// Libertas weather agent
+/// Provides application-tailored weather services. This initial version exposes
+/// one sprinkler-weather server endpoint; future application protocols can add
+/// their own typed endpoints and independently cached data. On startup it
 /// dynamically reconstructs indexed hourly history and validates independently
 /// persisted current conditions, forecast, and Hub location data. It subscribes
 /// to the built-in Libertas Hub location endpoint at every startup. A valid
@@ -1997,14 +2002,14 @@ fn handle_endpoint_event(
 /// Persisted retrieval timestamps preserve refresh schedules across restarts,
 /// avoiding immediate rewrites while cached sections are not yet due. The
 /// transient cursor and replay journal intentionally restart at sequence zero;
-/// the server publishes each change and a single shared heartbeat through the
+/// the agent publishes each change and a single shared heartbeat through the
 /// host-owned client set, without keeping a peer roster. Clients recover with
 /// epoch-timestamp-and-sequence reset detection.
 #[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentDataV1")]
-#[libertas_permissions(WEATHER_SERVER_PERMISSIONS)]
+#[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]
-pub fn libertas_weather_server(server: SprinklerWeatherEndpointServerV1) {
-    let endpoint = server.endpoint;
+pub fn libertas_weather_agent(sprinkler_weather: SprinklerWeatherEndpointServerV1) {
+    let endpoint = sprinkler_weather.endpoint;
     let cached_location = load_location(endpoint);
     let mut snapshot = load_snapshot(endpoint);
     if cached_location.is_none()

@@ -163,7 +163,7 @@ pub const APP_STRINGS: [(&str, &str); 8] = [
     ),
     (
         "libertas.permission.ACCESS_FINE_LOCATION",
-        "Allow the sprinkler task to receive location-specific conditions and forecasts from the weather server.",
+        "Allow the sprinkler task to receive location-specific conditions and forecasts from the weather agent.",
     ),
 ];
 const ZONE_DATA_RESOURCE: &str = APP_STRINGS[0].0;
