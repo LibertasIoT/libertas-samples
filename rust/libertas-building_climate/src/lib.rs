@@ -353,7 +353,7 @@ pub static APP_STRINGS: [(&str, &str); 34] = [
     ),
     (
         "libertas.permission.ACCESS_FINE_LOCATION",
-        "Allow the building climate task to receive location-specific outdoor conditions and forecasts from the weather server.",
+        "Allow the building climate task to receive location-specific outdoor conditions and forecasts from the weather agent.",
     ),
 ];
 
@@ -1833,13 +1833,13 @@ pub struct BuildingHvacBuildingV1 {
 
 /// Building HVAC weather client
 /// Selects the typed building-HVAC endpoint expected from
-/// `libertas-weather_server`. The controller is only a client and never
+/// `libertas-weather_agent`. The controller is only a client and never
 /// performs provider HTTP requests itself.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub struct BuildingHvacWeatherClientV1 {
-    /// Weather server endpoint
+    /// Weather agent endpoint
     /// A client endpoint providing current conditions, recent history, forecast,
     /// outdoor air quality, and incremental recovery.
     #[libertas_endpoint_schema(BuildingHvacWeatherProtocolV1)]
@@ -4274,7 +4274,7 @@ pub fn libertas_building_climate(
     /*
      * Building HVAC weather
      * The special BuildingHvacWeatherProtocolV1 client endpoint expected from
-     * libertas-weather_server.
+     * libertas-weather_agent.
      */
     weather: BuildingHvacWeatherClientV1,
     /*

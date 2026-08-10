@@ -5,7 +5,7 @@
 These instructions apply to every Rust application below this directory. Build
 self-describing applications on the Libertas platform. Use `no_std` unless an
 application-specific section explicitly requires `std`;
-`libertas-weather_server` uses `std` for its HTTP worker. Libertas is
+`libertas-weather_agent` uses `std` for its HTTP worker. Libertas is
 broader than Matter: an application may use configuration schemas, persistent
 data, endpoints, notifications, timers, users, actions, physical devices, or
 other protocols without using Matter at all. Add `libertas-matter` only when the
@@ -525,12 +525,16 @@ expanded.
 - Add Avro round-trip coverage for every new public data shape and stable
   encoding checks for enum and union discriminants.
 
-## Sprinkler weather endpoint server (`libertas-weather_server`)
+## Application-tailored weather agent (`libertas-weather_agent`)
 
-`libertas-weather_server` is a `std` Libertas application library that
-serves `SprinklerWeatherProtocolV1`. Its application configuration exposes
-exactly one endpoint marked with `#[libertas_endpoint_server]`; do not model the
-endpoint operation as another protocol field.
+`libertas-weather_agent` is a `std` Libertas application library intended to
+serve weather protocols tailored to a wide range of Libertas applications. Its
+first implemented service is `SprinklerWeatherProtocolV1`. Until another
+service is implemented, its application configuration exposes exactly one
+endpoint marked with `#[libertas_endpoint_server]`; do not model the endpoint
+operation as another protocol field. Keep each future application-specific
+schema and its persistence, refresh, recovery, and endpoint behavior separate
+rather than widening the sprinkler V1 contract into a general weather model.
 
 - Treat the server's V1 schema and database layout as unpublished design-time
   contracts. Reshape V1 directly when needed; do not keep superseded

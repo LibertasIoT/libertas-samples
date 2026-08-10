@@ -759,7 +759,7 @@ pub enum SprinklerWeatherProtocolV1 {
 
 /// Sprinkler weather location
 /// Stores the Libertas Hub location used to obtain weather for one sprinkler
-/// site. It is cached independently from provider data so the weather server can
+/// site. It is cached independently from provider data so the weather agent can
 /// continue refreshing during a temporary Hub outage.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWeatherLocationV1 {
@@ -791,7 +791,7 @@ pub struct SprinklerWeatherHistoryMetadataV1 {
 }
 
 /// Sprinkler weather persistent data
-/// Defines the complete set of values that the sprinkler weather server may
+/// Defines the complete set of values that the sprinkler weather agent may
 /// write to the Libertas database. History metadata, current conditions,
 /// forecast, and location are independent single records. Every completed
 /// history period is an indexed record keyed by its start timestamp.
