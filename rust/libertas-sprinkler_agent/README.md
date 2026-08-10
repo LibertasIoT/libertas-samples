@@ -1,4 +1,4 @@
-# libertas-sprinkler
+# libertas-sprinkler_agent
 
 A `no_std` Libertas application library that calculates and executes
 weather-aware irrigation schedules.
@@ -6,7 +6,8 @@ weather-aware irrigation schedules.
 Configuration contains:
 
 - one `SprinklerWeatherProtocolV1` client endpoint shared by all zones;
-- one Libertas user who receives system-wide winterization reminders;
+- one to 16 unique Libertas users who receive application reminders, currently
+  including system-wide winterization reminders;
 - one Matter Irrigation System valve per zone;
 - a plant type and sprinkler-head type per zone; and
 - one server endpoint that exposes the zone's complete current state.
@@ -50,7 +51,7 @@ One system-wide Watering mode control selects Active or Winterization and is
 persisted locally across restarts and internet outages.
 
 While Watering mode is Active, Libertas Notification reminds the configured
-user to winterize. Fresh current conditions or a fresh seven-day forecast at
+users to winterize. Fresh current conditions or a fresh seven-day forecast at
 3 °C or below trigger the weather reminder at any latitude. When weather is
 unavailable, the cached Hub location provides a seasonal fallback only at 35°
 absolute latitude or farther from the equator. The location-only season begins
