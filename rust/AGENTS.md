@@ -797,7 +797,18 @@ compatibility.
   forecast period or a bounded six-hour fallback when no forecast exists. Do
   not impose a calendar-based winter cutoff: seasonal demand may fall, but only
   fresh unsafe conditions defer the otherwise calculated slot.
+- Initialize a newly configured or repaired zone at the current time with zero
+  deficit. Weather history cannot reveal prior irrigation, so never synthesize
+  an unattended catch-up run by projecting a dry gap from before installation.
 - Permit at most one automatic zone to be open or command-pending at a time.
+  Persist the expected irrigation event before issuing a timed Matter `Open`
+  command, then amend that same indexed event from the observed open-to-close
+  duration instead of writing periodic automatic-watering checkpoints. Treat a
+  manually observed open as externally owned: never close it, block automatic
+  watering in every other zone, checkpoint its observed duration, and finalize
+  it on close. After any newly observed close, arm one controller-wide absolute
+  monotonic deadline and make no new automatic-open decision for at least 10
+  seconds.
   Close a controller-opened valve when fresh current weather becomes unsafe,
   but do not close it merely because weather becomes stale or unavailable. Do
   not take ownership of or forcibly close a manual valve opening. A manual open

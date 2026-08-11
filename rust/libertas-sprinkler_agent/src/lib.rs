@@ -80,6 +80,7 @@ const SPRINKLER_PERMISSIONS: &[&str] = &["libertas.permission.ACCESS_FINE_LOCATI
 const RECENT_WATER_WINDOW_SECONDS: u64 = 7 * 24 * 60 * 60;
 const WEATHER_RETRY_SECONDS: u32 = 60;
 const VALVE_COMMAND_TIMEOUT_SECONDS: u32 = 60;
+const VALVE_DECISION_DELAY_SECONDS: u32 = 10;
 const VALVE_ACCOUNTING_INTERVAL_SECONDS: u32 = 60;
 const SCHEDULE_EVALUATION_INTERVAL_SECONDS: u32 = 60;
 const SCHEDULE_CANDIDATE_INTERVAL_SECONDS: u64 = 15 * 60;
@@ -184,11 +185,13 @@ const WINTERIZATION_SEASON_NOTIFICATION_RESOURCE: &str = APP_STRINGS[6].0;
 pub struct SprinklerTimeSlotV1 {
     /// Start time
     /// The inclusive start date and time in seconds since the Unix epoch.
+    #[libertas_ui_header]
     pub starts_at: LibertasDateTime,
     /// Duration
     /// The interval length in seconds. A valid slot always has a nonzero
     /// duration and an end time representable by `LibertasDateTime`.
     #[libertas_time_interval]
+    #[libertas_default(14400)]
     pub duration_seconds: u32,
 }
 
@@ -336,17 +339,32 @@ pub enum SprinklerWaterDemandSourceV1 {
     ConservativeDefault,
 }
 
-/// Active sprinkler state
-/// Exposes all current data for a zone that is actively calculating automatic
-/// watering, including its next slot, user constraints, recent water, and
-/// valve status.
+/// Sprinkler zone configuration
+/// Groups the two end-user scheduling settings in one configuration view while
+/// allowing each setting to be changed independently.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub struct SprinklerZoneActiveStateV1 {
+pub struct SprinklerZoneConfigurationV1 {
     /// Water amount adjuster
-    /// Percentage of the adaptive watering amount to apply. It ranges from 20%
-    /// through 200%, with 100% selecting the adaptive amount.
+    /// Percentage of the adaptive watering amount to apply. Use 100% for the
+    /// adaptive amount, less than 100% for less water, and more than 100% for
+    /// more water.
     #[libertas_number(min = 20, max = 200, step = 10)]
     pub watering_percent: u16,
+    /// Hold-off periods
+    /// Active sorted, non-overlapping intervals that watering must avoid.
+    /// ----
+    /// Hold-off period
+    /// A half-open interval during which this zone cannot water.
+    #[libertas_size(max = 64)]
+    pub hold_off_periods: Vec<SprinklerTimeSlotV1>,
+}
+
+/// Active sprinkler state
+/// Exposes calculation, water-balance, and valve diagnostics for a zone that is
+/// actively calculating automatic watering. End-user settings are exposed by
+/// `SprinklerZoneConfigurationV1` instead.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+pub struct SprinklerZoneActiveStateV1 {
     /// Water demand source
     /// The best available source used to estimate when the root zone will next
     /// need water.
@@ -386,14 +404,6 @@ pub struct SprinklerZoneActiveStateV1 {
     /// seven-day ledger, in millimeters.
     #[libertas_number(min = 0)]
     pub recent_irrigation_millimeters: f32,
-    /// Hold-off periods
-    /// Active sorted, non-overlapping intervals that the next watering slot
-    /// must avoid. Expired persisted constraints are omitted.
-    /// ----
-    /// Hold-off period
-    /// A half-open interval during which this zone cannot water.
-    #[libertas_size(max = 64)]
-    pub hold_off_periods: Vec<SprinklerTimeSlotV1>,
     /// Valve open
     /// Whether the Matter Valve is currently observed open.
     pub valve_is_open: bool,
@@ -454,15 +464,40 @@ pub struct SprinklerWinterizationReminderMemoryV1 {
 }
 
 /// Sprinkler state
-/// Distinguishes complete active zone data from system winterization.
+/// Presents the essential current condition and next watering schedule for a
+/// regular user, without configuration or diagnostic details.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerZoneStateV1 {
+    /// Active
+    /// Automatic watering is enabled and a next watering slot is available.
+    #[libertas_ui_header]
+    ActiveV1 {
+        /// Condition
+        /// The current watering decision or constraint.
+        condition: SprinklerScheduleConditionV1,
+        /// Next watering
+        /// The best calculated valve-open slot. Weather or valve availability
+        /// may change whether it can be executed, but never removes the
+        /// estimate.
+        next_watering: SprinklerTimeSlotV1,
+    },
+    /// Winterization
+    /// Automatic watering is disabled for the entire sprinkler system and no
+    /// watering slot is scheduled.
+    WinterizationV1,
+}
+
+/// Advanced sprinkler state
+/// Distinguishes complete active zone data from system winterization for users
+/// diagnosing a zone or controlling the system watering mode.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+pub enum SprinklerZoneAdvancedStateV1 {
     /// Active
     /// Automatic watering is enabled and all current zone data is available.
     ActiveV1 {
         /// Current state
-        /// The complete current calculation, water balance, constraints, and
-        /// valve status for the active zone.
+        /// The complete current calculation, water balance, and valve status
+        /// for the active zone.
         current: SprinklerZoneActiveStateV1,
     },
     /// Winterization
@@ -472,35 +507,88 @@ pub enum SprinklerZoneStateV1 {
 }
 
 /// Sprinkler zone protocol
-/// Reads or subscribes to the complete current state and updates the zone's one
-/// water amount adjuster, hold-off constraints, or the shared watering mode.
+/// Reads or subscribes to regular-user state, retrieves advanced diagnostics,
+/// presents both end-user settings in one configuration view, and updates the
+/// water amount adjuster or hold-off constraints independently.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerZoneProtocolV1 {
     /// Get state
-    /// Requests the complete current state. The same message may establish
-    /// a subscription because the endpoint operation is outside this value.
+    /// Requests the essential regular-user state. This first protocol variant
+    /// is the default GUI action and may establish a subscription because the
+    /// endpoint operation is outside this value.
     #[libertas_request]
     #[libertas_subscription_request]
     #[libertas_next_response(StateV1)]
     GetStateV1,
-    /// Set water amount adjuster
-    /// Updates the only user tuning parameter used by the adaptive calculation.
+    /// State
+    /// Returns or reports the essential current condition and next watering
+    /// schedule. Advanced diagnostics and configuration are available on
+    /// demand.
+    #[libertas_response]
+    #[libertas_subscription_data]
+    #[libertas_next_request("GetAdvancedStateV1,GetConfigurationV1")]
+    StateV1 {
+        /// Sprinkler state
+        /// The essential active-zone state or the Winterization state.
+        state: SprinklerZoneStateV1,
+    },
+    /// Get advanced state
+    /// Requests complete calculation, water-balance, and valve diagnostics for
+    /// this zone.
     #[libertas_request]
-    #[libertas_next_response(StateV1)]
+    #[libertas_next_response(AdvancedStateV1)]
+    GetAdvancedStateV1,
+    /// Advanced state
+    /// Returns complete calculation, water-balance, and valve diagnostics after
+    /// an advanced-state request or watering-mode update.
+    #[libertas_response]
+    #[libertas_next_request("GetConfigurationV1,SetWateringModeV1")]
+    AdvancedStateV1 {
+        /// Watering mode
+        /// The current system-wide mode, exposed explicitly so its control can
+        /// initialize from this response.
+        mode: SprinklerWateringModeV1,
+        /// Sprinkler state
+        /// The active zone diagnostics or the Winterization state.
+        state: SprinklerZoneAdvancedStateV1,
+    },
+    /// Get configuration
+    /// Opens the zone's single end-user configuration view containing the water
+    /// amount adjuster and hold-off periods.
+    #[libertas_request]
+    #[libertas_next_response(ConfigurationV1)]
+    GetConfigurationV1,
+    /// Configuration
+    /// Returns both end-user settings together and offers a separate action for
+    /// changing either one.
+    #[libertas_response]
+    #[libertas_next_request("SetWaterAmountAdjusterV1,ReplaceHoldOffPeriodsV1")]
+    ConfigurationV1 {
+        /// Configuration
+        /// The current water amount adjuster and hold-off periods.
+        #[libertas_ui_header]
+        configuration: SprinklerZoneConfigurationV1,
+    },
+    /// Set water amount adjuster
+    /// Independently updates the user tuning parameter used by the adaptive
+    /// calculation.
+    #[libertas_request]
+    #[libertas_next_response(ConfigurationV1)]
     SetWaterAmountAdjusterV1 {
         /// Water amount adjuster
         /// Percentage of the adaptive watering amount to apply. Use 100% for
         /// the adaptive amount, less than 100% for less water, and more than
         /// 100% for more water.
         #[libertas_number(min = 20, max = 200, step = 10)]
-        #[libertas_copy_from("$.state.current.watering_percent")]
+        #[libertas_copy_from("$.configuration.watering_percent")]
         watering_percent: u16,
     },
     /// Replace hold-off periods
-    /// Replaces all scheduling constraints for this zone. Overlapping or
-    /// touching periods are normalized into sorted merged intervals.
+    /// Independently replaces all scheduling constraints for this zone.
+    /// Overlapping or touching periods are normalized into sorted merged
+    /// intervals.
     #[libertas_request]
-    #[libertas_next_response(StateV1)]
+    #[libertas_next_response(ConfigurationV1)]
     ReplaceHoldOffPeriodsV1 {
         /// Hold-off periods
         /// The complete replacement list, limited to 64 valid intervals.
@@ -508,32 +596,19 @@ pub enum SprinklerZoneProtocolV1 {
         /// Hold-off period
         /// A half-open interval during which the schedule cannot water.
         #[libertas_size(max = 64)]
-        #[libertas_copy_from("$.state.current.hold_off_periods")]
+        #[libertas_copy_from("$.configuration.hold_off_periods")]
         hold_off_periods: Vec<SprinklerTimeSlotV1>,
     },
     /// Set watering mode
     /// Selects Active or Winterization for the entire sprinkler system. The
     /// selected mode persists across restarts and internet outages.
     #[libertas_request]
-    #[libertas_next_response(StateV1)]
+    #[libertas_next_response(AdvancedStateV1)]
     SetWateringModeV1 {
         /// Watering mode
         /// Active enables automatic watering. Winterization shuts it down.
         #[libertas_copy_from("$.mode")]
         mode: SprinklerWateringModeV1,
-    },
-    /// State
-    /// Returns the complete current state or reports a later state change.
-    #[libertas_response]
-    #[libertas_subscription_data]
-    StateV1 {
-        /// Watering mode
-        /// The current system-wide mode, exposed explicitly so runtime control
-        /// requests can initialize their GUI field from this response.
-        mode: SprinklerWateringModeV1,
-        /// Sprinkler state
-        /// The active zone data or the Winterization state.
-        state: SprinklerZoneStateV1,
     },
 }
 
@@ -707,8 +782,10 @@ pub struct SprinklerZoneV1 {
     #[libertas_default(RotorsLowRate)]
     pub sprinkler_head_type: SprinklerHeadTypeV1,
     /// State endpoint
-    /// Exposes the complete current state and accepts the water amount adjuster
-    /// and hold-off constraints. It also accepts the system-wide watering mode.
+    /// Exposes an essential regular-user state by default, offers complete
+    /// advanced state on demand, groups end-user settings in one configuration
+    /// view, and accepts independent adjuster, hold-off, and watering-mode
+    /// actions.
     #[libertas_endpoint_schema(SprinklerZoneProtocolV1)]
     #[libertas_endpoint_server]
     #[libertas_endpoint_base_objects("^.valve")]
@@ -736,6 +813,12 @@ struct PendingValveCommand {
     sent_at_ticks: u64,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct ExpectedIrrigation {
+    starts_at: LibertasDateTime,
+    open_observed_at_ticks: Option<u64>,
+}
+
 struct ZoneRuntime {
     configuration: SprinklerZoneV1,
     memory: SprinklerZoneMemoryV1,
@@ -749,6 +832,7 @@ struct ZoneRuntime {
     accounted_at_ticks: Option<u64>,
     accounted_at_utc: Option<LibertasDateTime>,
     pending_command: Option<PendingValveCommand>,
+    expected_irrigation: Option<ExpectedIrrigation>,
 }
 
 struct ControllerState {
@@ -765,6 +849,8 @@ struct ControllerState {
     weather_server_up: bool,
     weather_maximum_wait_seconds: u32,
     weather_retry_timer: u32,
+    valve_decision_not_before_ticks: u64,
+    valve_decision_timer: u32,
     zones: Vec<ZoneRuntime>,
 }
 
@@ -784,10 +870,51 @@ enum ControllerAction {
     },
 }
 
+#[derive(Clone, Copy)]
+enum ZoneResponseKind {
+    State,
+    AdvancedState,
+    Configuration,
+}
+
 struct EvaluationOutcome {
     changed_zones: Vec<usize>,
     zone_memories_to_persist: Vec<(LibertasDevice, SprinklerZoneMemoryV1)>,
     action: Option<ControllerAction>,
+}
+
+struct ZonePersistenceChange {
+    valve: LibertasDevice,
+    previous_memory: SprinklerZoneMemoryV1,
+    memory: SprinklerZoneMemoryV1,
+    previous_events: Vec<SprinklerWaterEventV1>,
+    water_events: Vec<SprinklerWaterEventV1>,
+}
+
+impl ZonePersistenceChange {
+    fn submit(self) {
+        persist_zone_runtime_change(
+            self.valve,
+            &self.previous_memory,
+            &self.memory,
+            &self.previous_events,
+            &self.water_events,
+        );
+    }
+}
+
+fn zone_persistence_change(
+    zone: &ZoneRuntime,
+    previous_memory: SprinklerZoneMemoryV1,
+    previous_events: Vec<SprinklerWaterEventV1>,
+) -> ZonePersistenceChange {
+    ZonePersistenceChange {
+        valve: zone.configuration.valve,
+        previous_memory,
+        memory: zone.memory.clone(),
+        previous_events,
+        water_events: zone.water_events.clone(),
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -852,6 +979,10 @@ fn utc_seconds() -> Option<LibertasDateTime> {
 
 fn absolute_interval_ticks(now_ticks: u64, interval_seconds: u32) -> u64 {
     now_ticks.saturating_add(u64::from(interval_seconds).saturating_mul(MICROSECONDS_PER_SECOND))
+}
+
+fn valve_decision_allowed(now_ticks: u64, not_before_ticks: u64) -> bool {
+    now_ticks >= not_before_ticks
 }
 
 fn plant_profile(plant: SprinklerPlantTypeV1) -> PlantProfile {
@@ -1313,7 +1444,9 @@ fn default_memory(now: LibertasDateTime) -> SprinklerZoneMemoryV1 {
     SprinklerZoneMemoryV1 {
         watering_percent: 100,
         hold_off_periods: Vec::new(),
-        balance_baseline_at: now.saturating_sub(RECENT_WATER_WINDOW_SECONDS),
+        // Prior irrigation is unknown when a zone is first configured. Start
+        // fully replenished now instead of manufacturing a dry seven-day gap.
+        balance_baseline_at: now,
         baseline_deficit_millimeters: 0.0,
     }
 }
@@ -1836,6 +1969,101 @@ fn add_irrigation_event(
         &zone.configuration,
         now,
     );
+}
+
+fn begin_expected_irrigation(
+    zone: &mut ZoneRuntime,
+    starts_at: LibertasDateTime,
+    duration_seconds: u32,
+) -> bool {
+    let applied_water_millimeters =
+        nominal_delivery_millimeters_per_hour(zone.configuration.sprinkler_head_type)
+            * duration_seconds as f32
+            / 3_600.0;
+    let candidate = SprinklerWaterEventV1::IrrigationV1 {
+        starts_at,
+        duration_seconds,
+        watering_percent: zone.memory.watering_percent,
+        applied_water_millimeters,
+    };
+    let Some(index) = water_event_index(&candidate) else {
+        return false;
+    };
+    if duration_seconds == 0
+        || !valid_nonnegative(applied_water_millimeters)
+        || zone.expected_irrigation.is_some()
+        || zone
+            .water_events
+            .iter()
+            .any(|event| water_event_index(event) == Some(index))
+    {
+        return false;
+    }
+    zone.water_events.push(candidate);
+    prune_water_events(
+        &mut zone.memory,
+        &mut zone.water_events,
+        &zone.configuration,
+        starts_at,
+    );
+    zone.expected_irrigation = Some(ExpectedIrrigation {
+        starts_at,
+        open_observed_at_ticks: None,
+    });
+    true
+}
+
+fn discard_expected_irrigation(zone: &mut ZoneRuntime) -> bool {
+    let Some(expected) = zone.expected_irrigation.take() else {
+        return false;
+    };
+    let previous_len = zone.water_events.len();
+    zone.water_events.retain(|event| {
+        !matches!(
+            event,
+            SprinklerWaterEventV1::IrrigationV1 { starts_at, .. }
+                if *starts_at == expected.starts_at
+        )
+    });
+    previous_len != zone.water_events.len()
+}
+
+fn reconcile_expected_irrigation(zone: &mut ZoneRuntime, now_ticks: u64) -> bool {
+    let Some(expected) = zone.expected_irrigation.take() else {
+        return false;
+    };
+    let actual_duration_seconds = expected
+        .open_observed_at_ticks
+        .map(|opened_at| now_ticks.saturating_sub(opened_at) / MICROSECONDS_PER_SECOND)
+        .and_then(|duration| u32::try_from(duration).ok())
+        .unwrap_or_default();
+    let Some(index) = zone.water_events.iter().position(|event| {
+        matches!(
+            event,
+            SprinklerWaterEventV1::IrrigationV1 { starts_at, .. }
+                if *starts_at == expected.starts_at
+        )
+    }) else {
+        return false;
+    };
+    if actual_duration_seconds == 0 {
+        zone.water_events.remove(index);
+        return true;
+    }
+    let SprinklerWaterEventV1::IrrigationV1 {
+        duration_seconds,
+        applied_water_millimeters,
+        ..
+    } = &mut zone.water_events[index]
+    else {
+        return false;
+    };
+    *duration_seconds = actual_duration_seconds;
+    *applied_water_millimeters =
+        nominal_delivery_millimeters_per_hour(zone.configuration.sprinkler_head_type)
+            * actual_duration_seconds as f32
+            / 3_600.0;
+    true
 }
 
 fn safe_wind_limits(head: SprinklerHeadTypeV1) -> (f32, f32) {
@@ -2537,7 +2765,6 @@ fn calculate_active_state(
         .filter(|hold_off| hold_off.ends_at().is_some_and(|ends_at| ends_at > now))
         .collect();
     let base = |condition, next_watering, planned_water_millimeters| SprinklerZoneActiveStateV1 {
-        watering_percent: zone.memory.watering_percent,
         water_demand_source: demand_estimate.source,
         estimated_reference_evapotranspiration_millimeters_per_day: demand_estimate
             .reference_evapotranspiration_millimeters_per_day,
@@ -2548,7 +2775,6 @@ fn calculate_active_state(
         estimated_deficit_millimeters: deficit,
         recent_precipitation_millimeters: recent_precipitation,
         recent_irrigation_millimeters: recent_irrigation,
-        hold_off_periods: active_hold_offs.clone(),
         valve_is_open: zone.valve_is_open,
         valve_state_known: zone.valve_state_known,
         valve_fault_bitmap: zone.valve_fault_bitmap,
@@ -2697,6 +2923,7 @@ fn valve_permits_automatic_watering(
         && zone.valve_fault_bitmap == 0
         && !zone.valve_is_open
         && zone.pending_command.is_none()
+        && zone.expected_irrigation.is_none()
 }
 
 fn public_zone_state(
@@ -2705,9 +2932,29 @@ fn public_zone_state(
 ) -> SprinklerZoneStateV1 {
     match watering_mode {
         SprinklerWateringModeV1::Active => SprinklerZoneStateV1::ActiveV1 {
-            current: zone.active_state.clone(),
+            condition: zone.active_state.condition,
+            next_watering: zone.active_state.next_watering,
         },
         SprinklerWateringModeV1::Winterization => SprinklerZoneStateV1::WinterizationV1,
+    }
+}
+
+fn public_zone_advanced_state(
+    zone: &ZoneRuntime,
+    watering_mode: SprinklerWateringModeV1,
+) -> SprinklerZoneAdvancedStateV1 {
+    match watering_mode {
+        SprinklerWateringModeV1::Active => SprinklerZoneAdvancedStateV1::ActiveV1 {
+            current: zone.active_state.clone(),
+        },
+        SprinklerWateringModeV1::Winterization => SprinklerZoneAdvancedStateV1::WinterizationV1,
+    }
+}
+
+fn public_zone_configuration(zone: &ZoneRuntime) -> SprinklerZoneConfigurationV1 {
+    SprinklerZoneConfigurationV1 {
+        watering_percent: zone.memory.watering_percent,
+        hold_off_periods: zone.memory.hold_off_periods.clone(),
     }
 }
 
@@ -2748,7 +2995,7 @@ fn evaluate_controller(shared: &Rc<RefCell<ControllerState>>) -> EvaluationOutco
     let any_pending = state
         .zones
         .iter()
-        .any(|zone| zone.pending_command.is_some());
+        .any(|zone| zone.pending_command.is_some() || zone.expected_irrigation.is_some());
     for (zone_index, zone) in state.zones.iter_mut().enumerate() {
         if watering_mode == SprinklerWateringModeV1::Winterization {
             continue;
@@ -2780,7 +3027,10 @@ fn evaluate_controller(shared: &Rc<RefCell<ControllerState>>) -> EvaluationOutco
                 )
             })
             .map(|(zone_index, _)| ControllerAction::Close { zone_index })
-    } else if !any_open && !any_pending {
+    } else if !any_open
+        && !any_pending
+        && valve_decision_allowed(now_ticks, state.valve_decision_not_before_ticks)
+    {
         state
             .zones
             .iter()
@@ -2818,7 +3068,6 @@ fn publish_zone_state(shared: &Rc<RefCell<ControllerState>>, zone_index: usize) 
         (
             zone.configuration.state_endpoint,
             SprinklerZoneProtocolV1::StateV1 {
-                mode: state.watering_mode,
                 state: public_zone_state(zone, state.watering_mode),
             },
         )
@@ -2826,50 +3075,119 @@ fn publish_zone_state(shared: &Rc<RefCell<ControllerState>>, zone_index: usize) 
     libertas_endpoint_report(endpoint, &message, None);
 }
 
-fn execute_controller_action(shared: &Rc<RefCell<ControllerState>>, action: ControllerAction) {
-    let (zone_index, kind, valve, duration_seconds) = match action {
-        ControllerAction::Open {
-            zone_index,
-            duration_seconds,
-        } => (
-            zone_index,
-            ValveCommandKind::Open,
-            shared.borrow().zones[zone_index].configuration.valve,
-            Some(duration_seconds),
-        ),
-        ControllerAction::Close { zone_index } => (
-            zone_index,
-            ValveCommandKind::Close,
-            shared.borrow().zones[zone_index].configuration.valve,
-            None,
-        ),
-    };
-    {
+fn rollback_expected_irrigation(shared: &Rc<RefCell<ControllerState>>, zone_index: usize) -> bool {
+    let change = {
         let mut state = shared.borrow_mut();
-        if state.zones[zone_index].pending_command.is_some() {
+        let Some(zone) = state.zones.get_mut(zone_index) else {
+            return false;
+        };
+        let previous_memory = zone.memory.clone();
+        let previous_events = zone.water_events.clone();
+        zone.pending_command = None;
+        discard_expected_irrigation(zone)
+            .then(|| zone_persistence_change(zone, previous_memory, previous_events))
+    };
+    if let Some(change) = change {
+        change.submit();
+        true
+    } else {
+        false
+    }
+}
+
+fn execute_timed_open(
+    shared: &Rc<RefCell<ControllerState>>,
+    zone_index: usize,
+    duration_seconds: u32,
+) {
+    let Some(starts_at) = utc_seconds() else {
+        libertas_log(
+            LogLevel::Warn,
+            "Cannot persist expected irrigation without valid UTC time",
+        );
+        return;
+    };
+    let sent_at_ticks = libertas_get_sys_ticks();
+    let prepared = {
+        let mut state = shared.borrow_mut();
+        let Some(zone) = state.zones.get_mut(zone_index) else {
+            return;
+        };
+        if zone.pending_command.is_some() || zone.expected_irrigation.is_some() {
             return;
         }
-        state.zones[zone_index].pending_command = Some(PendingValveCommand {
-            kind,
+        let previous_memory = zone.memory.clone();
+        let previous_events = zone.water_events.clone();
+        if !begin_expected_irrigation(zone, starts_at, duration_seconds) {
+            libertas_log(
+                LogLevel::Warn,
+                "Cannot reserve an expected irrigation database record",
+            );
+            return;
+        }
+        zone.pending_command = Some(PendingValveCommand {
+            kind: ValveCommandKind::Open,
             transaction_id: None,
-            sent_at_ticks: libertas_get_sys_ticks(),
+            sent_at_ticks,
         });
-    }
-
-    let result = match duration_seconds {
-        Some(duration_seconds) => MatterDevice::new(valve).invoke(&Open {
-            OpenDuration: Some(Nullable::some(duration_seconds)),
-            TargetLevel: None,
-        }),
-        None => MatterDevice::new(valve).invoke(&Close {}),
+        (
+            zone.configuration.valve,
+            zone_persistence_change(zone, previous_memory, previous_events),
+        )
     };
-    match result {
+    let (valve, expected_change) = prepared;
+    // Submit the expected delivered amount before issuing the timed device open.
+    expected_change.submit();
+    match MatterDevice::new(valve).invoke(&Open {
+        OpenDuration: Some(Nullable::some(duration_seconds)),
+        TargetLevel: None,
+    }) {
         Ok(transaction_id) => {
-            shared.borrow_mut().zones[zone_index].pending_command = Some(PendingValveCommand {
-                kind,
-                transaction_id: Some(transaction_id),
-                sent_at_ticks: libertas_get_sys_ticks(),
-            });
+            if let Some(pending) = shared.borrow_mut().zones[zone_index]
+                .pending_command
+                .as_mut()
+                && pending.kind == ValveCommandKind::Open
+            {
+                pending.transaction_id = Some(transaction_id);
+            }
+        }
+        Err(error) => {
+            rollback_expected_irrigation(shared, zone_index);
+            libertas_log(
+                LogLevel::Error,
+                &alloc::format!("Matter Valve command could not be encoded: {error}"),
+            );
+        }
+    }
+}
+
+fn execute_close(shared: &Rc<RefCell<ControllerState>>, zone_index: usize) {
+    let (valve, sent_at_ticks) = {
+        let mut state = shared.borrow_mut();
+        let Some(zone) = state.zones.get_mut(zone_index) else {
+            return;
+        };
+        if zone.pending_command.is_some() {
+            return;
+        }
+        let sent_at_ticks = libertas_get_sys_ticks();
+        zone.pending_command = Some(PendingValveCommand {
+            kind: ValveCommandKind::Close,
+            transaction_id: None,
+            sent_at_ticks,
+        });
+        (zone.configuration.valve, sent_at_ticks)
+    };
+    match MatterDevice::new(valve).invoke(&Close {}) {
+        Ok(transaction_id) => {
+            if let Some(pending) = shared.borrow_mut().zones[zone_index]
+                .pending_command
+                .as_mut()
+                && pending.kind == ValveCommandKind::Close
+            {
+                pending.transaction_id = Some(transaction_id);
+                pending.sent_at_ticks = sent_at_ticks;
+            }
         }
         Err(error) => {
             shared.borrow_mut().zones[zone_index].pending_command = None;
@@ -2878,6 +3196,16 @@ fn execute_controller_action(shared: &Rc<RefCell<ControllerState>>, action: Cont
                 &alloc::format!("Matter Valve command could not be encoded: {error}"),
             );
         }
+    }
+}
+
+fn execute_controller_action(shared: &Rc<RefCell<ControllerState>>, action: ControllerAction) {
+    match action {
+        ControllerAction::Open {
+            zone_index,
+            duration_seconds,
+        } => execute_timed_open(shared, zone_index, duration_seconds),
+        ControllerAction::Close { zone_index } => execute_close(shared, zone_index),
     }
 }
 
@@ -2958,6 +3286,11 @@ fn account_open_zone(
     if !zone.valve_is_open {
         return false;
     }
+    // A timed automatic open was already persisted at command issue. Its one
+    // record is amended when the observed valve close supplies actual duration.
+    if zone.valve_opened_automatically && zone.expected_irrigation.is_some() {
+        return false;
+    }
     let Some(previous_ticks) = zone.accounted_at_ticks else {
         zone.accounted_at_ticks = Some(now_ticks);
         zone.accounted_at_utc = now_utc;
@@ -3024,58 +3357,87 @@ fn account_all_open_valves(shared: &Rc<RefCell<ControllerState>>) {
     }
 }
 
+fn arm_valve_decision_delay(shared: &Rc<RefCell<ControllerState>>, now_ticks: u64) {
+    let requested_deadline = absolute_interval_ticks(now_ticks, VALVE_DECISION_DELAY_SECONDS);
+    let (timer, deadline) = {
+        let mut state = shared.borrow_mut();
+        state.valve_decision_not_before_ticks = state
+            .valve_decision_not_before_ticks
+            .max(requested_deadline);
+        (
+            state.valve_decision_timer,
+            state.valve_decision_not_before_ticks,
+        )
+    };
+    if timer != 0 {
+        libertas_timer_update_interval(timer, deadline);
+    }
+}
+
 fn set_valve_open_state(shared: &Rc<RefCell<ControllerState>>, zone_index: usize, is_open: bool) {
     let now_ticks = libertas_get_sys_ticks();
     let now_utc = utc_seconds();
-    let change_to_persist = {
+    let (change_to_persist, closed_transition) = {
         let mut state = shared.borrow_mut();
         let Some(zone) = state.zones.get_mut(zone_index) else {
             return;
         };
+        let was_known = zone.valve_state_known;
+        let was_open = zone.valve_is_open;
         let previous_memory = zone.memory.clone();
         let previous_events = zone.water_events.clone();
         zone.valve_state_known = true;
         zone.valve_last_report_ticks = Some(now_ticks);
-        let mut changed_memory = false;
-        if zone.valve_is_open && !is_open {
-            changed_memory = account_open_zone(zone, now_ticks, now_utc);
+        let mut irrigation_changed = false;
+        if was_open && !is_open {
+            irrigation_changed =
+                if zone.valve_opened_automatically && zone.expected_irrigation.is_some() {
+                    reconcile_expected_irrigation(zone, now_ticks)
+                } else {
+                    account_open_zone(zone, now_ticks, now_utc)
+                };
+        } else if !is_open && zone.expected_irrigation.is_some() {
+            // A confirmed closed report without an observed open means the
+            // timed open delivered no water; remove its optimistic record.
+            irrigation_changed = reconcile_expected_irrigation(zone, now_ticks);
         }
-        if zone.valve_is_open != is_open {
-            let opened_automatically = is_open
-                && zone
-                    .pending_command
-                    .is_some_and(|pending| pending.kind == ValveCommandKind::Open);
+        if was_open != is_open {
+            let opened_automatically = is_open && zone.expected_irrigation.is_some();
             zone.valve_is_open = is_open;
             zone.pending_command = None;
             if is_open {
                 zone.valve_opened_automatically = opened_automatically;
-                zone.accounted_at_ticks = Some(now_ticks);
-                zone.accounted_at_utc = now_utc;
+                if opened_automatically {
+                    if let Some(expected) = &mut zone.expected_irrigation {
+                        expected.open_observed_at_ticks = Some(now_ticks);
+                    }
+                    zone.accounted_at_ticks = None;
+                    zone.accounted_at_utc = None;
+                } else {
+                    // A manual open is never closed by this application. Track
+                    // it from observation and persist minute checkpoints.
+                    zone.accounted_at_ticks = Some(now_ticks);
+                    zone.accounted_at_utc = now_utc;
+                }
             } else {
                 zone.valve_opened_automatically = false;
                 zone.accounted_at_ticks = None;
                 zone.accounted_at_utc = None;
             }
+        } else if !is_open {
+            zone.pending_command = None;
         }
-        changed_memory.then(|| {
-            (
-                zone.configuration.valve,
-                previous_memory,
-                zone.memory.clone(),
-                previous_events,
-                zone.water_events.clone(),
-            )
-        })
+        (
+            irrigation_changed
+                .then(|| zone_persistence_change(zone, previous_memory, previous_events)),
+            !is_open && (!was_known || was_open),
+        )
     };
-    if let Some((valve, previous_memory, memory, previous_events, water_events)) = change_to_persist
-    {
-        persist_zone_runtime_change(
-            valve,
-            &previous_memory,
-            &memory,
-            &previous_events,
-            &water_events,
-        );
+    if let Some(change) = change_to_persist {
+        change.submit();
+    }
+    if closed_transition {
+        arm_valve_decision_delay(shared, now_ticks);
     }
     evaluate_and_publish(shared);
 }
@@ -3125,7 +3487,11 @@ fn handle_valve_command_response(
         ),
     };
     if !successful {
-        shared.borrow_mut().zones[zone_index].pending_command = None;
+        if pending.kind == ValveCommandKind::Open {
+            rollback_expected_irrigation(shared, zone_index);
+        } else {
+            shared.borrow_mut().zones[zone_index].pending_command = None;
+        }
         libertas_log(LogLevel::Warn, "Matter Valve command failed");
         evaluate_and_publish(shared);
     }
@@ -3388,8 +3754,27 @@ fn handle_zone_endpoint(
     let mut persist_runtime = None;
     let mut persist_mode = None;
     let mut force_all_reports = false;
+    let response_kind;
     match message {
-        SprinklerZoneProtocolV1::GetStateV1 => {}
+        SprinklerZoneProtocolV1::GetStateV1 => {
+            response_kind = ZoneResponseKind::State;
+        }
+        SprinklerZoneProtocolV1::GetAdvancedStateV1 => {
+            if is_subscription {
+                return LibertasEndpointHandlerResult::Status(
+                    LibertasEndpointStandardStatus::InvalidArgument,
+                );
+            }
+            response_kind = ZoneResponseKind::AdvancedState;
+        }
+        SprinklerZoneProtocolV1::GetConfigurationV1 => {
+            if is_subscription {
+                return LibertasEndpointHandlerResult::Status(
+                    LibertasEndpointStandardStatus::InvalidArgument,
+                );
+            }
+            response_kind = ZoneResponseKind::Configuration;
+        }
         SprinklerZoneProtocolV1::SetWaterAmountAdjusterV1 { watering_percent } => {
             if is_subscription || !valid_watering_percent(watering_percent) {
                 return LibertasEndpointHandlerResult::Status(
@@ -3413,6 +3798,7 @@ fn handle_zone_endpoint(
                     zone.water_events.clone(),
                 ));
             }
+            response_kind = ZoneResponseKind::Configuration;
         }
         SprinklerZoneProtocolV1::ReplaceHoldOffPeriodsV1 { hold_off_periods } => {
             if is_subscription {
@@ -3429,6 +3815,7 @@ fn handle_zone_endpoint(
             let zone = &mut state.zones[context.zone_index];
             zone.memory.hold_off_periods = hold_off_periods;
             persist = Some((zone.configuration.valve, zone.memory.clone()));
+            response_kind = ZoneResponseKind::Configuration;
         }
         SprinklerZoneProtocolV1::SetWateringModeV1 { mode } => {
             if is_subscription {
@@ -3442,8 +3829,11 @@ fn handle_zone_endpoint(
                 persist_mode = Some((state.weather_endpoint, mode));
                 force_all_reports = true;
             }
+            response_kind = ZoneResponseKind::AdvancedState;
         }
-        SprinklerZoneProtocolV1::StateV1 { .. } => {
+        SprinklerZoneProtocolV1::StateV1 { .. }
+        | SprinklerZoneProtocolV1::AdvancedStateV1 { .. }
+        | SprinklerZoneProtocolV1::ConfigurationV1 { .. } => {
             return LibertasEndpointHandlerResult::InvalidMessage;
         }
     }
@@ -3472,22 +3862,23 @@ fn handle_zone_endpoint(
             }
         }
     }
-    let (mode, state) = {
+    let response = {
         let controller = context.shared.borrow();
-        (
-            controller.watering_mode,
-            public_zone_state(
-                &controller.zones[context.zone_index],
-                controller.watering_mode,
-            ),
-        )
+        let zone = &controller.zones[context.zone_index];
+        match response_kind {
+            ZoneResponseKind::State => SprinklerZoneProtocolV1::StateV1 {
+                state: public_zone_state(zone, controller.watering_mode),
+            },
+            ZoneResponseKind::AdvancedState => SprinklerZoneProtocolV1::AdvancedStateV1 {
+                mode: controller.watering_mode,
+                state: public_zone_advanced_state(zone, controller.watering_mode),
+            },
+            ZoneResponseKind::Configuration => SprinklerZoneProtocolV1::ConfigurationV1 {
+                configuration: public_zone_configuration(zone),
+            },
+        }
     };
-    libertas_endpoint_response(
-        endpoint,
-        &SprinklerZoneProtocolV1::StateV1 { mode, state },
-        transaction_id,
-        peer,
-    );
+    libertas_endpoint_response(endpoint, &response, transaction_id, peer);
     dispatch_evaluation(&context.shared, outcome);
     LibertasEndpointHandlerResult::Handled
 }
@@ -3854,6 +4245,22 @@ fn valve_accounting_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>
     );
 }
 
+fn valve_decision_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
+    let shared = context
+        .downcast_mut::<Rc<RefCell<ControllerState>>>()
+        .unwrap();
+    let deadline = shared.borrow().valve_decision_not_before_ticks;
+    if deadline == 0 {
+        libertas_timer_cancel(timer);
+    } else if !valve_decision_allowed(now_ticks, deadline) {
+        libertas_timer_update_interval(timer, deadline);
+    } else {
+        shared.borrow_mut().valve_decision_not_before_ticks = 0;
+        libertas_timer_cancel(timer);
+        evaluate_and_publish(shared);
+    }
+}
+
 fn schedule_evaluation_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
@@ -3908,7 +4315,6 @@ fn initial_active_state(
         .collect();
     let (starts_at, _) = shift_after_hold_offs(candidate, duration, &active_hold_offs);
     SprinklerZoneActiveStateV1 {
-        watering_percent: memory.watering_percent,
         water_demand_source: demand_estimate.source,
         estimated_reference_evapotranspiration_millimeters_per_day: demand_estimate
             .reference_evapotranspiration_millimeters_per_day,
@@ -3922,7 +4328,6 @@ fn initial_active_state(
         estimated_deficit_millimeters: deficit,
         recent_precipitation_millimeters: 0.0,
         recent_irrigation_millimeters: 0.0,
-        hold_off_periods: active_hold_offs,
         valve_is_open: false,
         valve_state_known: false,
         valve_fault_bitmap: 0,
@@ -3932,8 +4337,9 @@ fn initial_active_state(
 /// Sprinkler agent
 /// Runs a weather-aware multi-zone sprinkler controller. The weather endpoint
 /// supplies the tailored sprinkler history, current conditions, and forecast
-/// shared by all zones. Each zone exposes its complete current state and
-/// persists its own recent-water state.
+/// shared by all zones. Each zone exposes an essential state by default,
+/// complete advanced details on demand, and persists its own recent-water
+/// state.
 #[libertas_data_schema(SprinklerDataV1)]
 #[libertas_permissions(SPRINKLER_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]
@@ -4016,6 +4422,7 @@ pub fn libertas_sprinkler(
             accounted_at_ticks: None,
             accounted_at_utc: None,
             pending_command: None,
+            expected_irrigation: None,
         });
     }
     let shared = Rc::new(RefCell::new(ControllerState {
@@ -4036,6 +4443,8 @@ pub fn libertas_sprinkler(
         weather_server_up: true,
         weather_maximum_wait_seconds: WEATHER_RETRY_SECONDS,
         weather_retry_timer: 0,
+        valve_decision_not_before_ticks: 0,
+        valve_decision_timer: 0,
         zones: runtime_zones,
     }));
 
@@ -4080,6 +4489,9 @@ pub fn libertas_sprinkler(
     let weather_timer =
         libertas_timer_new_interval(0, weather_retry_timer, Box::new(Rc::clone(&shared)));
     shared.borrow_mut().weather_retry_timer = weather_timer;
+    let valve_decision_timer =
+        libertas_timer_new_interval(0, valve_decision_timer, Box::new(Rc::clone(&shared)));
+    shared.borrow_mut().valve_decision_timer = valve_decision_timer;
     let now_ticks = libertas_get_sys_ticks();
     libertas_timer_new_interval(
         absolute_interval_ticks(now_ticks, VALVE_ACCOUNTING_INTERVAL_SECONDS),
@@ -4272,6 +4684,7 @@ mod tests {
             accounted_at_ticks: None,
             accounted_at_utc: None,
             pending_command: None,
+            expected_irrigation: None,
         }
     }
 
@@ -4279,7 +4692,8 @@ mod tests {
     fn public_protocol_round_trips_through_avro() {
         let current = initial_active_state(NOW, &memory(), &zone());
         let active = SprinklerZoneStateV1::ActiveV1 {
-            current: current.clone(),
+            condition: current.condition,
+            next_watering: current.next_watering,
         };
         let winterization = SprinklerZoneStateV1::WinterizationV1;
         for (index, state) in [&active, &winterization].into_iter().enumerate() {
@@ -4287,23 +4701,53 @@ mod tests {
             assert_eq!(encoded.first(), Some(&((index as u8) * 2)));
             assert_eq!(SprinklerZoneStateV1::from_avro(&encoded), Ok(state.clone()));
         }
+
+        let advanced_active = SprinklerZoneAdvancedStateV1::ActiveV1 {
+            current: current.clone(),
+        };
+        let advanced_winterization = SprinklerZoneAdvancedStateV1::WinterizationV1;
+        for (index, state) in [&advanced_active, &advanced_winterization]
+            .into_iter()
+            .enumerate()
+        {
+            let encoded = state.to_avro();
+            assert_eq!(encoded.first(), Some(&((index as u8) * 2)));
+            assert_eq!(
+                SprinklerZoneAdvancedStateV1::from_avro(&encoded),
+                Ok(state.clone())
+            );
+        }
+        let configuration = SprinklerZoneConfigurationV1 {
+            watering_percent: 80,
+            hold_off_periods: vec![SprinklerTimeSlotV1 {
+                starts_at: NOW,
+                duration_seconds: 600,
+            }],
+        };
+        assert_eq!(
+            SprinklerZoneConfigurationV1::from_avro(&configuration.to_avro()),
+            Ok(configuration.clone())
+        );
         let values = [
             SprinklerZoneProtocolV1::GetStateV1,
+            SprinklerZoneProtocolV1::StateV1 { state: active },
+            SprinklerZoneProtocolV1::GetAdvancedStateV1,
+            SprinklerZoneProtocolV1::AdvancedStateV1 {
+                mode: SprinklerWateringModeV1::Active,
+                state: advanced_active,
+            },
+            SprinklerZoneProtocolV1::GetConfigurationV1,
+            SprinklerZoneProtocolV1::ConfigurationV1 {
+                configuration: configuration.clone(),
+            },
             SprinklerZoneProtocolV1::SetWaterAmountAdjusterV1 {
                 watering_percent: 80,
             },
             SprinklerZoneProtocolV1::ReplaceHoldOffPeriodsV1 {
-                hold_off_periods: vec![SprinklerTimeSlotV1 {
-                    starts_at: NOW,
-                    duration_seconds: 600,
-                }],
+                hold_off_periods: configuration.hold_off_periods,
             },
             SprinklerZoneProtocolV1::SetWateringModeV1 {
                 mode: SprinklerWateringModeV1::Winterization,
-            },
-            SprinklerZoneProtocolV1::StateV1 {
-                mode: SprinklerWateringModeV1::Active,
-                state: active,
             },
         ];
         for value in values {
@@ -4375,6 +4819,29 @@ mod tests {
 
         let protocols = [
             SprinklerZoneProtocolV1::GetStateV1,
+            SprinklerZoneProtocolV1::StateV1 {
+                state: SprinklerZoneStateV1::ActiveV1 {
+                    condition: SprinklerScheduleConditionV1::Scheduled,
+                    next_watering: SprinklerTimeSlotV1 {
+                        starts_at: NOW,
+                        duration_seconds: 600,
+                    },
+                },
+            },
+            SprinklerZoneProtocolV1::GetAdvancedStateV1,
+            SprinklerZoneProtocolV1::AdvancedStateV1 {
+                mode: SprinklerWateringModeV1::Active,
+                state: SprinklerZoneAdvancedStateV1::ActiveV1 {
+                    current: initial_active_state(NOW, &memory(), &zone()),
+                },
+            },
+            SprinklerZoneProtocolV1::GetConfigurationV1,
+            SprinklerZoneProtocolV1::ConfigurationV1 {
+                configuration: SprinklerZoneConfigurationV1 {
+                    watering_percent: 100,
+                    hold_off_periods: Vec::new(),
+                },
+            },
             SprinklerZoneProtocolV1::SetWaterAmountAdjusterV1 {
                 watering_percent: 100,
             },
@@ -4383,12 +4850,6 @@ mod tests {
             },
             SprinklerZoneProtocolV1::SetWateringModeV1 {
                 mode: SprinklerWateringModeV1::Winterization,
-            },
-            SprinklerZoneProtocolV1::StateV1 {
-                mode: SprinklerWateringModeV1::Active,
-                state: SprinklerZoneStateV1::ActiveV1 {
-                    current: initial_active_state(NOW, &memory(), &zone()),
-                },
             },
         ];
         for (index, protocol) in protocols.iter().enumerate() {
@@ -4767,10 +5228,10 @@ mod tests {
 
     #[test]
     fn no_weather_still_projects_and_schedules_watering() {
-        let mut current_memory = memory();
-        current_memory.balance_baseline_at = NOW;
+        assert_eq!(memory().balance_baseline_at, NOW);
+        assert_eq!(memory().baseline_deficit_millimeters, 0.0);
         let active_state = calculate_active_state(
-            &runtime(current_memory),
+            &runtime(memory()),
             &SprinklerWeatherSnapshotV1 {
                 history: None,
                 current: None,
@@ -4793,20 +5254,7 @@ mod tests {
             NOW + 4 * SECONDS_PER_DAY
         );
         assert!((active_state.planned_water_millimeters - 9.6).abs() < 0.001);
-
-        let catch_up = calculate_active_state(
-            &runtime(memory()),
-            &SprinklerWeatherSnapshotV1 {
-                history: None,
-                current: None,
-                forecast: None,
-            },
-            false,
-            None,
-            NOW,
-        );
-        assert_eq!(catch_up.next_watering.starts_at, NOW);
-        assert!(catch_up.planned_water_millimeters > 0.0);
+        assert_eq!(active_state.next_watering.duration_seconds, 48 * 60);
     }
 
     #[test]
@@ -5340,6 +5788,108 @@ mod tests {
     }
 
     #[test]
+    fn timed_open_is_reserved_then_amended_to_observed_duration() {
+        let mut zone_runtime = runtime(memory());
+        assert!(begin_expected_irrigation(&mut zone_runtime, NOW, 900));
+        assert_eq!(zone_runtime.water_events.len(), 1);
+        let SprinklerWaterEventV1::IrrigationV1 {
+            duration_seconds,
+            applied_water_millimeters,
+            ..
+        } = zone_runtime.water_events[0]
+        else {
+            panic!("expected irrigation event");
+        };
+        assert_eq!(duration_seconds, 900);
+        assert!((applied_water_millimeters - 3.0).abs() < 0.001);
+        let expected_events = zone_runtime.water_events.clone();
+        let reservation_delta = water_event_delta(&[], &expected_events);
+        assert_eq!(reservation_delta.upserts.len(), 1);
+        assert!(reservation_delta.removals.is_empty());
+
+        zone_runtime.valve_is_open = true;
+        zone_runtime.valve_opened_automatically = true;
+        zone_runtime
+            .expected_irrigation
+            .as_mut()
+            .unwrap()
+            .open_observed_at_ticks = Some(10 * MICROSECONDS_PER_SECOND);
+        assert!(!account_open_zone(
+            &mut zone_runtime,
+            310 * MICROSECONDS_PER_SECOND,
+            Some(NOW + 300)
+        ));
+        assert_eq!(zone_runtime.water_events.len(), 1);
+
+        assert!(reconcile_expected_irrigation(
+            &mut zone_runtime,
+            610 * MICROSECONDS_PER_SECOND
+        ));
+        let SprinklerWaterEventV1::IrrigationV1 {
+            duration_seconds,
+            applied_water_millimeters,
+            ..
+        } = zone_runtime.water_events[0]
+        else {
+            panic!("expected irrigation event");
+        };
+        assert_eq!(duration_seconds, 600);
+        assert!((applied_water_millimeters - 2.0).abs() < 0.001);
+        assert_eq!(zone_runtime.expected_irrigation, None);
+        let amendment_delta = water_event_delta(&expected_events, &zone_runtime.water_events);
+        assert_eq!(amendment_delta.upserts.len(), 1);
+        assert!(amendment_delta.removals.is_empty());
+
+        let mut unopened = runtime(memory());
+        assert!(begin_expected_irrigation(&mut unopened, NOW, 900));
+        assert!(reconcile_expected_irrigation(
+            &mut unopened,
+            610 * MICROSECONDS_PER_SECOND
+        ));
+        assert!(unopened.water_events.is_empty());
+    }
+
+    #[test]
+    fn manual_open_is_observed_and_counted_until_close() {
+        let mut runtime = runtime(memory());
+        runtime.valve_is_open = true;
+        runtime.valve_opened_automatically = false;
+        runtime.accounted_at_ticks = Some(10 * MICROSECONDS_PER_SECOND);
+        runtime.accounted_at_utc = Some(NOW);
+
+        assert!(account_open_zone(
+            &mut runtime,
+            40 * MICROSECONDS_PER_SECOND,
+            Some(NOW + 30)
+        ));
+        assert!(account_open_zone(
+            &mut runtime,
+            80 * MICROSECONDS_PER_SECOND,
+            Some(NOW + 70)
+        ));
+        assert_eq!(runtime.water_events.len(), 1);
+        let SprinklerWaterEventV1::IrrigationV1 {
+            duration_seconds,
+            applied_water_millimeters,
+            ..
+        } = runtime.water_events[0]
+        else {
+            panic!("expected irrigation event");
+        };
+        assert_eq!(duration_seconds, 70);
+        assert!((applied_water_millimeters - 12.0 * 70.0 / 3_600.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn valve_decisions_wait_through_the_ten_second_close_boundary() {
+        let closed_at = 123 * MICROSECONDS_PER_SECOND;
+        let deadline = absolute_interval_ticks(closed_at, VALVE_DECISION_DELAY_SECONDS);
+        assert!(!valve_decision_allowed(closed_at, deadline));
+        assert!(!valve_decision_allowed(deadline - 1, deadline));
+        assert!(valve_decision_allowed(deadline, deadline));
+    }
+
+    #[test]
     fn watering_percentage_change_splits_adjacent_irrigation_events() {
         let mut runtime = runtime(memory());
         add_irrigation_event(&mut runtime, NOW - 120, 60, NOW - 60);
@@ -5426,6 +5976,8 @@ mod tests {
             weather_server_up: true,
             weather_maximum_wait_seconds: WEATHER_RETRY_SECONDS,
             weather_retry_timer: 0,
+            valve_decision_not_before_ticks: 0,
+            valve_decision_timer: 0,
             zones: Vec::new(),
         }));
         let reset = |cursor| SprinklerWeatherRecoveryV1::ResetV1 {
@@ -5477,6 +6029,8 @@ mod tests {
             weather_server_up: true,
             weather_maximum_wait_seconds: WEATHER_RETRY_SECONDS,
             weather_retry_timer: 0,
+            valve_decision_not_before_ticks: 0,
+            valve_decision_timer: 0,
             zones: Vec::new(),
         };
         assert_eq!(
