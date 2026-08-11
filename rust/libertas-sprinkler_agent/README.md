@@ -10,7 +10,8 @@ Configuration contains:
   including system-wide winterization reminders;
 - one Matter Irrigation System valve per zone;
 - a plant type and sprinkler-head type per zone; and
-- one server endpoint that exposes the zone's complete current state.
+- one server endpoint that exposes an essential regular-user state by default
+  and complete advanced state on demand.
 
 The plant profile drives adaptive weather demand and water capacity. The
 sprinkler-head profile estimates delivery from observed Matter Valve open time,
@@ -40,15 +41,17 @@ next hold-off.
 
 At runtime, the only water-amount input is a 20% through 200% adjuster in 10%
 steps; 100% selects the adaptive amount. Users can also replace the zone's
-hold-off intervals. The published Active state contains all current zone data:
-the adjuster first, followed by the next watering slot, planned amount,
-estimated deficit, recent rain and irrigation, constraints, and valve status.
-Expired hold-offs are removed on the next schedule evaluation, persisted, and
-published to zone subscribers even if the rest of the schedule is unchanged.
-The top-level state is an Active/Winterization union. Active contains the
-complete current zone data; Winterization contains no fabricated watering slot.
-One system-wide Watering mode control selects Active or Winterization and is
-persisted locally across restarts and internet outages.
+hold-off intervals. The default state and subscription show only the current
+watering condition and next watering slot for an active zone; Winterization
+contains no fabricated watering slot. An explicit advanced-state request shows
+the demand source, calculation time, planned amount, estimated deficit, recent
+rain and irrigation, and valve status. A separate configuration interaction
+presents the adjuster and hold-off periods together in one end-user view. From
+there, each setting still has its own independent update action. Expired
+hold-offs are removed on the next schedule evaluation, persisted, and reflected
+in the next default state report and configuration read. One system-wide
+Watering mode control selects Active or Winterization and is persisted locally
+across restarts and internet outages.
 
 While Watering mode is Active, Libertas Notification reminds the configured
 users to winterize. Fresh current conditions or a fresh seven-day forecast at
@@ -68,6 +71,14 @@ full ledger. Every irrigation interval records the zone's watering percentage;
 changing that setting while a valve is open first checkpoints the old value and
 starts a separate adjacent interval for the new value.
 
+Before issuing a timed Matter `Open` command, the controller persists the
+expected irrigation amount. It does not replace that reservation with periodic
+automatic-watering checkpoints; the observed close amends the same record when
+the actual duration differs. A manually opened valve is never commandeered or
+closed by the controller: it blocks other automatic watering, is checkpointed
+while open, and is finalized when observed closed. Every newly observed close
+starts a 10-second controller-wide delay before another automatic open decision.
+
 Internet weather is an enhancement rather than a watering dependency. The
 controller always projects demand from the best available source: at least one
 day of persisted local reference evapotranspiration, otherwise a cached Hub
@@ -77,3 +88,6 @@ offline estimated schedule and does not prevent automatic watering. Fresh rain,
 freezing, or excessive-wind observations still delay a run for safety. There is
 no blanket calendar-based winter cutoff: the seasonal estimate reduces winter
 demand, while actual fresh freezing conditions provide the safety cutoff.
+When a zone is first configured, its balance starts fully replenished at the
+current time because weather history cannot reveal unobserved prior irrigation;
+the controller does not manufacture a dry-week catch-up run.
