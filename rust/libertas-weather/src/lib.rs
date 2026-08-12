@@ -103,10 +103,9 @@ pub const SPRINKLER_FORECAST_HORIZON_SECONDS: u32 = 7 * 24 * 60 * 60;
 pub const SPRINKLER_SUBSCRIPTION_REPLAY_WINDOW_SECONDS: u32 = 24 * 60 * 60;
 
 /// Subscription maximum wait interval
-/// The default maximum number of seconds a subscribed client waits after a
-/// response or data report before requesting weather again with its last
-/// applied cursor. The server sends an incremental report, including an empty
-/// heartbeat report when necessary, before this interval expires.
+/// Seconds a client waits after a response, data report, or PeerAlive before
+/// requesting weather again. No-change liveness uses payloadless PeerAlive,
+/// never synthetic application data.
 pub const SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS: u32 = 20 * 60;
 
 /// Sprinkler weather history period
@@ -540,9 +539,9 @@ pub enum SprinklerWeatherChangeV1 {
 
 /// Sprinkler weather incremental report
 /// Carries an ordered, atomic range of weather changes. A client applies the
-/// report only when its stored cursor equals `from_cursor`; after applying every
-/// change, it stores `through_cursor`. An empty report is a heartbeat that
-/// preserves the cursor and restarts the client's maximum-wait timer.
+/// report only when its stored cursor equals `from_cursor`, then stores
+/// `through_cursor`. An empty report is a caught-up recovery result; periodic
+/// no-change liveness uses PeerAlive.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWeatherIncrementalReportV1 {
     /// From cursor
@@ -557,8 +556,8 @@ pub struct SprinklerWeatherIncrementalReportV1 {
     pub through_cursor: SprinklerWeatherCursorV1,
     /// Weather changes
     /// Ordered changes to apply atomically. Each item advances the sequence by
-    /// exactly one; an empty list is a caught-up acknowledgement and subscription
-    /// heartbeat that does not advance the cursor.
+    /// exactly one; an empty list is caught-up recovery and does not advance the
+    /// cursor or serve as periodic liveness.
     /// ----
     /// Weather change
     /// One atomic state mutation in cursor order.
@@ -568,8 +567,8 @@ pub struct SprinklerWeatherIncrementalReportV1 {
 impl SprinklerWeatherIncrementalReportV1 {
     /// Contiguous cursor range
     /// Returns `true` when the sequence distance equals the number of changes
-    /// and both cursors have the same epoch timestamp. An empty heartbeat
-    /// therefore preserves both cursor fields exactly.
+    /// and both cursors have the same epoch timestamp. An empty result therefore
+    /// preserves both cursor fields.
     /// #[libertas_ignored]
     pub fn has_contiguous_cursor_range(&self) -> bool {
         let Ok(change_count) = u64::try_from(self.changes.len()) else {
@@ -732,10 +731,9 @@ pub enum SprinklerWeatherProtocolV1 {
     WeatherRecoveryV1 {
         /// Maximum wait interval
         /// The maximum number of seconds a subscription client waits after a
-        /// successful replay or reset response, or after any later incremental
-        /// report. The server sends a change report or an empty heartbeat report
-        /// before the interval expires. A one-shot client ignores this required
-        /// field. The value must be greater than zero.
+        /// successful recovery, incremental report, or PeerAlive. The server
+        /// sends changed data or PeerAlive first. One-shot clients ignore this
+        /// required, nonzero value.
         #[libertas_time_interval]
         #[libertas_number(min = 1)]
         maximum_wait_interval_seconds: u32,
@@ -747,8 +745,8 @@ pub enum SprinklerWeatherProtocolV1 {
     /// Reports only state changes after a successful weather request. A cursor
     /// mismatch or non-contiguous range requires another
     /// subscription request; the client must not apply the report partially.
-    /// Receipt of any report, including an empty heartbeat, restarts the
-    /// maximum-wait timer supplied by the recovery response.
+    /// A valid report or PeerAlive restarts the recovery response's wait timer;
+    /// PeerAlive never enters this data schema or changes the cursor.
     #[libertas_subscription_data]
     WeatherIncrementV1 {
         /// Incremental report
@@ -1230,7 +1228,7 @@ mod tests {
     }
 
     #[test]
-    fn empty_incremental_report_is_a_cursor_preserving_heartbeat() {
+    fn empty_caught_up_report_preserves_the_cursor() {
         let report = SprinklerWeatherIncrementalReportV1 {
             from_cursor: cursor(CURSOR_TIMESTAMP, 12),
             through_cursor: cursor(CURSOR_TIMESTAMP, 12),

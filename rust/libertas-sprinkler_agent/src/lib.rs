@@ -38,9 +38,9 @@ use libertas::{
     IndexDirection, IndexedData, LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasDevice,
     LibertasEndpoint, LibertasEndpointHandlerResult, LibertasEndpointMessage,
     LibertasEndpointStandardStatus, LibertasUser, LogLevel, NotificationArgument,
-    NotificationImportance, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP,
-    OP_ENDPOINT_REQ, OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_data_open_indexed,
-    libertas_data_read_indexed_range, libertas_data_read_single,
+    NotificationImportance, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_ALIVE, OP_ENDPOINT_PEER_DOWN,
+    OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ, OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ,
+    libertas_data_open_indexed, libertas_data_read_indexed_range, libertas_data_read_single,
     libertas_data_remove_indexed_records, libertas_data_write_indexed, libertas_data_write_single,
     libertas_endpoint_report, libertas_endpoint_response, libertas_endpoint_subscribe_request,
     libertas_get_sys_ticks, libertas_get_utc_time, libertas_log, libertas_notification_send,
@@ -842,6 +842,7 @@ struct ControllerState {
     winterization_reminder: Option<SprinklerWinterizationReminderMemoryV1>,
     site_location: Option<SprinklerWeatherLocationV1>,
     hub_location_server_up: bool,
+    hub_location_subscription_ready: bool,
     site_location_retry_timer: u32,
     weather: SprinklerWeatherSnapshotV1,
     weather_cursor: Option<SprinklerWeatherCursorV1>,
@@ -3676,10 +3677,21 @@ fn handle_site_location_event(
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .unwrap();
+    if opcode == OP_ENDPOINT_PEER_ALIVE {
+        // Signaling only: rearm an established watchdog before any data path.
+        if !matches!(message, LibertasEndpointMessage::NoPayload) {
+            return LibertasEndpointHandlerResult::InvalidMessage;
+        }
+        if shared.borrow().hub_location_subscription_ready {
+            arm_site_location_retry(shared, HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS);
+        }
+        return LibertasEndpointHandlerResult::Handled;
+    }
     if opcode == OP_ENDPOINT_PEER_DOWN {
         let timer = {
             let mut state = shared.borrow_mut();
             state.hub_location_server_up = false;
+            state.hub_location_subscription_ready = false;
             state.site_location_retry_timer
         };
         if timer != 0 {
@@ -3690,7 +3702,11 @@ fn handle_site_location_event(
     if opcode == OP_ENDPOINT_PEER_UP {
         // Up can arrive without the preceding Down. Re-establish the
         // subscription for this newer Hub endpoint startup.
-        shared.borrow_mut().hub_location_server_up = true;
+        {
+            let mut state = shared.borrow_mut();
+            state.hub_location_server_up = true;
+            state.hub_location_subscription_ready = false;
+        }
         request_site_location(shared);
         return LibertasEndpointHandlerResult::Handled;
     }
@@ -3707,6 +3723,7 @@ fn handle_site_location_event(
             if !valid_site_location(location) {
                 return LibertasEndpointHandlerResult::InvalidMessage;
             }
+            shared.borrow_mut().hub_location_subscription_ready = true;
             let (weather_endpoint, changed) = {
                 let state = shared.borrow();
                 (
@@ -3737,9 +3754,7 @@ fn handle_zone_endpoint(
 ) -> LibertasEndpointHandlerResult {
     let context = context.downcast_mut::<ZoneContext>().unwrap();
     if opcode == OP_ENDPOINT_PEER_DOWN {
-        // The host has confirmed this client is currently stopped or absent.
-        // The server keeps no per-client state; durable membership and common
-        // report fan-out remain host-owned.
+        // The host removes this opaque in-memory route after the callback.
         return LibertasEndpointHandlerResult::Handled;
     }
     if opcode != OP_ENDPOINT_REQ && opcode != OP_ENDPOINT_SUB_REQ {
@@ -4134,6 +4149,21 @@ fn handle_weather_event(
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .unwrap();
+    if opcode == OP_ENDPOINT_PEER_ALIVE {
+        // Signaling only: rearm an established watchdog before any data path.
+        if !matches!(message, LibertasEndpointMessage::NoPayload) {
+            return LibertasEndpointHandlerResult::InvalidMessage;
+        }
+        let maximum_wait_seconds = {
+            let state = shared.borrow();
+            (state.weather_server_up && state.weather_stream_ready)
+                .then_some(state.weather_maximum_wait_seconds)
+        };
+        if let Some(maximum_wait_seconds) = maximum_wait_seconds {
+            arm_weather_retry(shared, maximum_wait_seconds);
+        }
+        return LibertasEndpointHandlerResult::Handled;
+    }
     if opcode == OP_ENDPOINT_PEER_DOWN {
         let timer = {
             let mut state = shared.borrow_mut();
@@ -4432,6 +4462,7 @@ pub fn libertas_sprinkler(
         winterization_reminder,
         site_location,
         hub_location_server_up: true,
+        hub_location_subscription_ready: false,
         site_location_retry_timer: 0,
         weather: SprinklerWeatherSnapshotV1 {
             history: None,
@@ -4685,6 +4716,32 @@ mod tests {
             accounted_at_utc: None,
             pending_command: None,
             expected_irrigation: None,
+        }
+    }
+
+    fn controller_state() -> ControllerState {
+        ControllerState {
+            weather_endpoint: 1,
+            reminder_recipients: vec![2, 3],
+            watering_mode: SprinklerWateringModeV1::Active,
+            winterization_reminder: None,
+            site_location: None,
+            hub_location_server_up: true,
+            hub_location_subscription_ready: false,
+            site_location_retry_timer: 0,
+            weather: SprinklerWeatherSnapshotV1 {
+                history: None,
+                current: None,
+                forecast: None,
+            },
+            weather_cursor: None,
+            weather_stream_ready: true,
+            weather_server_up: true,
+            weather_maximum_wait_seconds: WEATHER_RETRY_SECONDS,
+            weather_retry_timer: 0,
+            valve_decision_not_before_ticks: 0,
+            valve_decision_timer: 0,
+            zones: Vec::new(),
         }
     }
 
@@ -5958,28 +6015,9 @@ mod tests {
             epoch_timestamp: NOW,
             sequence: 10,
         };
-        let shared = Rc::new(RefCell::new(ControllerState {
-            weather_endpoint: 1,
-            reminder_recipients: vec![2, 3],
-            watering_mode: SprinklerWateringModeV1::Active,
-            winterization_reminder: None,
-            site_location: None,
-            hub_location_server_up: true,
-            site_location_retry_timer: 0,
-            weather: SprinklerWeatherSnapshotV1 {
-                history: None,
-                current: None,
-                forecast: None,
-            },
-            weather_cursor: Some(previous),
-            weather_stream_ready: true,
-            weather_server_up: true,
-            weather_maximum_wait_seconds: WEATHER_RETRY_SECONDS,
-            weather_retry_timer: 0,
-            valve_decision_not_before_ticks: 0,
-            valve_decision_timer: 0,
-            zones: Vec::new(),
-        }));
+        let mut state = controller_state();
+        state.weather_cursor = Some(previous);
+        let shared = Rc::new(RefCell::new(state));
         let reset = |cursor| SprinklerWeatherRecoveryV1::ResetV1 {
             reason: libertas_weather::SprinklerWeatherResetReasonV1::ServerCursorReset,
             cursor,
@@ -6007,32 +6045,51 @@ mod tests {
     }
 
     #[test]
-    fn cursor_ahead_error_restarts_weather_recovery_without_a_cursor() {
-        let mut state = ControllerState {
-            weather_endpoint: 1,
-            reminder_recipients: vec![2, 3],
-            watering_mode: SprinklerWateringModeV1::Active,
-            winterization_reminder: None,
-            site_location: None,
-            hub_location_server_up: true,
-            site_location_retry_timer: 0,
-            weather: SprinklerWeatherSnapshotV1 {
-                history: None,
-                current: None,
-                forecast: None,
-            },
-            weather_cursor: Some(SprinklerWeatherCursorV1 {
-                epoch_timestamp: NOW,
-                sequence: 10,
-            }),
-            weather_stream_ready: true,
-            weather_server_up: true,
-            weather_maximum_wait_seconds: WEATHER_RETRY_SECONDS,
-            weather_retry_timer: 0,
-            valve_decision_not_before_ticks: 0,
-            valve_decision_timer: 0,
-            zones: Vec::new(),
+    fn peer_alive_refresh_path_does_not_touch_weather_data_or_cursor() {
+        let cursor = SprinklerWeatherCursorV1 {
+            epoch_timestamp: NOW,
+            sequence: 10,
         };
+        let weather = SprinklerWeatherSnapshotV1 {
+            history: Some(history()),
+            current: Some(current()),
+            forecast: None,
+        };
+        let mut state = controller_state();
+        state.weather = weather.clone();
+        state.weather_cursor = Some(cursor);
+        let shared = Rc::new(RefCell::new(state));
+        let mut context: Box<dyn Any> = Box::new(Rc::clone(&shared));
+        let mut peer_alive = || {
+            handle_weather_event(
+                1,
+                OP_ENDPOINT_PEER_ALIVE,
+                LibertasEndpointMessage::NoPayload,
+                &mut context,
+                0,
+                99,
+            )
+        };
+
+        assert_eq!(peer_alive(), LibertasEndpointHandlerResult::Handled);
+        let state = shared.borrow();
+        assert_eq!(state.weather, weather);
+        assert_eq!(state.weather_cursor, Some(cursor));
+        assert!(state.weather_stream_ready);
+        drop(state);
+
+        shared.borrow_mut().weather_stream_ready = false;
+        assert_eq!(peer_alive(), LibertasEndpointHandlerResult::Handled);
+        assert!(!shared.borrow().weather_stream_ready);
+    }
+
+    #[test]
+    fn cursor_ahead_error_restarts_weather_recovery_without_a_cursor() {
+        let mut state = controller_state();
+        state.weather_cursor = Some(SprinklerWeatherCursorV1 {
+            epoch_timestamp: NOW,
+            sequence: 10,
+        });
         assert_eq!(
             apply_weather_recovery_error(
                 &mut state,

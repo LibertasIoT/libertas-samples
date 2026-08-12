@@ -51,10 +51,11 @@ use libertas::{
     IndexDirection, IndexedData, LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasEndpoint,
     LibertasEndpointHandlerResult, LibertasEndpointMessage, LibertasEndpointStandardStatus,
     LibertasEndpointStatus, LogLevel, NotificationArgument, OP_ENDPOINT_DATA,
-    OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ, OP_ENDPOINT_RSP,
-    OP_ENDPOINT_SUB_REQ, libertas_data_open_indexed, libertas_data_read_indexed_range,
-    libertas_data_read_single, libertas_data_remove_indexed_records, libertas_data_remove_single,
-    libertas_data_write_indexed, libertas_data_write_single, libertas_endpoint_remove_subscriber,
+    OP_ENDPOINT_PEER_ALIVE, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ,
+    OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_data_open_indexed,
+    libertas_data_read_indexed_range, libertas_data_read_single,
+    libertas_data_remove_indexed_records, libertas_data_remove_single, libertas_data_write_indexed,
+    libertas_data_write_single, libertas_endpoint_peer_alive, libertas_endpoint_remove_subscriber,
     libertas_endpoint_report, libertas_endpoint_response, libertas_endpoint_subscribe_request,
     libertas_get_sys_ticks, libertas_get_utc_time, libertas_log,
     libertas_register_endpoint_listener, libertas_register_endpoint_status_listener,
@@ -219,6 +220,7 @@ struct LocationSubscriptionState {
     location: Option<SprinklerWeatherLocationV1>,
     retry_timer: u32,
     hub_server_up: bool,
+    subscription_ready: bool,
 }
 
 #[derive(Serialize)]
@@ -288,8 +290,8 @@ struct WeatherServerState {
     cursor: Option<SprinklerWeatherCursorV1>,
     snapshot: SprinklerWeatherSnapshotV1,
     journal: Vec<JournalEntry>,
-    heartbeat_timer: u32,
-    next_heartbeat_ticks: Option<u64>,
+    peer_alive_timer: u32,
+    next_peer_alive_ticks: Option<u64>,
 }
 
 struct PreparedResponse {
@@ -701,8 +703,8 @@ impl WeatherServerState {
             }),
             snapshot,
             journal: Vec::new(),
-            heartbeat_timer: 0,
-            next_heartbeat_ticks: None,
+            peer_alive_timer: 0,
+            next_peer_alive_ticks: None,
         }
     }
 
@@ -969,42 +971,34 @@ impl WeatherServerState {
         }
     }
 
-    fn heartbeat_interval_ticks() -> u64 {
-        u64::from(SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS)
+    fn peer_alive_interval_ticks() -> u64 {
+        (u64::from(SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS).saturating_mul(3) / 4)
             .saturating_mul(MICROSECONDS_PER_SECOND)
     }
 
-    // This is only process-local scheduling state. The host owns the client
-    // list, so observing one subscription merely enables a shared heartbeat;
-    // it does not create a server-side peer roster.
+    // The host owns fan-out; the App needs one cadence, not a peer roster.
     fn note_subscription(&mut self, now_ticks: u64) {
-        let deadline = now_ticks.saturating_add(Self::heartbeat_interval_ticks());
-        self.next_heartbeat_ticks = Some(
-            self.next_heartbeat_ticks
+        let deadline = now_ticks.saturating_add(Self::peer_alive_interval_ticks());
+        self.next_peer_alive_ticks = Some(
+            self.next_peer_alive_ticks
                 .map_or(deadline, |current| current.min(deadline)),
         );
     }
 
-    fn next_heartbeat_ticks(&self) -> Option<u64> {
-        self.next_heartbeat_ticks
+    fn note_data_report(&mut self, now_ticks: u64) {
+        self.next_peer_alive_ticks =
+            Some(now_ticks.saturating_add(Self::peer_alive_interval_ticks()));
     }
 
-    fn note_broadcast(&mut self, now_ticks: u64) {
-        self.next_heartbeat_ticks =
-            Some(now_ticks.saturating_add(Self::heartbeat_interval_ticks()));
-    }
-
-    fn due_heartbeat(&mut self, now_ticks: u64) -> Option<SprinklerWeatherProtocolV1> {
-        let deadline = self.next_heartbeat_ticks?;
-        if now_ticks < deadline {
-            return None;
+    fn take_due_peer_alive(&mut self, now_ticks: u64) -> bool {
+        if self
+            .next_peer_alive_ticks
+            .is_none_or(|deadline| now_ticks < deadline)
+        {
+            return false;
         }
-        self.next_heartbeat_ticks =
-            Some(now_ticks.saturating_add(Self::heartbeat_interval_ticks()));
-        self.cursor
-            .map(|cursor| SprinklerWeatherProtocolV1::WeatherIncrementV1 {
-                report: empty_report(cursor),
-            })
+        self.note_data_report(now_ticks);
+        true
     }
 }
 
@@ -1240,14 +1234,14 @@ fn publish_change(
         let mut state = shared.borrow_mut();
         let publication = state.apply_change(change, now_ticks, now_utc);
         if publication.report.is_some() {
-            state.note_broadcast(now_ticks);
+            state.note_data_report(now_ticks);
         }
         (state.endpoint, publication)
     };
     if let Some(report) = publication.report {
         libertas_endpoint_report(endpoint, &report, None);
     }
-    update_heartbeat_timer(shared);
+    update_peer_alive_timer(shared);
 }
 
 #[derive(Debug, Default, PartialEq)]
@@ -1858,6 +1852,17 @@ fn handle_hub_location_event(
         .downcast_mut::<Rc<RefCell<LocationSubscriptionState>>>()
         .unwrap();
 
+    if opcode == OP_ENDPOINT_PEER_ALIVE {
+        // Signaling only: rearm an established watchdog before any data path.
+        if !matches!(message, LibertasEndpointMessage::NoPayload) {
+            return LibertasEndpointHandlerResult::InvalidMessage;
+        }
+        if state.borrow().subscription_ready {
+            arm_location_watchdog(state, HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS);
+        }
+        return LibertasEndpointHandlerResult::Handled;
+    }
+
     if opcode == OP_ENDPOINT_RSP || opcode == OP_ENDPOINT_DATA {
         if let LibertasEndpointMessage::Data(HubProtocol::LocationRsp {
             longitude,
@@ -1871,6 +1876,9 @@ fn handle_hub_location_event(
                     latitude_degrees: *latitude,
                 },
             );
+            if accepted {
+                state.borrow_mut().subscription_ready = true;
+            }
             arm_location_watchdog(
                 state,
                 if accepted {
@@ -1905,6 +1913,7 @@ fn handle_hub_location_event(
         let timer = {
             let mut state = state.borrow_mut();
             state.hub_server_up = false;
+            state.subscription_ready = false;
             state.retry_timer
         };
         if timer != 0 {
@@ -1918,7 +1927,11 @@ fn handle_hub_location_event(
     } else if opcode == OP_ENDPOINT_PEER_UP {
         // Up can arrive without the preceding Down. Re-establish the
         // subscription for this newer Hub endpoint startup.
-        state.borrow_mut().hub_server_up = true;
+        {
+            let mut state = state.borrow_mut();
+            state.hub_server_up = true;
+            state.subscription_ready = false;
+        }
         subscribe_to_hub_location(state);
         return LibertasEndpointHandlerResult::Handled;
     }
@@ -1927,10 +1940,10 @@ fn handle_hub_location_event(
     LibertasEndpointHandlerResult::Handled
 }
 
-fn update_heartbeat_timer(shared: &Rc<RefCell<WeatherServerState>>) {
+fn update_peer_alive_timer(shared: &Rc<RefCell<WeatherServerState>>) {
     let (timer, next_ticks) = {
         let state = shared.borrow();
-        (state.heartbeat_timer, state.next_heartbeat_ticks())
+        (state.peer_alive_timer, state.next_peer_alive_ticks)
     };
     if timer == 0 {
         return;
@@ -1955,9 +1968,7 @@ fn handle_endpoint_event(
         .unwrap();
 
     if opcode == OP_ENDPOINT_PEER_DOWN {
-        // The host has confirmed this client is currently stopped or absent.
-        // No ephemeral per-client state is kept here, and host-owned
-        // membership continues to drive the shared broadcast heartbeat.
+        // The host removes this opaque route after the callback; no App roster.
         return LibertasEndpointStatus::Success;
     }
     if opcode != OP_ENDPOINT_REQ && opcode != OP_ENDPOINT_SUB_REQ {
@@ -1977,7 +1988,7 @@ fn handle_endpoint_event(
     if is_subscription {
         if prepared.accepted {
             shared.borrow_mut().note_subscription(now_ticks);
-            update_heartbeat_timer(shared);
+            update_peer_alive_timer(shared);
         } else {
             libertas_endpoint_remove_subscriber(endpoint, peer);
         }
@@ -2002,9 +2013,8 @@ fn handle_endpoint_event(
 /// Persisted retrieval timestamps preserve refresh schedules across restarts,
 /// avoiding immediate rewrites while cached sections are not yet due. The
 /// transient cursor and replay journal intentionally restart at sequence zero;
-/// the agent publishes each change and a single shared heartbeat through the
-/// host-owned client set, without keeping a peer roster. Clients recover with
-/// epoch-timestamp-and-sequence reset detection.
+/// the agent publishes changes and one shared PeerAlive through host fan-out.
+/// Clients recover with epoch-timestamp-and-sequence reset detection.
 #[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentDataV1")]
 #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]
@@ -2041,27 +2051,28 @@ pub fn libertas_weather_server(sprinkler_weather: SprinklerWeatherEndpointServer
     )));
 
     let timer_shared = Rc::clone(&shared);
-    let heartbeat_timer = libertas_timer_new_interval(
+    let peer_alive_timer = libertas_timer_new_interval(
         0,
         move |timer, now_ticks, context| {
             let shared = context
                 .downcast_mut::<Rc<RefCell<WeatherServerState>>>()
                 .unwrap();
-            let (endpoint, report) = {
+            let (endpoint, due) = {
                 let mut state = shared.borrow_mut();
-                (state.endpoint, state.due_heartbeat(now_ticks))
+                let due = state.take_due_peer_alive(now_ticks);
+                (state.endpoint, due)
             };
-            if let Some(report) = report {
-                libertas_endpoint_report(endpoint, &report, None);
+            if due {
+                libertas_endpoint_peer_alive(endpoint, None);
             }
-            let next_ticks = shared.borrow().next_heartbeat_ticks();
+            let next_ticks = shared.borrow().next_peer_alive_ticks;
             if let Some(next_ticks) = next_ticks {
                 libertas_timer_update_interval(timer, next_ticks);
             }
         },
         Box::new(timer_shared),
     );
-    shared.borrow_mut().heartbeat_timer = heartbeat_timer;
+    shared.borrow_mut().peer_alive_timer = peer_alive_timer;
 
     libertas_register_endpoint_listener::<SprinklerWeatherProtocolV1, _>(
         endpoint,
@@ -2082,6 +2093,7 @@ pub fn libertas_weather_server(sprinkler_weather: SprinklerWeatherEndpointServer
         location: cached_location,
         retry_timer: 0,
         hub_server_up: true,
+        subscription_ready: false,
     }));
     let location_retry_timer = libertas_timer_new_interval(
         0,
@@ -2774,47 +2786,41 @@ mod tests {
     }
 
     #[test]
-    fn heartbeat_fires_at_the_maximum_wait_boundary_and_preserves_cursor() {
+    fn peer_alive_is_due_before_the_maximum_wait_without_touching_the_cursor() {
         let start_ticks = 100;
+        let interval = WeatherServerState::peer_alive_interval_ticks();
         let maximum_wait = u64::from(SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS)
-            * MICROSECONDS_PER_SECOND;
+            .saturating_mul(MICROSECONDS_PER_SECOND);
         let mut state = WeatherServerState::new(ENDPOINT, Some(NEW_EPOCH), snapshot());
         state.note_subscription(start_ticks);
+        let cursor = state.cursor;
 
-        assert!(
-            state
-                .due_heartbeat(start_ticks + maximum_wait - 1)
-                .is_none()
-        );
-        let Some(SprinklerWeatherProtocolV1::WeatherIncrementV1 { report }) =
-            state.due_heartbeat(start_ticks + maximum_wait)
-        else {
-            panic!("expected heartbeat report");
-        };
-        assert!(report.changes.is_empty());
-        assert_eq!(report.from_cursor, report.through_cursor);
+        assert!(interval < maximum_wait);
+        assert!(!state.take_due_peer_alive(start_ticks + interval - 1));
+        assert!(state.take_due_peer_alive(start_ticks + interval));
+        assert_eq!(state.cursor, cursor);
         assert_eq!(
-            state.next_heartbeat_ticks(),
-            Some(start_ticks + maximum_wait.saturating_mul(2))
+            state.next_peer_alive_ticks,
+            Some(start_ticks + interval.saturating_mul(2))
         );
     }
 
     #[test]
-    fn confirmed_client_down_does_not_mutate_host_owned_membership_or_shared_heartbeat() {
+    fn confirmed_client_down_leaves_membership_removal_and_shared_cadence_to_the_host() {
         let shared = Rc::new(RefCell::new(WeatherServerState::new(
             ENDPOINT,
             Some(NEW_EPOCH),
             snapshot(),
         )));
         shared.borrow_mut().note_subscription(100);
-        let deadline = shared.borrow().next_heartbeat_ticks();
+        let deadline = shared.borrow().next_peer_alive_ticks;
         let mut context: Box<dyn Any> = Box::new(Rc::clone(&shared));
 
         assert_eq!(
             handle_endpoint_event(ENDPOINT, OP_ENDPOINT_PEER_DOWN, None, &mut context, 0, 7),
             LibertasEndpointStatus::Success
         );
-        assert_eq!(shared.borrow().next_heartbeat_ticks(), deadline);
+        assert_eq!(shared.borrow().next_peer_alive_ticks, deadline);
     }
 
     #[test]

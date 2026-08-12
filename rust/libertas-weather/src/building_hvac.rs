@@ -87,9 +87,9 @@ pub const BUILDING_HVAC_AIR_QUALITY_HORIZON_SECONDS: u32 = 2 * 24 * 60 * 60;
 pub const BUILDING_HVAC_SUBSCRIPTION_REPLAY_WINDOW_SECONDS: u32 = 24 * 60 * 60;
 
 /// Building HVAC subscription maximum wait interval
-/// The default maximum number of seconds a subscribed HVAC client waits after a
-/// response or data report before retrying its request with the last fully
-/// applied cursor. The server reports a change or empty heartbeat first.
+/// Seconds a client waits after a response, data report, or PeerAlive before
+/// retrying from its last cursor. No-change liveness uses payloadless PeerAlive,
+/// never fake data.
 pub const BUILDING_HVAC_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS: u32 = 20 * 60;
 
 /// Building HVAC precipitation kind
@@ -658,8 +658,8 @@ pub enum BuildingHvacWeatherChangeV1 {
 
 /// Building HVAC weather incremental report
 /// Carries an ordered, atomic range of building-HVAC weather changes. A client
-/// applies it only when `from_cursor` exactly matches the last fully applied
-/// cursor. An empty report is a cursor-preserving heartbeat.
+/// applies it only when `from_cursor` matches its last cursor. An empty report
+/// is caught-up recovery; periodic no-change liveness uses PeerAlive.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct BuildingHvacWeatherIncrementalReportV1 {
     /// From cursor
@@ -823,14 +823,13 @@ pub enum BuildingHvacWeatherProtocolV1 {
     /// Building HVAC weather recovery
     /// Responds to every valid get request with replay, a reset snapshot, or a
     /// typed error. Subscription clients restart their timeout after successful
-    /// recovery and every later data report.
+    /// recovery, later data reports, and PeerAlive.
     #[libertas_response]
     BuildingHvacWeatherRecoveryV1 {
         /// Maximum wait interval
         /// Maximum seconds a subscription client waits before retrying with its
-        /// last fully applied cursor. The server sends a change or empty
-        /// heartbeat first. A one-shot client ignores this required nonzero
-        /// value.
+        /// last cursor. The server sends changed data or PeerAlive first. A
+        /// one-shot client ignores this required, nonzero value.
         #[libertas_time_interval]
         #[libertas_number(min = 1)]
         maximum_wait_interval_seconds: u32,
@@ -869,7 +868,7 @@ pub struct BuildingHvacWeatherLocationV1 {
 /// Defines every value a building-HVAC weather agent may write to the Libertas
 /// database. Each variant is stored under its own stable resource identifier so
 /// partial provider failure cannot erase another section. Subscription cursors,
-/// journals, peers, and heartbeat deadlines are deliberately not persistent.
+/// journals, peers, and PeerAlive deadlines are not persistent.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum BuildingHvacWeatherPersistentDataV1 {
     /// Building location
@@ -1363,7 +1362,7 @@ mod tests {
     }
 
     #[test]
-    fn empty_incremental_report_is_a_cursor_preserving_heartbeat() {
+    fn empty_caught_up_report_preserves_the_cursor() {
         let report = BuildingHvacWeatherIncrementalReportV1 {
             from_cursor: cursor(CURSOR_TIMESTAMP, 22),
             through_cursor: cursor(CURSOR_TIMESTAMP, 22),

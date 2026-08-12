@@ -11,8 +11,9 @@ use std::sync::mpsc::Receiver;
 
 use libertas::{
     LibertasEndpointHandlerResult, LibertasEndpointMessage, LibertasEndpointStandardStatus,
-    LibertasTransId, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ,
-    OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_data_remove_single, libertas_endpoint_report,
+    LibertasTransId, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_ALIVE, OP_ENDPOINT_PEER_DOWN,
+    OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ, OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ,
+    libertas_data_remove_single, libertas_endpoint_peer_alive, libertas_endpoint_report,
     libertas_endpoint_response, libertas_endpoint_subscribe_request, libertas_formatted_text,
     libertas_get_sys_ticks, libertas_get_utc_time, libertas_register_device_listener,
     libertas_register_endpoint_status_listener, libertas_register_shutdown_handler,
@@ -230,7 +231,7 @@ struct RoomRuntime {
     machine_learning: BuildingHvacRoomMachineLearningV1,
     plan: Option<BuildingHvacRoomPlanV1>,
     last_report: Option<BuildingHvacRoomProtocolV1>,
-    last_endpoint_report_ticks: Option<u64>,
+    last_endpoint_signal_ticks: Option<u64>,
     last_condition_boundary: Option<LibertasDateTime>,
     pending_features: Vec<PendingFeatures>,
     prediction_residuals: Vec<PredictionResidualObservation>,
@@ -248,6 +249,7 @@ struct ControllerState {
     weather_retry_timer: u32,
     external_feature_endpoint: Option<LibertasEndpoint>,
     external_feature_server_up: bool,
+    external_feature_stream_ready: bool,
     external_features: BuildingHvacExternalFeatureSnapshotV1,
     external_feature_maximum_wait_seconds: u32,
     external_feature_retry_timer: u32,
@@ -1704,34 +1706,35 @@ fn report_changed_rooms(shared: &Rc<RefCell<ControllerState>>) {
         libertas_endpoint_report(endpoint, &report, None);
         let mut state = shared.borrow_mut();
         state.rooms[index].last_report = Some(report);
-        state.rooms[index].last_endpoint_report_ticks = Some(now_ticks);
+        state.rooms[index].last_endpoint_signal_ticks = Some(now_ticks);
     }
 }
 
-fn report_due_heartbeats(shared: &Rc<RefCell<ControllerState>>, now_ticks: u64) {
-    let interval = u64::from(BUILDING_HVAC_ROOM_MAXIMUM_WAIT_INTERVAL_SECONDS)
-        .saturating_mul(MICROSECONDS_PER_SECOND);
-    let mut reports = Vec::new();
-    let now = libertas_get_utc_time();
-    {
+fn room_peer_alive_interval_ticks() -> u64 {
+    (u64::from(BUILDING_HVAC_ROOM_MAXIMUM_WAIT_INTERVAL_SECONDS).saturating_mul(3) / 4)
+        .saturating_mul(MICROSECONDS_PER_SECOND)
+}
+
+fn room_peer_alive_due(last_signal_ticks: Option<u64>, now_ticks: u64) -> bool {
+    last_signal_ticks
+        .is_some_and(|last| now_ticks.saturating_sub(last) >= room_peer_alive_interval_ticks())
+}
+
+fn signal_due_peer_alive(shared: &Rc<RefCell<ControllerState>>, now_ticks: u64) {
+    let endpoints = {
         let state = shared.borrow();
-        for (index, room) in state.rooms.iter().enumerate() {
-            if room
-                .last_endpoint_report_ticks
-                .is_some_and(|last_report| now_ticks.saturating_sub(last_report) >= interval)
-            {
-                reports.push((
-                    index,
-                    room.configuration.control_endpoint,
-                    room_report(&state, index, now),
-                ));
-            }
-        }
-    }
-    for (index, endpoint, report) in reports {
-        libertas_endpoint_report(endpoint, &report, None);
+        state
+            .rooms
+            .iter()
+            .enumerate()
+            .filter(|(_, room)| room_peer_alive_due(room.last_endpoint_signal_ticks, now_ticks))
+            .map(|(index, room)| (index, room.configuration.control_endpoint))
+            .collect::<Vec<_>>()
+    };
+    for (index, endpoint) in endpoints {
+        libertas_endpoint_peer_alive(endpoint, None);
         let mut state = shared.borrow_mut();
-        state.rooms[index].last_endpoint_report_ticks = Some(now_ticks);
+        state.rooms[index].last_endpoint_signal_ticks = Some(now_ticks);
     }
 }
 
@@ -1831,9 +1834,7 @@ fn handle_room_endpoint(
         .downcast_mut::<RoomContext>()
         .expect("invalid building climate room context");
     if opcode == OP_ENDPOINT_PEER_DOWN {
-        // The host has confirmed this client is currently stopped or absent.
-        // No ephemeral per-client state is kept here, and the host still owns
-        // permanent-until-changed membership.
+        // The host removes this opaque route after the callback; no App roster.
         return LibertasEndpointHandlerResult::Handled;
     }
     if opcode != OP_ENDPOINT_REQ && opcode != OP_ENDPOINT_SUB_REQ {
@@ -1852,8 +1853,8 @@ fn handle_room_endpoint(
                 let now_ticks = libertas_get_sys_ticks();
                 let mut state = context.shared.borrow_mut();
                 let room = &mut state.rooms[context.room_index];
-                if room.last_endpoint_report_ticks.is_none() {
-                    room.last_endpoint_report_ticks = Some(now_ticks);
+                if room.last_endpoint_signal_ticks.is_none() {
+                    room.last_endpoint_signal_ticks = Some(now_ticks);
                 }
                 room.last_report = Some(response);
             }
@@ -2227,6 +2228,21 @@ fn handle_weather_endpoint(
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .expect("invalid building climate weather context");
+    if opcode == OP_ENDPOINT_PEER_ALIVE {
+        // Signaling only: rearm an established watchdog before any data path.
+        if !matches!(message, LibertasEndpointMessage::NoPayload) {
+            return LibertasEndpointHandlerResult::InvalidMessage;
+        }
+        let wait = {
+            let state = shared.borrow();
+            (state.weather_server_up && state.weather_stream_ready)
+                .then_some(state.weather_maximum_wait_seconds)
+        };
+        if let Some(wait) = wait {
+            arm_weather_retry(shared, wait);
+        }
+        return LibertasEndpointHandlerResult::Handled;
+    }
     if opcode == OP_ENDPOINT_PEER_DOWN {
         let timer = {
             let mut state = shared.borrow_mut();
@@ -2523,10 +2539,26 @@ fn handle_external_feature_endpoint(
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .expect("invalid building climate external-feature context");
+    if opcode == OP_ENDPOINT_PEER_ALIVE {
+        // Signaling only: rearm an established watchdog before any data path.
+        if !matches!(message, LibertasEndpointMessage::NoPayload) {
+            return LibertasEndpointHandlerResult::InvalidMessage;
+        }
+        let wait = {
+            let state = shared.borrow();
+            (state.external_feature_server_up && state.external_feature_stream_ready)
+                .then_some(state.external_feature_maximum_wait_seconds)
+        };
+        if let Some(wait) = wait {
+            arm_external_feature_retry(shared, wait);
+        }
+        return LibertasEndpointHandlerResult::Handled;
+    }
     if opcode == OP_ENDPOINT_PEER_DOWN {
         let timer = {
             let mut state = shared.borrow_mut();
             state.external_feature_server_up = false;
+            state.external_feature_stream_ready = false;
             state.external_feature_retry_timer
         };
         if timer != 0 {
@@ -2537,7 +2569,11 @@ fn handle_external_feature_endpoint(
     if opcode == OP_ENDPOINT_PEER_UP {
         // Up can arrive without the preceding Down. Re-establish the
         // subscription for this newer server startup.
-        shared.borrow_mut().external_feature_server_up = true;
+        {
+            let mut state = shared.borrow_mut();
+            state.external_feature_server_up = true;
+            state.external_feature_stream_ready = false;
+        }
         subscribe_external_features(shared);
         return LibertasEndpointHandlerResult::Handled;
     }
@@ -2554,8 +2590,10 @@ fn handle_external_feature_endpoint(
         ) if maximum_wait_interval_seconds != 0 => {
             let accepted = accept_external_features(shared, snapshot);
             if accepted {
-                shared.borrow_mut().external_feature_maximum_wait_seconds =
-                    maximum_wait_interval_seconds;
+                let mut state = shared.borrow_mut();
+                state.external_feature_maximum_wait_seconds = maximum_wait_interval_seconds;
+                state.external_feature_stream_ready = true;
+                drop(state);
                 arm_external_feature_retry(shared, maximum_wait_interval_seconds);
             }
             accepted
@@ -2569,6 +2607,7 @@ fn handle_external_feature_endpoint(
             let accepted = accept_external_features(shared, snapshot);
             if accepted {
                 let wait = shared.borrow().external_feature_maximum_wait_seconds;
+                shared.borrow_mut().external_feature_stream_ready = true;
                 arm_external_feature_retry(shared, wait);
             }
             accepted
@@ -2590,6 +2629,7 @@ fn handle_external_feature_endpoint(
     if accepted {
         evaluate_and_publish(shared);
     } else {
+        shared.borrow_mut().external_feature_stream_ready = false;
         arm_external_feature_retry(shared, retry_seconds);
     }
     LibertasEndpointHandlerResult::Handled
@@ -4940,7 +4980,7 @@ fn evaluation_timer(timer: u32, now_ticks: u64, context: &mut Box<dyn Any>) {
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
         .expect("invalid building climate evaluation timer context");
     evaluate_and_publish(shared);
-    report_due_heartbeats(shared, now_ticks);
+    signal_due_peer_alive(shared, now_ticks);
     let now = libertas_get_utc_time();
     let stale_ticks = MATTER_READING_FRESHNESS_SECONDS.saturating_mul(MICROSECONDS_PER_SECOND);
     let resubscribe = {
@@ -5051,7 +5091,7 @@ pub(super) fn start(
             machine_learning: BuildingHvacRoomMachineLearningV1::default(),
             plan: None,
             last_report: None,
-            last_endpoint_report_ticks: None,
+            last_endpoint_signal_ticks: None,
             last_condition_boundary: None,
             pending_features: Vec::new(),
             prediction_residuals: Vec::new(),
@@ -5070,6 +5110,7 @@ pub(super) fn start(
         weather_retry_timer: 0,
         external_feature_endpoint: external_feature_client.map(|client| client.endpoint),
         external_feature_server_up: true,
+        external_feature_stream_ready: false,
         external_features: restore_external_features(),
         external_feature_maximum_wait_seconds: EXTERNAL_FEATURE_RETRY_SECONDS,
         external_feature_retry_timer: 0,
@@ -5303,6 +5344,27 @@ mod tests {
             }
             .is_server_reset_after(previous)
         );
+    }
+
+    #[test]
+    fn room_peer_alive_requires_subscription_and_due_time() {
+        let maximum_wait = u64::from(BUILDING_HVAC_ROOM_MAXIMUM_WAIT_INTERVAL_SECONDS)
+            .saturating_mul(MICROSECONDS_PER_SECOND);
+        let interval = room_peer_alive_interval_ticks();
+        let evaluation_interval =
+            u64::from(EVALUATION_INTERVAL_SECONDS).saturating_mul(MICROSECONDS_PER_SECOND);
+        let subscribed_at = 100;
+
+        assert!(interval + evaluation_interval < maximum_wait);
+        assert!(!room_peer_alive_due(None, subscribed_at + interval));
+        assert!(!room_peer_alive_due(
+            Some(subscribed_at),
+            subscribed_at + interval - 1
+        ));
+        assert!(room_peer_alive_due(
+            Some(subscribed_at),
+            subscribed_at + interval
+        ));
     }
 
     #[test]
