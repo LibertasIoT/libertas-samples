@@ -1529,8 +1529,8 @@ pub enum BuildingHvacRoomProtocolV1 {
     /// Room data
     /// Carries the complete authoritative room runtime. It is returned for a
     /// room request or accepted control replacement, and reported to subscribers
-    /// after any visible control, state, statistics, or plan change. An unchanged
-    /// report is a valid subscription heartbeat.
+    /// after a visible change. No-change liveness uses PeerAlive instead of
+    /// repeating UI-visible data.
     #[libertas_response]
     #[libertas_subscription_data]
     RoomDataV1 {
@@ -1547,9 +1547,8 @@ pub enum BuildingHvacRoomProtocolV1 {
         formatted_room_status: Vec<u8>,
         /// Maximum wait interval
         /// The maximum number of seconds a subscribed client waits after this
-        /// response or report before requesting the room again. The server sends
-        /// a changed or unchanged room-data report before this interval expires.
-        /// A one-shot client ignores the value.
+        /// response, report, or PeerAlive before requesting the room again. The
+        /// server sends changed data or PeerAlive first. One-shot clients ignore it.
         #[libertas_time_interval]
         #[libertas_number(min = 1)]
         maximum_wait_interval_seconds: u32,
@@ -1899,10 +1898,8 @@ impl BuildingHvacExternalFeatureInputV1 {
 /// External feature snapshot
 /// Carries the complete currently known optional operational inputs. Values are
 /// sorted by feature name. `retrieved_at` advances for a changed replacement;
-/// an unchanged heartbeat repeats the complete prior snapshot. Provider
-/// failures, older reports, and conflicting reports with the same timestamp
-/// leave the controller's last valid independently persisted snapshot
-/// unchanged.
+/// no-change liveness uses PeerAlive. Invalid, older, or conflicting reports
+/// leave the last valid independently persisted snapshot unchanged.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct BuildingHvacExternalFeatureSnapshotV1 {
     /// Retrieved at
@@ -1964,7 +1961,7 @@ pub enum BuildingHvacExternalFeatureProtocolV1 {
     GetExternalFeaturesV1,
     /// External features
     /// Correlated complete snapshot response. Subscription clients restart
-    /// their timeout after this response and every later update.
+    /// their timeout after this response, later updates, and PeerAlive.
     #[libertas_response]
     ExternalFeaturesV1 {
         /// Maximum wait interval
@@ -1978,8 +1975,8 @@ pub enum BuildingHvacExternalFeatureProtocolV1 {
         snapshot: BuildingHvacExternalFeatureSnapshotV1,
     },
     /// External feature update
-    /// Complete replacement reported to subscribers after any accepted change
-    /// or as an unchanged heartbeat before the maximum wait interval.
+    /// Complete replacement after an accepted change; no-change liveness uses
+    /// PeerAlive.
     #[libertas_subscription_data]
     ExternalFeatureUpdateV1 {
         /// Snapshot
@@ -4253,9 +4250,8 @@ fn restore_machine_learning_models(
 /// does not generate certified life-safety alarms. The runtime protocol and
 /// persistent union are design contracts. Runtime callbacks subscribe to Matter
 /// devices and weather, persist accepted state before reporting it, arbitrate
-/// shared thermostats, publish room snapshots and heartbeats, evaluate urgent
-/// conditions, learn cross-zone effects, and use the bounded statically linked
-/// XGBoost worker for optional near-term predictions.
+/// shared thermostats, publish changes and PeerAlive, evaluate urgent conditions,
+/// learn cross-zone effects, and run optional bounded XGBoost predictions.
 #[libertas_data_schema(BuildingHvacPersistentDataV1)]
 #[libertas_permissions(BUILDING_CLIMATE_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]

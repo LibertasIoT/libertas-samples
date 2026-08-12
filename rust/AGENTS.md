@@ -246,8 +246,11 @@ For a typed endpoint, define its protocol union and register
 ```
 
 Handle `OP_ENDPOINT_REQ`, `OP_ENDPOINT_SUB_REQ`, `OP_ENDPOINT_RSP`,
-`OP_ENDPOINT_DATA`, `OP_ENDPOINT_PEER_DOWN`, and `OP_ENDPOINT_PEER_UP`
-according to the declared variant roles. Use
+`OP_ENDPOINT_DATA`, `OP_ENDPOINT_PEER_ALIVE`, `OP_ENDPOINT_PEER_DOWN`, and
+`OP_ENDPOINT_PEER_UP` according to the declared variant roles. The contiguous
+SDK documentation on `LibertasEndpoint` is the sole normative source for the
+closed subscription, signaling, opaque-peer, lifecycle, and enforcement
+contract; this guidance and its examples are derived from it. Use
 `libertas_endpoint_request`,
 `libertas_endpoint_subscribe_request`, `libertas_endpoint_response`, and
 `libertas_endpoint_report`; preserve transaction ID and peer for correlated
@@ -257,7 +260,10 @@ permanent-until-changed client list and broadcast fan-out; a server must expect
 membership to change at any time without receiving the complete list. It may
 receive `OP_ENDPOINT_PEER_DOWN` opportunistically after one of its messages
 cannot be delivered and the client host confirms that exact client generation
-is unavailable. It may then clean up ephemeral peer-specific state, but client
+is unavailable. The host delivers Down while the opaque membership pair still
+exists and removes the pair only after successful runtime delivery. The server
+may then clean up ephemeral peer-specific state, but must not interpret the
+handle or issue a redundant removal. Client
 termination alone is not reported and it never receives client
 `OP_ENDPOINT_PEER_UP`. Current Hub-local App-task Up/Down delivery is guaranteed.
 A future remote transport must retain the newest unacknowledged state and retry
@@ -269,15 +275,20 @@ reports peer timeout. A client cancels subscription retry on server Down and
 infers timeout locally when expected protocol traffic is missing. Timeout leaves
 server state uncertain, so retry remains appropriate.
 
-For common subscription updates and heartbeats, publish once with
-`libertas_endpoint_report(..., None)` and use one endpoint-wide heartbeat timer.
+For common subscription updates, publish once with
+`libertas_endpoint_report(..., None)`. For no-change liveness, use one
+endpoint-wide timer and `libertas_endpoint_peer_alive(..., None)`; never invent
+an empty application payload merely to keep a subscription alive.
 Do not normally address `LIBERTAS_BROADCAST_DEST`; `None` asks the host to fan
 out through its authoritative list. Do not allocate timers per observed peer or
-cancel shared work after an opportunistic client Down. Client code should reuse
-its one watchdog timer and cancel it while the server is Down. Infrastructure
-suppresses duplicate and stale lifecycle events, so every delivered server Up
-is newer: resubscribe and rearm the watchdog even when the preceding Down was
-not observed.
+cancel shared work after an opportunistic client Down. `OP_ENDPOINT_PEER_ALIVE`
+is payloadless signaling outside the App Avro schema. A client with an
+established subscription uses it only to rearm its App-owned receive watchdog
+and returns before data, cache, cursor, state, or UI handling. Client code
+should reuse its one watchdog timer and cancel it while the server is Down.
+Infrastructure suppresses duplicate and stale lifecycle events, so every
+delivered server Up is newer: resubscribe and rearm the watchdog even when the
+preceding Down was not observed.
 
 The typed endpoint runtime validates the platform status byte, complete Avro
 decoding, and absence of trailing bytes before delivering requests. It
@@ -490,8 +501,9 @@ expanded.
 - Send exactly one `WeatherRecoveryV1` response for every
   `GetWeatherV1` request or subscription request. The response must include a
   nonzero maximum wait interval. After a successful replay or reset, clients
-  restart that timeout after the response and every data report, and retry
-  `GetWeatherV1` with their last fully applied cursor if it expires. One-shot
+  restart that timeout after the response, every valid data report, and
+  payloadless PeerAlive, and retry `GetWeatherV1` with their last fully applied
+  cursor if it expires. One-shot
   clients ignore the maximum wait interval. On an error response, the typed
   error and retry delay take precedence.
 - Incremental sprinkler-weather subscriptions use an epoch timestamp and
@@ -502,8 +514,8 @@ expanded.
   exclusive-from and inclusive-through cursors. Apply a report atomically only
   when its from-cursor matches the subscriber's stored cursor.
 - When no state change occurs before a subscriber's maximum wait interval,
-  publish an empty contiguous incremental report as a heartbeat. It keeps the
-  same cursor, proves liveness, and restarts the client timeout.
+  send standardized payloadless PeerAlive through host fan-out. It restarts the
+  client watchdog without entering the application-data or cursor path.
 - On a cursor gap or expired cursor, use the resume transaction. Replay a
   contiguous retained range when possible; otherwise return a cached snapshot
   limited to the client's half-open history and forecast recovery ranges.
@@ -585,16 +597,16 @@ rather than widening the sprinkler V1 contract into a general weather model.
   probabilities, and finite nonnegative measurements before exposing a record.
   A missing or invalid section remains `None` without hiding valid sections.
 - Never persist the cursor, replay journal, subscriber list, transaction IDs, or
-  heartbeat deadlines. Startup creates a current-time epoch timestamp with
+  PeerAlive deadlines. Startup creates a current-time epoch timestamp with
   sequence zero while preserving the validated weather snapshot.
 - Limit history and forecast recovery requests to their seven-day V1 windows
   and 168 periods per section. Replay only an exact contiguous journal range;
   otherwise return a range-limited reset snapshot.
-- Arm heartbeat timers with absolute monotonic expiration ticks. Send each due
-  subscriber an empty cursor-preserving `WeatherIncrementV1` before its maximum
-  wait interval, then rearm from the actual report time. Do not hold a mutable
-  application-state borrow while sending a response or report or updating a
-  timer.
+- Arm the shared PeerAlive timer with an absolute monotonic expiration tick.
+  Ask the host to fan out one payloadless PeerAlive before the maximum wait
+  interval, then rearm from actual Data or Alive transmission time. Do not hold
+  a mutable application-state borrow while sending a response, Data, Alive, or
+  updating a timer.
 - Perform Open-Meteo HTTPS requests only on the dedicated `std` worker thread.
   Reuse one Rustls HTTP client with bounded connect and total timeouts, limited
   redirects, compressed-response support, HTTP status validation, and a capped
@@ -659,7 +671,7 @@ used for freeze, equipment, smoke, or life-safety protection.
   unchanged.
 - Use the same epoch-timestamp-and-sequence reset detection, exact contiguous
   incremental ranges, 24-hour transient replay window, range-limited snapshot
-  recovery, and empty heartbeat behavior as the sprinkler family. Neither
+  recovery, and payloadless PeerAlive behavior as the sprinkler family. Neither
   family shares its public types or Avro union because they evolve for different
   consuming applications.
 - Keep indoor temperature, indoor humidity, indoor air quality, occupancy,
