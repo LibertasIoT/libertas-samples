@@ -6,9 +6,11 @@ weather-aware irrigation schedules.
 Configuration contains:
 
 - one `SprinklerWeatherProtocolV1` client endpoint shared by all zones;
+- one system-wide `Sprinkler Report` server endpoint;
 - one to 16 unique Libertas users who receive application reminders, currently
   including system-wide winterization reminders;
-- one Matter Irrigation System valve per zone;
+- one unique Matter Irrigation System valve per zone; report charts reuse the
+  device's normal frontend-resolved name rather than asking for another label;
 - a plant type and sprinkler-head type per zone; and
 - one server endpoint that exposes an essential regular-user state by default
   and complete advanced state on demand.
@@ -63,21 +65,48 @@ persisted before notification submission, repeats no more than once every 30
 days, and escalates immediately if fresh freezing-weather evidence follows a
 seasonal reminder. Winterization mode suppresses reminders.
 
-Each weather period and observed irrigation interval is persisted as a separate
-indexed water event. Startup loads and validates those records to reconstruct a
-bounded seven-day ledger dynamically. Weather corrections and minute valve
-checkpoints update only their matching indexed record rather than rewriting the
-full ledger. Every irrigation interval records the zone's watering percentage;
-changing that setting while a valve is open first checkpoints the old value and
-starts a separate adjacent interval for the new value.
+The `Sprinkler Report` endpoint returns one complete response containing four
+chart families: a selected zone's calculated available-water balance with
+thresholds, rain/irrigation inputs, and decision markers; a multi-zone watering
+timeline; day/week/month rain and irrigation accounting; and vertically aligned
+ET, temperature, humidity, sustained-wind, and gust charts. All panels use
+server-prepared rows and shared UTC time scales. Available water is a calculated
+root-zone balance, not a soil-moisture sensor reading. Water is reported as
+depth in millimeters because the configuration has no zone area or flow meter.
 
-Before issuing a timed Matter `Open` command, the controller persists the
-expected irrigation amount. It does not replace that reservation with periodic
-automatic-watering checkpoints; the observed close amends the same record when
-the actual duration differs. A manually opened valve is never commandeered or
-closed by the controller: it blocks other automatic watering, is checkpointed
-while open, and is finalized when observed closed. Every newly observed close
-starts a 10-second controller-wide delay before another automatic open decision.
+Report weather, watering activities, and daily balance/accounting checkpoints
+are retained without an age-based deletion window. A request can select any
+retained half-open interval up to 31 days; this bounds one response without
+limiting how old the requested data may be. Explicit provider corrections can
+replace or remove their matching weather records. The underlying controller
+still reconstructs a separate bounded seven-day ledger at startup, so it does
+not load the indefinite report archive into memory.
+
+Historical weather now includes temperature, relative humidity, sustained wind,
+and gusts in addition to precipitation and reference ET. The weather agent
+obtains these from the same provider hourly response and validates them before
+publishing or persisting the period. This begins honest wind history when the
+new schema is deployed; unavailable periods remain gaps instead of being
+inferred.
+
+The report also retains accepted 15-minute current-condition samples so the
+exact wind, gust, freeze, or rain evidence behind a controller decision remains
+visible after hourly history catches up. Completed hourly periods remain the
+sole rain/ET accounting source to avoid double-counting overlapping current
+samples. Daily checkpoints label provider coverage and persist any recent-
+weather, location/season, or conservative ET used to model a gap.
+
+Before issuing a timed Matter `Open` command, the controller durably records a
+`CommandPending` activity with the planned start, duration, and water depth.
+That reservation is not counted as delivered irrigation. Only observed valve-
+open time creates irrigation ledger entries and actual activity checkpoints, so
+a restart before the valve opens cannot manufacture delivered water. Planned
+and actual duration remain separate. Scheduled, skipped, superseded, failed,
+automatic, manual, and legacy-unknown activity facts are retained for the
+timeline. A manually opened valve is never commandeered or closed by the
+controller: it blocks other automatic watering, is checkpointed while open, and
+is finalized when observed closed. Every newly observed close starts a
+10-second controller-wide delay before another automatic open decision.
 
 Internet weather is an enhancement rather than a watering dependency. The
 controller always projects demand from the best available source: at least one
