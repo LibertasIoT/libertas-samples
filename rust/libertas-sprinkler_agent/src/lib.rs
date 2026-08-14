@@ -710,8 +710,7 @@ enum SprinklerReportBucketV1 {
 }
 
 /// Water input type
-/// Distinguishes provider-recorded rain from irrigation estimated from actual
-/// observed valve-open time.
+/// Distinguishes observed and planned sources contributing water to a zone.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
@@ -723,6 +722,12 @@ pub enum SprinklerWaterInputTypeV1 {
     /// Water estimated from observed valve-open time and the sprinkler-head
     /// profile; this is not a flow-meter measurement.
     Irrigation,
+    /// Forecast rain
+    /// Provider forecast precipitation for a future interval.
+    ForecastRain,
+    /// Scheduled water
+    /// Planned automatic irrigation that has not begun yet.
+    ScheduledWater,
 }
 
 /// Water-balance series
@@ -1224,19 +1229,15 @@ pub struct SprinklerWateringTimelineChartV1 {
 }
 
 /// Water-usage row
-/// One explicit rain or irrigation segment for a UTC day or week and
+/// One explicit water-amount segment for a sparse UTC day or week bucket and
 /// one configured zone.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWaterUsageRowV1 {
-    /// Bucket start
-    /// Inclusive UTC day or week boundary.
+    /// Bucket
+    /// Sparse UTC day or week bucket. Buckets with no water are omitted.
     #[libertas_chart_channel(x, tooltip)]
-    #[libertas_chart_scale(id = report_time, kind = utc)]
-    pub starts_at: LibertasDateTime,
-    /// Bucket end
-    /// Exclusive UTC day or week boundary.
-    #[libertas_chart_channel(x2, tooltip)]
-    pub ends_at: LibertasDateTime,
+    #[libertas_chart_scale(id = report_time, kind = band)]
+    pub at: LibertasDateTime,
     /// Stack start
     /// Server-computed lower water-depth bound.
     #[libertas_chart_channel(y)]
@@ -1247,7 +1248,7 @@ pub struct SprinklerWaterUsageRowV1 {
     #[libertas_chart_channel(y2, tooltip)]
     pub stack_end_millimeters: f32,
     /// Input type
-    /// Rain or estimated irrigation.
+    /// Rain, observed irrigation, forecast rain, or scheduled irrigation.
     #[libertas_chart_channel(color, detail, tooltip)]
     pub input_type: SprinklerWaterInputTypeV1,
     /// Zone
@@ -1260,7 +1261,8 @@ pub struct SprinklerWaterUsageRowV1 {
 }
 
 /// Water usage
-/// Compares rain and estimated irrigation by day or week for each zone.
+/// Compares observed and planned water amounts in sparse day or week buckets
+/// for each zone facet.
 #[libertas_chart(bar)]
 pub type SprinklerWaterUsageMarksV1 = Vec<SprinklerWaterUsageRowV1>;
 
@@ -7997,6 +7999,8 @@ struct UsageAccumulator {
     zone: LibertasDevice,
     rain: f32,
     irrigation: f32,
+    forecast_rain: f32,
+    scheduled_water: f32,
 }
 
 struct WaterInputInterval {
@@ -8045,12 +8049,16 @@ fn accumulate_water_interval(
                 zone,
                 rain: 0.0,
                 irrigation: 0.0,
+                forecast_rain: 0.0,
+                scheduled_water: 0.0,
             });
             totals.last_mut().unwrap()
         };
         match input_type {
             SprinklerWaterInputTypeV1::Rain => total.rain += segment_amount,
             SprinklerWaterInputTypeV1::Irrigation => total.irrigation += segment_amount,
+            SprinklerWaterInputTypeV1::ForecastRain => total.forecast_rain += segment_amount,
+            SprinklerWaterInputTypeV1::ScheduledWater => total.scheduled_water += segment_amount,
         }
         represented_at = segment_end;
     }
@@ -8059,6 +8067,7 @@ fn accumulate_water_interval(
 fn accumulate_zone_water_inputs(
     zone: &ReportZoneData,
     history: &[SprinklerWeatherHistoryPeriodV1],
+    forecast: Option<&SprinklerWeatherForecastV1>,
     bucket: SprinklerReportBucketV1,
     range: SprinklerReportTimeRangeV1,
     totals: &mut Vec<UsageAccumulator>,
@@ -8076,6 +8085,22 @@ fn accumulate_zone_water_inputs(
             bucket,
             range,
         );
+    }
+    if let Some(forecast) = forecast {
+        for period in &forecast.periods {
+            accumulate_water_interval(
+                totals,
+                zone.valve,
+                WaterInputInterval {
+                    starts_at: period.starts_at,
+                    duration_seconds: period.duration_seconds,
+                    amount_millimeters: period.expected_precipitation_millimeters,
+                    input_type: SprinklerWaterInputTypeV1::ForecastRain,
+                },
+                bucket,
+                range,
+            );
+        }
     }
     for activity in &zone.activities {
         if let (Some(starts_at), Some(duration_seconds), Some(amount_millimeters)) = (
@@ -8095,6 +8120,28 @@ fn accumulate_zone_water_inputs(
                 bucket,
                 range,
             );
+        } else if matches!(
+            activity.outcome,
+            SprinklerWateringOutcomeV1::Scheduled | SprinklerWateringOutcomeV1::CommandPending
+        ) {
+            if let (Some(starts_at), Some(duration_seconds), Some(amount_millimeters)) = (
+                activity.scheduled_starts_at,
+                activity.scheduled_duration_seconds,
+                activity.planned_water_millimeters,
+            ) {
+                accumulate_water_interval(
+                    totals,
+                    zone.valve,
+                    WaterInputInterval {
+                        starts_at,
+                        duration_seconds,
+                        amount_millimeters,
+                        input_type: SprinklerWaterInputTypeV1::ScheduledWater,
+                    },
+                    bucket,
+                    range,
+                );
+            }
         }
     }
 }
@@ -8102,12 +8149,13 @@ fn accumulate_zone_water_inputs(
 fn build_water_usage(
     zones: &[ReportZoneData],
     history: &[SprinklerWeatherHistoryPeriodV1],
+    forecast: Option<&SprinklerWeatherForecastV1>,
     bucket: SprinklerReportBucketV1,
     range: SprinklerReportTimeRangeV1,
 ) -> SprinklerWaterUsageChartV1 {
     let mut totals: Vec<UsageAccumulator> = Vec::new();
     for zone in zones {
-        accumulate_zone_water_inputs(zone, history, bucket, range, &mut totals);
+        accumulate_zone_water_inputs(zone, history, forecast, bucket, range, &mut totals);
     }
     totals.sort_by(|left, right| {
         left.zone
@@ -8118,8 +8166,7 @@ fn build_water_usage(
     for total in totals {
         if total.rain > 0.0 {
             inputs.push(SprinklerWaterUsageRowV1 {
-                starts_at: total.starts_at,
-                ends_at: total.ends_at,
+                at: total.starts_at,
                 stack_start_millimeters: 0.0,
                 stack_end_millimeters: total.rain,
                 input_type: SprinklerWaterInputTypeV1::Rain,
@@ -8128,11 +8175,30 @@ fn build_water_usage(
         }
         if total.irrigation > 0.0 {
             inputs.push(SprinklerWaterUsageRowV1 {
-                starts_at: total.starts_at,
-                ends_at: total.ends_at,
+                at: total.starts_at,
                 stack_start_millimeters: total.rain,
                 stack_end_millimeters: total.rain + total.irrigation,
                 input_type: SprinklerWaterInputTypeV1::Irrigation,
+                zone: total.zone,
+            });
+        }
+        let mut stack = total.rain + total.irrigation;
+        if total.forecast_rain > 0.0 {
+            inputs.push(SprinklerWaterUsageRowV1 {
+                at: total.starts_at,
+                stack_start_millimeters: stack,
+                stack_end_millimeters: stack + total.forecast_rain,
+                input_type: SprinklerWaterInputTypeV1::ForecastRain,
+                zone: total.zone,
+            });
+            stack += total.forecast_rain;
+        }
+        if total.scheduled_water > 0.0 {
+            inputs.push(SprinklerWaterUsageRowV1 {
+                at: total.starts_at,
+                stack_start_millimeters: stack,
+                stack_end_millimeters: stack + total.scheduled_water,
+                input_type: SprinklerWaterInputTypeV1::ScheduledWater,
                 zone: total.zone,
             });
         }
@@ -8626,9 +8692,15 @@ fn build_sprinkler_report_response(
         SprinklerReportChartKind::WateringTimeline => {
             SprinklerReportProtocolV1::WateringTimelineV1(build_watering_timeline(zones, range))
         }
-        SprinklerReportChartKind::WaterUsage => SprinklerReportProtocolV1::WaterUsageV1(
-            build_water_usage(zones, &history.balance, report_usage_bucket(range), range),
-        ),
+        SprinklerReportChartKind::WaterUsage => {
+            SprinklerReportProtocolV1::WaterUsageV1(build_water_usage(
+                zones,
+                &history.balance,
+                forecast,
+                report_usage_bucket(range),
+                range,
+            ))
+        }
         SprinklerReportChartKind::WeatherEt => {
             SprinklerReportProtocolV1::WeatherEtV1(build_weather_et_chart(
                 &history.balance,
@@ -10811,7 +10883,7 @@ mod tests {
 
         let balance = build_water_balance_chart(&zones, &[], range).unwrap();
         let timeline = build_watering_timeline(&zones, range);
-        let usage = build_water_usage(&zones, &[], SprinklerReportBucketV1::Day, range);
+        let usage = build_water_usage(&zones, &[], None, SprinklerReportBucketV1::Day, range);
         let weather = build_weather_et_chart(&[], &[], &[], None, &zones, range).unwrap();
 
         assert!(balance.iter().any(|row| row.zone == 7));
@@ -11055,16 +11127,13 @@ mod tests {
         let rows = build_water_usage(
             core::slice::from_ref(&report_zone),
             core::slice::from_ref(&period),
+            None,
             SprinklerReportBucketV1::Day,
             range,
         );
         assert_eq!(rows.inputs.len(), 2);
         assert!(rows.empty_zones.is_empty());
-        assert!(
-            rows.inputs
-                .iter()
-                .all(|row| row.starts_at == range.starts_at && row.ends_at == range.ends_before)
-        );
+        assert!(rows.inputs.iter().all(|row| row.at == range.starts_at));
         let rain = rows
             .inputs
             .iter()
@@ -11081,10 +11150,54 @@ mod tests {
         assert!((irrigation.stack_end_millimeters - 3.0).abs() < 0.001);
 
         period.precipitation_millimeters = 0.0;
-        report_zone.activities[0].applied_water_millimeters = Some(0.0);
+        let forecast = SprinklerWeatherForecastV1 {
+            retrieved_at: day,
+            valid_until: day + 3_600,
+            periods: vec![SprinklerWeatherForecastPeriodV1 {
+                starts_at: day,
+                duration_seconds: 3_600,
+                temperature_celsius: 20.0,
+                relative_humidity_percent: 50,
+                precipitation_probability_percent: 80,
+                expected_precipitation_millimeters: 12.0,
+                reference_evapotranspiration_millimeters: 0.0,
+                wind_speed_meters_per_second: 1.0,
+                wind_gust_meters_per_second: 2.0,
+            }],
+        };
+        let scheduled = &mut report_zone.activities[0];
+        scheduled.outcome = SprinklerWateringOutcomeV1::Scheduled;
+        scheduled.actual_starts_at = None;
+        scheduled.actual_duration_seconds = None;
+        scheduled.applied_water_millimeters = None;
+        let planned = build_water_usage(
+            core::slice::from_ref(&report_zone),
+            core::slice::from_ref(&period),
+            Some(&forecast),
+            SprinklerReportBucketV1::Day,
+            range,
+        );
+        assert_eq!(planned.inputs.len(), 2);
+        let forecast_rain = planned
+            .inputs
+            .iter()
+            .find(|row| row.input_type == SprinklerWaterInputTypeV1::ForecastRain)
+            .unwrap();
+        assert!((forecast_rain.stack_start_millimeters - 0.0).abs() < 0.001);
+        assert!((forecast_rain.stack_end_millimeters - 3.0).abs() < 0.001);
+        let scheduled_water = planned
+            .inputs
+            .iter()
+            .find(|row| row.input_type == SprinklerWaterInputTypeV1::ScheduledWater)
+            .unwrap();
+        assert!((scheduled_water.stack_start_millimeters - 3.0).abs() < 0.001);
+        assert!((scheduled_water.stack_end_millimeters - 5.0).abs() < 0.001);
+
+        report_zone.activities[0].outcome = SprinklerWateringOutcomeV1::Superseded;
         let empty = build_water_usage(
             &[report_zone],
             &[period],
+            None,
             SprinklerReportBucketV1::Day,
             range,
         );
