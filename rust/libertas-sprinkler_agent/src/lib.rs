@@ -101,13 +101,16 @@ const MAX_REPORT_RANGE_SECONDS: u64 = 31 * 24 * 60 * 60;
 const DEFAULT_REPORT_RANGE_SECONDS: u64 = 7 * 24 * 60 * 60;
 const DEFAULT_WEATHER_HISTORY_SECONDS: u64 = 2 * 24 * 60 * 60;
 // Water-usage rectangles share the report's real UTC axis, but their horizontal
-// length represents water depth rather than elapsed time. The App therefore
-// finds the shortest represented bucket in the complete snapshot and uses three
-// quarters of that duration as one common mark span. Combining that span with
-// the chart-wide maximum amount creates one seconds-per-millimeter scale: equal
-// amounts must have equal DateTime lengths even when edge buckets are clipped.
-// Keeping this projection entirely here is essential: clients render the
-// supplied x/x2 coordinates literally and must never infer or restack data.
+// length represents water depth rather than elapsed time. The App uses three
+// quarters of the selected calendar bucket as one common mark span. Combining
+// that nominal span with the chart-wide maximum amount creates one
+// seconds-per-millimeter scale. Integer DateTime endpoints preserve that
+// proportion except for bounded whole-second allocation needed to keep every
+// positive contributor nondegenerate. A request may clip the amount accumulated
+// into its first or last bucket, but it must never shrink every mark merely
+// because an edge bucket has partial data. Keeping this projection entirely
+// here is essential: clients render the supplied positive x/x2 intervals
+// literally and must never infer, repair, or restack provider geometry.
 const WATER_USAGE_BUCKET_MARK_SPAN_NUMERATOR: u64 = 3;
 const WATER_USAGE_BUCKET_MARK_SPAN_DENOMINATOR: u64 = 4;
 const MAX_REPORT_WEATHER_PERIODS: usize = 1_024;
@@ -8056,34 +8059,65 @@ fn water_usage_total_millimeters(total: &UsageAccumulator) -> Option<f64> {
     (amount > 0.0 && amount.is_finite()).then_some(amount)
 }
 
-fn water_usage_common_mark_span_seconds(totals: &[UsageAccumulator]) -> u64 {
-    totals
-        .iter()
-        .filter(|total| water_usage_total_millimeters(total).is_some())
-        .map(|total| total.ends_at.saturating_sub(total.starts_at))
-        .filter(|span| *span > 0)
-        .min()
-        .unwrap_or_default()
-        .saturating_mul(WATER_USAGE_BUCKET_MARK_SPAN_NUMERATOR)
+fn water_usage_common_mark_span_seconds(bucket: SprinklerReportBucketV1) -> u64 {
+    let bucket_span = match bucket {
+        SprinklerReportBucketV1::Day => SECONDS_PER_DAY,
+        SprinklerReportBucketV1::Week => 7 * SECONDS_PER_DAY,
+    };
+    bucket_span.saturating_mul(WATER_USAGE_BUCKET_MARK_SPAN_NUMERATOR)
         / WATER_USAGE_BUCKET_MARK_SPAN_DENOMINATOR
 }
 
-fn water_usage_display_duration_seconds(
-    amount_millimeters: f32,
+fn water_usage_display_offset_seconds(
+    cumulative_amount_millimeters: f64,
     maximum_total_millimeters: f64,
     common_mark_span_seconds: u64,
 ) -> u64 {
-    if amount_millimeters <= 0.0
-        || !amount_millimeters.is_finite()
+    if cumulative_amount_millimeters <= 0.0
+        || !cumulative_amount_millimeters.is_finite()
         || maximum_total_millimeters <= 0.0
         || !maximum_total_millimeters.is_finite()
+        || common_mark_span_seconds == 0
     {
         return 0;
     }
-    let bounded_amount = f64::from(amount_millimeters).min(maximum_total_millimeters);
-    let duration =
+    let bounded_amount = cumulative_amount_millimeters.min(maximum_total_millimeters);
+    let offset =
         (common_mark_span_seconds as f64 * bounded_amount / maximum_total_millimeters) as u64;
-    duration.min(common_mark_span_seconds)
+    offset.clamp(1, common_mark_span_seconds)
+}
+
+fn water_usage_display_intervals(
+    amounts_millimeters: &[f32],
+    maximum_total_millimeters: f64,
+    common_mark_span_seconds: u64,
+) -> Vec<(u64, u64)> {
+    if common_mark_span_seconds < amounts_millimeters.len() as u64 {
+        return Vec::new();
+    }
+    let mut intervals = Vec::with_capacity(amounts_millimeters.len());
+    let mut cumulative_amount_millimeters = 0.0_f64;
+    let mut display_offset_seconds = 0_u64;
+    for (index, amount_millimeters) in amounts_millimeters.iter().copied().enumerate() {
+        cumulative_amount_millimeters += f64::from(amount_millimeters);
+        let projected_end = water_usage_display_offset_seconds(
+            cumulative_amount_millimeters,
+            maximum_total_millimeters,
+            common_mark_span_seconds,
+        );
+        // Project cumulative boundaries, not independently rounded widths.
+        // Reserve one second for each remaining positive segment so tiny
+        // contributors stay nondegenerate without allowing their rounding
+        // floors to push the complete stack beyond its nominal mark span.
+        let remaining_segments = (amounts_millimeters.len() - index - 1) as u64;
+        let latest_end = common_mark_span_seconds.saturating_sub(remaining_segments);
+        let display_end_seconds = projected_end
+            .max(display_offset_seconds.saturating_add(1))
+            .min(latest_end);
+        intervals.push((display_offset_seconds, display_end_seconds));
+        display_offset_seconds = display_end_seconds;
+    }
+    intervals
 }
 
 struct WaterInputInterval {
@@ -8117,18 +8151,18 @@ fn accumulate_water_interval(
         let segment_end = represented_end.min(bucket_end);
         let segment_amount = amount_millimeters * segment_end.saturating_sub(represented_at) as f32
             / duration_seconds as f32;
-        let displayed_start = bucket_start.max(range.starts_at);
-        let displayed_end = bucket_end.min(range.ends_before);
         let total = if let Some(total) = totals.iter_mut().find(|total| {
-            total.starts_at == displayed_start
-                && total.ends_at == displayed_end
-                && total.zone == zone
+            total.starts_at == bucket_start && total.ends_at == bucket_end && total.zone == zone
         }) {
             total
         } else {
             totals.push(UsageAccumulator {
-                starts_at: displayed_start,
-                ends_at: displayed_end,
+                // Amount contribution is clipped to the requested range above,
+                // while chart geometry remains anchored to the truthful UTC
+                // calendar bucket. Mixing those concerns made one short edge
+                // fragment collapse the scale of every mark in the response.
+                starts_at: bucket_start,
+                ends_at: bucket_end,
                 zone,
                 rain: 0.0,
                 irrigation: 0.0,
@@ -8247,14 +8281,13 @@ fn build_water_usage(
         .iter()
         .filter_map(water_usage_total_millimeters)
         .fold(0.0_f64, f64::max);
-    let common_mark_span_seconds = water_usage_common_mark_span_seconds(&totals);
+    let common_mark_span_seconds = water_usage_common_mark_span_seconds(bucket);
     let mut inputs = Vec::new();
     for total in totals {
         let Some(_) = water_usage_total_millimeters(&total) else {
             continue;
         };
-        let mut display_offset_seconds = 0_u64;
-        for (input_type, amount_millimeters) in [
+        let positive_inputs: Vec<_> = [
             (SprinklerWaterInputTypeV1::Rain, total.rain),
             (SprinklerWaterInputTypeV1::Irrigation, total.irrigation),
             (SprinklerWaterInputTypeV1::ForecastRain, total.forecast_rain),
@@ -8262,17 +8295,21 @@ fn build_water_usage(
                 SprinklerWaterInputTypeV1::ScheduledWater,
                 total.scheduled_water,
             ),
-        ] {
-            if amount_millimeters <= 0.0 || !amount_millimeters.is_finite() {
-                continue;
-            }
-            let duration_seconds = water_usage_display_duration_seconds(
-                amount_millimeters,
-                maximum_total_millimeters,
-                common_mark_span_seconds,
-            );
-            let segment_starts_at = total.starts_at.saturating_add(display_offset_seconds);
-            let segment_ends_at = segment_starts_at.saturating_add(duration_seconds);
+        ]
+        .into_iter()
+        .filter(|(_, amount)| *amount > 0.0 && amount.is_finite())
+        .collect();
+        let amounts: Vec<_> = positive_inputs.iter().map(|(_, amount)| *amount).collect();
+        let display_intervals = water_usage_display_intervals(
+            &amounts,
+            maximum_total_millimeters,
+            common_mark_span_seconds,
+        );
+        for ((input_type, amount_millimeters), (display_start, display_end)) in
+            positive_inputs.into_iter().zip(display_intervals)
+        {
+            let segment_starts_at = total.starts_at.saturating_add(display_start);
+            let segment_ends_at = total.starts_at.saturating_add(display_end);
             inputs.push(SprinklerWaterUsageRowV1 {
                 at: total.starts_at,
                 segment_starts_at,
@@ -8281,9 +8318,6 @@ fn build_water_usage(
                 input_type,
                 zone: total.zone,
             });
-            display_offset_seconds = display_offset_seconds
-                .saturating_add(duration_seconds)
-                .min(common_mark_span_seconds);
         }
     }
     let empty_zones = zones
@@ -11210,45 +11244,24 @@ mod tests {
     }
 
     #[test]
-    fn water_usage_uses_one_amount_scale_for_partial_and_full_buckets() {
-        let partial_bucket = UsageAccumulator {
-            starts_at: 100,
-            ends_at: 1_000,
-            zone: 7,
-            rain: 1.0,
-            irrigation: 2.0,
-            forecast_rain: 0.0,
-            scheduled_water: 0.0,
-        };
-        let full_bucket = UsageAccumulator {
-            starts_at: 10_000,
-            ends_at: 10_000 + SECONDS_PER_DAY,
-            zone: 8,
-            rain: 2.0,
-            irrigation: 2.0,
-            forecast_rain: 0.0,
-            scheduled_water: 0.0,
-        };
-        let totals = [partial_bucket, full_bucket];
-        let common_mark_span_seconds = water_usage_common_mark_span_seconds(&totals);
-        let maximum_total_millimeters = totals
-            .iter()
-            .filter_map(water_usage_total_millimeters)
-            .fold(0.0_f64, f64::max);
+    fn water_usage_uses_nominal_bucket_scale_and_positive_intervals() {
+        let common_mark_span_seconds =
+            water_usage_common_mark_span_seconds(SprinklerReportBucketV1::Day);
+        let maximum_total_millimeters = 4.0;
 
-        assert_eq!(common_mark_span_seconds, 675);
-        let equal_amount_duration = water_usage_display_duration_seconds(
+        assert_eq!(common_mark_span_seconds, 64_800);
+        assert_eq!(
+            water_usage_common_mark_span_seconds(SprinklerReportBucketV1::Week),
+            453_600
+        );
+        let equal_amount_offset = water_usage_display_offset_seconds(
             2.0,
             maximum_total_millimeters,
             common_mark_span_seconds,
         );
-        assert_eq!(equal_amount_duration, 337);
+        assert_eq!(equal_amount_offset, 32_400);
         assert_eq!(
-            totals[0].starts_at + equal_amount_duration - totals[0].starts_at,
-            totals[1].starts_at + equal_amount_duration - totals[1].starts_at
-        );
-        assert_eq!(
-            water_usage_display_duration_seconds(
+            water_usage_display_offset_seconds(
                 4.0,
                 maximum_total_millimeters,
                 common_mark_span_seconds,
@@ -11256,9 +11269,23 @@ mod tests {
             common_mark_span_seconds
         );
         assert_eq!(
-            totals[0].ends_at - (totals[0].starts_at + common_mark_span_seconds),
-            225
+            water_usage_display_offset_seconds(
+                f64::from(f32::MIN_POSITIVE),
+                maximum_total_millimeters,
+                common_mark_span_seconds,
+            ),
+            1
         );
+
+        let intervals = water_usage_display_intervals(
+            &[4.0, f32::MIN_POSITIVE, f32::MIN_POSITIVE, f32::MIN_POSITIVE],
+            4.0,
+            common_mark_span_seconds,
+        );
+        assert_eq!(intervals.len(), 4);
+        assert!(intervals.iter().all(|(start, end)| end > start));
+        assert!(intervals.windows(2).all(|pair| pair[0].1 == pair[1].0));
+        assert_eq!(intervals.last().unwrap().1, common_mark_span_seconds);
     }
 
     #[test]
@@ -11297,15 +11324,15 @@ mod tests {
         );
         assert_eq!(rows.inputs.len(), 2);
         assert!(rows.empty_zones.is_empty());
-        assert!(rows.inputs.iter().all(|row| row.at == range.starts_at));
+        assert!(rows.inputs.iter().all(|row| row.at == day));
         let rain = rows
             .inputs
             .iter()
             .find(|row| row.input_type == SprinklerWaterInputTypeV1::Rain)
             .unwrap();
         assert!((rain.amount_millimeters - 1.0).abs() < 0.001);
-        assert_eq!(rain.segment_starts_at, range.starts_at);
-        assert_eq!(rain.segment_ends_at, range.starts_at + 225);
+        assert_eq!(rain.segment_starts_at, day);
+        assert_eq!(rain.segment_ends_at, day + 21_600);
         let irrigation = rows
             .inputs
             .iter()
@@ -11313,8 +11340,8 @@ mod tests {
             .unwrap();
         assert!((irrigation.amount_millimeters - 2.0).abs() < 0.001);
         assert_eq!(irrigation.segment_starts_at, rain.segment_ends_at);
-        assert_eq!(irrigation.segment_ends_at, range.starts_at + 675);
-        assert!(irrigation.segment_ends_at < range.ends_before);
+        assert_eq!(irrigation.segment_ends_at, day + 64_800);
+        assert!(irrigation.segment_ends_at < day + SECONDS_PER_DAY);
 
         period.precipitation_millimeters = 0.0;
         let forecast = SprinklerWeatherForecastV1 {
@@ -11351,8 +11378,8 @@ mod tests {
             .find(|row| row.input_type == SprinklerWaterInputTypeV1::ForecastRain)
             .unwrap();
         assert!((forecast_rain.amount_millimeters - 3.0).abs() < 0.001);
-        assert_eq!(forecast_rain.segment_starts_at, range.starts_at);
-        assert_eq!(forecast_rain.segment_ends_at, range.starts_at + 405);
+        assert_eq!(forecast_rain.segment_starts_at, day);
+        assert_eq!(forecast_rain.segment_ends_at, day + 38_880);
         let scheduled_water = planned
             .inputs
             .iter()
@@ -11363,7 +11390,7 @@ mod tests {
             scheduled_water.segment_starts_at,
             forecast_rain.segment_ends_at
         );
-        assert_eq!(scheduled_water.segment_ends_at, range.starts_at + 675);
+        assert_eq!(scheduled_water.segment_ends_at, day + 64_800);
 
         report_zone.activities[0].outcome = SprinklerWateringOutcomeV1::Superseded;
         let empty = build_water_usage(
