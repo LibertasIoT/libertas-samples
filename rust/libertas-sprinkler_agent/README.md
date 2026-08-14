@@ -74,17 +74,22 @@ on one shared time axis and distinguishes rain, observed irrigation, forecast
 rain, and scheduled water; and the weather/ET response aligns shared provider
 ET, temperature, humidity, sustained wind, and gusts with per-zone modeled ET
 gaps. Each sparse usage bucket begins one horizontal colored stack in its zone
-lane. The App reserves three quarters of the selected nominal UTC day or week
-bucket and combines it with the chart-wide maximum water amount to form one
-seconds-per-millimeter scale. Rectangle lengths remain amount-proportional
-except for bounded whole-second allocation needed to keep every positive amount
-nondegenerate. A partial first or last query bucket changes only its exact
-accumulated amount; it cannot collapse every segment in the chart. Every bucket
-retains a non-overlap gap. The exact millimeter amount in the tooltip remains
-authoritative; clients render the complete supplied coordinates literally and
-perform no geometry repair or stacking. The timeline and usage charts carry the
-watering inputs and decision details without duplicating them into every
-balance facet.
+lane. The App emits numeric `display_start,display_end` synthetic seconds on a
+hidden linear x guide, while real UTC bucket time stays in tooltip-only `at`.
+Every response uses a 600-second full stack and a chart-wide maximum water
+amount to form one seconds-per-millimeter scale. Rectangle lengths remain
+amount-proportional except for bounded whole-second allocation needed to keep
+every positive amount nondegenerate. All zones at the same real bucket share a
+display anchor; the next anchor follows the prior bucket's greatest rounded
+stack extent. A real gap of 0–59 seconds is retained, while a 60-second-or-
+larger gap becomes a fixed 30-second display gap. That gap is 5% of a full
+stack and leaves room for four one-second positive-contributor floors. A
+partial first or last query bucket changes only its exact accumulated amount;
+it cannot collapse every segment in the chart. The exact millimeter amount and
+real bucket in the tooltip remain authoritative; clients render the complete
+supplied coordinates literally and perform no geometry repair or stacking. The
+timeline and usage charts carry the watering inputs and decision details without
+duplicating them into every balance facet.
 A zone with no rows in one represented window receives a localized
 no-recorded-data text annotation instead of a fabricated event or zero-width
 water bar. Zone identity remains the configured `LibertasDevice`, which the
