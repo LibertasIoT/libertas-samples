@@ -65,22 +65,37 @@ persisted before notification submission, repeats no more than once every 30
 days, and escalates immediately if fresh freezing-weather evidence follows a
 seasonal reminder. Winterization mode suppresses reminders.
 
-The `Sprinkler Report` endpoint returns one complete response containing four
-chart families: a selected zone's calculated available-water balance with
-thresholds, rain/irrigation inputs, and decision markers; a multi-zone watering
-timeline; day/week/month rain and irrigation accounting; and vertically aligned
-ET, temperature, humidity, sustained-wind, and gust charts. All panels use
-server-prepared rows and shared UTC time scales. Available water is a calculated
-root-zone balance, not a soil-moisture sensor reading. Water is reported as
-depth in millimeters because the configuration has no zone area or flow meter.
+The `Sprinkler Report` endpoint exposes four independent chart requests so a
+client can load every chart in parallel. None asks for a zone. The calculated
+available-water chart facets all configured valve devices with their field-
+capacity, watering, and critical reference lines; the watering timeline shows
+scheduled and actual activity across all zones; water-usage facets rain and
+observed irrigation across all zones; and the weather/ET response aligns shared
+provider ET, temperature, humidity, sustained wind, and gusts with per-zone
+modeled ET gaps. The timeline and usage charts carry the watering inputs and
+decision details without duplicating them into every balance facet. A zone with
+no rows in one represented window receives a localized no-recorded-data text
+annotation instead of a fabricated event or zero-width water bar. Zone identity
+remains the configured `LibertasDevice`, which the client resolves normally;
+the report adds neither a duplicate zone name nor `FormattedText` indirection.
+
+Every request has only nullable `starts_at` and `ends_before` inputs. A client
+can send both as null immediately instead of showing a query form. Balance,
+timeline, and usage then default to the latest seven days; weather/ET defaults
+to two days of history plus the provider forecast horizon. Supplying one bound
+uses the same fixed span from that bound, while supplying both selects an exact
+custom range. The server automatically uses day buckets through 14 days and
+week buckets for longer usage windows. Available water is a calculated root-
+zone balance, not a soil-moisture sensor reading. Water is reported as depth in
+millimeters because the configuration has no zone area or flow meter.
 
 Report weather, watering activities, and daily balance/accounting checkpoints
-are retained without an age-based deletion window. A request can select any
-retained half-open interval up to 31 days; this bounds one response without
-limiting how old the requested data may be. Explicit provider corrections can
-replace or remove their matching weather records. The underlying controller
-still reconstructs a separate bounded seven-day ledger at startup, so it does
-not load the indefinite report archive into memory.
+are retained without an age-based deletion window. Supplying both nullable time
+bounds can select any retained half-open interval up to 31 days; this bounds one
+response without limiting how old the requested data may be. Explicit provider
+corrections can replace or remove their matching weather records. The
+underlying controller still reconstructs a separate bounded seven-day ledger
+at startup, so it does not load the indefinite report archive into memory.
 
 Historical weather now includes temperature, relative humidity, sustained wind,
 and gusts in addition to precipitation and reference ET. The weather agent
