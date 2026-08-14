@@ -69,15 +69,24 @@ The `Sprinkler Report` endpoint exposes four independent chart requests so a
 client can load every chart in parallel. None asks for a zone. The calculated
 available-water chart facets all configured valve devices with their field-
 capacity, watering, and critical reference lines; the watering timeline shows
-scheduled and actual activity across all zones; water-usage facets rain and
-observed irrigation across all zones; and the weather/ET response aligns shared
-provider ET, temperature, humidity, sustained wind, and gusts with per-zone
-modeled ET gaps. The timeline and usage charts carry the watering inputs and
-decision details without duplicating them into every balance facet. A zone with
-no rows in one represented window receives a localized no-recorded-data text
-annotation instead of a fabricated event or zero-width water bar. Zone identity
-remains the configured `LibertasDevice`, which the client resolves normally;
-the report adds neither a duplicate zone name nor `FormattedText` indirection.
+scheduled and actual activity across all zones; water usage places every zone
+on one shared time axis and distinguishes rain, observed irrigation, forecast
+rain, and scheduled water; and the weather/ET response aligns shared provider
+ET, temperature, humidity, sustained wind, and gusts with per-zone modeled ET
+gaps. Each sparse usage bucket begins one horizontal colored stack in its zone
+lane. The App finds the shortest represented bucket in the complete snapshot,
+reserves three quarters of that duration, and combines it with the chart-wide
+maximum water amount to form one seconds-per-millimeter scale. Equal amounts
+therefore have equal UTC rectangle lengths even when an edge bucket is clipped,
+and every bucket retains a non-overlap gap. The real bucket and exact millimeter
+amount remain tooltip data; clients render the supplied coordinates literally
+and perform no stacking. The timeline and usage charts carry the watering
+inputs and decision details without duplicating them into every balance facet.
+A zone with no rows in one represented window receives a localized
+no-recorded-data text annotation instead of a fabricated event or zero-width
+water bar. Zone identity remains the configured `LibertasDevice`, which the
+client resolves normally; the report adds neither a duplicate zone name nor
+`FormattedText` indirection.
 
 Every request has only nullable `starts_at` and `ends_before` inputs. A client
 can send both as null immediately instead of showing a query form. Balance,
