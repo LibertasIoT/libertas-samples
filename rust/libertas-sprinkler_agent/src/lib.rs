@@ -1235,17 +1235,17 @@ pub struct SprinklerWateringTimelineChartV1 {
 pub struct SprinklerWaterUsageRowV1 {
     /// Bucket
     /// Sparse UTC day or week bucket. Buckets with no water are omitted.
-    #[libertas_chart_channel(x, tooltip)]
+    #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(id = report_time, kind = band)]
     pub at: LibertasDateTime,
     /// Stack start
-    /// Server-computed lower water-depth bound.
-    #[libertas_chart_channel(y)]
+    /// Server-computed left water-depth bound for the horizontal segment.
+    #[libertas_chart_channel(x)]
     #[libertas_chart_scale(kind = linear, min = 0, zero = true)]
     pub stack_start_millimeters: f32,
     /// Stack end
-    /// Server-computed upper water-depth bound.
-    #[libertas_chart_channel(y2, tooltip)]
+    /// Server-computed right water-depth bound for the horizontal segment.
+    #[libertas_chart_channel(x2, tooltip)]
     pub stack_end_millimeters: f32,
     /// Input type
     /// Rain, observed irrigation, forecast rain, or scheduled irrigation.
@@ -1261,8 +1261,8 @@ pub struct SprinklerWaterUsageRowV1 {
 }
 
 /// Water usage
-/// Compares observed and planned water amounts in sparse day or week buckets
-/// for each zone facet.
+/// Compares observed and planned water amounts as horizontal stacked bars in
+/// sparse day or week buckets for each zone facet.
 #[libertas_chart(bar)]
 pub type SprinklerWaterUsageMarksV1 = Vec<SprinklerWaterUsageRowV1>;
 
