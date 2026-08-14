@@ -8123,25 +8123,23 @@ fn accumulate_zone_water_inputs(
         } else if matches!(
             activity.outcome,
             SprinklerWateringOutcomeV1::Scheduled | SprinklerWateringOutcomeV1::CommandPending
+        ) && let (Some(starts_at), Some(duration_seconds), Some(amount_millimeters)) = (
+            activity.scheduled_starts_at,
+            activity.scheduled_duration_seconds,
+            activity.planned_water_millimeters,
         ) {
-            if let (Some(starts_at), Some(duration_seconds), Some(amount_millimeters)) = (
-                activity.scheduled_starts_at,
-                activity.scheduled_duration_seconds,
-                activity.planned_water_millimeters,
-            ) {
-                accumulate_water_interval(
-                    totals,
-                    zone.valve,
-                    WaterInputInterval {
-                        starts_at,
-                        duration_seconds,
-                        amount_millimeters,
-                        input_type: SprinklerWaterInputTypeV1::ScheduledWater,
-                    },
-                    bucket,
-                    range,
-                );
-            }
+            accumulate_water_interval(
+                totals,
+                zone.valve,
+                WaterInputInterval {
+                    starts_at,
+                    duration_seconds,
+                    amount_millimeters,
+                    input_type: SprinklerWaterInputTypeV1::ScheduledWater,
+                },
+                bucket,
+                range,
+            );
         }
     }
 }
@@ -8525,13 +8523,17 @@ enum SprinklerReportChartKind {
 }
 
 impl SprinklerReportChartKind {
+    fn includes_forecast(self) -> bool {
+        matches!(self, Self::WaterUsage | Self::WeatherEt)
+    }
+
     fn default_span_seconds(self) -> u64 {
         match self {
             Self::WeatherEt => DEFAULT_WEATHER_HISTORY_SECONDS
                 .saturating_add(u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS)),
-            Self::WaterBalance | Self::WateringTimeline | Self::WaterUsage => {
-                DEFAULT_REPORT_RANGE_SECONDS
-            }
+            Self::WaterUsage => DEFAULT_REPORT_RANGE_SECONDS
+                .saturating_add(u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS)),
+            Self::WaterBalance | Self::WateringTimeline => DEFAULT_REPORT_RANGE_SECONDS,
         }
     }
 
@@ -8543,7 +8545,15 @@ impl SprinklerReportChartKind {
                     .saturating_add(u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS))
                     .saturating_add(1),
             },
-            Self::WaterBalance | Self::WateringTimeline | Self::WaterUsage => {
+            Self::WaterUsage => SprinklerReportTimeRangeV1 {
+                starts_at: now
+                    .saturating_add(1)
+                    .saturating_sub(DEFAULT_REPORT_RANGE_SECONDS),
+                ends_before: now
+                    .saturating_add(u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS))
+                    .saturating_add(1),
+            },
+            Self::WaterBalance | Self::WateringTimeline => {
                 let ends_before = now.saturating_add(1);
                 SprinklerReportTimeRangeV1 {
                     starts_at: ends_before.saturating_sub(DEFAULT_REPORT_RANGE_SECONDS),
@@ -8851,7 +8861,7 @@ fn handle_report_endpoint(
             (kind == SprinklerReportChartKind::WeatherEt)
                 .then_some(state.weather.current)
                 .flatten(),
-            (kind == SprinklerReportChartKind::WeatherEt)
+            kind.includes_forecast()
                 .then(|| state.weather.forecast.clone())
                 .flatten(),
             zones,
@@ -10688,7 +10698,6 @@ mod tests {
         for kind in [
             SprinklerReportChartKind::WaterBalance,
             SprinklerReportChartKind::WateringTimeline,
-            SprinklerReportChartKind::WaterUsage,
         ] {
             assert_eq!(
                 resolve_report_range(kind, None, None, Some(NOW)),
@@ -10698,6 +10707,13 @@ mod tests {
                 })
             );
         }
+        assert_eq!(
+            resolve_report_range(SprinklerReportChartKind::WaterUsage, None, None, Some(NOW)),
+            Some(SprinklerReportTimeRangeV1 {
+                starts_at: NOW + 1 - DEFAULT_REPORT_RANGE_SECONDS,
+                ends_before: NOW + u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS) + 1,
+            })
+        );
         assert_eq!(
             resolve_report_range(SprinklerReportChartKind::WeatherEt, None, None, Some(NOW),),
             Some(SprinklerReportTimeRangeV1 {
@@ -10712,6 +10728,18 @@ mod tests {
                 ends_before: 1 + DEFAULT_REPORT_RANGE_SECONDS,
             })
         );
+        assert_eq!(
+            resolve_report_range(SprinklerReportChartKind::WaterUsage, Some(1), None, None,),
+            Some(SprinklerReportTimeRangeV1 {
+                starts_at: 1,
+                ends_before: 1
+                    + DEFAULT_REPORT_RANGE_SECONDS
+                    + u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS),
+            })
+        );
+        assert!(SprinklerReportChartKind::WaterUsage.includes_forecast());
+        assert!(SprinklerReportChartKind::WeatherEt.includes_forecast());
+        assert!(!SprinklerReportChartKind::WaterBalance.includes_forecast());
         assert!(
             resolve_report_range(
                 SprinklerReportChartKind::WaterUsage,
