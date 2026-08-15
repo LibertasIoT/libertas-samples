@@ -1231,11 +1231,13 @@ pub struct SprinklerWaterBalanceChartV1 {
 /// timeline lane.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWaterUsageRowV1 {
-    /// Bucket
-    /// Real sparse UTC day or week bucket represented by this segment. This is
-    /// tooltip data; the server-computed display coordinates own the time axis.
+    /// Date or week beginning
+    /// Timezone-free UTC calendar date on which this real sparse day or week
+    /// bucket begins. This is tooltip data; the server-computed display
+    /// coordinates own the time axis.
+    #[libertas_date_only]
     #[libertas_chart_channel(tooltip)]
-    pub at: LibertasDateTime,
+    pub bucket_starts_on: u32,
     /// Display start
     /// Server-computed broken-time horizontal start in synthetic seconds. It
     /// orders occupied real buckets and is not an event time; later colored
@@ -1512,9 +1514,9 @@ pub struct SprinklerWeatherEtChartV1 {
 
 /// Sprinkler report protocol
 /// Exposes three independently requested all-zone charts. Every request can be
-/// sent immediately with both time bounds null; the server then selects a
-/// useful fixed default window. A client may later resend that chart's request
-/// with one or both bounds to customize only its time window.
+/// sent immediately with both bounds null; the server then selects a useful
+/// fixed default window. A client may later resend that chart's request with
+/// one or both calendar-date bounds to customize only its window.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 // This public Avro/schema union must expose the chart composition directly;
 // boxing the response fields would change their generated chart shape.
@@ -1526,12 +1528,16 @@ pub enum SprinklerReportProtocolV1 {
     #[libertas_request]
     #[libertas_next_response(WaterBalanceV1)]
     GetWaterBalanceV1 {
-        /// Start time
-        /// Optional inclusive UTC bound. Leave null for the server default.
-        starts_at: Option<LibertasDateTime>,
-        /// End time
-        /// Optional exclusive UTC bound. Leave null for the server default.
-        ends_before: Option<LibertasDateTime>,
+        /// First date
+        /// Optional inclusive UTC calendar date. Leave null for the server
+        /// default.
+        #[libertas_date_only]
+        starts_on: Option<u32>,
+        /// Last date
+        /// Optional inclusive UTC calendar date. Leave null for the server
+        /// default.
+        #[libertas_date_only]
+        ends_on: Option<u32>,
     },
     /// Water balance
     /// Facets calculated available water, plant-specific reference lines, and
@@ -1546,12 +1552,16 @@ pub enum SprinklerReportProtocolV1 {
     #[libertas_request]
     #[libertas_next_response(WaterUsageV1)]
     GetWaterUsageV1 {
-        /// Start time
-        /// Optional inclusive UTC bound. Leave null for the server default.
-        starts_at: Option<LibertasDateTime>,
-        /// End time
-        /// Optional exclusive UTC bound. Leave null for the server default.
-        ends_before: Option<LibertasDateTime>,
+        /// First date
+        /// Optional inclusive UTC calendar date. Leave null for the server
+        /// default.
+        #[libertas_date_only]
+        starts_on: Option<u32>,
+        /// Last date
+        /// Optional inclusive UTC calendar date. Leave null for the server
+        /// default.
+        #[libertas_date_only]
+        ends_on: Option<u32>,
     },
     /// Water usage
     /// Rain and estimated irrigation by server-selected bucket and zone.
@@ -1564,12 +1574,16 @@ pub enum SprinklerReportProtocolV1 {
     #[libertas_request]
     #[libertas_next_response(WeatherEtV1)]
     GetWeatherEtV1 {
-        /// Start time
-        /// Optional inclusive UTC bound. Leave null for the server default.
-        starts_at: Option<LibertasDateTime>,
-        /// End time
-        /// Optional exclusive UTC bound. Leave null for the server default.
-        ends_before: Option<LibertasDateTime>,
+        /// First date
+        /// Optional inclusive UTC calendar date. Leave null for the server
+        /// default.
+        #[libertas_date_only]
+        starts_on: Option<u32>,
+        /// Last date
+        /// Optional inclusive UTC calendar date. Leave null for the server
+        /// default.
+        #[libertas_date_only]
+        ends_on: Option<u32>,
     },
     /// Weather and ET
     /// Shared observed/forecast weather and per-zone modeled ET gaps.
@@ -2346,8 +2360,8 @@ fn recent_reference_evapotranspiration_millimeters_per_day(
     ))
 }
 
-fn utc_day_of_year(now: LibertasDateTime) -> u16 {
-    let days_since_epoch = i64::try_from(now / SECONDS_PER_DAY).unwrap_or(i64::MAX / 2);
+fn utc_civil_date(at: LibertasDateTime) -> (i64, i64, i64) {
+    let days_since_epoch = i64::try_from(at / SECONDS_PER_DAY).unwrap_or(i64::MAX / 2);
     let shifted = days_since_epoch + 719_468;
     let era = shifted.div_euclid(146_097);
     let day_of_era = shifted.rem_euclid(146_097);
@@ -2361,6 +2375,11 @@ fn utc_day_of_year(now: LibertasDateTime) -> u16 {
     if month <= 2 {
         year += 1;
     }
+    (year, month, day)
+}
+
+fn utc_day_of_year(now: LibertasDateTime) -> u16 {
+    let (year, month, day) = utc_civil_date(now);
     let leap_year = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
     let month_offsets = [0_i64, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
     let month_index = usize::try_from(month.saturating_sub(1))
@@ -5060,6 +5079,63 @@ fn recent_water_totals(water_events: &[SprinklerWaterEventV1]) -> (f32, f32) {
 
 fn utc_day_start(at: LibertasDateTime) -> LibertasDateTime {
     at - at % SECONDS_PER_DAY
+}
+
+fn gregorian_month_days(year: u32, month: u32) -> Option<u32> {
+    let leap_year =
+        year.is_multiple_of(4) && (!year.is_multiple_of(100) || year.is_multiple_of(400));
+    let days = [
+        31,
+        if leap_year { 29 } else { 28 },
+        31,
+        30,
+        31,
+        30,
+        31,
+        31,
+        30,
+        31,
+        30,
+        31,
+    ];
+    let index = usize::try_from(month.checked_sub(1)?).ok()?;
+    days.get(index).copied()
+}
+
+fn date_only_to_utc_day_start(date: u32) -> Option<LibertasDateTime> {
+    let year = date / 10_000;
+    let month = date / 100 % 100;
+    let day = date % 100;
+    // LibertasDateTime cannot represent a pre-epoch instant. DateOnly itself
+    // accepts four-digit Gregorian years, so enforce the narrower report range
+    // here as well as validating messages at the platform boundary.
+    if !(1970..=9999).contains(&year) || day == 0 || day > gregorian_month_days(year, month)? {
+        return None;
+    }
+
+    let adjusted_year = i64::from(year) - if month <= 2 { 1 } else { 0 };
+    let era = adjusted_year.div_euclid(400);
+    let year_of_era = adjusted_year.rem_euclid(400);
+    let march_month = i64::from(month) + if month > 2 { -3 } else { 9 };
+    let day_of_year = (153 * march_month + 2) / 5 + i64::from(day) - 1;
+    let day_of_era = year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year;
+    let days_since_epoch = era * 146_097 + day_of_era - 719_468;
+    u64::try_from(days_since_epoch)
+        .ok()?
+        .checked_mul(SECONDS_PER_DAY)
+}
+
+fn utc_date_only(at: LibertasDateTime) -> Option<u32> {
+    let (year, month, day) = utc_civil_date(at);
+    if !(1000..=9999).contains(&year) {
+        return None;
+    }
+    let year = u32::try_from(year).ok()?;
+    let month = u32::try_from(month).ok()?;
+    let day = u32::try_from(day).ok()?;
+    year.checked_mul(10_000)?
+        .checked_add(month.checked_mul(100)?)?
+        .checked_add(day)
 }
 
 fn daily_report_totals(
@@ -7989,7 +8065,8 @@ fn water_usage_display_full_scale_seconds() -> u64 {
 
 /// Returns one synthetic display anchor for each occupied real bucket. The
 /// display coordinate starts at zero so it cannot be mistaken for an event
-/// timestamp, while the row's `at` field remains the real UTC bucket tooltip.
+/// timestamp, while the row's DateOnly field remains the real UTC calendar
+/// bucket tooltip.
 fn water_usage_display_bucket_anchors(
     totals: &[UsageAccumulator],
     maximum_total_millimeters: f64,
@@ -8258,7 +8335,7 @@ fn build_water_usage(
     forecast: Option<&SprinklerWeatherForecastV1>,
     bucket: SprinklerReportBucketV1,
     range: SprinklerReportTimeRangeV1,
-) -> SprinklerWaterUsageChartV1 {
+) -> Result<SprinklerWaterUsageChartV1, ()> {
     let mut totals: Vec<UsageAccumulator> = Vec::new();
     for zone in zones {
         accumulate_zone_water_inputs(zone, history, forecast, bucket, range, &mut totals);
@@ -8306,7 +8383,7 @@ fn build_water_usage(
             let display_start = display_bucket_start.saturating_add(display_start);
             let display_end = display_bucket_start.saturating_add(display_end);
             inputs.push(SprinklerWaterUsageRowV1 {
-                at: total.starts_at,
+                bucket_starts_on: utc_date_only(total.starts_at).ok_or(())?,
                 display_start: display_start as f64,
                 display_end: display_end as f64,
                 amount_millimeters,
@@ -8324,10 +8401,10 @@ fn build_water_usage(
             empty_state: SprinklerReportEmptyStateV1::NoRecordedWaterInput,
         })
         .collect();
-    SprinklerWaterUsageChartV1 {
+    Ok(SprinklerWaterUsageChartV1 {
         inputs,
         empty_zones,
-    }
+    })
 }
 
 fn wind_sample_key(at: LibertasDateTime, series: SprinklerWindSeriesV1) -> String {
@@ -8619,6 +8696,28 @@ fn resolve_report_range(
     valid_report_range(range).then_some(range)
 }
 
+fn resolve_report_date_range(
+    kind: SprinklerReportChartKind,
+    starts_on: Option<u32>,
+    ends_on: Option<u32>,
+    trusted_now: Option<LibertasDateTime>,
+) -> Option<SprinklerReportTimeRangeV1> {
+    let starts_at = match starts_on {
+        Some(date) => Some(date_only_to_utc_day_start(date)?),
+        None => None,
+    };
+    let ends_before = match ends_on {
+        Some(date) => Some(date_only_to_utc_day_start(date)?.checked_add(SECONDS_PER_DAY)?),
+        None => None,
+    };
+    let range = resolve_report_range(kind, starts_at, ends_before, trusted_now)?;
+    // Keep every default or explicitly selected report window representable in
+    // the same DateOnly domain offered by the request UI.
+    utc_date_only(range.starts_at)?;
+    utc_date_only(range.ends_before.saturating_sub(1))?;
+    Some(range)
+}
+
 fn report_usage_bucket(range: SprinklerReportTimeRangeV1) -> SprinklerReportBucketV1 {
     if range.ends_before.saturating_sub(range.starts_at) <= 14 * SECONDS_PER_DAY {
         SprinklerReportBucketV1::Day
@@ -8737,7 +8836,7 @@ fn build_sprinkler_report_response(
                 forecast,
                 report_usage_bucket(range),
                 range,
-            ))
+            )?)
         }
         SprinklerReportChartKind::WeatherEt => {
             SprinklerReportProtocolV1::WeatherEtV1(build_weather_et_chart(
@@ -8776,31 +8875,27 @@ fn handle_report_endpoint(
             LibertasEndpointHandlerResult::Handled
         };
     }
-    let (kind, starts_at, ends_before) = match message {
+    let trusted_now = utc_seconds();
+    let (kind, starts_on, ends_on) = match message {
         LibertasEndpointMessage::Data(SprinklerReportProtocolV1::GetWaterBalanceV1 {
-            starts_at,
-            ends_before,
-        }) => (
-            SprinklerReportChartKind::WaterBalance,
-            starts_at,
-            ends_before,
-        ),
+            starts_on,
+            ends_on,
+        }) => (SprinklerReportChartKind::WaterBalance, starts_on, ends_on),
         LibertasEndpointMessage::Data(SprinklerReportProtocolV1::GetWaterUsageV1 {
-            starts_at,
-            ends_before,
-        }) => (SprinklerReportChartKind::WaterUsage, starts_at, ends_before),
+            starts_on,
+            ends_on,
+        }) => (SprinklerReportChartKind::WaterUsage, starts_on, ends_on),
         LibertasEndpointMessage::Data(SprinklerReportProtocolV1::GetWeatherEtV1 {
-            starts_at,
-            ends_before,
-        }) => (SprinklerReportChartKind::WeatherEt, starts_at, ends_before),
+            starts_on,
+            ends_on,
+        }) => (SprinklerReportChartKind::WeatherEt, starts_on, ends_on),
         _ => return LibertasEndpointHandlerResult::InvalidMessage,
     };
-    let trusted_now = utc_seconds();
     // The trusted clock is consulted only for the all-null default. A custom
-    // bound is never promoted into a clock value and therefore cannot
-    // fabricate live daily balance checkpoints in the future.
-    let Some(range) = resolve_report_range(kind, starts_at, ends_before, trusted_now) else {
-        if trusted_now.is_none() && starts_at.is_none() && ends_before.is_none() {
+    // calendar-date bound is never promoted into a clock value and therefore
+    // cannot fabricate live daily balance checkpoints in the future.
+    let Some(range) = resolve_report_date_range(kind, starts_on, ends_on, trusted_now) else {
+        if trusted_now.is_none() && starts_on.is_none() && ends_on.is_none() {
             return LibertasEndpointHandlerResult::Status(
                 LibertasEndpointStandardStatus::Unavailable,
             );
@@ -10568,16 +10663,16 @@ mod tests {
         };
         let requests = [
             SprinklerReportProtocolV1::GetWaterBalanceV1 {
-                starts_at: None,
-                ends_before: None,
+                starts_on: None,
+                ends_on: None,
             },
             SprinklerReportProtocolV1::GetWaterUsageV1 {
-                starts_at: None,
-                ends_before: None,
+                starts_on: None,
+                ends_on: None,
             },
             SprinklerReportProtocolV1::GetWeatherEtV1 {
-                starts_at: None,
-                ends_before: None,
+                starts_on: None,
+                ends_on: None,
             },
         ];
         for (index, request) in requests.into_iter().enumerate() {
@@ -10585,14 +10680,19 @@ mod tests {
             assert_eq!(encoded, vec![(index as u8) * 4, 0, 0]);
             assert_eq!(SprinklerReportProtocolV1::from_avro(&encoded), Ok(request));
         }
-        let custom_request = SprinklerReportProtocolV1::GetWaterUsageV1 {
-            starts_at: Some(range.starts_at),
-            ends_before: Some(range.ends_before),
-        };
-        assert_eq!(
-            SprinklerReportProtocolV1::from_avro(&custom_request.to_avro()),
-            Ok(custom_request)
-        );
+        let starts_on = Some(utc_date_only(range.starts_at).unwrap());
+        let ends_on = Some(utc_date_only(range.ends_before - 1).unwrap());
+        let custom_requests = [
+            SprinklerReportProtocolV1::GetWaterBalanceV1 { starts_on, ends_on },
+            SprinklerReportProtocolV1::GetWaterUsageV1 { starts_on, ends_on },
+            SprinklerReportProtocolV1::GetWeatherEtV1 { starts_on, ends_on },
+        ];
+        for custom_request in custom_requests {
+            assert_eq!(
+                SprinklerReportProtocolV1::from_avro(&custom_request.to_avro()),
+                Ok(custom_request)
+            );
+        }
 
         let activity = completed_report_activity(day + 3_600);
         let report_zone = ReportZoneData {
@@ -10770,9 +10870,9 @@ mod tests {
     }
 
     #[test]
-    fn null_report_times_resolve_without_user_input() {
+    fn null_report_dates_resolve_without_user_input() {
         assert_eq!(
-            resolve_report_range(
+            resolve_report_date_range(
                 SprinklerReportChartKind::WaterBalance,
                 None,
                 None,
@@ -10784,31 +10884,42 @@ mod tests {
             })
         );
         assert_eq!(
-            resolve_report_range(SprinklerReportChartKind::WaterUsage, None, None, Some(NOW)),
+            resolve_report_date_range(SprinklerReportChartKind::WaterUsage, None, None, Some(NOW),),
             Some(SprinklerReportTimeRangeV1 {
                 starts_at: NOW + 1 - DEFAULT_REPORT_RANGE_SECONDS,
                 ends_before: NOW + u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS) + 1,
             })
         );
         assert_eq!(
-            resolve_report_range(SprinklerReportChartKind::WeatherEt, None, None, Some(NOW),),
+            resolve_report_date_range(SprinklerReportChartKind::WeatherEt, None, None, Some(NOW),),
             Some(SprinklerReportTimeRangeV1 {
                 starts_at: NOW - DEFAULT_WEATHER_HISTORY_SECONDS,
                 ends_before: NOW + u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS) + 1,
             })
         );
         assert_eq!(
-            resolve_report_range(SprinklerReportChartKind::WaterBalance, Some(1), None, None,),
+            resolve_report_date_range(
+                SprinklerReportChartKind::WaterBalance,
+                Some(20270115),
+                None,
+                None,
+            ),
             Some(SprinklerReportTimeRangeV1 {
-                starts_at: 1,
-                ends_before: 1 + DEFAULT_REPORT_RANGE_SECONDS,
+                starts_at: date_only_to_utc_day_start(20270115).unwrap(),
+                ends_before: date_only_to_utc_day_start(20270115).unwrap()
+                    + DEFAULT_REPORT_RANGE_SECONDS,
             })
         );
         assert_eq!(
-            resolve_report_range(SprinklerReportChartKind::WaterUsage, Some(1), None, None,),
+            resolve_report_date_range(
+                SprinklerReportChartKind::WaterUsage,
+                Some(20270115),
+                None,
+                None,
+            ),
             Some(SprinklerReportTimeRangeV1 {
-                starts_at: 1,
-                ends_before: 1
+                starts_at: date_only_to_utc_day_start(20270115).unwrap(),
+                ends_before: date_only_to_utc_day_start(20270115).unwrap()
                     + DEFAULT_REPORT_RANGE_SECONDS
                     + u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS),
             })
@@ -10817,16 +10928,16 @@ mod tests {
         assert!(SprinklerReportChartKind::WeatherEt.includes_forecast());
         assert!(!SprinklerReportChartKind::WaterBalance.includes_forecast());
         assert!(
-            resolve_report_range(
+            resolve_report_date_range(
                 SprinklerReportChartKind::WaterUsage,
-                Some(1),
-                Some(1 + MAX_REPORT_RANGE_SECONDS + 1),
+                Some(20270101),
+                Some(20270201),
                 Some(NOW),
             )
             .is_none()
         );
         assert!(
-            resolve_report_range(SprinklerReportChartKind::WaterBalance, None, None, None,)
+            resolve_report_date_range(SprinklerReportChartKind::WaterBalance, None, None, None,)
                 .is_none()
         );
         assert_eq!(
@@ -10843,6 +10954,42 @@ mod tests {
             }),
             SprinklerReportBucketV1::Week
         );
+    }
+
+    #[test]
+    fn date_only_converts_valid_utc_dates_without_timezone_semantics() {
+        for date in [19700101, 20000229, 20261231, 99991231] {
+            let starts_at = date_only_to_utc_day_start(date).unwrap();
+            assert_eq!(utc_date_only(starts_at), Some(date));
+            assert_eq!(utc_date_only(starts_at + SECONDS_PER_DAY - 1), Some(date));
+        }
+        for date in [19691231, 20230229, 20261301, 20260000] {
+            assert_eq!(date_only_to_utc_day_start(date), None);
+        }
+        assert_eq!(
+            utc_date_only(date_only_to_utc_day_start(99991231).unwrap() + SECONDS_PER_DAY),
+            None
+        );
+    }
+
+    #[test]
+    fn every_report_date_range_treats_the_last_date_as_inclusive() {
+        for kind in [
+            SprinklerReportChartKind::WaterBalance,
+            SprinklerReportChartKind::WaterUsage,
+            SprinklerReportChartKind::WeatherEt,
+        ] {
+            let range =
+                resolve_report_date_range(kind, Some(20240228), Some(20240229), None).unwrap();
+            assert_eq!(
+                range,
+                SprinklerReportTimeRangeV1 {
+                    starts_at: date_only_to_utc_day_start(20240228).unwrap(),
+                    ends_before: date_only_to_utc_day_start(20240301).unwrap(),
+                }
+            );
+            assert_eq!(range.ends_before - range.starts_at, 2 * SECONDS_PER_DAY);
+        }
     }
 
     #[test]
@@ -10991,7 +11138,8 @@ mod tests {
         let zones = [report_zone(7, true), report_zone(8, false)];
 
         let balance = build_water_balance_chart(&zones, &[], range).unwrap();
-        let usage = build_water_usage(&zones, &[], None, SprinklerReportBucketV1::Day, range);
+        let usage =
+            build_water_usage(&zones, &[], None, SprinklerReportBucketV1::Day, range).unwrap();
         assert!(balance.balance.iter().any(|row| row.zone == 7));
         assert!(balance.balance.iter().any(|row| row.zone == 8));
         assert!(balance.decisions.iter().any(|row| row.zone == 7));
@@ -11271,11 +11419,17 @@ mod tests {
             Some(&forecast),
             SprinklerReportBucketV1::Day,
             range,
-        );
+        )
+        .unwrap();
         let row = |zone, at, input_type| {
+            let bucket_starts_on = utc_date_only(at).unwrap();
             rows.inputs
                 .iter()
-                .find(|row| row.zone == zone && row.at == at && row.input_type == input_type)
+                .find(|row| {
+                    row.zone == zone
+                        && row.bucket_starts_on == bucket_starts_on
+                        && row.input_type == input_type
+                })
                 .unwrap()
         };
 
@@ -11386,10 +11540,15 @@ mod tests {
             None,
             SprinklerReportBucketV1::Day,
             range,
-        );
+        )
+        .unwrap();
         assert_eq!(rows.inputs.len(), 2);
         assert!(rows.empty_zones.is_empty());
-        assert!(rows.inputs.iter().all(|row| row.at == day));
+        assert!(
+            rows.inputs
+                .iter()
+                .all(|row| row.bucket_starts_on == utc_date_only(day).unwrap())
+        );
         let rain = rows
             .inputs
             .iter()
@@ -11434,7 +11593,8 @@ mod tests {
             Some(&forecast),
             SprinklerReportBucketV1::Day,
             range,
-        );
+        )
+        .unwrap();
         assert_eq!(planned.inputs.len(), 2);
         let forecast_rain = planned
             .inputs
@@ -11460,7 +11620,8 @@ mod tests {
             None,
             SprinklerReportBucketV1::Day,
             range,
-        );
+        )
+        .unwrap();
         assert!(empty.inputs.is_empty());
         assert_eq!(empty.empty_zones.len(), 1);
     }

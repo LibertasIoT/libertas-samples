@@ -77,7 +77,8 @@ temperature/humidity panel, and sustained wind and gusts. Modeled ET remains an
 internal water-balance input rather than a sparse standalone panel. Each sparse
 usage bucket begins one horizontal colored stack in its zone lane. The App emits
 numeric `display_start,display_end` synthetic seconds on a
-hidden linear x guide, while real UTC bucket time stays in tooltip-only `at`.
+hidden linear x guide, while the real UTC bucket's timezone-free calendar date
+stays in tooltip-only `bucket_starts_on`.
 Every response uses a 600-second full stack and a chart-wide maximum water
 amount to form one seconds-per-millimeter scale. Rectangle lengths remain
 amount-proportional except for bounded whole-second allocation needed to keep
@@ -88,33 +89,37 @@ larger gap becomes a fixed 30-second display gap. That gap is 5% of a full
 stack and leaves room for four one-second positive-contributor floors. A
 partial first or last query bucket changes only its exact accumulated amount;
 it cannot collapse every segment in the chart. The exact millimeter amount and
-real bucket in the tooltip remain authoritative; clients render the complete
-supplied coordinates literally and perform no geometry repair or stacking. The
-balance markers explain controller decisions while usage shows their water-
-accounting effect without a redundant activity timeline.
+real calendar bucket in the tooltip remain authoritative; clients render the
+complete supplied coordinates literally and perform no geometry repair or
+stacking. The balance markers explain controller decisions while usage shows
+their water-accounting effect without a redundant activity timeline.
 A zone with no rows in one represented window receives a localized
 no-recorded-data text annotation instead of a fabricated event or zero-width
 water bar. Zone identity remains the configured `LibertasDevice`, which the
 client resolves normally; the report adds neither a duplicate zone name nor
 `FormattedText` indirection.
 
-Every request has only nullable `starts_at` and `ends_before` inputs. A client
-can send both as null immediately instead of showing a query form. Balance and
-usage then default to the latest seven days; weather/ET defaults to two days of
-history plus the provider forecast horizon. Supplying one bound
-uses the same fixed span from that bound, while supplying both selects an exact
-custom range. The server automatically uses day buckets through 14 days and
-week buckets for longer usage windows. Available water is a calculated root-
-zone balance, not a soil-moisture sensor reading. Water is reported as depth in
-millimeters because the configuration has no zone area or flow meter.
+Every report request exposes nullable, timezone-free `starts_on` and `ends_on`
+UTC calendar dates through native date pickers; both dates are inclusive. A
+client can send both as null immediately instead of showing a query form.
+Balance then defaults to the latest seven days, usage to seven prior days plus
+the provider forecast horizon, and weather/ET to two prior days plus the
+provider forecast horizon. Supplying one bound uses the same fixed span from
+that bound, while supplying both selects an exact custom range. The server
+automatically uses day buckets through 14 days and week buckets for longer
+usage windows. Available water is a calculated root-zone balance, not a
+soil-moisture sensor reading. Water is reported as depth in millimeters because
+the configuration has no zone area or flow meter.
 
 Report weather, watering activities, and daily balance/accounting checkpoints
-are retained without an age-based deletion window. Supplying both nullable time
-bounds can select any retained half-open interval up to 31 days; this bounds one
+are retained without an age-based deletion window. Supplying both bounds can
+select any retained interval up to 31 days. Every request converts its inclusive
+first and last UTC dates to an internal half-open timestamp range, preserving
+exact chart samples while keeping calendar selection simple. This bounds one
 response without limiting how old the requested data may be. Explicit provider
-corrections can replace or remove their matching weather records. The
-underlying controller still reconstructs a separate bounded seven-day ledger
-at startup, so it does not load the indefinite report archive into memory.
+corrections can replace or remove their matching weather records. The underlying
+controller still reconstructs a separate bounded seven-day ledger at startup,
+so it does not load the indefinite report archive into memory.
 
 Historical weather now includes temperature, relative humidity, sustained wind,
 and gusts in addition to precipitation and reference ET. The weather agent
