@@ -72,9 +72,10 @@ capacity and plant-specific watering and critical reference lines, with
 scheduled, skipped, failed, manual, and completed watering decisions shown as
 markers; water usage places every zone on one shared time axis and
 distinguishes rain, observed irrigation, forecast rain, and scheduled water;
-and the weather/ET response aligns shared provider ET, temperature, humidity,
-sustained wind, and gusts with per-zone modeled ET gaps. Each sparse usage
-bucket begins one horizontal colored stack in its zone lane. The App emits
+and the weather/ET response aligns provider ET, a combined dual-axis
+temperature/humidity panel, and sustained wind and gusts. Modeled ET remains an
+internal water-balance input rather than a sparse standalone panel. Each sparse
+usage bucket begins one horizontal colored stack in its zone lane. The App emits
 numeric `display_start,display_end` synthetic seconds on a
 hidden linear x guide, while real UTC bucket time stays in tooltip-only `at`.
 Every response uses a 600-second full stack and a chart-wide maximum water
@@ -99,8 +100,8 @@ client resolves normally; the report adds neither a duplicate zone name nor
 
 Every request has only nullable `starts_at` and `ends_before` inputs. A client
 can send both as null immediately instead of showing a query form. Balance and
-usage then default to the latest seven days; weather/ET defaults
-to two days of history plus the provider forecast horizon. Supplying one bound
+usage then default to the latest seven days; weather/ET defaults to two days of
+history plus the provider forecast horizon. Supplying one bound
 uses the same fixed span from that bound, while supplying both selects an exact
 custom range. The server automatically uses day buckets through 14 days and
 week buckets for longer usage windows. Available water is a calculated root-
