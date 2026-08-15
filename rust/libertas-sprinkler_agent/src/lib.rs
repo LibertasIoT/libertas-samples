@@ -774,10 +774,21 @@ pub enum SprinklerReportEmptyStateV1 {
     /// This zone has no positive rain or observed-irrigation input in the
     /// requested window.
     NoRecordedWaterInput,
-    /// No recorded modeled ET gap
-    /// Provider history covers the represented zone interval, or no modeled
-    /// fallback interval is retained for this window.
-    NoRecordedModeledEtGap,
+}
+
+/// Temperature and humidity measurement
+/// Distinguishes the two independently scaled lines in the combined weather
+/// panel.
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
+)]
+pub enum SprinklerTemperatureHumidityMeasurementV1 {
+    /// Temperature
+    /// Air temperature in degrees Celsius.
+    Temperature,
+    /// Relative humidity
+    /// Relative humidity percentage.
+    RelativeHumidity,
 }
 
 /// Watering origin
@@ -1289,38 +1300,6 @@ pub struct SprinklerWaterUsageEmptyZoneRowV1 {
 #[libertas_chart(text)]
 pub type SprinklerWaterUsageEmptyZonesV1 = Vec<SprinklerWaterUsageEmptyZoneRowV1>;
 
-/// Empty faceted-zone annotation
-/// Centers localized text inside a Device facet without inventing a time or
-/// quantitative value.
-#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub struct SprinklerFacetedEmptyZoneRowV1 {
-    /// Horizontal center
-    /// Singleton discrete x position for the annotation.
-    #[libertas_chart_channel(x)]
-    #[libertas_chart_scale(kind = point, guide = none)]
-    pub horizontal_center: bool,
-    /// Vertical center
-    /// Singleton discrete y position for the annotation.
-    #[libertas_chart_channel(y)]
-    #[libertas_chart_scale(kind = point, guide = none)]
-    pub vertical_center: bool,
-    /// Zone
-    /// Configured valve device represented by this empty facet.
-    #[libertas_chart_channel(row, tooltip, key)]
-    #[libertas_chart_scale(id = report_zone, kind = band, guide = none)]
-    #[libertas_device_type("BQEBAUABgQED")]
-    pub zone: LibertasDevice,
-    /// Empty state
-    /// Localized explanation for the absence of quantitative marks.
-    #[libertas_chart_channel(text, tooltip)]
-    pub empty_state: SprinklerReportEmptyStateV1,
-}
-
-/// Empty faceted zones
-/// Text annotations for configured Device facets with no quantitative rows.
-#[libertas_chart(text)]
-pub type SprinklerFacetedEmptyZonesV1 = Vec<SprinklerFacetedEmptyZoneRowV1>;
-
 /// Water usage
 /// Layers positive rain/irrigation bars with annotations for dry, idle zones.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -1349,15 +1328,6 @@ pub enum SprinklerWeatherChartSourceV1 {
     /// Forecast
     /// A future value from the latest available forecast snapshot.
     Forecast,
-    /// Recent-weather estimate
-    /// A retained recent local ET rate fills a provider-history gap.
-    RecentWeatherEstimate,
-    /// Location-and-season estimate
-    /// The offline latitude, hemisphere, and season model fills a history gap.
-    LocationAndSeasonEstimate,
-    /// Conservative estimate
-    /// The built-in 5 mm/day reference rate fills a history gap.
-    ConservativeEstimate,
 }
 
 /// Wind series
@@ -1419,60 +1389,6 @@ pub struct SprinklerEtRowV1 {
 #[libertas_chart(bar)]
 pub type SprinklerEtChartV1 = Vec<SprinklerEtRowV1>;
 
-/// Zone modeled-ET row
-/// One exact provider-uncovered interval and the fallback reference-ET amount
-/// used by one configured zone.
-#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub struct SprinklerModeledEtRowV1 {
-    /// Start time
-    /// Inclusive modeled interval start.
-    #[libertas_chart_channel(x, tooltip)]
-    #[libertas_chart_scale(id = report_time, kind = utc)]
-    pub starts_at: LibertasDateTime,
-    /// End time
-    /// Exclusive modeled interval end.
-    #[libertas_chart_channel(x2, tooltip)]
-    pub ends_at: LibertasDateTime,
-    /// Reference evapotranspiration
-    /// Fallback reference ET applied during this provider-history gap.
-    #[libertas_chart_channel(y, tooltip)]
-    #[libertas_chart_scale(kind = linear, min = 0, zero = true)]
-    pub reference_evapotranspiration_millimeters: f32,
-    /// Source
-    /// Recent-weather, location-and-season, or conservative estimate.
-    #[libertas_chart_channel(color, detail, tooltip)]
-    pub source: SprinklerWeatherChartSourceV1,
-    /// Zone
-    /// Configured zone whose retained calculation used this fallback.
-    #[libertas_chart_channel(row, tooltip)]
-    #[libertas_chart_scale(id = report_zone, kind = band)]
-    #[libertas_device_type("BQEBAUABgQED")]
-    pub zone: LibertasDevice,
-    /// Stable key
-    /// Server-generated identity for this zone, interval, and source.
-    #[libertas_chart_channel(key)]
-    pub sample_key: String,
-}
-
-/// Zone modeled evapotranspiration
-/// Provider-history gaps and their frozen fallback source for every zone.
-#[libertas_chart(bar)]
-pub type SprinklerModeledEtMarksV1 = Vec<SprinklerModeledEtRowV1>;
-
-/// Zone modeled evapotranspiration
-/// Layers actual modeled-gap bars with annotations for zones whose represented
-/// interval needs no retained fallback estimate.
-#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-#[libertas_chart(layer)]
-pub struct SprinklerModeledEtChartV1 {
-    /// Modeled ET gaps
-    /// Exact retained fallback intervals and their source.
-    pub gaps: SprinklerModeledEtMarksV1,
-    /// Empty zones
-    /// Configured zones with no modeled gap in the requested window.
-    pub empty_zones: SprinklerFacetedEmptyZonesV1,
-}
-
 /// Temperature row
 /// One observed or forecast air-temperature sample.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -1487,9 +1403,15 @@ pub struct SprinklerTemperatureRowV1 {
     #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(kind = linear, zero = false)]
     pub temperature_celsius: f32,
+    /// Measurement
+    /// Identifies this line as temperature in the combined panel.
+    #[libertas_chart_channel(color, detail, tooltip)]
+    #[libertas_chart_scale(id = temperature_humidity_measurement)]
+    pub measurement: SprinklerTemperatureHumidityMeasurementV1,
     /// Source
     /// Observed or forecast.
-    #[libertas_chart_channel(color, detail, tooltip)]
+    #[libertas_chart_channel(strokeDash, detail, tooltip)]
+    #[libertas_chart_scale(id = temperature_humidity_source)]
     pub source: SprinklerWeatherChartSourceV1,
 }
 
@@ -1505,16 +1427,22 @@ pub struct SprinklerHumidityRowV1 {
     /// Time
     /// Provider period start.
     #[libertas_chart_channel(x, tooltip, key)]
-    #[libertas_chart_scale(id = report_time, kind = utc)]
+    #[libertas_chart_scale(id = report_time, kind = utc, guide = none)]
     pub at: LibertasDateTime,
     /// Relative humidity
     /// Relative humidity percentage.
     #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(kind = linear, min = 0, max = 100, zero = true)]
     pub relative_humidity_percent: u8,
+    /// Measurement
+    /// Identifies this line as relative humidity in the combined panel.
+    #[libertas_chart_channel(color, detail, tooltip)]
+    #[libertas_chart_scale(id = temperature_humidity_measurement, guide = none)]
+    pub measurement: SprinklerTemperatureHumidityMeasurementV1,
     /// Source
     /// Observed or forecast.
-    #[libertas_chart_channel(color, detail, tooltip)]
+    #[libertas_chart_channel(strokeDash, detail, tooltip)]
+    #[libertas_chart_scale(id = temperature_humidity_source, guide = none)]
     pub source: SprinklerWeatherChartSourceV1,
 }
 
@@ -1522,6 +1450,20 @@ pub struct SprinklerHumidityRowV1 {
 /// Observed and forecast humidity on its own zero-to-100-percent scale.
 #[libertas_chart(line)]
 pub type SprinklerHumidityChartV1 = Vec<SprinklerHumidityRowV1>;
+
+/// Temperature and relative humidity
+/// Overlays temperature and humidity in time while retaining independent left
+/// and right y-axes for their incompatible units.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+#[libertas_chart(layer)]
+pub struct SprinklerTemperatureHumidityChartV1 {
+    /// Temperature
+    /// Temperature uses the first automatic y guide.
+    pub temperature: SprinklerTemperatureChartV1,
+    /// Relative humidity
+    /// Relative humidity uses the independent second y guide.
+    pub relative_humidity: SprinklerHumidityChartV1,
+}
 
 /// Wind row
 /// One sustained-wind or gust sample.
@@ -1553,23 +1495,16 @@ pub struct SprinklerWindRowV1 {
 pub type SprinklerWindChartV1 = Vec<SprinklerWindRowV1>;
 
 /// Weather and ET chart
-/// Vertically aligns ET, temperature, humidity, and wind without mixing their
-/// incompatible units or scales.
+/// Vertically aligns provider ET, combined temperature/humidity, and wind.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 #[libertas_chart(vconcat)]
 pub struct SprinklerWeatherEtChartV1 {
     /// Reference evapotranspiration
     /// Observed and forecast ET.
     pub reference_evapotranspiration: SprinklerEtChartV1,
-    /// Modeled reference evapotranspiration
-    /// Exact provider-history gaps, faceted across every configured zone.
-    pub modeled_reference_evapotranspiration: SprinklerModeledEtChartV1,
-    /// Temperature
-    /// Observed and forecast air temperature.
-    pub temperature: SprinklerTemperatureChartV1,
-    /// Relative humidity
-    /// Observed and forecast relative humidity.
-    pub relative_humidity: SprinklerHumidityChartV1,
+    /// Temperature and relative humidity
+    /// Observed and forecast values with independent y-axes.
+    pub temperature_and_relative_humidity: SprinklerTemperatureHumidityChartV1,
     /// Wind
     /// Observed and forecast sustained wind and gusts.
     pub wind: SprinklerWindChartV1,
@@ -8414,30 +8349,6 @@ fn et_sample_key(at: LibertasDateTime, source: SprinklerWeatherChartSourceV1) ->
     alloc::format!("{at}:{source:?}")
 }
 
-fn modeled_et_sample_key(
-    zone: LibertasDevice,
-    at: LibertasDateTime,
-    source: SprinklerWeatherChartSourceV1,
-) -> String {
-    alloc::format!("{zone}:{at}:{source:?}")
-}
-
-fn modeled_weather_chart_source(
-    source: SprinklerWaterDemandSourceV1,
-) -> SprinklerWeatherChartSourceV1 {
-    match source {
-        SprinklerWaterDemandSourceV1::RecentLocalWeather => {
-            SprinklerWeatherChartSourceV1::RecentWeatherEstimate
-        }
-        SprinklerWaterDemandSourceV1::LocationAndSeason => {
-            SprinklerWeatherChartSourceV1::LocationAndSeasonEstimate
-        }
-        SprinklerWaterDemandSourceV1::ConservativeDefault => {
-            SprinklerWeatherChartSourceV1::ConservativeEstimate
-        }
-    }
-}
-
 fn reserve_report_rows(generated_rows: &mut usize, additional_rows: usize) -> Result<(), ()> {
     let total = generated_rows.checked_add(additional_rows).ok_or(())?;
     if total > MAX_REPORT_CHART_ROWS {
@@ -8452,17 +8363,13 @@ fn build_weather_et_chart(
     full_history: &[SprinklerWeatherHistoryPeriodV2],
     observations: &[SprinklerCurrentWeatherV1],
     forecast: Option<&SprinklerWeatherForecastV1>,
-    zones: &[ReportZoneData],
     range: SprinklerReportTimeRangeV1,
 ) -> Result<SprinklerWeatherEtChartV1, ()> {
     let mut reference_evapotranspiration = Vec::new();
-    let mut modeled_reference_evapotranspiration = Vec::new();
     let mut temperature = Vec::new();
     let mut relative_humidity = Vec::new();
     let mut wind = Vec::new();
     let mut generated_rows = 0;
-    let provider_intervals =
-        merged_report_provider_intervals(balance_history, range.starts_at, range.ends_before);
     // Every legacy period still contributes its exact provider ET. Its absent
     // temperature, humidity, and wind are omitted rather than represented as
     // synthetic zero observations.
@@ -8502,11 +8409,13 @@ fn build_weather_et_chart(
         temperature.push(SprinklerTemperatureRowV1 {
             at: starts_at,
             temperature_celsius: period.temperature_celsius,
+            measurement: SprinklerTemperatureHumidityMeasurementV1::Temperature,
             source: SprinklerWeatherChartSourceV1::HistoricalObservation,
         });
         relative_humidity.push(SprinklerHumidityRowV1 {
             at: starts_at,
             relative_humidity_percent: period.relative_humidity_percent,
+            measurement: SprinklerTemperatureHumidityMeasurementV1::RelativeHumidity,
             source: SprinklerWeatherChartSourceV1::HistoricalObservation,
         });
         for (series, meters_per_second) in [
@@ -8527,43 +8436,6 @@ fn build_weather_et_chart(
             });
         }
     }
-    for zone in zones {
-        for gap in normalized_modeled_weather_gaps(
-            &zone.modeled_weather_gaps,
-            range.starts_at,
-            range.ends_before,
-        ) {
-            let starts_at = gap.starts_at;
-            let ends_at = gap.ends_before;
-            // Provider history is authoritative even if a crash happened
-            // between accepting its correction and removing the superseded
-            // per-zone gap record. The cursor subtraction is bounded by the
-            // remaining chart-row budget and never repeatedly rebuilds a
-            // fragment vector for every provider period.
-            let remaining_rows = MAX_REPORT_CHART_ROWS.saturating_sub(generated_rows);
-            let fragments = provider_uncovered_fragments(
-                starts_at,
-                ends_at,
-                &provider_intervals,
-                remaining_rows,
-            )?;
-            reserve_report_rows(&mut generated_rows, fragments.len())?;
-            let source = modeled_weather_chart_source(gap.demand_source);
-            for (starts_at, ends_at) in fragments {
-                modeled_reference_evapotranspiration.push(SprinklerModeledEtRowV1 {
-                    starts_at,
-                    ends_at,
-                    reference_evapotranspiration_millimeters: gap
-                        .reference_evapotranspiration_millimeters_per_day
-                        * ends_at.saturating_sub(starts_at) as f32
-                        / SECONDS_PER_DAY as f32,
-                    source,
-                    zone: zone.valve,
-                    sample_key: modeled_et_sample_key(zone.valve, starts_at, source),
-                });
-            }
-        }
-    }
     // Current observations provide higher-frequency temperature, humidity,
     // wind, and gust evidence, including the precise samples that caused a
     // watering decision. Rain and ET remain sourced from completed history so
@@ -8575,11 +8447,13 @@ fn build_weather_et_chart(
         temperature.push(SprinklerTemperatureRowV1 {
             at: observation.valid_at,
             temperature_celsius: observation.temperature_celsius,
+            measurement: SprinklerTemperatureHumidityMeasurementV1::Temperature,
             source: SprinklerWeatherChartSourceV1::CurrentObservation,
         });
         relative_humidity.push(SprinklerHumidityRowV1 {
             at: observation.valid_at,
             relative_humidity_percent: observation.relative_humidity_percent,
+            measurement: SprinklerTemperatureHumidityMeasurementV1::RelativeHumidity,
             source: SprinklerWeatherChartSourceV1::CurrentObservation,
         });
         for (series, meters_per_second) in [
@@ -8626,11 +8500,13 @@ fn build_weather_et_chart(
             temperature.push(SprinklerTemperatureRowV1 {
                 at: starts_at,
                 temperature_celsius: period.temperature_celsius,
+                measurement: SprinklerTemperatureHumidityMeasurementV1::Temperature,
                 source: SprinklerWeatherChartSourceV1::Forecast,
             });
             relative_humidity.push(SprinklerHumidityRowV1 {
                 at: starts_at,
                 relative_humidity_percent: period.relative_humidity_percent,
+                measurement: SprinklerTemperatureHumidityMeasurementV1::RelativeHumidity,
                 source: SprinklerWeatherChartSourceV1::Forecast,
             });
             for (series, meters_per_second) in [
@@ -8653,26 +8529,6 @@ fn build_weather_et_chart(
         }
     }
     reference_evapotranspiration.sort_by_key(|row| row.starts_at);
-    modeled_reference_evapotranspiration.sort_by(|left, right| {
-        left.zone
-            .cmp(&right.zone)
-            .then(left.starts_at.cmp(&right.starts_at))
-    });
-    let modeled_et_empty_zones: Vec<_> = zones
-        .iter()
-        .filter(|zone| {
-            !modeled_reference_evapotranspiration
-                .iter()
-                .any(|row| row.zone == zone.valve)
-        })
-        .map(|zone| SprinklerFacetedEmptyZoneRowV1 {
-            horizontal_center: true,
-            vertical_center: true,
-            zone: zone.valve,
-            empty_state: SprinklerReportEmptyStateV1::NoRecordedModeledEtGap,
-        })
-        .collect();
-    reserve_report_rows(&mut generated_rows, modeled_et_empty_zones.len())?;
     temperature.sort_by_key(|row| row.at);
     relative_humidity.sort_by_key(|row| row.at);
     wind.sort_by(|left, right| {
@@ -8682,12 +8538,10 @@ fn build_weather_et_chart(
     });
     Ok(SprinklerWeatherEtChartV1 {
         reference_evapotranspiration,
-        modeled_reference_evapotranspiration: SprinklerModeledEtChartV1 {
-            gaps: modeled_reference_evapotranspiration,
-            empty_zones: modeled_et_empty_zones,
+        temperature_and_relative_humidity: SprinklerTemperatureHumidityChartV1 {
+            temperature,
+            relative_humidity,
         },
-        temperature,
-        relative_humidity,
         wind,
     })
 }
@@ -8809,10 +8663,11 @@ fn report_response_within_chart_limits(response: &SprinklerReportProtocolV1) -> 
         SprinklerReportProtocolV1::WeatherEtV1(chart) => {
             let total_rows = [
                 chart.reference_evapotranspiration.len(),
-                chart.modeled_reference_evapotranspiration.gaps.len(),
-                chart.modeled_reference_evapotranspiration.empty_zones.len(),
-                chart.temperature.len(),
-                chart.relative_humidity.len(),
+                chart.temperature_and_relative_humidity.temperature.len(),
+                chart
+                    .temperature_and_relative_humidity
+                    .relative_humidity
+                    .len(),
                 chart.wind.len(),
             ]
             .into_iter()
@@ -8824,17 +8679,16 @@ fn report_response_within_chart_limits(response: &SprinklerReportProtocolV1) -> 
                 SprinklerWeatherChartSourceV1::HistoricalObservation,
                 SprinklerWeatherChartSourceV1::CurrentObservation,
                 SprinklerWeatherChartSourceV1::Forecast,
-                SprinklerWeatherChartSourceV1::RecentWeatherEstimate,
-                SprinklerWeatherChartSourceV1::LocationAndSeasonEstimate,
-                SprinklerWeatherChartSourceV1::ConservativeEstimate,
             ] {
                 if chart
+                    .temperature_and_relative_humidity
                     .temperature
                     .iter()
                     .filter(|row| row.source == source)
                     .count()
                     > MAX_REPORT_POINTS_PER_PATH
                     || chart
+                        .temperature_and_relative_humidity
                         .relative_humidity
                         .iter()
                         .filter(|row| row.source == source)
@@ -8891,7 +8745,6 @@ fn build_sprinkler_report_response(
                 &history.full,
                 observations,
                 forecast,
-                zones,
                 range,
             )?)
         }
@@ -8966,10 +8819,7 @@ fn handle_report_endpoint(
         kind,
         SprinklerReportChartKind::WaterBalance | SprinklerReportChartKind::WaterUsage
     );
-    let needs_modeled_gaps = matches!(
-        kind,
-        SprinklerReportChartKind::WaterBalance | SprinklerReportChartKind::WeatherEt
-    );
+    let needs_modeled_gaps = kind == SprinklerReportChartKind::WaterBalance;
     let needs_daily_reports = kind == SprinklerReportChartKind::WaterBalance;
     // A daily checkpoint supplies the opening balance. Replay from that UTC
     // day boundary so a sub-day query still includes every earlier raw event
@@ -10807,21 +10657,20 @@ mod tests {
             panic!("expected weather/ET response");
         };
         assert_eq!(weather_et.reference_evapotranspiration.len(), 1);
-        assert!(
-            weather_et
-                .modeled_reference_evapotranspiration
-                .gaps
-                .is_empty()
-        );
         assert_eq!(
             weather_et
-                .modeled_reference_evapotranspiration
-                .empty_zones
+                .temperature_and_relative_humidity
+                .temperature
                 .len(),
             1
         );
-        assert_eq!(weather_et.temperature.len(), 1);
-        assert_eq!(weather_et.relative_humidity.len(), 1);
+        assert_eq!(
+            weather_et
+                .temperature_and_relative_humidity
+                .relative_humidity
+                .len(),
+            1
+        );
         assert_eq!(weather_et.wind.len(), 2);
 
         for (index, response) in responses.into_iter().enumerate() {
@@ -11143,8 +10992,6 @@ mod tests {
 
         let balance = build_water_balance_chart(&zones, &[], range).unwrap();
         let usage = build_water_usage(&zones, &[], None, SprinklerReportBucketV1::Day, range);
-        let weather = build_weather_et_chart(&[], &[], &[], None, &zones, range).unwrap();
-
         assert!(balance.balance.iter().any(|row| row.zone == 7));
         assert!(balance.balance.iter().any(|row| row.zone == 8));
         assert!(balance.decisions.iter().any(|row| row.zone == 7));
@@ -11153,31 +11000,6 @@ mod tests {
         assert!(!usage.inputs.iter().any(|row| row.zone == 8));
         assert_eq!(usage.empty_zones.len(), 1);
         assert_eq!(usage.empty_zones[0].zone, 8);
-        assert!(
-            weather
-                .modeled_reference_evapotranspiration
-                .gaps
-                .iter()
-                .any(|row| row.zone == 7)
-        );
-        assert!(
-            !weather
-                .modeled_reference_evapotranspiration
-                .gaps
-                .iter()
-                .any(|row| row.zone == 8)
-        );
-        assert_eq!(
-            weather
-                .modeled_reference_evapotranspiration
-                .empty_zones
-                .len(),
-            1
-        );
-        assert_eq!(
-            weather.modeled_reference_evapotranspiration.empty_zones[0].zone,
-            8
-        );
     }
 
     #[test]
@@ -11247,7 +11069,6 @@ mod tests {
             &[history],
             &[observation],
             Some(&forecast),
-            &[],
             range,
         )
         .unwrap();
@@ -11261,16 +11082,28 @@ mod tests {
         assert_eq!(forecast_et.ends_at, NOW + 2_700);
         assert!((forecast_et.reference_evapotranspiration_millimeters - 3.0).abs() < 0.001);
 
-        assert!(chart.temperature.iter().any(|row| {
-            row.at == observation.valid_at
-                && row.temperature_celsius == observation.temperature_celsius
-                && row.source == SprinklerWeatherChartSourceV1::CurrentObservation
-        }));
-        assert!(chart.relative_humidity.iter().any(|row| {
-            row.at == observation.valid_at
-                && row.relative_humidity_percent == observation.relative_humidity_percent
-                && row.source == SprinklerWeatherChartSourceV1::CurrentObservation
-        }));
+        assert!(
+            chart
+                .temperature_and_relative_humidity
+                .temperature
+                .iter()
+                .any(|row| {
+                    row.at == observation.valid_at
+                        && row.temperature_celsius == observation.temperature_celsius
+                        && row.source == SprinklerWeatherChartSourceV1::CurrentObservation
+                })
+        );
+        assert!(
+            chart
+                .temperature_and_relative_humidity
+                .relative_humidity
+                .iter()
+                .any(|row| {
+                    row.at == observation.valid_at
+                        && row.relative_humidity_percent == observation.relative_humidity_percent
+                        && row.source == SprinklerWeatherChartSourceV1::CurrentObservation
+                })
+        );
         let observation_wind: Vec<_> = chart
             .wind
             .iter()
@@ -11278,61 +11111,6 @@ mod tests {
             .map(|row| row.meters_per_second)
             .collect();
         assert_eq!(observation_wind, vec![7.0, 11.0]);
-    }
-
-    #[test]
-    fn provider_covered_subwindow_does_not_receive_modeled_et() {
-        let day = utc_day_start(NOW);
-        let range = SprinklerReportTimeRangeV1 {
-            starts_at: day + 6 * 3_600,
-            ends_before: day + 12 * 3_600,
-        };
-        let gap = SprinklerModeledWeatherGapV1 {
-            starts_at: day,
-            ends_before: day + 12 * 3_600,
-            reference_evapotranspiration_millimeters_per_day: 4.0,
-            demand_source: SprinklerWaterDemandSourceV1::ConservativeDefault,
-            recorded_at: day,
-        };
-        let mut provider = report_weather_period(range.starts_at);
-        provider.duration_seconds = 6 * 3_600;
-
-        let report_zone = ReportZoneData {
-            valve: zone().valve,
-            plant_type: zone().plant_type,
-            capacity_millimeters: root_zone_capacity_millimeters(&zone()),
-            crop_coefficient: plant_profile(zone().plant_type).crop_coefficient,
-            active_state: runtime(memory()).active_state,
-            water_events: Vec::new(),
-            modeled_weather_gaps: vec![gap],
-            current_activity: None,
-            activities: Vec::new(),
-            daily_reports: Vec::new(),
-        };
-        let chart = build_weather_et_chart(
-            &[provider.into()],
-            &[provider],
-            &[],
-            None,
-            &[report_zone],
-            range,
-        )
-        .unwrap();
-
-        assert_eq!(chart.reference_evapotranspiration.len(), 1);
-        assert_eq!(
-            chart.reference_evapotranspiration[0].source,
-            SprinklerWeatherChartSourceV1::HistoricalObservation
-        );
-        assert_eq!(
-            chart.reference_evapotranspiration[0].starts_at,
-            range.starts_at
-        );
-        assert_eq!(
-            chart.reference_evapotranspiration[0].ends_at,
-            range.ends_before
-        );
-        assert!(chart.modeled_reference_evapotranspiration.gaps.is_empty());
     }
 
     #[test]
