@@ -65,16 +65,17 @@ persisted before notification submission, repeats no more than once every 30
 days, and escalates immediately if fresh freezing-weather evidence follows a
 seasonal reminder. Winterization mode suppresses reminders.
 
-The `Sprinkler Report` endpoint exposes four independent chart requests so a
+The `Sprinkler Report` endpoint exposes three independent chart requests so a
 client can load every chart in parallel. None asks for a zone. The calculated
 available-water chart facets all configured valve devices with their field-
-capacity, watering, and critical reference lines; the watering timeline shows
-scheduled and actual activity across all zones; water usage places every zone
-on one shared time axis and distinguishes rain, observed irrigation, forecast
-rain, and scheduled water; and the weather/ET response aligns shared provider
-ET, temperature, humidity, sustained wind, and gusts with per-zone modeled ET
-gaps. Each sparse usage bucket begins one horizontal colored stack in its zone
-lane. The App emits numeric `display_start,display_end` synthetic seconds on a
+capacity and plant-specific watering and critical reference lines, with
+scheduled, skipped, failed, manual, and completed watering decisions shown as
+markers; water usage places every zone on one shared time axis and
+distinguishes rain, observed irrigation, forecast rain, and scheduled water;
+and the weather/ET response aligns shared provider ET, temperature, humidity,
+sustained wind, and gusts with per-zone modeled ET gaps. Each sparse usage
+bucket begins one horizontal colored stack in its zone lane. The App emits
+numeric `display_start,display_end` synthetic seconds on a
 hidden linear x guide, while real UTC bucket time stays in tooltip-only `at`.
 Every response uses a 600-second full stack and a chart-wide maximum water
 amount to form one seconds-per-millimeter scale. Rectangle lengths remain
@@ -88,8 +89,8 @@ partial first or last query bucket changes only its exact accumulated amount;
 it cannot collapse every segment in the chart. The exact millimeter amount and
 real bucket in the tooltip remain authoritative; clients render the complete
 supplied coordinates literally and perform no geometry repair or stacking. The
-timeline and usage charts carry the watering inputs and decision details without
-duplicating them into every balance facet.
+balance markers explain controller decisions while usage shows their water-
+accounting effect without a redundant activity timeline.
 A zone with no rows in one represented window receives a localized
 no-recorded-data text annotation instead of a fabricated event or zero-width
 water bar. Zone identity remains the configured `LibertasDevice`, which the
@@ -97,8 +98,8 @@ client resolves normally; the report adds neither a duplicate zone name nor
 `FormattedText` indirection.
 
 Every request has only nullable `starts_at` and `ends_before` inputs. A client
-can send both as null immediately instead of showing a query form. Balance,
-timeline, and usage then default to the latest seven days; weather/ET defaults
+can send both as null immediately instead of showing a query form. Balance and
+usage then default to the latest seven days; weather/ET defaults
 to two days of history plus the provider forecast horizon. Supplying one bound
 uses the same fixed span from that bound, while supplying both selects an exact
 custom range. The server automatically uses day buckets through 14 days and
