@@ -149,10 +149,6 @@ const SAFE_MAXIMUM_WIND_METERS_PER_SECOND: f32 = 10.0;
 const SAFE_MAXIMUM_GUST_METERS_PER_SECOND: f32 = 15.0;
 const HIGH_RAIN_PROBABILITY_PERCENT: u8 = 50;
 const FORECAST_LOOKAHEAD_SECONDS: u64 = 12 * 60 * 60;
-const PREFERRED_DEFICIT_RATIO: f32 = 0.40;
-const TARGET_DEFICIT_RATIO: f32 = 0.50;
-const CRITICAL_DEFICIT_RATIO: f32 = 0.65;
-const REPLENISHED_DEFICIT_RATIO: f32 = 0.20;
 const OVERHEAD_MINIMUM_SOLAR_ELEVATION_DEGREES: f64 = -6.0;
 const OVERHEAD_MAXIMUM_SOLAR_ELEVATION_DEGREES: f64 = 10.0;
 const TARGET_SOLAR_ELEVATION_DEGREES: f64 = -1.0;
@@ -774,10 +770,6 @@ pub enum SprinklerWaterBalanceSeriesV1 {
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub enum SprinklerReportEmptyStateV1 {
-    /// No recorded watering activity
-    /// This zone has no scheduled, skipped, manual, or completed watering
-    /// activity in the requested window.
-    NoRecordedWateringActivity,
     /// No recorded water input
     /// This zone has no positive rain or observed-irrigation input in the
     /// requested window.
@@ -808,7 +800,7 @@ pub enum SprinklerWateringOriginV1 {
 }
 
 /// Watering outcome
-/// Durable lifecycle state shown on the activity timeline and decision markers.
+/// Durable lifecycle state shown by water-balance decision markers.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
@@ -1144,29 +1136,37 @@ pub struct SprinklerWaterBalancePointV1 {
     pub zone: LibertasDevice,
 }
 
-/// Water balance
+/// Water-balance lines
 /// Calculated available water and agronomic reference lines for every zone.
 #[libertas_chart(line)]
-pub type SprinklerWaterBalanceChartV1 = Vec<SprinklerWaterBalancePointV1>;
+pub type SprinklerWaterBalanceLinesV1 = Vec<SprinklerWaterBalancePointV1>;
 
-/// Watering timeline row
-/// One actual or planned interval for one configured zone.
+/// Watering decision marker
+/// One scheduled, skipped, failed, manual, or completed activity placed at its
+/// calculated water-balance position.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub struct SprinklerWateringTimelineRowV1 {
-    /// Start time
-    /// Actual start when observed, otherwise the scheduled start.
+pub struct SprinklerWateringDecisionRowV1 {
+    /// Time
+    /// Actual start when observed, otherwise the scheduled decision time.
     #[libertas_chart_channel(x, tooltip)]
-    #[libertas_chart_scale(id = report_time, kind = utc)]
-    pub starts_at: LibertasDateTime,
-    /// End time
-    /// Actual end when observed, otherwise the scheduled end.
-    #[libertas_chart_channel(x2, tooltip)]
-    pub ends_at: LibertasDateTime,
-    /// Zone
-    /// Configured zone valve. The client resolves the device's normal display
-    /// name, so configuring a duplicate report-only name is unnecessary.
+    #[libertas_chart_scale(id = report_time, kind = utc, guide = none)]
+    pub at: LibertasDateTime,
+    /// Available water
+    /// Calculated available water at the decision time.
     #[libertas_chart_channel(y, tooltip)]
-    #[libertas_chart_scale(id = report_zone, kind = band)]
+    #[libertas_chart_scale(
+        id = available_water_percent,
+        kind = linear,
+        min = 0,
+        max = 100,
+        zero = true,
+        guide = none
+    )]
+    pub available_water_percent: f32,
+    /// Zone
+    /// Configured zone valve resolved by the client.
+    #[libertas_chart_channel(row, tooltip)]
+    #[libertas_chart_scale(id = report_zone, kind = band, guide = none)]
     #[libertas_device_type("BQEBAUABgQED")]
     pub zone: LibertasDevice,
     /// Outcome
@@ -1191,57 +1191,28 @@ pub struct SprinklerWateringTimelineRowV1 {
     #[libertas_chart_channel(tooltip)]
     #[libertas_time_interval]
     pub actual_duration_seconds: u32,
-    /// Activity key
+    /// Decision key
     /// Stable focus key unique across every configured zone.
     #[libertas_chart_channel(key)]
     pub activity_key: String,
 }
 
-/// Watering-event timeline
-/// Shows what actually happened across zones alongside scheduled and skipped
-/// activities.
-#[libertas_chart(rect)]
-pub type SprinklerWateringTimelineMarksV1 = Vec<SprinklerWateringTimelineRowV1>;
+/// Watering decisions
+/// Explains controller and manual activity directly on the water balance.
+#[libertas_chart(point)]
+pub type SprinklerWateringDecisionsV1 = Vec<SprinklerWateringDecisionRowV1>;
 
-/// Empty timeline annotation
-/// Keeps an otherwise-idle configured zone visible without fabricating a
-/// watering event or duration.
-#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub struct SprinklerTimelineEmptyZoneRowV1 {
-    /// Horizontal center
-    /// A singleton discrete position centers the annotation without inventing
-    /// a report timestamp.
-    #[libertas_chart_channel(x)]
-    #[libertas_chart_scale(kind = point, guide = none)]
-    pub horizontal_center: bool,
-    /// Zone
-    /// Configured valve device whose empty timeline lane is annotated.
-    #[libertas_chart_channel(y, tooltip, key)]
-    #[libertas_chart_scale(id = report_zone, kind = band, guide = none)]
-    #[libertas_device_type("BQEBAUABgQED")]
-    pub zone: LibertasDevice,
-    /// Empty state
-    /// Localized explanation for the absence of activity marks.
-    #[libertas_chart_channel(text, tooltip)]
-    pub empty_state: SprinklerReportEmptyStateV1,
-}
-
-/// Empty watering timeline zones
-/// Text annotations for configured zones with no watering activity.
-#[libertas_chart(text)]
-pub type SprinklerTimelineEmptyZonesV1 = Vec<SprinklerTimelineEmptyZoneRowV1>;
-
-/// Watering-event timeline
-/// Layers real activity intervals with honest annotations for idle zones.
+/// Water balance
+/// Layers calculated all-zone balance lines with decision markers.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 #[libertas_chart(layer)]
-pub struct SprinklerWateringTimelineChartV1 {
-    /// Watering activity
-    /// Scheduled and observed activity intervals.
-    pub activities: SprinklerWateringTimelineMarksV1,
-    /// Empty zones
-    /// Configured zones with no activity in the requested window.
-    pub empty_zones: SprinklerTimelineEmptyZonesV1,
+pub struct SprinklerWaterBalanceChartV1 {
+    /// Available water and thresholds
+    /// Calculated all-zone balance lines and plant-specific reference lines.
+    pub balance: SprinklerWaterBalanceLinesV1,
+    /// Watering decisions
+    /// Scheduled, skipped, failed, manual, and completed activity markers.
+    pub decisions: SprinklerWateringDecisionsV1,
 }
 
 /// Water-usage row
@@ -1605,7 +1576,7 @@ pub struct SprinklerWeatherEtChartV1 {
 }
 
 /// Sprinkler report protocol
-/// Exposes four independently requested all-zone charts. Every request can be
+/// Exposes three independently requested all-zone charts. Every request can be
 /// sent immediately with both time bounds null; the server then selects a
 /// useful fixed default window. A client may later resend that chart's request
 /// with one or both bounds to customize only its time window.
@@ -1628,31 +1599,12 @@ pub enum SprinklerReportProtocolV1 {
         ends_before: Option<LibertasDateTime>,
     },
     /// Water balance
-    /// Facets calculated available water and reference lines across every
-    /// configured zone. Water inputs and decisions are available in the
-    /// all-zone usage and timeline charts.
+    /// Facets calculated available water, plant-specific reference lines, and
+    /// watering decision markers across every configured zone.
     #[libertas_response]
     #[libertas_next_request(GetWaterBalanceV1)]
-    #[libertas_chart(line)]
-    WaterBalanceV1(SprinklerWaterBalanceChartV1),
-    /// Get watering timeline
-    /// Requests scheduled and actual watering activity across every zone.
-    #[libertas_request]
-    #[libertas_next_response(WateringTimelineV1)]
-    GetWateringTimelineV1 {
-        /// Start time
-        /// Optional inclusive UTC bound. Leave null for the server default.
-        starts_at: Option<LibertasDateTime>,
-        /// End time
-        /// Optional exclusive UTC bound. Leave null for the server default.
-        ends_before: Option<LibertasDateTime>,
-    },
-    /// Watering timeline
-    /// Scheduled and actual controller activity across configured zones.
-    #[libertas_response]
-    #[libertas_next_request(GetWateringTimelineV1)]
     #[libertas_chart(layer)]
-    WateringTimelineV1(SprinklerWateringTimelineChartV1),
+    WaterBalanceV1(SprinklerWaterBalanceChartV1),
     /// Get water usage
     /// Requests rain and observed irrigation accounting for every zone. The
     /// server selects day or week buckets from the represented duration.
@@ -1961,6 +1913,10 @@ struct PlantProfile {
     water_capacity_millimeters: f32,
     crop_coefficient: f32,
     foliage_wetness_sensitivity: f32,
+    preferred_deficit_ratio: f32,
+    target_deficit_ratio: f32,
+    critical_deficit_ratio: f32,
+    replenished_deficit_ratio: f32,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -2194,36 +2150,64 @@ fn plant_profile(plant: SprinklerPlantTypeV1) -> PlantProfile {
             water_capacity_millimeters: 32.0,
             crop_coefficient: 0.80,
             foliage_wetness_sensitivity: 0.8,
+            preferred_deficit_ratio: 0.40,
+            target_deficit_ratio: 0.50,
+            critical_deficit_ratio: 0.65,
+            replenished_deficit_ratio: 0.20,
         },
         SprinklerPlantTypeV1::Flowers => PlantProfile {
             water_capacity_millimeters: 48.0,
             crop_coefficient: 0.70,
             foliage_wetness_sensitivity: 1.0,
+            preferred_deficit_ratio: 0.35,
+            target_deficit_ratio: 0.45,
+            critical_deficit_ratio: 0.60,
+            replenished_deficit_ratio: 0.15,
         },
         SprinklerPlantTypeV1::Vegetables => PlantProfile {
             water_capacity_millimeters: 72.0,
             crop_coefficient: 0.90,
             foliage_wetness_sensitivity: 1.0,
+            preferred_deficit_ratio: 0.30,
+            target_deficit_ratio: 0.40,
+            critical_deficit_ratio: 0.55,
+            replenished_deficit_ratio: 0.15,
         },
         SprinklerPlantTypeV1::FruitTrees => PlantProfile {
             water_capacity_millimeters: 128.0,
             crop_coefficient: 0.75,
             foliage_wetness_sensitivity: 0.4,
+            preferred_deficit_ratio: 0.45,
+            target_deficit_ratio: 0.55,
+            critical_deficit_ratio: 0.70,
+            replenished_deficit_ratio: 0.25,
         },
         SprinklerPlantTypeV1::Citrus => PlantProfile {
             water_capacity_millimeters: 120.0,
             crop_coefficient: 0.80,
             foliage_wetness_sensitivity: 0.4,
+            preferred_deficit_ratio: 0.40,
+            target_deficit_ratio: 0.50,
+            critical_deficit_ratio: 0.65,
+            replenished_deficit_ratio: 0.20,
         },
         SprinklerPlantTypeV1::TreesAndBushes => PlantProfile {
             water_capacity_millimeters: 160.0,
             crop_coefficient: 0.60,
             foliage_wetness_sensitivity: 0.25,
+            preferred_deficit_ratio: 0.50,
+            target_deficit_ratio: 0.60,
+            critical_deficit_ratio: 0.75,
+            replenished_deficit_ratio: 0.25,
         },
         SprinklerPlantTypeV1::Xeriscape => PlantProfile {
             water_capacity_millimeters: 80.0,
             crop_coefficient: 0.30,
             foliage_wetness_sensitivity: 0.1,
+            preferred_deficit_ratio: 0.60,
+            target_deficit_ratio: 0.70,
+            critical_deficit_ratio: 0.85,
+            replenished_deficit_ratio: 0.30,
         },
     }
 }
@@ -5665,9 +5649,10 @@ fn planned_water_millimeters(
     capacity_millimeters: f32,
     planning_deficit_millimeters: f32,
     watering_percent: u16,
+    replenished_deficit_ratio: f32,
 ) -> f32 {
     let replenishment =
-        (planning_deficit_millimeters - capacity_millimeters * REPLENISHED_DEFICIT_RATIO).max(0.0);
+        (planning_deficit_millimeters - capacity_millimeters * replenished_deficit_ratio).max(0.0);
     let multiplier = f32::from(watering_percent) / 100.0;
     (replenishment * multiplier).clamp(0.0, capacity_millimeters)
 }
@@ -5822,7 +5807,7 @@ fn candidate_penalty(
     };
     let deficit_ratio = f64::from(planning_deficit_millimeters / capacity_millimeters);
     let deficit_penalty =
-        (deficit_ratio - f64::from(TARGET_DEFICIT_RATIO)).abs() * DEFICIT_PENALTY_WEIGHT;
+        (deficit_ratio - f64::from(profile.target_deficit_ratio)).abs() * DEFICIT_PENALTY_WEIGHT;
     let solar_penalty = (solar.elevation_degrees - solar_target).abs()
         * if exposes_foliage {
             OVERHEAD_SOLAR_PENALTY_WEIGHT
@@ -5884,12 +5869,13 @@ fn optimized_morning_candidate(
     } = search;
     let location = location.filter(|location| valid_site_location(*location))?;
     let forecast = forecast.filter(|forecast| forecast.is_fresh_at(now))?;
-    let critical_deficit = capacity_millimeters * CRITICAL_DEFICIT_RATIO;
+    let profile = plant_profile(zone.configuration.plant_type);
+    let critical_deficit = capacity_millimeters * profile.critical_deficit_ratio;
     if current_deficit_millimeters >= critical_deficit {
         return None;
     }
 
-    let preferred_deficit = capacity_millimeters * PREFERRED_DEFICIT_RATIO;
+    let preferred_deficit = capacity_millimeters * profile.preferred_deficit_ratio;
     let search_starts_at = now.saturating_add(seconds_until_deficit(
         current_deficit_millimeters,
         preferred_deficit,
@@ -5932,6 +5918,7 @@ fn optimized_morning_candidate(
             capacity_millimeters,
             planning_deficit,
             zone.memory.watering_percent,
+            profile.replenished_deficit_ratio,
         );
         let duration = watering_duration_seconds(&zone.configuration, planned_water)
             .max(MIN_WATERING_DURATION_SECONDS);
@@ -5999,6 +5986,7 @@ fn watering_plan_at(
         capacity_millimeters,
         planning_deficit_millimeters,
         zone.memory.watering_percent,
+        plant_profile(zone.configuration.plant_type).replenished_deficit_ratio,
     );
     let duration_seconds =
         watering_duration_seconds(&zone.configuration, planned_water_millimeters)
@@ -6079,7 +6067,8 @@ fn best_preemptive_hold_off_plan(
         .as_ref()
         .filter(|forecast| forecast.is_fresh_at(now))?;
     let location = location.filter(|location| valid_site_location(*location))?;
-    let critical_deficit = capacity_millimeters * CRITICAL_DEFICIT_RATIO;
+    let profile = plant_profile(zone.configuration.plant_type);
+    let critical_deficit = capacity_millimeters * profile.critical_deficit_ratio;
     if post_hold_off_plan.planning_deficit_millimeters < critical_deficit {
         return None;
     }
@@ -6091,7 +6080,7 @@ fn best_preemptive_hold_off_plan(
     let weighted_rain =
         weighted_forecast_rain_between(forecast, now, post_hold_off_plan.starts_at)?;
 
-    let preferred_deficit = capacity_millimeters * PREFERRED_DEFICIT_RATIO;
+    let preferred_deficit = capacity_millimeters * profile.preferred_deficit_ratio;
     let search_starts_at = now.saturating_add(seconds_until_deficit(
         current_deficit_millimeters,
         preferred_deficit,
@@ -6180,7 +6169,8 @@ fn calculate_active_state(
         demand_estimate,
     );
     let capacity = root_zone_capacity_millimeters(&zone.configuration);
-    let crop_coefficient = plant_profile(zone.configuration.plant_type).crop_coefficient;
+    let profile = plant_profile(zone.configuration.plant_type);
+    let crop_coefficient = profile.crop_coefficient;
     let (recent_precipitation, recent_irrigation) = recent_water_totals(&zone.water_events);
     let active_hold_offs: Vec<_> = zone
         .memory
@@ -6205,7 +6195,7 @@ fn calculate_active_state(
         valve_fault_bitmap: zone.valve_fault_bitmap,
     };
 
-    let trigger_deficit = capacity * TARGET_DEFICIT_RATIO;
+    let trigger_deficit = capacity * profile.target_deficit_ratio;
     let mut candidate = if deficit < trigger_deficit {
         now.saturating_add(seconds_until_deficit(
             deficit,
@@ -7700,6 +7690,7 @@ fn handle_site_location_event(
 #[derive(Clone)]
 struct ReportZoneData {
     valve: LibertasDevice,
+    plant_type: SprinklerPlantTypeV1,
     capacity_millimeters: f32,
     crop_coefficient: f32,
     active_state: SprinklerZoneActiveStateV1,
@@ -7915,18 +7906,24 @@ fn water_balance_points(
         .collect())
 }
 
-fn activity_display_interval(
-    activity: &SprinklerWateringActivityV1,
-) -> Option<(LibertasDateTime, LibertasDateTime)> {
-    let starts_at = activity.actual_starts_at.or(activity.scheduled_starts_at)?;
-    let duration = activity
-        .actual_duration_seconds
-        .or(activity.scheduled_duration_seconds)
-        .unwrap_or_else(|| {
-            u32::try_from(activity.updated_at.saturating_sub(starts_at)).unwrap_or(u32::MAX)
-        })
-        .max(60);
-    Some((starts_at, starts_at.saturating_add(u64::from(duration))))
+fn available_water_at(points: &[(LibertasDateTime, f32)], at: LibertasDateTime) -> Option<f32> {
+    if let Some((_, value)) = points.iter().find(|(point_at, _)| *point_at == at) {
+        return Some(*value);
+    }
+    points.windows(2).find_map(|window| {
+        let [(left_at, left_value), (right_at, right_value)] = window else {
+            return None;
+        };
+        if *left_at >= at || at >= *right_at {
+            return None;
+        }
+        let span = right_at.saturating_sub(*left_at);
+        if span == 0 {
+            return Some(*left_value);
+        }
+        let fraction = at.saturating_sub(*left_at) as f32 / span as f32;
+        Some(*left_value + (*right_value - *left_value) * fraction)
+    })
 }
 
 fn build_water_balance_chart(
@@ -7937,21 +7934,23 @@ fn build_water_balance_chart(
     // The balance anchor can begin at the UTC-day boundary before the visible
     // left edge, so retain every loaded provider interval for that replay.
     let provider_intervals = merged_report_provider_intervals(history, 0, range.ends_before);
-    let mut rows = Vec::new();
+    let mut balance = Vec::new();
+    let mut decisions = Vec::new();
     for zone in zones {
+        let profile = plant_profile(zone.plant_type);
         let points = water_balance_points(zone, history, &provider_intervals, range)?;
         let additional_rows = points.len().checked_add(6).ok_or(())?;
-        if rows
+        if balance
             .len()
             .checked_add(additional_rows)
             .is_none_or(|total| total > MAX_REPORT_CHART_ROWS)
         {
             return Err(());
         }
-        rows.extend(points.into_iter().map(|(at, available_water_percent)| {
+        balance.extend(points.iter().map(|(at, available_water_percent)| {
             SprinklerWaterBalancePointV1 {
-                at,
-                available_water_percent,
+                at: *at,
+                available_water_percent: *available_water_percent,
                 series: SprinklerWaterBalanceSeriesV1::AvailableWater,
                 zone: zone.valve,
             }
@@ -7959,16 +7958,16 @@ fn build_water_balance_chart(
         for (available_water_percent, series) in [
             (100.0, SprinklerWaterBalanceSeriesV1::FieldCapacity),
             (
-                (1.0 - TARGET_DEFICIT_RATIO) * 100.0,
+                (1.0 - profile.target_deficit_ratio) * 100.0,
                 SprinklerWaterBalanceSeriesV1::WateringThreshold,
             ),
             (
-                (1.0 - CRITICAL_DEFICIT_RATIO) * 100.0,
+                (1.0 - profile.critical_deficit_ratio) * 100.0,
                 SprinklerWaterBalanceSeriesV1::CriticalThreshold,
             ),
         ] {
             for at in [range.starts_at, range.ends_before] {
-                rows.push(SprinklerWaterBalancePointV1 {
+                balance.push(SprinklerWaterBalancePointV1 {
                     at,
                     available_water_percent,
                     series,
@@ -7976,28 +7975,19 @@ fn build_water_balance_chart(
                 });
             }
         }
-    }
-    Ok(rows)
-}
-
-fn build_watering_timeline(
-    zones: &[ReportZoneData],
-    range: SprinklerReportTimeRangeV1,
-) -> SprinklerWateringTimelineChartV1 {
-    let mut activities = Vec::new();
-    for zone in zones {
         for activity in &zone.activities {
-            let Some((starts_at, ends_at)) = activity_display_interval(activity) else {
+            let Some(at) = activity.actual_starts_at.or(activity.scheduled_starts_at) else {
                 continue;
             };
-            let starts_at = starts_at.max(range.starts_at);
-            let ends_at = ends_at.min(range.ends_before);
-            if starts_at >= ends_at {
+            if at < range.starts_at || at >= range.ends_before {
                 continue;
             }
-            activities.push(SprinklerWateringTimelineRowV1 {
-                starts_at,
-                ends_at,
+            let Some(available_water_percent) = available_water_at(&points, at) else {
+                continue;
+            };
+            decisions.push(SprinklerWateringDecisionRowV1 {
+                at,
+                available_water_percent,
                 zone: zone.valve,
                 outcome: activity.outcome,
                 origin: activity.origin,
@@ -8008,25 +7998,20 @@ fn build_watering_timeline(
             });
         }
     }
-    activities.sort_by(|left, right| {
-        left.starts_at
-            .cmp(&right.starts_at)
+    decisions.sort_by(|left, right| {
+        left.at
+            .cmp(&right.at)
             .then(left.zone.cmp(&right.zone))
             .then(left.activity_key.cmp(&right.activity_key))
     });
-    let empty_zones = zones
-        .iter()
-        .filter(|zone| !activities.iter().any(|row| row.zone == zone.valve))
-        .map(|zone| SprinklerTimelineEmptyZoneRowV1 {
-            horizontal_center: true,
-            zone: zone.valve,
-            empty_state: SprinklerReportEmptyStateV1::NoRecordedWateringActivity,
-        })
-        .collect();
-    SprinklerWateringTimelineChartV1 {
-        activities,
-        empty_zones,
+    if balance
+        .len()
+        .checked_add(decisions.len())
+        .is_none_or(|total| total > MAX_REPORT_CHART_ROWS)
+    {
+        return Err(());
     }
+    Ok(SprinklerWaterBalanceChartV1 { balance, decisions })
 }
 
 fn usage_bucket_bounds(
@@ -8710,7 +8695,6 @@ fn build_weather_et_chart(
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum SprinklerReportChartKind {
     WaterBalance,
-    WateringTimeline,
     WaterUsage,
     WeatherEt,
 }
@@ -8726,7 +8710,7 @@ impl SprinklerReportChartKind {
                 .saturating_add(u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS)),
             Self::WaterUsage => DEFAULT_REPORT_RANGE_SECONDS
                 .saturating_add(u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS)),
-            Self::WaterBalance | Self::WateringTimeline => DEFAULT_REPORT_RANGE_SECONDS,
+            Self::WaterBalance => DEFAULT_REPORT_RANGE_SECONDS,
         }
     }
 
@@ -8746,7 +8730,7 @@ impl SprinklerReportChartKind {
                     .saturating_add(u64::from(SPRINKLER_FORECAST_HORIZON_SECONDS))
                     .saturating_add(1),
             },
-            Self::WaterBalance | Self::WateringTimeline => {
+            Self::WaterBalance => {
                 let ends_before = now.saturating_add(1);
                 SprinklerReportTimeRangeV1 {
                     starts_at: ends_before.saturating_sub(DEFAULT_REPORT_RANGE_SECONDS),
@@ -8791,13 +8775,18 @@ fn report_usage_bucket(range: SprinklerReportTimeRangeV1) -> SprinklerReportBuck
 
 fn report_response_within_chart_limits(response: &SprinklerReportProtocolV1) -> bool {
     match response {
-        SprinklerReportProtocolV1::WaterBalanceV1(rows) => {
-            if rows.len() > MAX_REPORT_CHART_ROWS {
+        SprinklerReportProtocolV1::WaterBalanceV1(chart) => {
+            if chart
+                .balance
+                .len()
+                .checked_add(chart.decisions.len())
+                .is_none_or(|total| total > MAX_REPORT_CHART_ROWS)
+            {
                 return false;
             }
             let mut path_counts: Vec<(LibertasDevice, SprinklerWaterBalanceSeriesV1, usize)> =
                 Vec::new();
-            for row in rows {
+            for row in &chart.balance {
                 if let Some((_, _, count)) = path_counts
                     .iter_mut()
                     .find(|(zone, series, _)| *zone == row.zone && *series == row.series)
@@ -8812,11 +8801,6 @@ fn report_response_within_chart_limits(response: &SprinklerReportProtocolV1) -> 
             }
             true
         }
-        SprinklerReportProtocolV1::WateringTimelineV1(chart) => chart
-            .activities
-            .len()
-            .checked_add(chart.empty_zones.len())
-            .is_some_and(|total| total <= MAX_REPORT_CHART_ROWS),
         SprinklerReportProtocolV1::WaterUsageV1(chart) => chart
             .inputs
             .len()
@@ -8892,9 +8876,6 @@ fn build_sprinkler_report_response(
         SprinklerReportChartKind::WaterBalance => SprinklerReportProtocolV1::WaterBalanceV1(
             build_water_balance_chart(zones, &history.balance, range)?,
         ),
-        SprinklerReportChartKind::WateringTimeline => {
-            SprinklerReportProtocolV1::WateringTimelineV1(build_watering_timeline(zones, range))
-        }
         SprinklerReportChartKind::WaterUsage => {
             SprinklerReportProtocolV1::WaterUsageV1(build_water_usage(
                 zones,
@@ -8951,14 +8932,6 @@ fn handle_report_endpoint(
             starts_at,
             ends_before,
         ),
-        LibertasEndpointMessage::Data(SprinklerReportProtocolV1::GetWateringTimelineV1 {
-            starts_at,
-            ends_before,
-        }) => (
-            SprinklerReportChartKind::WateringTimeline,
-            starts_at,
-            ends_before,
-        ),
         LibertasEndpointMessage::Data(SprinklerReportProtocolV1::GetWaterUsageV1 {
             starts_at,
             ends_before,
@@ -8991,9 +8964,7 @@ fn handle_report_endpoint(
     );
     let needs_activities = matches!(
         kind,
-        SprinklerReportChartKind::WaterBalance
-            | SprinklerReportChartKind::WateringTimeline
-            | SprinklerReportChartKind::WaterUsage
+        SprinklerReportChartKind::WaterBalance | SprinklerReportChartKind::WaterUsage
     );
     let needs_modeled_gaps = matches!(
         kind,
@@ -9019,6 +8990,7 @@ fn handle_report_endpoint(
             .iter()
             .map(|zone| ReportZoneData {
                 valve: zone.configuration.valve,
+                plant_type: zone.configuration.plant_type,
                 capacity_millimeters: root_zone_capacity_millimeters(&zone.configuration),
                 crop_coefficient: plant_profile(zone.configuration.plant_type).crop_coefficient,
                 active_state: zone.active_state.clone(),
@@ -10113,8 +10085,9 @@ fn initial_active_state(
     };
     let deficit = projected_deficit_millimeters(configuration, memory, &[], now, demand_estimate);
     let capacity = root_zone_capacity_millimeters(configuration);
-    let crop_coefficient = plant_profile(configuration.plant_type).crop_coefficient;
-    let trigger_deficit = capacity * TARGET_DEFICIT_RATIO;
+    let profile = plant_profile(configuration.plant_type);
+    let crop_coefficient = profile.crop_coefficient;
+    let trigger_deficit = capacity * profile.target_deficit_ratio;
     let (candidate, planning_deficit) = if deficit < trigger_deficit {
         (
             now.saturating_add(seconds_until_deficit(
@@ -10128,8 +10101,12 @@ fn initial_active_state(
     } else {
         (now, deficit)
     };
-    let planned_water =
-        planned_water_millimeters(capacity, planning_deficit, memory.watering_percent);
+    let planned_water = planned_water_millimeters(
+        capacity,
+        planning_deficit,
+        memory.watering_percent,
+        profile.replenished_deficit_ratio,
+    );
     let duration =
         watering_duration_seconds(configuration, planned_water).max(MIN_WATERING_DURATION_SECONDS);
     let active_hold_offs: Vec<_> = memory
@@ -10180,7 +10157,7 @@ pub fn libertas_sprinkler(
     /*
      * Sprinkler Report
      * The system-wide server endpoint for `SprinklerReportProtocolV1`. It
-     * returns four chart-ready report families from indefinitely retained
+     * returns three chart-ready report families from indefinitely retained
      * weather, activity, and daily balance archives.
      */
     #[libertas_endpoint_schema(SprinklerReportProtocolV1)]
@@ -10733,7 +10710,7 @@ mod tests {
     }
 
     #[test]
-    fn report_protocol_round_trips_all_four_chart_families() {
+    fn report_protocol_round_trips_all_three_chart_families() {
         let day = utc_day_start(NOW);
         let range = SprinklerReportTimeRangeV1 {
             starts_at: day,
@@ -10741,10 +10718,6 @@ mod tests {
         };
         let requests = [
             SprinklerReportProtocolV1::GetWaterBalanceV1 {
-                starts_at: None,
-                ends_before: None,
-            },
-            SprinklerReportProtocolV1::GetWateringTimelineV1 {
                 starts_at: None,
                 ends_before: None,
             },
@@ -10774,6 +10747,7 @@ mod tests {
         let activity = completed_report_activity(day + 3_600);
         let report_zone = ReportZoneData {
             valve: zone().valve,
+            plant_type: zone().plant_type,
             capacity_millimeters: root_zone_capacity_millimeters(&zone()),
             crop_coefficient: plant_profile(zone().plant_type).crop_coefficient,
             active_state: runtime(memory()).active_state,
@@ -10792,14 +10766,6 @@ mod tests {
         let responses = [
             build_sprinkler_report_response(
                 SprinklerReportChartKind::WaterBalance,
-                &zones,
-                &history,
-                &[],
-                None,
-                range,
-            ),
-            build_sprinkler_report_response(
-                SprinklerReportChartKind::WateringTimeline,
                 &zones,
                 &history,
                 &[],
@@ -10827,21 +10793,17 @@ mod tests {
         let SprinklerReportProtocolV1::WaterBalanceV1(water_balance) = &responses[0] else {
             panic!("expected water-balance response");
         };
-        assert!(water_balance.iter().any(|row| {
+        assert!(water_balance.balance.iter().any(|row| {
             row.series == SprinklerWaterBalanceSeriesV1::AvailableWater
                 && row.zone == zones[0].valve
         }));
-        let SprinklerReportProtocolV1::WateringTimelineV1(watering_timeline) = &responses[1] else {
-            panic!("expected timeline response");
-        };
-        assert_eq!(watering_timeline.activities.len(), 1);
-        assert!(watering_timeline.empty_zones.is_empty());
-        let SprinklerReportProtocolV1::WaterUsageV1(water_usage) = &responses[2] else {
+        assert_eq!(water_balance.decisions.len(), 1);
+        let SprinklerReportProtocolV1::WaterUsageV1(water_usage) = &responses[1] else {
             panic!("expected water-usage response");
         };
         assert_eq!(water_usage.inputs.len(), 2);
         assert!(water_usage.empty_zones.is_empty());
-        let SprinklerReportProtocolV1::WeatherEtV1(weather_et) = &responses[3] else {
+        let SprinklerReportProtocolV1::WeatherEtV1(weather_et) = &responses[2] else {
             panic!("expected weather/ET response");
         };
         assert_eq!(weather_et.reference_evapotranspiration.len(), 1);
@@ -10887,19 +10849,91 @@ mod tests {
     }
 
     #[test]
-    fn null_report_times_resolve_without_user_input() {
-        for kind in [
-            SprinklerReportChartKind::WaterBalance,
-            SprinklerReportChartKind::WateringTimeline,
-        ] {
-            assert_eq!(
-                resolve_report_range(kind, None, None, Some(NOW)),
-                Some(SprinklerReportTimeRangeV1 {
-                    starts_at: NOW + 1 - DEFAULT_REPORT_RANGE_SECONDS,
-                    ends_before: NOW + 1,
-                })
-            );
+    fn plant_profiles_have_ordered_plant_specific_deficit_thresholds() {
+        let plants = [
+            SprinklerPlantTypeV1::Lawn,
+            SprinklerPlantTypeV1::Flowers,
+            SprinklerPlantTypeV1::Vegetables,
+            SprinklerPlantTypeV1::FruitTrees,
+            SprinklerPlantTypeV1::Citrus,
+            SprinklerPlantTypeV1::TreesAndBushes,
+            SprinklerPlantTypeV1::Xeriscape,
+        ];
+        for plant in plants {
+            let profile = plant_profile(plant);
+            assert!(profile.replenished_deficit_ratio < profile.preferred_deficit_ratio);
+            assert!(profile.preferred_deficit_ratio < profile.target_deficit_ratio);
+            assert!(profile.target_deficit_ratio < profile.critical_deficit_ratio);
+            assert!(profile.critical_deficit_ratio < 1.0);
         }
+        assert!(
+            plant_profile(SprinklerPlantTypeV1::Vegetables).target_deficit_ratio
+                < plant_profile(SprinklerPlantTypeV1::Lawn).target_deficit_ratio
+        );
+        assert!(
+            plant_profile(SprinklerPlantTypeV1::Xeriscape).target_deficit_ratio
+                > plant_profile(SprinklerPlantTypeV1::Lawn).target_deficit_ratio
+        );
+    }
+
+    #[test]
+    fn water_balance_uses_each_zones_plant_specific_thresholds() {
+        let report_zone = |valve, plant_type| {
+            let profile = plant_profile(plant_type);
+            ReportZoneData {
+                valve,
+                plant_type,
+                capacity_millimeters: profile.water_capacity_millimeters,
+                crop_coefficient: profile.crop_coefficient,
+                active_state: runtime(memory()).active_state,
+                water_events: Vec::new(),
+                modeled_weather_gaps: Vec::new(),
+                current_activity: None,
+                activities: Vec::new(),
+                daily_reports: Vec::new(),
+            }
+        };
+        let chart = build_water_balance_chart(
+            &[
+                report_zone(7, SprinklerPlantTypeV1::Vegetables),
+                report_zone(8, SprinklerPlantTypeV1::Xeriscape),
+            ],
+            &[],
+            SprinklerReportTimeRangeV1 {
+                starts_at: NOW.saturating_sub(1),
+                ends_before: NOW.saturating_add(1),
+            },
+        )
+        .unwrap();
+        let threshold = |valve| {
+            chart
+                .balance
+                .iter()
+                .find(|row| {
+                    row.zone == valve
+                        && row.series == SprinklerWaterBalanceSeriesV1::WateringThreshold
+                })
+                .unwrap()
+                .available_water_percent
+        };
+        assert!((threshold(7) - 60.0).abs() < 0.001);
+        assert!((threshold(8) - 30.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn null_report_times_resolve_without_user_input() {
+        assert_eq!(
+            resolve_report_range(
+                SprinklerReportChartKind::WaterBalance,
+                None,
+                None,
+                Some(NOW),
+            ),
+            Some(SprinklerReportTimeRangeV1 {
+                starts_at: NOW + 1 - DEFAULT_REPORT_RANGE_SECONDS,
+                ends_before: NOW + 1,
+            })
+        );
         assert_eq!(
             resolve_report_range(SprinklerReportChartKind::WaterUsage, None, None, Some(NOW)),
             Some(SprinklerReportTimeRangeV1 {
@@ -11033,16 +11067,19 @@ mod tests {
             series: SprinklerWaterBalanceSeriesV1::AvailableWater,
             zone: zone().valve,
         };
-        let response =
-            SprinklerReportProtocolV1::WaterBalanceV1(vec![row; MAX_REPORT_POINTS_PER_PATH + 1]);
+        let response = SprinklerReportProtocolV1::WaterBalanceV1(SprinklerWaterBalanceChartV1 {
+            balance: vec![row; MAX_REPORT_POINTS_PER_PATH + 1],
+            decisions: Vec::new(),
+        });
         assert!(!report_response_within_chart_limits(&response));
     }
 
     #[test]
-    fn timeline_keys_are_unique_across_zones() {
+    fn water_balance_decision_keys_are_unique_across_zones() {
         let activity = completed_report_activity(NOW - 600);
         let report_zone = |valve: LibertasDevice| ReportZoneData {
             valve,
+            plant_type: zone().plant_type,
             capacity_millimeters: root_zone_capacity_millimeters(&zone()),
             crop_coefficient: plant_profile(zone().plant_type).crop_coefficient,
             active_state: runtime(memory()).active_state,
@@ -11050,20 +11087,21 @@ mod tests {
             modeled_weather_gaps: Vec::new(),
             current_activity: None,
             activities: vec![activity.clone()],
-            daily_reports: Vec::new(),
+            daily_reports: vec![completed_daily_report(utc_day_start(NOW))],
         };
-        let rows = build_watering_timeline(
+        let chart = build_water_balance_chart(
             &[report_zone(7), report_zone(8)],
+            &[],
             SprinklerReportTimeRangeV1 {
                 starts_at: NOW - SECONDS_PER_DAY,
                 ends_before: NOW + SECONDS_PER_DAY,
             },
-        );
-        assert_eq!(rows.activities.len(), 2);
-        assert!(rows.empty_zones.is_empty());
+        )
+        .unwrap();
+        assert_eq!(chart.decisions.len(), 2);
         assert_ne!(
-            rows.activities[0].activity_key,
-            rows.activities[1].activity_key
+            chart.decisions[0].activity_key,
+            chart.decisions[1].activity_key
         );
     }
 
@@ -11076,6 +11114,7 @@ mod tests {
         };
         let report_zone = |valve: LibertasDevice, populated: bool| ReportZoneData {
             valve,
+            plant_type: zone().plant_type,
             capacity_millimeters: root_zone_capacity_millimeters(&zone()),
             crop_coefficient: plant_profile(zone().plant_type).crop_coefficient,
             active_state: runtime(memory()).active_state,
@@ -11103,16 +11142,13 @@ mod tests {
         let zones = [report_zone(7, true), report_zone(8, false)];
 
         let balance = build_water_balance_chart(&zones, &[], range).unwrap();
-        let timeline = build_watering_timeline(&zones, range);
         let usage = build_water_usage(&zones, &[], None, SprinklerReportBucketV1::Day, range);
         let weather = build_weather_et_chart(&[], &[], &[], None, &zones, range).unwrap();
 
-        assert!(balance.iter().any(|row| row.zone == 7));
-        assert!(balance.iter().any(|row| row.zone == 8));
-        assert!(timeline.activities.iter().any(|row| row.zone == 7));
-        assert!(!timeline.activities.iter().any(|row| row.zone == 8));
-        assert_eq!(timeline.empty_zones.len(), 1);
-        assert_eq!(timeline.empty_zones[0].zone, 8);
+        assert!(balance.balance.iter().any(|row| row.zone == 7));
+        assert!(balance.balance.iter().any(|row| row.zone == 8));
+        assert!(balance.decisions.iter().any(|row| row.zone == 7));
+        assert!(!balance.decisions.iter().any(|row| row.zone == 8));
         assert!(usage.inputs.iter().any(|row| row.zone == 7));
         assert!(!usage.inputs.iter().any(|row| row.zone == 8));
         assert_eq!(usage.empty_zones.len(), 1);
@@ -11145,7 +11181,7 @@ mod tests {
     }
 
     #[test]
-    fn report_intervals_are_clipped_and_cross_midnight_water_is_prorated() {
+    fn cross_midnight_water_is_prorated() {
         let day = utc_day_start(NOW);
         let events = vec![
             SprinklerWaterEventV1::WeatherV1 {
@@ -11169,26 +11205,6 @@ mod tests {
             daily_report_totals(&events, day, day + SECONDS_PER_DAY),
             (1.0, 2.0, 3.0)
         );
-
-        let activity = completed_report_activity(day - 300);
-        let report_zone = ReportZoneData {
-            valve: zone().valve,
-            capacity_millimeters: root_zone_capacity_millimeters(&zone()),
-            crop_coefficient: plant_profile(zone().plant_type).crop_coefficient,
-            active_state: runtime(memory()).active_state,
-            water_events: Vec::new(),
-            modeled_weather_gaps: Vec::new(),
-            current_activity: None,
-            activities: vec![activity],
-            daily_reports: Vec::new(),
-        };
-        let range = SprinklerReportTimeRangeV1 {
-            starts_at: day,
-            ends_before: day + 120,
-        };
-        let timeline = build_watering_timeline(&[report_zone], range);
-        assert_eq!(timeline.activities[0].starts_at, day);
-        assert_eq!(timeline.activities[0].ends_at, day + 120);
     }
 
     #[test]
@@ -11283,6 +11299,7 @@ mod tests {
 
         let report_zone = ReportZoneData {
             valve: zone().valve,
+            plant_type: zone().plant_type,
             capacity_millimeters: root_zone_capacity_millimeters(&zone()),
             crop_coefficient: plant_profile(zone().plant_type).crop_coefficient,
             active_state: runtime(memory()).active_state,
@@ -11436,6 +11453,7 @@ mod tests {
             configuration.valve = valve;
             ReportZoneData {
                 valve,
+                plant_type: configuration.plant_type,
                 capacity_millimeters: root_zone_capacity_millimeters(&configuration),
                 crop_coefficient: plant_profile(configuration.plant_type).crop_coefficient,
                 active_state: runtime(memory()).active_state,
@@ -11573,6 +11591,7 @@ mod tests {
         activity.updated_at = day + 3_600;
         let mut report_zone = ReportZoneData {
             valve: zone().valve,
+            plant_type: zone().plant_type,
             capacity_millimeters: root_zone_capacity_millimeters(&zone()),
             crop_coefficient: plant_profile(zone().plant_type).crop_coefficient,
             active_state: runtime(memory()).active_state,
@@ -13008,8 +13027,9 @@ mod tests {
     fn critical_deficit_uses_the_first_safe_opportunity() {
         let now = EQUINOX_DAY_START + 12 * 3_600;
         let mut memory = default_memory(now);
-        memory.baseline_deficit_millimeters =
-            root_zone_capacity_millimeters(&zone()) * CRITICAL_DEFICIT_RATIO;
+        let configuration = zone();
+        memory.baseline_deficit_millimeters = root_zone_capacity_millimeters(&configuration)
+            * plant_profile(configuration.plant_type).critical_deficit_ratio;
         memory.balance_baseline_at = now;
         let zone = runtime(memory);
         let weather = SprinklerWeatherSnapshotV2 {
@@ -13211,6 +13231,7 @@ mod tests {
         };
         let report_zone = ReportZoneData {
             valve: zone().valve,
+            plant_type: zone().plant_type,
             capacity_millimeters: root_zone_capacity_millimeters(&zone()),
             crop_coefficient: plant_profile(zone().plant_type).crop_coefficient,
             active_state: runtime(memory()).active_state,
@@ -13228,18 +13249,21 @@ mod tests {
         )
         .unwrap();
         let start = chart
+            .balance
             .iter()
             .find(|point| {
                 point.series == SprinklerWaterBalanceSeriesV1::AvailableWater && point.at == day
             })
             .unwrap();
         let before_irrigation = chart
+            .balance
             .iter()
             .find(|point| {
                 point.series == SprinklerWaterBalanceSeriesV1::AvailableWater && point.at == noon
             })
             .unwrap();
         let after_irrigation = chart
+            .balance
             .iter()
             .find(|point| {
                 point.series == SprinklerWaterBalanceSeriesV1::AvailableWater
@@ -13255,7 +13279,20 @@ mod tests {
                 .abs()
                 < 0.001
         );
-        assert!(chart.iter().all(|point| point.zone == report_zone.valve));
+        assert!(
+            chart
+                .balance
+                .iter()
+                .all(|point| point.zone == report_zone.valve)
+        );
+        assert_eq!(chart.decisions.len(), 1);
+        assert_eq!(chart.decisions[0].at, noon);
+        assert!(
+            (chart.decisions[0].available_water_percent
+                - before_irrigation.available_water_percent)
+                .abs()
+                < 0.001
+        );
     }
 
     #[test]
