@@ -36,18 +36,18 @@ use core::{any::Any, cell::RefCell};
 use libm::{asin, cos, floor, sin};
 
 use libertas::{
-    IndexDirection, IndexedData, LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasDevice,
+    DataName, IndexDirection, IndexedData, LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasDevice,
     LibertasEndpoint, LibertasEndpointHandlerResult, LibertasEndpointMessage,
     LibertasEndpointStandardStatus, LibertasUser, LogLevel, NotificationArgument,
     NotificationImportance, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_ALIVE, OP_ENDPOINT_PEER_DOWN,
     OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ, OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ,
-    libertas_data_open_indexed, libertas_data_read_indexed, libertas_data_read_indexed_range,
-    libertas_data_read_single, libertas_data_remove_indexed_records, libertas_data_write_indexed,
-    libertas_data_write_single, libertas_endpoint_report, libertas_endpoint_response,
-    libertas_endpoint_subscribe_request, libertas_get_sys_ticks, libertas_get_utc_time,
-    libertas_log, libertas_notification_send, libertas_register_device_listener,
-    libertas_register_endpoint_status_listener, libertas_timer_cancel, libertas_timer_new_interval,
-    libertas_timer_update_interval,
+    libertas_data_get_indexed_names, libertas_data_open_indexed, libertas_data_read_indexed,
+    libertas_data_read_indexed_range, libertas_data_read_single, libertas_data_remove_indexed_name,
+    libertas_data_remove_indexed_records, libertas_data_write_indexed, libertas_data_write_single,
+    libertas_endpoint_report, libertas_endpoint_response, libertas_endpoint_subscribe_request,
+    libertas_get_sys_ticks, libertas_get_utc_time, libertas_log, libertas_notification_send,
+    libertas_register_device_listener, libertas_register_endpoint_status_listener,
+    libertas_timer_cancel, libertas_timer_new_interval, libertas_timer_update_interval,
 };
 use libertas_hub::HubProtocol;
 use libertas_macros::{
@@ -127,12 +127,10 @@ const MAX_REPORT_WEATHER_PERIODS: usize = MAX_WATER_USAGE_REPORT_RANGE_DAYS * 24
 const MAX_REPORT_WEATHER_REPLACEMENT_RECORDS_SCANNED: usize = MAX_WEATHER_MESSAGE_PERIODS + 1;
 const MAX_REPORT_WEATHER_OBSERVATIONS: usize = 4_096;
 const MAX_REPORT_ACTIVITIES: usize = 4_096;
-// One activity may occur in the primary archive and in every UTC-day overlap
-// bucket touched by the longest accepted report query. Keep that worst-case
-// read bounded across the entire multi-zone response as well as bounding the
-// number of unique activities returned.
-const MAX_REPORT_ACTIVITY_RECORDS_SCANNED: usize =
-    MAX_REPORT_ACTIVITIES * (MAX_WATER_USAGE_REPORT_RANGE_DAYS + 2);
+// Each activity exists once in its zone archive. A range scan may additionally
+// inspect one immediate predecessor per zone for an interval crossing the left
+// boundary.
+const MAX_REPORT_ACTIVITY_RECORDS_SCANNED: usize = MAX_REPORT_ACTIVITIES + MAX_SPRINKLER_ZONES;
 const MAX_REPORT_DAILY_RECORDS_PER_ZONE: usize = 32;
 const MAX_REPORT_MODELED_GAPS: usize = 4_096;
 const MAX_REPORT_CHART_ROWS: usize = 100_000;
@@ -182,7 +180,7 @@ const SOUTHERN_WINTERIZATION_SEASON_END_DAY: u16 = 273;
 
 /// Sprinkler database names
 /// Stable resource identifiers and their user-facing descriptions.
-pub const APP_STRINGS: [(&str, &str); 17] = [
+pub const APP_STRINGS: [(&str, &str); 16] = [
     (
         "SPRINKLER_ZONE_MEMORY_V1",
         "Sprinkler water balance and settings for %1$s.",
@@ -240,10 +238,6 @@ pub const APP_STRINGS: [(&str, &str); 17] = [
         "Allow the sprinkler task to receive location-specific conditions and forecasts from the weather agent.",
     ),
     (
-        "SPRINKLER_WATERING_ACTIVITY_DAYS_V1",
-        "Indefinite sprinkler watering activity overlap index for %1$s on UTC day %2$u.",
-    ),
-    (
         "SPRINKLER_MODELED_WEATHER_GAPS_V1",
         "Indefinite modeled sprinkler weather gaps for %1$s.",
     ),
@@ -265,9 +259,12 @@ const REPORT_WEATHER_OBSERVATIONS_RESOURCE: &str = APP_STRINGS[9].0;
 const REPORT_WEATHER_ARCHIVE_STATE_RESOURCE: &str = APP_STRINGS[10].0;
 const WINTERIZATION_WEATHER_NOTIFICATION_RESOURCE: &str = APP_STRINGS[11].0;
 const WINTERIZATION_SEASON_NOTIFICATION_RESOURCE: &str = APP_STRINGS[12].0;
-const WATERING_ACTIVITY_DAYS_RESOURCE: &str = APP_STRINGS[14].0;
-const MODELED_WEATHER_GAPS_RESOURCE: &str = APP_STRINGS[15].0;
-const REPORT_WEATHER_HISTORY_V2_RESOURCE: &str = APP_STRINGS[16].0;
+const MODELED_WEATHER_GAPS_RESOURCE: &str = APP_STRINGS[14].0;
+const REPORT_WEATHER_HISTORY_V2_RESOURCE: &str = APP_STRINGS[15].0;
+// Older builds duplicated every activity into one indexed database per UTC
+// day. The per-zone activity archive is authoritative, so these databases can
+// be removed without migrating records.
+const LEGACY_WATERING_ACTIVITY_DAYS_RESOURCE: &str = "SPRINKLER_WATERING_ACTIVITY_DAYS_V1";
 
 /// Sprinkler time slot
 /// Defines one half-open schedule or hold-off interval.
@@ -2606,16 +2603,6 @@ fn zone_key(valve: LibertasDevice) -> [NotificationArgument<'static>; 1] {
     [NotificationArgument::Object(valve)]
 }
 
-fn activity_day_key(
-    valve: LibertasDevice,
-    day: LibertasDateTime,
-) -> [NotificationArgument<'static>; 2] {
-    [
-        NotificationArgument::Object(valve),
-        NotificationArgument::Unsigned(day),
-    ]
-}
-
 fn system_key(weather_endpoint: LibertasEndpoint) -> [NotificationArgument<'static>; 1] {
     [NotificationArgument::Object(weather_endpoint)]
 }
@@ -3714,46 +3701,6 @@ fn watering_activity_load_plan(
     }
 }
 
-fn activity_report_days(activity: &SprinklerWateringActivityV1) -> Vec<LibertasDateTime> {
-    let Some((starts_at, ends_at)) = activity_interval(activity) else {
-        return Vec::new();
-    };
-    if starts_at >= ends_at {
-        return Vec::new();
-    }
-    let last_day = utc_day_start(ends_at.saturating_sub(1));
-    let mut days = Vec::new();
-    let mut day = utc_day_start(starts_at);
-    loop {
-        days.push(day);
-        if day >= last_day {
-            break;
-        }
-        let next = day.saturating_add(SECONDS_PER_DAY);
-        if next <= day {
-            break;
-        }
-        day = next;
-    }
-    days
-}
-
-fn persist_watering_activity_days(valve: LibertasDevice, activity: &SprinklerWateringActivityV1) {
-    for day in activity_report_days(activity) {
-        let database = libertas_data_open_indexed(
-            WATERING_ACTIVITY_DAYS_RESOURCE,
-            &activity_day_key(valve, day),
-        );
-        libertas_data_write_indexed(
-            database.handle,
-            activity.activity_index,
-            &SprinklerDataV1::WateringActivityV1 {
-                activity: activity.clone(),
-            },
-        );
-    }
-}
-
 fn persist_watering_activity(valve: LibertasDevice, activity: &SprinklerWateringActivityV1) {
     if !valid_watering_activity(activity) {
         return;
@@ -3762,11 +3709,6 @@ fn persist_watering_activity(valve: LibertasDevice, activity: &SprinklerWatering
     // a crash cannot resurrect a stale nonterminal audit row after a terminal
     // transition. A missing audit write is repaired when this state is loaded.
     persist_watering_activity_state(valve, watering_activity_state(activity.clone()));
-    // Materialize every overlapped UTC day before the primary audit write.
-    // A report therefore reads only the day buckets in its bounded range even
-    // when a manual or stuck-open interval is much longer than an automatic
-    // command.
-    persist_watering_activity_days(valve, activity);
     let database = libertas_data_open_indexed(WATERING_ACTIVITIES_RESOURCE, &zone_key(valve));
     libertas_data_write_indexed(
         database.handle,
@@ -3791,7 +3733,6 @@ fn load_current_watering_activity(valve: LibertasDevice) -> Option<SprinklerWate
             }
             // Repair a missing or stale audit write from the authoritative
             // bounded snapshot before returning it.
-            persist_watering_activity_days(valve, &activity);
             let database =
                 libertas_data_open_indexed(WATERING_ACTIVITIES_RESOURCE, &zone_key(valve));
             libertas_data_write_indexed(
@@ -4424,11 +4365,29 @@ fn load_report_activities(
         .ok_or(())?;
     let mut activities = Vec::new();
 
-    // The primary archive efficiently supplies activities whose identity is
-    // anchored inside the query. Long predecessors are supplied by the day
-    // overlap index below instead of an unsafe unbounded backward scan.
+    // Activity intervals for one valve do not overlap. The immediately
+    // preceding activity is therefore the only archive row whose anchor can be
+    // before the query while its represented interval crosses the left edge.
+    // Reading that one predecessor avoids a database per UTC day.
     let database = libertas_data_open_indexed(WATERING_ACTIVITIES_RESOURCE, &zone_key(valve));
     if database.count > 0 {
+        if start > i64::MIN {
+            let mut predecessor = Vec::new();
+            libertas_data_read_indexed_range::<SprinklerDataV1>(
+                database.handle,
+                start - 1,
+                IndexDirection::Below,
+                1,
+                &mut predecessor,
+            );
+            if !predecessor.is_empty() {
+                if *remaining_records_scanned == 0 {
+                    return Err(());
+                }
+                *remaining_records_scanned -= 1;
+                merge_report_activity(&mut activities, predecessor.pop().unwrap(), range, maximum)?;
+            }
+        }
         let mut records = Vec::new();
         libertas_data_read_indexed_range::<SprinklerDataV1>(
             database.handle,
@@ -4451,40 +4410,6 @@ fn load_report_activities(
         for record in records.into_iter().take(records_in_range) {
             merge_report_activity(&mut activities, record, range, maximum)?;
         }
-    }
-
-    let last_day = utc_day_start(range.ends_before.saturating_sub(1));
-    let mut day = utc_day_start(range.starts_at);
-    loop {
-        let database = libertas_data_open_indexed(
-            WATERING_ACTIVITY_DAYS_RESOURCE,
-            &activity_day_key(valve, day),
-        );
-        if database.count > 0 {
-            let mut records = Vec::new();
-            libertas_data_read_indexed_range::<SprinklerDataV1>(
-                database.handle,
-                database.min_index,
-                IndexDirection::Above,
-                remaining_records_scanned.saturating_add(1),
-                &mut records,
-            );
-            if records.len() > *remaining_records_scanned {
-                return Err(());
-            }
-            *remaining_records_scanned -= records.len();
-            for record in records {
-                merge_report_activity(&mut activities, record, range, maximum)?;
-            }
-        }
-        if day >= last_day {
-            break;
-        }
-        let next = day.saturating_add(SECONDS_PER_DAY);
-        if next <= day {
-            break;
-        }
-        day = next;
     }
     activities.sort_by_key(|activity| activity.activity_index);
     Ok(activities)
@@ -8819,11 +8744,26 @@ fn extend_report_data_extent(
 
 fn extend_report_indexed_database_extent(
     extent: &mut Option<SprinklerReportDataExtent>,
+    existing_names: &[DataName],
     resource: &str,
     arguments: &[NotificationArgument<'_>],
     indexes_per_second: i64,
 ) {
     if indexes_per_second <= 0 {
+        return;
+    }
+    // `libertas_data_open_indexed` may materialize a missing logical database.
+    // Range discovery is read-only, so consult the existing-name catalog first
+    // and never open a name that has not already been created by persistence.
+    if !existing_names.iter().any(|name| {
+        name.resource_name == resource
+            && name.arguments.len() == arguments.len()
+            && name
+                .arguments
+                .iter()
+                .zip(arguments)
+                .all(|(saved, expected)| saved == expected)
+    }) {
         return;
     }
     let database = libertas_data_open_indexed(resource, arguments);
@@ -8841,6 +8781,14 @@ fn extend_report_indexed_database_extent(
     extend_report_data_extent(extent, first_at, last_at);
 }
 
+fn remove_legacy_watering_activity_day_databases() {
+    for data_name in libertas_data_get_indexed_names() {
+        if data_name.resource_name == LEGACY_WATERING_ACTIVITY_DAYS_RESOURCE {
+            libertas_data_remove_indexed_name(&data_name);
+        }
+    }
+}
+
 fn report_database_data_extent(
     kind: SprinklerReportChartKind,
     weather_endpoint: LibertasEndpoint,
@@ -8848,16 +8796,24 @@ fn report_database_data_extent(
     valves: &[LibertasDevice],
 ) -> Option<SprinklerReportDataExtent> {
     let mut extent = None;
+    let existing_names = libertas_data_get_indexed_names();
     let weather_key = report_weather_archive_key(weather_endpoint, weather_generation);
     for resource in [
         REPORT_WEATHER_HISTORY_RESOURCE,
         REPORT_WEATHER_HISTORY_V2_RESOURCE,
     ] {
-        extend_report_indexed_database_extent(&mut extent, resource, &weather_key, 1);
+        extend_report_indexed_database_extent(
+            &mut extent,
+            &existing_names,
+            resource,
+            &weather_key,
+            1,
+        );
     }
     if kind == SprinklerReportChartKind::WeatherEt {
         extend_report_indexed_database_extent(
             &mut extent,
+            &existing_names,
             REPORT_WEATHER_OBSERVATIONS_RESOURCE,
             &weather_key,
             1,
@@ -8871,15 +8827,23 @@ fn report_database_data_extent(
         ) {
             extend_report_indexed_database_extent(
                 &mut extent,
+                &existing_names,
                 WATERING_ACTIVITIES_RESOURCE,
                 &key,
                 REPORT_ACTIVITY_INDEXES_PER_SECOND,
             );
         }
         if kind == SprinklerReportChartKind::WaterBalance {
-            extend_report_indexed_database_extent(&mut extent, DAILY_REPORT_RESOURCE, &key, 1);
             extend_report_indexed_database_extent(
                 &mut extent,
+                &existing_names,
+                DAILY_REPORT_RESOURCE,
+                &key,
+                1,
+            );
+            extend_report_indexed_database_extent(
+                &mut extent,
+                &existing_names,
                 MODELED_WEATHER_GAPS_RESOURCE,
                 &key,
                 1,
@@ -10554,6 +10518,7 @@ pub fn libertas_sprinkler(
         );
         return;
     }
+    remove_legacy_watering_activity_day_databases();
     let now = utc_seconds().unwrap_or_default();
     let watering_mode = load_watering_mode(weather_endpoint);
     let report_weather_archive_state = load_report_weather_archive_state(weather_endpoint);
@@ -12550,13 +12515,14 @@ mod tests {
             activity.activity_ordinal,
         )
         .unwrap();
-        let days = activity_report_days(&activity);
-        assert_eq!(days, vec![day, day + SECONDS_PER_DAY]);
-
         let range = SprinklerReportTimeRangeV1 {
             starts_at: starts_at + 7 * 3_600,
             ends_before: starts_at + 8 * 3_600,
         };
+        assert!(
+            activity.activity_index
+                < i64::try_from(range.starts_at).unwrap() * REPORT_ACTIVITY_INDEXES_PER_SECOND
+        );
         let record = IndexedData {
             index: activity.activity_index,
             data: SprinklerDataV1::WateringActivityV1 {
