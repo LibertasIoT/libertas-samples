@@ -103,12 +103,14 @@ Every report request exposes nullable, timezone-free `starts_on` and `ends_on`
 calendar dates through native date pickers; both dates are inclusive. Water
 usage interprets those values as Hub-local dates, while balance and weather/ET
 retain UTC dates. A client can send both as null immediately instead of showing
-a query form. Balance defaults to the latest seven days, usage to the latest 31
-Hub-local calendar days plus the provider forecast horizon, and weather/ET to
-two prior days plus the provider forecast horizon. Supplying one bound uses the
-same fixed span from that bound, while supplying both selects an exact custom
-range. Water usage always uses Hub-local calendar-day buckets, including across
-UTC offset changes.
+a query form. A supplied bound before or after the chart's retained data is
+clamped to its first or last available database date; forecast dates remain
+available while the forecast is present. Balance defaults to the latest seven
+days, usage to the latest 31 Hub-local calendar days plus the provider forecast
+horizon, and weather/ET to two prior days plus the provider forecast horizon.
+Supplying one bound uses the same fixed span from that bound, while supplying
+both selects an exact custom range. Water usage always uses Hub-local calendar-
+day buckets, including across UTC offset changes.
 Forecast rain and scheduled water are clipped at the report-generation time,
 so a past date can never label a projected input. Available water is a
 calculated root-zone balance, not a soil-moisture sensor reading. Water is
