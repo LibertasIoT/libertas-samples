@@ -1,4 +1,5 @@
-//! A Matter multi-zone sprinkler controller emulator.
+//! Virtual Sprinkler Valves
+//! Lets you try sprinkler apps without installing physical irrigation hardware.
 #![no_std]
 #![forbid(unsafe_code)]
 
@@ -40,7 +41,7 @@ const DEFAULT_OPEN_DURATION_SECONDS: u32 = 10 * 60;
 const MICROSECONDS_PER_SECOND: u64 = 1_000_000;
 
 pub const APP_STRINGS: [(&str, &str); 1] =
-    [("DEFAULT_OPEN_DURATION", "Default open duration for %1$s.")];
+    [("DEFAULT_OPEN_DURATION", "Saved watering duration for %1$s.")];
 const DEFAULT_OPEN_DURATION_RESOURCE: &str = APP_STRINGS[0].0;
 
 /// Persistent valve data.
@@ -561,18 +562,19 @@ fn status_for_handler_error(error: Error) -> IMStatusCode {
     }
 }
 
-/// Emulate a multi-zone sprinkler.
-///
-/// Each valve is a binary Matter Valve Configuration and Control server. The
-/// controller permits only one valve to be open at a time.
+/// Virtual Sprinkler Valves
+/// Creates sprinkler valves for demonstrations and testing. Only one valve can
+/// water at a time.
 #[libertas_data_schema(ValveData)]
 #[libertas_string_resources(APP_STRINGS)]
 pub fn virtual_irrigation_controller(
     /*
-     * A list of sprinkler valves.
+     * Sprinkler valves
+     * Add one virtual valve for each area you want to try.
      * #[libertas_size(min=1)]
      * ----
-     * A sprinkler valve.
+     * Sprinkler valve
+     * One virtual water valve.
      * #[libertas_virtual_device_type("BQEBQAEBgQEBAQAABQABAwQFAAIAAQA=")]
      */
     valves: Vec<LibertasVirtualDevice>,
