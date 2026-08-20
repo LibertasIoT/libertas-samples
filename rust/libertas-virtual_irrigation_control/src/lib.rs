@@ -20,6 +20,7 @@ use libertas_macros::{
 };
 use libertas_matter::{
     IMStatusCode, MatterAttribute, MatterDevice, MatterReadCluster, MatterRequestContext,
+    MatterResponseStatus,
     consts::{
         attributes::ValveConfigurationandControl as valve_attributes, clusters,
         commands::ValveConfigurationandControl as valve_commands,
@@ -33,7 +34,7 @@ use libertas_matter::{
         types::ValveStateEnum,
     },
     error::Error,
-    frame::{self, Operation, PROTOCOL_MATTER, Status},
+    frame::{self, Operation, PROTOCOL_MATTER},
     tlv::{Element, FromTLV, Nullable, TLVWrite, Tag, ValueType},
 };
 
@@ -300,9 +301,7 @@ fn write_attribute_status<W: TLVWrite + ?Sized>(
     writer.start_struct(Tag::Anonymous)?;
     writer.start_struct(Tag::Context(0))?;
     write_attribute_path(writer, Tag::Context(0), cluster_id, attribute_id)?;
-    writer.start_struct(Tag::Context(1))?;
-    writer.u8(Tag::Context(0), status as u8)?;
-    writer.end_container()?;
+    frame::encode_standard_status(writer, Tag::Context(1), status as MatterResponseStatus)?;
     writer.end_container()?;
     writer.end_container()
 }
@@ -503,7 +502,12 @@ fn send_command_status(
     status: IMStatusCode,
 ) -> Result<(), Error> {
     let mut response = InlineByteBuffer::new();
-    frame::encode_command_status(&mut response, cluster_id, command_id, Status::from(status))?;
+    frame::encode_command_status(
+        &mut response,
+        cluster_id,
+        command_id,
+        status as MatterResponseStatus,
+    )?;
     send_matter_response(context, Operation::InvokeResponse, &response);
     Ok(())
 }

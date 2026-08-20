@@ -416,6 +416,19 @@ Use precise Interaction Model statuses:
 - buffer/capacity exhaustion: `ResourceExhausted`
 - unrecognized operation: `InvalidAction`
 
+`MatterStatus` is the raw Libertas `u32` status received by a Matter client.
+Zero means success. Bits 0-7 are the Matter Interaction Model status, bits
+8-15 are the Matter cluster status, and bits 16-31 are reserved for a future
+OS-generated Libertas-specific status; the current Hub does not generate it. A
+client normally only distinguishes zero from nonzero because it has little
+useful recovery to perform for individual server failures, including timeout.
+
+A Matter virtual device must only issue standard Matter statuses. Its response
+helpers therefore accept `IMStatusCode` or `MatterResponseStatus`, which cannot
+represent the Libertas-specific upper field. When building a response
+structure, use `frame::encode_standard_status`; do not hand-encode status
+fields.
+
 Map internal errors deliberately and respond once. Do not turn all failures into
 generic `Failure`.
 
