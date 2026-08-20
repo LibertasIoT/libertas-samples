@@ -418,9 +418,12 @@ Use precise Interaction Model statuses:
 
 `MatterStatus` is the raw Libertas `u32` status received by a Matter client.
 Zero means success. Bits 0-7 are the Matter Interaction Model status, bits
-8-15 are the Matter cluster status, and bits 16-31 are reserved for a future
-OS-generated Libertas-specific status; the current Hub does not generate it. A
-client normally only distinguishes zero from nonzero because it has little
+8-15 are the Matter cluster status, and bits 16-31 are a Hub-generated status.
+The Hub currently returns `libertas_matter::frame::STATUS_SUPERSEDED`
+(`0x0001_0000`) when an original command differs from the command actually sent
+or a requested attribute value differs from the value finally written by the
+pooled Matter interaction. A client normally only distinguishes zero from
+nonzero because it has little
 useful recovery to perform for individual server failures, including timeout.
 
 A Matter virtual device must only issue standard Matter statuses. Its response
