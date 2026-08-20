@@ -1,34 +1,10 @@
-//! Libertas Weather Agent
-//! Provides application-tailored weather services for Libertas applications.
-//! The first implemented service exposes sprinkler weather through a typed
-//! endpoint while retaining independently persisted weather sections across
-//! provider outages and cursor resets. Future application-specific weather
-//! protocols can be added alongside it without turning this crate into a
-//! universal weather model.
+//! Local Weather
+//! Keeps recent conditions and forecasts available to apps such as Smart
+//! Sprinkler.
 //!
-//! A dedicated standard-library worker owns the reusable HTTPS client and
-//! communicates through bounded channels. During normal operation the worker's
-//! only Libertas call is `libertas_wake_up`, which is explicitly the
-//! cross-thread wake-up primitive. The wake-up callback validates and persists
-//! provider results, advances cursor state, and publishes reports on the single
-//! Libertas application thread.
-//!
-//! Startup subscribes to the built-in Libertas Hub location endpoint. A valid
-//! persisted location is used while that subscription is recovering; without a
-//! cached location, the worker remains idle. Persisted retrieval timestamps
-//! preserve each valid weather section's refresh schedule across restarts.
-//! Missing, overdue, or future-dated cache entries refresh immediately;
-//! otherwise the first request waits only for the remainder of the normal
-//! refresh interval.
-//! Completed history hours are indexed by start timestamp and reconstructed
-//! into the bounded history section during startup. Current conditions and
-//! forecast remain independently replaceable singleton records.
-//!
-//! The Libertas shutdown handler signals the HTTP worker without blocking the
-//! application thread. After any bounded in-flight request returns, the worker
-//! stops without publishing another result and calls `libertas_shutdown_complete`
-//! as its final action. The current Libertas data-write API still has no
-//! completion result with which to confirm durable storage.
+//! Local Weather uses the Hub's location to request the right forecast. It
+//! remembers the latest good weather during short internet or location-service
+//! interruptions and updates automatically when the Hub moves.
 #![forbid(unsafe_code)]
 
 extern crate alloc;
@@ -102,28 +78,28 @@ const HUB_LOCATION_MAX_REPORT_INTERVAL_SECONDS: u32 = 60 * 60;
 const HUB_LOCATION_RETRY_SECONDS: u32 = 60;
 const LOCATION_EQUALITY_TOLERANCE_DEGREES: f64 = 0.000_001;
 
-/// Weather agent database names
-/// Stable resource identifiers and their user-facing descriptions.
+/// Saved weather information
+/// Names and descriptions for information kept between restarts.
 pub const APP_STRINGS: [(&str, &str); 6] = [
     (
         "SPRINKLER_WEATHER_HISTORY_METADATA_V1",
-        "Sprinkler weather history freshness for %1$s.",
+        "Saved sprinkler weather update time for %1$s.",
     ),
     (
         "SPRINKLER_WEATHER_HISTORY_PERIODS_V1",
-        "Sprinkler weather history periods for %1$s.",
+        "Saved recent sprinkler weather for %1$s.",
     ),
     (
         "SPRINKLER_CURRENT_WEATHER_V1",
-        "Persisted current sprinkler weather for %1$s.",
+        "Saved current sprinkler weather for %1$s.",
     ),
     (
         "SPRINKLER_WEATHER_FORECAST_V1",
-        "Persisted sprinkler weather forecast for %1$s.",
+        "Saved sprinkler weather forecast for %1$s.",
     ),
     (
         "SPRINKLER_WEATHER_LOCATION_V1",
-        "Persisted sprinkler weather location for %1$s.",
+        "Saved location used for sprinkler weather at %1$s.",
     ),
     (
         "libertas.permission.ACCESS_FINE_LOCATION",
@@ -136,14 +112,12 @@ const CURRENT_RESOURCE: &str = APP_STRINGS[2].0;
 const FORECAST_RESOURCE: &str = APP_STRINGS[3].0;
 const LOCATION_RESOURCE: &str = APP_STRINGS[4].0;
 
-/// Sprinkler weather endpoint server
-/// Configures the agent's sprinkler endpoint through which applications request
-/// current data or establish incremental subscriptions.
+/// Sprinkler weather service
+/// Makes local weather available to Smart Sprinkler.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWeatherEndpointServerV1 {
-    /// Sprinkler weather endpoint
-    /// The server endpoint for sprinkler weather. Both one-shot and
-    /// subscription clients request weather through this endpoint.
+    /// Weather service
+    /// Choose where sprinkler apps can get weather updates.
     #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)]
     #[libertas_endpoint_server]
     #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
@@ -2109,26 +2083,10 @@ fn handle_endpoint_event(
     LibertasEndpointStatus::Success
 }
 
-/// Weather server
-/// Provides application-tailored weather services. This initial version exposes
-/// one sprinkler-weather server endpoint; future application protocols can add
-/// their own typed endpoints and independently cached data. On startup it
-/// dynamically reconstructs indexed hourly history and validates independently
-/// persisted current conditions, forecast, and Hub location data. It subscribes
-/// to the built-in Libertas Hub location endpoint at every startup. A valid
-/// cached location keeps weather refreshes available during a temporary Hub
-/// outage; without one, Open-Meteo requests wait for the first valid Hub report.
-/// On a changed Hub location, weather for the old site is cleared before the
-/// new location is persisted and replacement refreshes begin. A restart can
-/// therefore leave an empty cache, but cannot relabel old-site weather as new.
-///
-/// HTTPS runs on a dedicated worker; all persistence, cursor, endpoint, timer,
-/// and subscription operations run on the Libertas application thread.
-/// Persisted retrieval timestamps preserve refresh schedules across restarts,
-/// avoiding immediate rewrites while cached sections are not yet due. The
-/// transient cursor and replay journal intentionally restart at sequence zero;
-/// the agent publishes changes and one shared PeerAlive through host fan-out.
-/// Clients recover with epoch-timestamp-and-sequence reset detection.
+/// Local Weather
+/// Gets local conditions and forecasts using the Hub's location. It remembers
+/// the latest good weather during short outages and refreshes automatically
+/// when the location changes.
 #[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentDataV1")]
 #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]

@@ -1,10 +1,11 @@
-//! Libertas Building Climate
-//! Configures rooms, their Matter thermostats and environmental sensors, and a
-//! building-HVAC weather client with an optional operational-feature client.
-//! Every room exposes a Libertas endpoint that separates writable comfort
-//! intent from read-only observed state, statistics, and the controller's
-//! calculated schedule. The Hub build uses `std` and statically links a bounded
-//! CPU-only XGBoost thermal-prediction worker.
+//! Smart Building Climate
+//! Helps keep rooms comfortable by coordinating thermostats, indoor sensors,
+//! outdoor weather, and optional local sensors.
+//!
+//! Add the rooms in the building, choose which thermostat serves each room,
+//! and select the people who should receive important heating and cooling
+//! warnings. Each room gets its own comfort controls, current conditions, and
+//! schedule.
 #![forbid(unsafe_code)]
 
 extern crate alloc;
@@ -1657,190 +1658,152 @@ pub enum BuildingHvacRoomProtocolV1 {
     },
 }
 
-/// Building HVAC room
-/// Defines one user-visible room and its stable runtime-control endpoint. The
-/// room name is the label shown by `EnumSource` when thermostats select rooms.
+/// Room
+/// Add a room people can recognize and choose where its climate controls appear.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct BuildingHvacRoomV1 {
     /// Room name
-    /// A nonempty name unique within this building. It is the human-readable
-    /// `EnumSource` label for thermostat room associations.
+    /// Enter a unique, recognizable name such as Living Room or Main Bedroom.
     #[libertas_size(min = 1, max = 64)]
     #[libertas_ui_header]
     #[libertas_unique]
     pub name: String,
-    /// Room control endpoint
-    /// A stable Libertas server endpoint exposing this room's writable comfort
-    /// intent and read-only state, statistics, and calculated schedule. Runtime
-    /// persistence uses this endpoint as the room key rather than an array
-    /// index.
+    /// Room controls
+    /// Choose where this room's comfort settings, conditions, and schedule will
+    /// be available.
     #[libertas_endpoint_schema(BuildingHvacRoomProtocolV1)]
     #[libertas_endpoint_server]
     #[libertas_unique]
     pub control_endpoint: LibertasEndpoint,
 }
 
-/// Indoor sensor
-/// Configures one indoor Matter environmental station. Temperature is required;
-/// humidity and air quality are optional capabilities of the same physical
-/// station represented by their standard Matter logical devices.
+/// Indoor sensor group
+/// Choose the sensors at one place in the room. Temperature is required;
+/// humidity and air quality are optional.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub struct BuildingHvacIndoorSensorV1 {
     /// Temperature sensor
-    /// A standard Matter Temperature Sensor logical device. One logical device
-    /// may be assigned to only one station and contributes to the room's robust
-    /// fused temperature.
+    /// Choose the temperature sensor at this place in the room.
     #[libertas_device_type("BQEBAYIGAA==")]
     #[libertas_ui_header]
     #[libertas_unique(3)]
     pub temperature_sensor: LibertasDevice,
     /// Humidity sensor
-    /// An optional standard Matter Humidity Sensor logical device from the same
-    /// physical station. Its accepted reading contributes to the room's fused
-    /// relative humidity.
+    /// Optionally choose a humidity sensor at the same place.
     #[libertas_device_type("BQEBAYcGAA==")]
     #[libertas_unique(3)]
     pub humidity_sensor: Option<LibertasDevice>,
     /// Air quality sensor
-    /// An optional standard Matter Air Quality Sensor logical device from the
-    /// same physical station. The controller discovers and queries PM2.5,
-    /// carbon dioxide, and its other standard concentration clusters at runtime.
+    /// Optionally choose an air quality sensor at the same place.
     #[libertas_device_type("BQEBASwA")]
     #[libertas_unique(3)]
     pub air_quality_sensor: Option<LibertasDevice>,
 }
 
-/// Outdoor sensor
-/// Configures an optional local outdoor sensing station. Temperature is
-/// required whenever the station is present; relative humidity and air quality
-/// are optional additional Matter logical devices.
+/// Outdoor sensor group
+/// Optionally use sensors at one representative outdoor location. Temperature
+/// is required; humidity and air quality are optional.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub struct BuildingHvacOutdoorSensorV1 {
     /// Outdoor temperature sensor
-    /// A standard Matter Temperature Sensor logical device installed where it
-    /// measures representative outdoor air rather than sun-heated surfaces,
-    /// exhaust, or equipment discharge.
+    /// Choose a shaded sensor that measures the outdoor air, away from exhaust
+    /// and equipment heat.
     #[libertas_device_type("BQEBAYIGAA==")]
     pub temperature_sensor: LibertasDevice,
     /// Outdoor humidity sensor
-    /// An optional standard Matter Humidity Sensor logical device installed at
-    /// the same representative outdoor location.
+    /// Optionally choose a humidity sensor at the same outdoor location.
     #[libertas_device_type("BQEBAYcGAA==")]
     pub humidity_sensor: Option<LibertasDevice>,
     /// Outdoor air quality sensor
-    /// An optional standard Matter Air Quality Sensor logical device. The
-    /// controller discovers and queries its optional standard concentration
-    /// clusters at runtime, including PM2.5 and carbon dioxide when supported.
+    /// Optionally choose an air quality sensor at the same outdoor location.
     #[libertas_device_type("BQEBASwA")]
     pub air_quality_sensor: Option<LibertasDevice>,
 }
 
-/// Thermostat room association
-/// Associates one room with its serving physical thermostat and with the
-/// room-specific Matter sensors used to evaluate that room's comfort demand.
+/// Room served by this thermostat
+/// Choose a room and the indoor sensors used to keep it comfortable.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct BuildingHvacThermostatRoomV1 {
     /// Room
-    /// The zero-based index of a room in the building's `rooms` list. The
-    /// `EnumSource` UI displays the selected room by its room-name header.
+    /// Choose one of the rooms added above.
     #[libertas_enum_source("$.rooms")]
     #[libertas_unique(2)]
     pub room_index: u16,
-    /// Indoor sensors
-    /// One or more Matter environmental stations located in this room. Every
-    /// station supplies temperature and may additionally supply humidity and
-    /// runtime-discovered air-quality measurements. At least one station is
-    /// required even when the thermostat reports its own local temperature.
+    /// Indoor sensor groups
+    /// Add at least one place in this room where temperature is measured. You
+    /// can also add humidity and air quality sensors at each place.
     /// ----
-    /// Indoor sensor
-    /// One room-specific environmental station.
+    /// Indoor sensor group
+    /// Sensors located together at one place in this room.
     #[libertas_size(min = 1, max = 8)]
     pub sensors: Vec<BuildingHvacIndoorSensorV1>,
 }
 
-/// Building thermostat
-/// Configures one standard Matter Thermostat logical device and every room it
-/// serves. Multiple rooms may share one thermostat, but their runtime room
-/// controls are comfort demands reconciled into common physical setpoints.
+/// Thermostat
+/// Choose a thermostat and all the rooms it serves.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct BuildingHvacThermostatV1 {
-    /// Matter thermostat
-    /// The standard Matter Thermostat logical device controlled through typed
-    /// Matter reads, subscriptions, and writes.
+    /// Thermostat
+    /// Choose the thermostat to control.
     #[libertas_device_type("BQEBAYEGAA==")]
     #[libertas_ui_header]
     #[libertas_unique]
     pub thermostat: LibertasDevice,
-    /// Served rooms
-    /// One or more unique rooms served by this physical thermostat. Every
-    /// building room must appear exactly once across all thermostat entries.
+    /// Rooms served
+    /// Add every room controlled by this thermostat. Each room must be assigned
+    /// to exactly one thermostat.
     /// ----
-    /// Served room
-    /// One room reference and its required temperature and optional humidity
-    /// sensor assignments.
+    /// Room
+    /// One room and the sensors used for it.
     #[libertas_size(min = 1, max = 64)]
     pub rooms: Vec<BuildingHvacThermostatRoomV1>,
 }
 
-/// Building climate configuration
-/// Contains the complete physical room, thermostat, and sensor topology. Rooms
-/// and thermostats share one schema-data tree so nested room references can use
-/// `EnumSource("$.rooms")`.
+/// Building setup
+/// Add rooms first, then add thermostats and choose the rooms each one serves.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct BuildingHvacBuildingV1 {
     /// Rooms
-    /// Define all user-visible rooms before associating them with thermostats.
-    /// Every room has a stable runtime endpoint and must be selected exactly
-    /// once by a thermostat room association.
+    /// Add every room that should have its own climate controls.
     /// ----
     /// Room
-    /// One named room and its runtime-control endpoint.
+    /// One named room with its own controls.
     #[libertas_size(min = 1, max = 64)]
     pub rooms: Vec<BuildingHvacRoomV1>,
     /// Thermostats
-    /// Standard Matter thermostats and the rooms and sensors they serve.
+    /// Add the thermostats and choose the rooms and sensors served by each one.
     /// ----
     /// Thermostat
-    /// One physical thermostat with one or more room associations.
+    /// One thermostat and the rooms it serves.
     #[libertas_size(min = 1, max = 16)]
     pub thermostats: Vec<BuildingHvacThermostatV1>,
-    /// Outdoor sensor
-    /// An optional local Matter outdoor station. When present it must include a
-    /// temperature sensor and may include humidity and a standard Matter Air
-    /// Quality Sensor. Fresh local temperature takes precedence over internet
-    /// current weather for passive-drift learning. Runtime cluster discovery
-    /// exposes any supported air measurements; forecasts and other weather
-    /// inputs still come from the weather client.
+    /// Outdoor sensors
+    /// Optionally choose local outdoor temperature, humidity, and air quality
+    /// sensors. Local readings are used together with the weather service.
     pub outdoor_sensor: Option<BuildingHvacOutdoorSensorV1>,
-    /// Urgent notification recipients
-    /// One or more Libertas users who receive confirmed time-sensitive HVAC
-    /// warnings, bounded reminders, and recovery notifications. These
-    /// notifications cover temperature, control availability, and apparent
-    /// HVAC recovery failures; they are not life-safety alarms.
+    /// People to notify
+    /// Choose who should receive important heating and cooling warnings,
+    /// reminders, and recovery messages. These are not life-safety alarms.
     /// ----
-    /// Notification recipient
-    /// One Libertas user authorized to receive building HVAC warnings. Runtime
-    /// configuration validation rejects duplicate recipients.
+    /// Person to notify
+    /// One person who should receive building climate warnings.
     #[libertas_size(min = 1, max = 16)]
     #[libertas_unordered]
     pub urgent_notification_recipients: Vec<LibertasUser>,
 }
 
-/// Building HVAC weather client
-/// Selects the typed building-HVAC endpoint expected from
-/// `libertas-weather_agent`. The controller is only a client and never
-/// performs provider HTTP requests itself.
+/// Weather service
+/// Choose the local weather information used to plan heating and cooling.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub struct BuildingHvacWeatherClientV1 {
-    /// Weather agent endpoint
-    /// A client endpoint providing current conditions, recent history, forecast,
-    /// outdoor air quality, and incremental recovery.
+    /// Weather service
+    /// Choose where current conditions, forecasts, and outdoor air quality come from.
     #[libertas_endpoint_schema(BuildingHvacWeatherProtocolV1)]
     pub endpoint: LibertasEndpoint,
 }
@@ -1998,15 +1961,15 @@ pub enum BuildingHvacExternalFeatureProtocolV1 {
     },
 }
 
-/// Building HVAC external-feature client
-/// Selects an optional full-snapshot endpoint for operational inputs not
-/// available through standard Matter devices or the weather endpoint.
+/// Additional building information
+/// Optionally use energy prices, occupancy, windows, meters, or equipment data
+/// from another service.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub struct BuildingHvacExternalFeatureClientV1 {
-    /// External feature endpoint
-    /// Client endpoint for optional external features.
+    /// Information service
+    /// Choose where the optional building information comes from.
     #[libertas_endpoint_schema(BuildingHvacExternalFeatureProtocolV1)]
     pub endpoint: LibertasEndpoint,
 }
@@ -4241,45 +4204,33 @@ fn restore_machine_learning_models(
         .collect()
 }
 
-/// Libertas building climate
-/// Configures a room-first building topology and its dedicated building-HVAC
-/// weather client. Room endpoints expose writable comfort intent and read-only
-/// indoor and outdoor sensor state, statistics, learned cross-zone influence,
-/// calculated schedules, and active urgent HVAC warnings. Selected Libertas
-/// users receive time-sensitive supervisory notifications; this application
-/// does not generate certified life-safety alarms. The runtime protocol and
-/// persistent union are design contracts. Runtime callbacks subscribe to Matter
-/// devices and weather, persist accepted state before reporting it, arbitrate
-/// shared thermostats, publish changes and PeerAlive, evaluate urgent conditions,
-/// learn cross-zone effects, and run optional bounded XGBoost predictions.
+/// Smart Building Climate
+/// Coordinates thermostats, room sensors, and weather to keep each room
+/// comfortable. It provides room-by-room controls and schedules, and sends
+/// selected people important heating and cooling warnings. These warnings are
+/// not life-safety alarms.
 #[libertas_data_schema(BuildingHvacPersistentDataV1)]
 #[libertas_permissions(BUILDING_CLIMATE_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]
 pub fn libertas_building_climate(
     /*
      * Building
-     * Define rooms first, then select those rooms from each Matter thermostat
-     * using the room-name EnumSource. Every room must be assigned exactly once
-     * and must have at least one indoor station with a Matter Temperature
-     * Sensor. Each station may add Matter Humidity and Air Quality Sensor
-     * logical devices whose optional measurements are discovered at runtime.
-     * Select at least one user to receive urgent HVAC warnings and recovery
-     * notifications.
+     * Add rooms first, then add thermostats and choose the rooms each one
+     * serves. Every room needs at least one temperature sensor and must be
+     * assigned to exactly one thermostat. Humidity and air quality sensors are
+     * optional. Also choose at least one person to receive important warnings.
      */
     building: BuildingHvacBuildingV1,
     /*
-     * Building HVAC weather
-     * The special BuildingHvacWeatherProtocolV1 client endpoint expected from
-     * libertas-weather_agent.
+     * Weather service
+     * Choose the local weather service used to help plan heating and cooling.
      */
     weather: BuildingHvacWeatherClientV1,
     /*
-     * Optional operational inputs
-     * A full-snapshot endpoint for utility prices and carbon intensity, central
-     * equipment telemetry, occupancy and window state, local calendar context,
-     * PI demand, and energy or delivered-thermal metering. Leave absent when
-     * those sources do not exist; their model columns remain XGBoost missing
-     * values rather than guessed zeros.
+     * Additional building information
+     * Optionally choose a service that provides energy prices, occupancy,
+     * window state, meters, calendar information, or central equipment data.
+     * Leave this blank when that information is not available.
      */
     external_features: Option<BuildingHvacExternalFeatureClientV1>,
 ) {

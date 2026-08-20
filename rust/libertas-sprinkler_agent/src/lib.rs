@@ -1,31 +1,11 @@
-//! Libertas Sprinkler
-//! Calculates and executes weather-aware watering schedules for sprinkler zones
-//! controlled by Matter Valve Configuration and Control devices.
+//! Smart Sprinkler
+//! Waters each part of the yard only when it needs water.
 //!
-//! Configuration identifies the shared sprinkler weather endpoint, one
-//! chart-ready Sprinkler Report endpoint, reminder recipients, and, for each
-//! zone, its valve, plant type, sprinkler-head type, and state endpoint. The
-//! controller adapts each watering
-//! run from weather, observed valve time, and one user-facing water amount
-//! adjuster. Hold-off periods remain runtime schedule constraints.
-//! When a fresh forecast and site location are available, the controller moves
-//! a run into the best nearby morning window. It derives solar position from
-//! UTC and the site coordinates, prefers low evapotranspiration and wind, and
-//! avoids prolonged foliage wetness for overhead watering. A critically dry
-//! zone still uses the first weather-safe opportunity.
-//! Hold-offs remain hard constraints. The controller waters before one only
-//! when a fresh continuous forecast shows a safe, rain-free opportunity and
-//! delaying would produce a critical deficit; otherwise it recalculates the
-//! make-up amount and duration at the first legal post-hold-off start.
-//!
-//! Each zone persists compact settings and a folded water-balance baseline.
-//! Recent precipitation, evapotranspiration, and actual valve-open irrigation
-//! are incremental indexed records reconstructed into a bounded ledger during
-//! startup. If internet weather stops, persisted local demand falls back to an
-//! offline location-and-season estimate and finally a conservative built-in
-//! rate. Valve subscriptions count both automatic and manual watering, so a
-//! restart or manual run does not cause the controller to water the same
-//! deficit twice.
+//! Choose what grows in each area, how it is watered, and any times when
+//! watering must be paused. Smart Sprinkler uses recent rain, current weather,
+//! and the forecast to choose a safe watering time and amount. It also counts
+//! manual watering, keeps working during short internet outages, and reminds
+//! you to prepare the system for freezing weather.
 #![no_std]
 #![forbid(unsafe_code)]
 
@@ -178,52 +158,52 @@ const WINTERIZATION_REMINDER_INTERVAL_SECONDS: u64 = 30 * SECONDS_PER_DAY;
 const NORTHERN_WINTERIZATION_SEASON_END_DAY: u16 = 90;
 const SOUTHERN_WINTERIZATION_SEASON_END_DAY: u16 = 273;
 
-/// Sprinkler database names
-/// Stable resource identifiers and their user-facing descriptions.
+/// Saved sprinkler information
+/// Names and descriptions for information kept between restarts.
 pub const APP_STRINGS: [(&str, &str); 16] = [
     (
         "SPRINKLER_ZONE_MEMORY_V1",
-        "Sprinkler water balance and settings for %1$s.",
+        "Saved water balance and settings for %1$s.",
     ),
     (
         "SPRINKLER_WATER_EVENTS_V1",
-        "Sprinkler water history for %1$s.",
+        "Saved recent rain and watering for %1$s.",
     ),
     (
         "SPRINKLER_SITE_LOCATION_V1",
-        "Sprinkler site location for %1$s.",
+        "Saved location used for sprinkler weather at %1$s.",
     ),
     (
         "SPRINKLER_WATERING_MODE_V1",
-        "Sprinkler watering mode for %1$s.",
+        "Saved watering mode for %1$s.",
     ),
     (
         "SPRINKLER_WINTERIZATION_REMINDER_V1",
-        "Sprinkler winterization reminder state for %1$s.",
+        "Saved winterization reminder history for %1$s.",
     ),
     (
         "SPRINKLER_REPORT_WEATHER_HISTORY_V1",
-        "Indefinite sprinkler report weather history for %1$s.",
+        "Saved weather history for sprinkler reports at %1$s.",
     ),
     (
         "SPRINKLER_WATERING_ACTIVITIES_V1",
-        "Indefinite sprinkler watering activity for %1$s.",
+        "Saved watering history for %1$s.",
     ),
     (
         "SPRINKLER_DAILY_REPORT_V1",
-        "Indefinite daily sprinkler water accounting for %1$s.",
+        "Saved daily water balance for %1$s.",
     ),
     (
         "SPRINKLER_WATERING_ACTIVITY_STATE_V1",
-        "Current sprinkler watering activity for %1$s.",
+        "Current watering activity for %1$s.",
     ),
     (
         "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1",
-        "Indefinite sprinkler current-weather observations for %1$s.",
+        "Saved current-weather observations for sprinkler reports at %1$s.",
     ),
     (
         "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V1",
-        "Current sprinkler weather-archive generation for %1$s.",
+        "Saved location used by sprinkler weather reports at %1$s.",
     ),
     (
         "SPRINKLER_WINTERIZATION_WEATHER_REMINDER",
@@ -235,15 +215,15 @@ pub const APP_STRINGS: [(&str, &str); 16] = [
     ),
     (
         "libertas.permission.ACCESS_FINE_LOCATION",
-        "Allow the sprinkler task to receive location-specific conditions and forecasts from the weather agent.",
+        "Use this Hub's location to get local weather for automatic watering.",
     ),
     (
         "SPRINKLER_MODELED_WEATHER_GAPS_V1",
-        "Indefinite modeled sprinkler weather gaps for %1$s.",
+        "Saved weather estimates used during service interruptions at %1$s.",
     ),
     (
         "SPRINKLER_REPORT_WEATHER_HISTORY_V2",
-        "Indefinite full-observation sprinkler report weather history for %1$s.",
+        "Saved detailed weather history for sprinkler reports at %1$s.",
     ),
 ];
 const ZONE_DATA_RESOURCE: &str = APP_STRINGS[0].0;
@@ -266,17 +246,16 @@ const REPORT_WEATHER_HISTORY_V2_RESOURCE: &str = APP_STRINGS[15].0;
 // be removed without migrating records.
 const LEGACY_WATERING_ACTIVITY_DAYS_RESOURCE: &str = "SPRINKLER_WATERING_ACTIVITY_DAYS_V1";
 
-/// Sprinkler time slot
-/// Defines one half-open schedule or hold-off interval.
+/// Time period
+/// A start time and length of time for watering or a watering pause.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerTimeSlotV1 {
-    /// Start time
-    /// The inclusive start date and time in seconds since the Unix epoch.
+    /// Starts at
+    /// When this period begins.
     #[libertas_ui_header]
     pub starts_at: LibertasDateTime,
     /// Duration
-    /// The interval length in seconds. A valid slot always has a nonzero
-    /// duration and an end time representable by `LibertasDateTime`.
+    /// How long this period lasts.
     #[libertas_time_interval]
     #[libertas_default(14400)]
     pub duration_seconds: u32,
@@ -295,10 +274,8 @@ impl SprinklerTimeSlotV1 {
     }
 }
 
-/// Sprinkler head type
-/// Selects a nominal delivery profile used to translate the adaptive water need
-/// into valve-open time. Weather history and observed valve time drive later
-/// calculations, while the water amount adjuster provides the only user tuning.
+/// Watering method
+/// Choose the kind of sprinkler or drip system installed in this area.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
@@ -321,8 +298,7 @@ pub enum SprinklerHeadTypeV1 {
 }
 
 /// Plant type
-/// Selects the plant water-storage and weather-demand profile used by the
-/// zone's adaptive water-balance calculation.
+/// Choose what grows in this area so watering can match its needs.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
@@ -350,156 +326,133 @@ pub enum SprinklerPlantTypeV1 {
     Xeriscape,
 }
 
-/// Sprinkler schedule condition
-/// Explains the current calculated schedule and why watering may be deferred.
+/// Watering status
+/// Explains what the sprinkler is doing or why watering is delayed.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub enum SprinklerScheduleConditionV1 {
     /// Initializing
-    /// The controller is restoring persisted state and has not completed its
-    /// first schedule calculation.
+    /// Getting the latest information ready.
     Initializing,
     /// Water not needed
-    /// No positive watering amount can be calculated from the current zone
-    /// configuration.
+    /// Plants have enough water right now.
     WaterNotNeeded,
     /// Forecast rain
-    /// Significant high-probability rain is expected before watering is needed.
+    /// Expected rain should provide enough water for now.
     ForecastRain,
     /// Waiting for safe weather
-    /// Rain, freezing temperature, or excessive wind currently prevents
-    /// watering; the displayed future slot is forecast-derived.
+    /// Watering is delayed because it is raining, near freezing, or too windy.
     WaitingForSafeWeather,
-    /// Preempting a hold-off
-    /// Watering is scheduled before a user hold-off because waiting until the
-    /// first legal slot afterward would reach the critical plant-deficit
-    /// threshold. Preemption requires a fresh, safe forecast whose expected
-    /// rain cannot replace enough of the planned water.
+    /// Watering before a pause
+    /// Plants may become too dry during a no-watering period, so a safe run is
+    /// planned before it begins.
     PreemptiveHoldOff,
     /// Held off
-    /// A user hold-off moved watering to the first legal slot afterward. The
-    /// displayed amount and duration are recalculated for that delayed start.
+    /// Watering was moved until after a no-watering period.
     HeldOff,
     /// Scheduled
-    /// A watering slot has been calculated and is waiting to begin. With a
-    /// fresh forecast and known location, this is the best nearby rising-sun
-    /// period after considering plant demand, humidity, evapotranspiration,
-    /// precipitation, temperature, sprinkler-head drift, and hold-offs.
+    /// The next watering time has been chosen using plant needs and available
+    /// weather information.
     Scheduled,
-    /// Valve command pending
-    /// A Matter Valve command was sent and is awaiting confirmation.
+    /// Starting or stopping
+    /// The sprinkler is waiting for the valve to confirm a change.
     ValveCommandPending,
     /// Valve state unavailable
-    /// The controller has not yet observed the Matter Valve's current state and
-    /// will not start automatic watering.
+    /// The valve status is not available, so automatic watering will not start.
     ValveStateUnavailable,
     /// Valve open
-    /// The valve is observed open. Its actual open time is being added to the
-    /// recent-water ledger whether the opening was automatic or manual.
+    /// This area is watering now.
     ValveOpen,
     /// Valve fault
-    /// The Matter Valve reports a fault and automatic watering is inhibited.
+    /// The valve reported a problem, so automatic watering is paused.
     ValveFault,
     /// Offline weather estimate
-    /// Live weather is unavailable, so the schedule uses recent local demand,
-    /// a location-and-season estimate, or the conservative built-in fallback.
+    /// Live weather is unavailable, so the schedule uses the best saved or
+    /// seasonal estimate.
     OfflineWeatherEstimate,
 }
 
-/// Water demand source
-/// Explains the reference evapotranspiration rate used to project the next
-/// adaptive watering requirement.
+/// Water-use estimate
+/// Shows which information was used to estimate how quickly plants lose water.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub enum SprinklerWaterDemandSourceV1 {
-    /// Recent local weather
-    /// Uses the average rate reconstructed from persisted local weather events.
+    /// Recent weather
+    /// Based on recent weather at this location.
     RecentLocalWeather,
     /// Location and season
-    /// Uses an offline latitude, hemisphere, and time-of-year estimate.
+    /// Based on the location and time of year.
     LocationAndSeason,
-    /// Conservative default
-    /// Uses the built-in reference rate because neither sufficient recent
-    /// weather nor a valid cached location is available.
+    /// Built-in estimate
+    /// Used when recent weather and location information are unavailable.
     ConservativeDefault,
 }
 
-/// Sprinkler zone configuration
-/// Groups the two end-user scheduling settings in one configuration view while
-/// allowing each setting to be changed independently.
+/// Zone settings
+/// Adjust the water amount or add times when this area must not be watered.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerZoneConfigurationV1 {
-    /// Water amount adjuster
-    /// Percentage of the adaptive watering amount to apply. Use 100% for the
-    /// adaptive amount, less than 100% for less water, and more than 100% for
-    /// more water.
+    /// Water amount
+    /// Use 100% for the recommended amount, a lower value for less water, or a
+    /// higher value for more water.
     #[libertas_number(min = 20, max = 200, step = 10)]
     pub watering_percent: u16,
-    /// Hold-off periods
-    /// Active sorted, non-overlapping intervals that watering must avoid.
+    /// No-watering periods
+    /// Times when watering must be paused.
     /// ----
-    /// Hold-off period
-    /// A half-open interval during which this zone cannot water.
+    /// No-watering period
+    /// One period when this area must not be watered.
     #[libertas_size(max = 64)]
     pub hold_off_periods: Vec<SprinklerTimeSlotV1>,
 }
 
-/// Active sprinkler state
-/// Exposes calculation, water-balance, and valve diagnostics for a zone that is
-/// actively calculating automatic watering. End-user settings are exposed by
-/// `SprinklerZoneConfigurationV1` instead.
+/// Zone details
+/// Shows the information behind the current watering plan.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerZoneActiveStateV1 {
-    /// Water demand source
-    /// The best available source used to estimate when the root zone will next
-    /// need water.
+    /// Water-use estimate
+    /// The information used to estimate when plants will next need water.
     pub water_demand_source: SprinklerWaterDemandSourceV1,
-    /// Estimated reference evapotranspiration
-    /// The reference water-loss rate used for projection, in millimeters per
-    /// day. The plant-specific crop coefficient is applied separately.
+    /// Estimated daily water loss
+    /// Estimated water lost each day through evaporation and plant use.
     #[libertas_number(min = 0)]
     pub estimated_reference_evapotranspiration_millimeters_per_day: f32,
-    /// Calculated at
-    /// The date and time represented by this schedule calculation.
+    /// Last updated
+    /// When this watering plan was calculated.
     pub calculated_at: LibertasDateTime,
-    /// Condition
-    /// The current watering decision or constraint.
+    /// Status
+    /// The current watering decision or reason for a delay.
     pub condition: SprinklerScheduleConditionV1,
     /// Next watering
-    /// The best calculated valve-open slot. Weather or valve availability may
-    /// change whether it can be executed, but never removes the estimate.
+    /// The planned start time and duration. Weather or valve availability may
+    /// still change the plan.
     pub next_watering: SprinklerTimeSlotV1,
     /// Planned water
-    /// The water depth that the next automatic run intends to apply, in
-    /// millimeters.
+    /// The amount of water planned for the next automatic run.
     #[libertas_number(min = 0)]
     pub planned_water_millimeters: f32,
-    /// Estimated water deficit
-    /// The estimated root-zone water deficit in millimeters after applying the
-    /// persisted recent-water ledger.
+    /// Estimated water shortage
+    /// How much water the plants are estimated to need.
     #[libertas_number(min = 0)]
     pub estimated_deficit_millimeters: f32,
-    /// Recent precipitation
-    /// Total precipitation represented by the retained seven-day ledger, in
-    /// millimeters.
+    /// Recent rain
+    /// Rain counted during the past seven days.
     #[libertas_number(min = 0)]
     pub recent_precipitation_millimeters: f32,
-    /// Recent irrigation
-    /// Total observed valve-open irrigation represented by the retained
-    /// seven-day ledger, in millimeters.
+    /// Recent watering
+    /// Watering counted during the past seven days.
     #[libertas_number(min = 0)]
     pub recent_irrigation_millimeters: f32,
-    /// Valve open
-    /// Whether the Matter Valve is currently observed open.
+    /// Watering now
+    /// Whether the valve is currently open.
     pub valve_is_open: bool,
-    /// Valve state known
-    /// Whether the controller has received a non-null current state for this
-    /// Matter Valve. Automatic watering is inhibited while this is false.
+    /// Valve status available
+    /// Automatic watering waits until the valve status is available.
     pub valve_state_known: bool,
-    /// Valve fault bitmap
-    /// The current Matter Valve Configuration and Control fault bitmap.
+    /// Valve problem code
+    /// A code reported by the valve. Zero means no problem was reported.
     pub valve_fault_bitmap: u16,
 }
 
@@ -512,14 +465,13 @@ pub enum SprinklerWateringModeV1 {
     /// Active
     /// Automatic watering is enabled.
     Active,
-    /// Winterization
+    /// Winterized
     /// Automatic watering is shut down for the cold season.
     Winterization,
 }
 
 /// Winterization reminder reason
-/// Records whether the latest reminder came from seasonal location guidance or
-/// fresh freezing-weather evidence.
+/// Explains why the latest cold-weather reminder was sent.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
@@ -534,166 +486,143 @@ pub enum SprinklerWinterizationReminderReasonV1 {
     FreezingWeather,
 }
 
-/// Winterization reminder memory
-/// Persists the most recent system-wide reminder so restarts do not create a
-/// notification burst.
+/// Latest winterization reminder
+/// Remembers the latest reminder so it is not sent again too soon.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub struct SprinklerWinterizationReminderMemoryV1 {
-    /// Last reminded at
-    /// The date and time when the reminder state was persisted immediately
-    /// before its notification was submitted.
+    /// Sent at
+    /// When the latest reminder was sent.
     pub last_reminded_at: LibertasDateTime,
-    /// Reminder reason
-    /// The evidence used for the latest reminder.
+    /// Reason
+    /// Why the latest reminder was sent.
     pub reason: SprinklerWinterizationReminderReasonV1,
 }
 
-/// Sprinkler state
-/// Presents the essential current condition and next watering schedule for a
-/// regular user, without configuration or diagnostic details.
+/// Sprinkler status
+/// Shows the current status and next watering plan.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerZoneStateV1 {
     /// Active
-    /// Automatic watering is enabled and a next watering slot is available.
+    /// Automatic watering is enabled.
     #[libertas_ui_header]
     ActiveV1 {
-        /// Condition
-        /// The current watering decision or constraint.
+        /// Status
+        /// The current watering decision or reason for a delay.
         condition: SprinklerScheduleConditionV1,
         /// Next watering
-        /// The best calculated valve-open slot. Weather or valve availability
-        /// may change whether it can be executed, but never removes the
-        /// estimate.
+        /// The planned start time and duration.
         next_watering: SprinklerTimeSlotV1,
     },
-    /// Winterization
+    /// Winterized
     /// Automatic watering is disabled for the entire sprinkler system and no
     /// watering slot is scheduled.
     WinterizationV1,
 }
 
-/// Advanced sprinkler state
-/// Distinguishes complete active zone data from system winterization for users
-/// diagnosing a zone or controlling the system watering mode.
+/// Detailed sprinkler status
+/// Shows the full watering plan or that the system is winterized.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerZoneAdvancedStateV1 {
     /// Active
     /// Automatic watering is enabled and all current zone data is available.
     ActiveV1 {
-        /// Current state
-        /// The complete current calculation, water balance, and valve status
-        /// for the active zone.
+        /// Zone details
+        /// The current watering plan, water estimate, and valve status.
         current: SprinklerZoneActiveStateV1,
     },
-    /// Winterization
+    /// Winterized
     /// Automatic watering is disabled for the entire sprinkler system and no
     /// watering slot is scheduled.
     WinterizationV1,
 }
 
-/// Sprinkler zone protocol
-/// Reads or subscribes to regular-user state, retrieves advanced diagnostics,
-/// presents both end-user settings in one configuration view, and updates the
-/// water amount adjuster or hold-off constraints independently.
+/// Sprinkler controls
+/// View this area's status and details, or change its watering settings.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerZoneProtocolV1 {
-    /// Get state
-    /// Requests the essential regular-user state. This first protocol variant
-    /// is the default GUI action and may establish a subscription because the
-    /// endpoint operation is outside this value.
+    /// View status
+    /// Shows what this area is doing and when it will next be watered.
     #[libertas_request]
     #[libertas_subscription_request]
     #[libertas_next_response(StateV1)]
     GetStateV1,
-    /// State
-    /// Returns or reports the essential current condition and next watering
-    /// schedule. Advanced diagnostics and configuration are available on
-    /// demand.
+    /// Current status
+    /// The current watering status and next watering plan.
     #[libertas_response]
     #[libertas_subscription_data]
     #[libertas_next_request("GetAdvancedStateV1,GetConfigurationV1")]
     StateV1 {
-        /// Sprinkler state
-        /// The essential active-zone state or the Winterization state.
+        /// Sprinkler status
+        /// The current status for this area or the winterized system.
         state: SprinklerZoneStateV1,
     },
-    /// Get advanced state
-    /// Requests complete calculation, water-balance, and valve diagnostics for
-    /// this zone.
+    /// View details
+    /// Shows the water estimate, watering plan, and valve status.
     #[libertas_request]
     #[libertas_next_response(AdvancedStateV1)]
     GetAdvancedStateV1,
-    /// Advanced state
-    /// Returns complete calculation, water-balance, and valve diagnostics after
-    /// an advanced-state request or watering-mode update.
+    /// Zone details
+    /// The water estimate, watering plan, valve status, and watering mode.
     #[libertas_response]
     #[libertas_next_request("GetConfigurationV1,SetWateringModeV1")]
     AdvancedStateV1 {
         /// Watering mode
-        /// The current system-wide mode, exposed explicitly so its control can
-        /// initialize from this response.
+        /// Whether automatic watering is active or the system is winterized.
         mode: SprinklerWateringModeV1,
-        /// Sprinkler state
-        /// The active zone diagnostics or the Winterization state.
+        /// Sprinkler status
+        /// Detailed status for this area or the winterized system.
         state: SprinklerZoneAdvancedStateV1,
     },
-    /// Get configuration
-    /// Opens the zone's single end-user configuration view containing the water
-    /// amount adjuster and hold-off periods.
+    /// View settings
+    /// Shows the water amount and no-watering periods for this area.
     #[libertas_request]
     #[libertas_next_response(ConfigurationV1)]
     GetConfigurationV1,
-    /// Configuration
-    /// Returns both end-user settings together and offers a separate action for
-    /// changing either one.
+    /// Zone settings
+    /// The current water amount and no-watering periods.
     #[libertas_response]
     #[libertas_next_request("SetWaterAmountAdjusterV1,ReplaceHoldOffPeriodsV1")]
     ConfigurationV1 {
-        /// Configuration
-        /// The current water amount adjuster and hold-off periods.
+        /// Settings
+        /// The current settings for this area.
         #[libertas_ui_header]
         configuration: SprinklerZoneConfigurationV1,
     },
-    /// Set water amount adjuster
-    /// Independently updates the user tuning parameter used by the adaptive
-    /// calculation.
+    /// Change water amount
+    /// Use more or less water than the recommended amount.
     #[libertas_request]
     #[libertas_next_response(ConfigurationV1)]
     SetWaterAmountAdjusterV1 {
-        /// Water amount adjuster
-        /// Percentage of the adaptive watering amount to apply. Use 100% for
-        /// the adaptive amount, less than 100% for less water, and more than
-        /// 100% for more water.
+        /// Water amount
+        /// Use 100% for the recommended amount, a lower value for less water,
+        /// or a higher value for more water.
         #[libertas_number(min = 20, max = 200, step = 10)]
         #[libertas_copy_from("$.configuration.watering_percent")]
         watering_percent: u16,
     },
-    /// Replace hold-off periods
-    /// Independently replaces all scheduling constraints for this zone.
-    /// Overlapping or touching periods are normalized into sorted merged
-    /// intervals.
+    /// Change no-watering periods
+    /// Replace the times when this area must not be watered.
     #[libertas_request]
     #[libertas_next_response(ConfigurationV1)]
     ReplaceHoldOffPeriodsV1 {
-        /// Hold-off periods
-        /// The complete replacement list, limited to 64 valid intervals.
+        /// No-watering periods
+        /// The complete list of times when watering must be paused.
         /// ----
-        /// Hold-off period
-        /// A half-open interval during which the schedule cannot water.
+        /// No-watering period
+        /// One period when this area must not be watered.
         #[libertas_size(max = 64)]
         #[libertas_copy_from("$.configuration.hold_off_periods")]
         hold_off_periods: Vec<SprinklerTimeSlotV1>,
     },
-    /// Set watering mode
-    /// Selects Active or Winterization for the entire sprinkler system. The
-    /// selected mode persists across restarts and internet outages.
+    /// Change watering mode
+    /// Turn automatic watering on, or mark the entire system as winterized.
     #[libertas_request]
     #[libertas_next_response(AdvancedStateV1)]
     SetWateringModeV1 {
         /// Watering mode
-        /// Active enables automatic watering. Winterization shuts it down.
+        /// Active enables automatic watering. Winterized keeps it off.
         #[libertas_copy_from("$.mode")]
         mode: SprinklerWateringModeV1,
     },
@@ -713,58 +642,54 @@ struct SprinklerReportTimeRangeV1 {
     ends_before: LibertasDateTime,
 }
 
-/// Water input type
-/// Distinguishes observed and planned sources contributing water to a zone.
+/// Water source
+/// Shows where the water came from or whether it is expected later.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub enum SprinklerWaterInputTypeV1 {
     /// Rain
-    /// Provider-recorded precipitation.
+    /// Rain already recorded by the weather service.
     Rain,
     /// Irrigation
-    /// Water estimated from observed valve-open time and the sprinkler-head
-    /// profile; this is not a flow-meter measurement.
+    /// Water estimated from how long the valve was open.
     Irrigation,
     /// Forecast rain
-    /// Provider forecast precipitation for a future interval.
+    /// Rain expected in the forecast.
     ForecastRain,
     /// Scheduled water
-    /// Planned automatic irrigation that has not begun yet.
+    /// Automatic watering that is planned but has not started.
     ScheduledWater,
 }
 
-/// Water-balance series
-/// Identifies the calculated available-water line or one agronomic reference
-/// line in each zone facet.
+/// Water-balance line
+/// Identifies the available water and the important watering levels.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub enum SprinklerWaterBalanceSeriesV1 {
     /// Available water
-    /// Calculated root-zone available water.
+    /// Estimated water available to the plants.
     AvailableWater,
     /// Field capacity
-    /// The modeled root zone is full.
+    /// The soil is estimated to hold all the water it can use.
     FieldCapacity,
     /// Watering threshold
-    /// The normal target-deficit boundary at which watering becomes due.
+    /// The level where watering normally becomes due.
     WateringThreshold,
     /// Critical threshold
-    /// The dry boundary used to prioritize urgent watering.
+    /// The level where watering becomes urgent.
     CriticalThreshold,
 }
 
-/// Empty report state
-/// Supplies an honest localized annotation when a configured zone has no rows
-/// for one chart in the requested time window.
+/// No report data
+/// Explains why a configured area has nothing to show for the selected dates.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub enum SprinklerReportEmptyStateV1 {
     /// No recorded water input
-    /// This zone has no positive rain or observed-irrigation input in the
-    /// requested window.
+    /// No rain or watering was recorded for this area during the selected dates.
     NoRecordedWaterInput,
 }
 
@@ -783,27 +708,25 @@ pub enum SprinklerTemperatureHumidityMeasurementV1 {
     RelativeHumidity,
 }
 
-/// Watering origin
-/// Records whether a valve opening was initiated by the sprinkler controller,
-/// observed as an externally owned manual run, or predates origin tracking.
+/// How watering started
+/// Shows whether watering was automatic or started another way.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub enum SprinklerWateringOriginV1 {
     /// Automatic
-    /// The controller initiated the timed valve-open command.
+    /// Smart Sprinkler started this watering run.
     Automatic,
     /// Manual
-    /// The controller observed but did not initiate or own the valve opening.
+    /// The valve was opened outside Smart Sprinkler.
     Manual,
-    /// Legacy unknown
-    /// The irrigation predates durable origin tracking and cannot be classified
-    /// honestly as automatic or manual.
+    /// Unknown
+    /// Older saved data does not show how this watering run started.
     LegacyUnknown,
 }
 
-/// Watering outcome
-/// Durable lifecycle state shown by water-balance decision markers.
+/// Watering result
+/// Shows what happened to a watering plan or run.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
@@ -812,84 +735,78 @@ pub enum SprinklerWateringOutcomeV1 {
     /// A calculated future automatic run is still planned.
     Scheduled,
     /// Command pending
-    /// The durable automatic plan was persisted and the timed valve-open
-    /// command was submitted, but an open has not yet been observed.
+    /// The sprinkler asked the valve to open and is waiting for confirmation.
     CommandPending,
     /// Running
-    /// The valve is observed open and actual delivered water is being counted.
+    /// The valve is open and watering is being counted.
     Running,
     /// Completed
-    /// The valve closed after a nonzero observed open interval.
+    /// Watering finished after the valve closed.
     Completed,
     /// Skipped
-    /// A due plan did not run because a durable safety or scheduling reason
-    /// prevented it.
+    /// A planned run did not start because weather, settings, or safety stopped it.
     Skipped,
     /// Failed
-    /// A valve command or confirmation failed before useful watering completed.
+    /// A valve problem prevented the watering run from completing.
     Failed,
     /// Superseded
-    /// A newer calculation replaced a future plan before it became due.
+    /// A newer watering plan replaced this one before it started.
     Superseded,
 }
 
 /// Watering reason
-/// Gives the durable controller fact explaining a schedule, skip, failure, or
-/// interruption. It never claims a synthetic heat-adjustment percentage.
+/// Explains why a watering run was planned, changed, stopped, or unsuccessful.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub enum SprinklerWateringReasonV1 {
     /// Smart schedule
-    /// The adaptive water-balance schedule selected the run.
+    /// Smart Sprinkler selected this run based on plant needs and weather.
     SmartSchedule,
     /// Manual operation
-    /// The valve opening was externally initiated.
+    /// The valve was opened outside Smart Sprinkler.
     ManualOperation,
     /// Forecast rain
-    /// Forecast precipitation deferred or replaced the due run.
+    /// Expected rain delayed or replaced the planned watering.
     ForecastRain,
     /// Observed rain
-    /// Fresh observed precipitation stopped or prevented watering.
+    /// Recorded rain stopped or prevented watering.
     ObservedRain,
     /// Freezing weather
-    /// Fresh observed or forecast temperature was unsafe for irrigation.
+    /// The temperature was too low for safe watering.
     FreezingWeather,
     /// Excessive wind
-    /// Fresh observed or forecast wind was unsafe for the sprinkler-head type.
+    /// The wind was too strong for this watering method.
     ExcessiveWind,
     /// Other unsafe weather
-    /// Fresh weather was unsafe but did not match a more specific retained
-    /// reason.
+    /// The weather was not safe for watering.
     OtherUnsafeWeather,
     /// Hold-off
-    /// A configured hold-off period prevented the due run.
+    /// A no-watering period prevented the planned run.
     HoldOff,
     /// Winterization
-    /// System-wide winterization disabled automatic watering.
+    /// The system was winterized, so automatic watering was off.
     Winterization,
     /// Valve unavailable
-    /// No trustworthy current valve state was available.
+    /// The valve status was unavailable.
     ValveUnavailable,
     /// Valve fault
-    /// The Matter Valve reported a fault.
+    /// The valve reported a problem.
     ValveFault,
     /// Command failed
-    /// The Matter command could not be encoded or returned a failure status.
+    /// The valve did not accept the request.
     CommandFailed,
     /// Command timeout
-    /// The Matter command did not produce a timely confirmation; the observed
-    /// valve state still determines whether watering ran.
+    /// The valve did not confirm the request in time.
     CommandTimeout,
     /// No open observed
-    /// A timed open was requested but no open interval was observed.
+    /// The valve was asked to open, but no watering was detected.
     NoOpenObserved,
     /// Recalculated
-    /// A newer water-balance calculation replaced a future plan.
+    /// A newer calculation replaced the planned run.
     Recalculated,
-    /// Legacy unknown
-    /// The retained record does not contain enough evidence for a more precise
-    /// reason.
+    /// Unknown
+    /// Older saved data does not contain a more specific reason.
     LegacyUnknown,
 }
 
@@ -1106,18 +1023,17 @@ pub struct SprinklerModeledWeatherGapV1 {
 }
 
 /// Water-balance point
-/// One calculated or reference point in an all-zone root-zone balance chart.
-/// Available water is modeled from rain, ET, and observed valve time; it is not
-/// a soil-moisture sensor measurement.
+/// One point showing estimated plant-available water or an important watering
+/// level. Available water is an estimate, not a soil-sensor reading.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWaterBalancePointV1 {
     /// Time
-    /// UTC time represented by this balance point.
+    /// When this water level applies.
     #[libertas_chart_channel(x, tooltip, key)]
     #[libertas_chart_scale(id = report_time, kind = utc)]
     pub at: LibertasDateTime,
     /// Available water
-    /// Modeled available root-zone water from 0 through 100 percent.
+    /// Estimated water available to the plants, from 0 through 100 percent.
     #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(
         id = available_water_percent,
@@ -1127,12 +1043,12 @@ pub struct SprinklerWaterBalancePointV1 {
         zero = true
     )]
     pub available_water_percent: f32,
-    /// Series
-    /// Calculated available water or one agronomic reference line.
+    /// Line
+    /// Available water or one important watering level.
     #[libertas_chart_channel(color, detail, tooltip)]
     pub series: SprinklerWaterBalanceSeriesV1,
-    /// Zone
-    /// Configured zone represented by this chart facet.
+    /// Area
+    /// The watered area represented by this part of the chart.
     #[libertas_chart_channel(row, tooltip)]
     #[libertas_chart_scale(id = report_zone, kind = band)]
     #[libertas_device_type("BQEBAUABgQED")]
@@ -1140,22 +1056,21 @@ pub struct SprinklerWaterBalancePointV1 {
 }
 
 /// Water-balance lines
-/// Calculated available water and agronomic reference lines for every zone.
+/// Estimated available water and important watering levels for every area.
 #[libertas_chart(line)]
 pub type SprinklerWaterBalanceLinesV1 = Vec<SprinklerWaterBalancePointV1>;
 
-/// Watering decision marker
-/// One scheduled, skipped, failed, manual, or completed activity placed at its
-/// calculated water-balance position.
+/// Watering event
+/// A planned, skipped, unsuccessful, manual, or completed watering run.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWateringDecisionRowV1 {
     /// Time
-    /// Actual start when observed, otherwise the scheduled decision time.
+    /// When watering started, or when it was planned to start.
     #[libertas_chart_channel(x, tooltip)]
     #[libertas_chart_scale(id = report_time, kind = utc, guide = none)]
     pub at: LibertasDateTime,
     /// Available water
-    /// Calculated available water at the decision time.
+    /// Estimated plant-available water at that time.
     #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(
         id = available_water_percent,
@@ -1166,31 +1081,31 @@ pub struct SprinklerWateringDecisionRowV1 {
         guide = none
     )]
     pub available_water_percent: f32,
-    /// Zone
-    /// Configured zone valve resolved by the client.
+    /// Area
+    /// The watered area for this event.
     #[libertas_chart_channel(row, tooltip)]
     #[libertas_chart_scale(id = report_zone, kind = band, guide = none)]
     #[libertas_device_type("BQEBAUABgQED")]
     pub zone: LibertasDevice,
-    /// Outcome
-    /// Durable activity lifecycle state.
+    /// Result
+    /// What happened to this watering plan or run.
     #[libertas_chart_channel(color, detail, tooltip)]
     pub outcome: SprinklerWateringOutcomeV1,
-    /// Origin
-    /// Automatic, manual, or legacy unknown.
+    /// Started by
+    /// Whether watering was automatic, manual, or unknown.
     #[libertas_chart_channel(tooltip)]
     pub origin: SprinklerWateringOriginV1,
     /// Reason
-    /// Durable activity explanation.
+    /// Why the run was planned, changed, stopped, or unsuccessful.
     #[libertas_chart_channel(tooltip)]
     pub reason: SprinklerWateringReasonV1,
-    /// Scheduled duration
-    /// Planned automatic duration in seconds, or zero when unavailable.
+    /// Planned duration
+    /// How long automatic watering was planned to run.
     #[libertas_chart_channel(tooltip)]
     #[libertas_time_interval]
     pub scheduled_duration_seconds: u32,
     /// Actual duration
-    /// Accounted observed duration in seconds, or zero until unavailable.
+    /// How long the valve was observed open.
     #[libertas_chart_channel(tooltip)]
     #[libertas_time_interval]
     pub actual_duration_seconds: u32,
@@ -1200,127 +1115,117 @@ pub struct SprinklerWateringDecisionRowV1 {
     pub activity_key: String,
 }
 
-/// Watering decisions
-/// Explains controller and manual activity directly on the water balance.
+/// Watering events
+/// Shows automatic and manual watering on the water-balance chart.
 #[libertas_chart(point)]
 pub type SprinklerWateringDecisionsV1 = Vec<SprinklerWateringDecisionRowV1>;
 
 /// Water balance
-/// Layers calculated all-zone balance lines with decision markers.
+/// Combines estimated water levels with watering events for every area.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 #[libertas_chart(layer)]
 pub struct SprinklerWaterBalanceChartV1 {
-    /// Available water and thresholds
-    /// Calculated all-zone balance lines and plant-specific reference lines.
+    /// Available water and levels
+    /// Estimated water and important watering levels for every area.
     pub balance: SprinklerWaterBalanceLinesV1,
-    /// Watering decisions
-    /// Scheduled, skipped, failed, manual, and completed activity markers.
+    /// Watering events
+    /// Planned, skipped, unsuccessful, manual, and completed watering runs.
     pub decisions: SprinklerWateringDecisionsV1,
 }
 
-/// Water-usage row
-/// One server-positioned water-amount segment on a configured zone's shared
-/// timeline lane.
+/// Water-use item
+/// One amount of rain or watering shown for an area on a particular date.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWaterUsageRowV1 {
     /// Date
-    /// Hub-local calendar date containing this real sparse daily bucket. This
-    /// is tooltip data; the server-computed display coordinates own the time
-    /// axis.
+    /// The local calendar date for this rain or watering amount.
     #[libertas_date_only]
     #[libertas_chart_channel(tooltip)]
     pub bucket_starts_on: u32,
-    /// Display start
-    /// Server-computed broken-time horizontal start in synthetic seconds. It
-    /// orders occupied real buckets and is not an event time; later colored
-    /// segments continue the same bucket's amount stack.
+    /// Bar start
+    /// Where this amount begins in the chart.
     #[libertas_chart_channel(x)]
     #[libertas_chart_scale(id = water_usage_display, kind = linear, guide = none)]
     pub display_start: f64,
-    /// Display end
-    /// Server-computed broken-time horizontal end in synthetic seconds. Its
-    /// distance from the start encodes water depth; it is not an event time.
+    /// Bar end
+    /// Where this amount ends in the chart.
     #[libertas_chart_channel(x2)]
     pub display_end: f64,
     /// Water amount
-    /// Exact rain or irrigation depth represented by this colored segment.
+    /// Rain or watering represented by this part of the bar.
     #[libertas_chart_channel(tooltip)]
     #[libertas_number(min = 0)]
     pub amount_millimeters: f32,
-    /// Input type
-    /// Rain, observed irrigation, forecast rain, or scheduled irrigation.
+    /// Water source
+    /// Recorded rain, watering, expected rain, or planned watering.
     #[libertas_chart_channel(color, detail, tooltip)]
     pub input_type: SprinklerWaterInputTypeV1,
-    /// Zone
-    /// Configured zone valve used as one categorical timeline lane. The client
-    /// resolves its normal device display name.
+    /// Area
+    /// The watered area represented by this row.
     #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(id = report_zone, kind = band)]
     #[libertas_device_type("BQEBAUABgQED")]
     pub zone: LibertasDevice,
 }
 
-/// Water usage
-/// Places every zone on one shared time axis. Each sparse bucket starts one
-/// horizontal colored stack whose segment lengths encode exact water amounts.
+/// Water use
+/// Shows rain and watering amounts by date for every area.
 #[libertas_chart(rect)]
 pub type SprinklerWaterUsageMarksV1 = Vec<SprinklerWaterUsageRowV1>;
 
-/// Empty water-usage lane annotation
-/// Keeps an otherwise-dry configured zone visible without fabricating a time or
-/// water amount.
+/// Area with no recorded water
+/// Keeps an area visible when it had no rain or watering during the selected dates.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWaterUsageEmptyZoneRowV1 {
-    /// Horizontal center
-    /// A singleton discrete position centers the annotation without inventing a
-    /// report timestamp.
+    /// Label position
+    /// Centers the message in the chart.
     #[libertas_chart_channel(x)]
     #[libertas_chart_scale(kind = point, guide = none)]
     pub horizontal_center: bool,
-    /// Zone
-    /// Configured valve device whose empty timeline lane is annotated.
+    /// Area
+    /// The watered area with no recorded water.
     #[libertas_chart_channel(y, tooltip, key)]
     #[libertas_chart_scale(id = report_zone, kind = band, guide = none)]
     #[libertas_device_type("BQEBAUABgQED")]
     pub zone: LibertasDevice,
-    /// Empty state
-    /// Localized explanation for the absence of water-usage marks.
+    /// Message
+    /// Explains why this area has no bars in the chart.
     #[libertas_chart_channel(text, tooltip)]
     pub empty_state: SprinklerReportEmptyStateV1,
 }
 
-/// Empty water-usage lanes
-/// Text annotations for configured zones with no positive water input.
+/// Areas with no recorded water
+/// Messages for areas with no rain or watering during the selected dates.
 #[libertas_chart(text)]
 pub type SprinklerWaterUsageEmptyZonesV1 = Vec<SprinklerWaterUsageEmptyZoneRowV1>;
 
-/// Water usage
-/// Layers positive rain/irrigation bars with annotations for dry, idle zones.
+/// Water use
+/// Shows rain and watering, while keeping dry or idle areas visible.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 #[libertas_chart(layer)]
 pub struct SprinklerWaterUsageChartV1 {
-    /// Water inputs
-    /// Positive observed and planned water-input segments.
+    /// Rain and watering
+    /// Recorded and planned water amounts.
     pub inputs: SprinklerWaterUsageMarksV1,
-    /// Empty zones
-    /// Configured zones with no positive water input in the requested window.
+    /// Areas with no recorded water
+    /// Areas with no rain or watering during the selected dates.
     pub empty_zones: SprinklerWaterUsageEmptyZonesV1,
 }
 
-/// Weather data source
-/// Distinguishes completed provider observations from the latest forecast.
+/// Weather source
+/// Shows whether a value was recorded or forecast.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
 pub enum SprinklerWeatherChartSourceV1 {
-    /// Historical observation
-    /// A completed provider historical period.
+    /// Recorded history
+    /// A completed weather observation.
     HistoricalObservation,
-    /// Current observation
-    /// A retained higher-frequency current-condition sample.
+    /// Current conditions
+    /// A recent current-weather observation.
     CurrentObservation,
     /// Forecast
-    /// A future value from the latest available forecast snapshot.
+    /// A future value from the latest forecast.
     Forecast,
 }
 
@@ -1350,26 +1255,26 @@ pub enum SprinklerWindSeriesV1 {
     ForecastGust,
 }
 
-/// Weather interval value
-/// One observed or forecast ET amount over an explicit interval.
+/// Daily water loss
+/// One recorded or forecast amount of water lost through evaporation and plants.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerEtRowV1 {
-    /// Start time
-    /// Inclusive provider period start.
+    /// Starts at
+    /// When this weather period begins.
     #[libertas_chart_channel(x, tooltip)]
     #[libertas_chart_scale(id = report_time, kind = utc)]
     pub starts_at: LibertasDateTime,
-    /// End time
-    /// Exclusive provider period end.
+    /// Ends at
+    /// When this weather period ends.
     #[libertas_chart_channel(x2, tooltip)]
     pub ends_at: LibertasDateTime,
-    /// Reference evapotranspiration
-    /// Provider FAO-56 reference ET in millimeters.
+    /// Estimated water loss
+    /// Water lost through evaporation and plant use.
     #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(kind = linear, min = 0, zero = true)]
     pub reference_evapotranspiration_millimeters: f32,
     /// Source
-    /// Observed or forecast.
+    /// Whether this value was recorded or forecast.
     #[libertas_chart_channel(color, detail, tooltip)]
     pub source: SprinklerWeatherChartSourceV1,
     /// Stable key
@@ -1378,8 +1283,8 @@ pub struct SprinklerEtRowV1 {
     pub sample_key: String,
 }
 
-/// Reference evapotranspiration
-/// Observed and forecast ET on the shared report time axis.
+/// Estimated water loss
+/// Recorded and forecast water loss through evaporation and plant use.
 #[libertas_chart(bar)]
 pub type SprinklerEtChartV1 = Vec<SprinklerEtRowV1>;
 
@@ -1488,13 +1393,13 @@ pub struct SprinklerWindRowV1 {
 #[libertas_chart(line)]
 pub type SprinklerWindChartV1 = Vec<SprinklerWindRowV1>;
 
-/// Weather and ET chart
-/// Vertically aligns provider ET, combined temperature/humidity, and wind.
+/// Weather
+/// Shows estimated water loss, temperature, humidity, and wind together.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 #[libertas_chart(vconcat)]
 pub struct SprinklerWeatherEtChartV1 {
-    /// Reference evapotranspiration
-    /// Observed and forecast ET.
+    /// Estimated water loss
+    /// Recorded and forecast water loss through evaporation and plant use.
     pub reference_evapotranspiration: SprinklerEtChartV1,
     /// Temperature and relative humidity
     /// Observed and forecast values with independent y-axes.
@@ -1504,85 +1409,72 @@ pub struct SprinklerWeatherEtChartV1 {
     pub wind: SprinklerWindChartV1,
 }
 
-/// Sprinkler report protocol
-/// Exposes three independently requested all-zone charts. Every request can be
-/// sent immediately with both bounds null; the server then selects a useful
-/// fixed default window. A client may later resend that chart's request with
-/// one or both calendar-date bounds to customize only its window. A supplied
-/// date outside the retained data range is clamped to the first or last
-/// available database date instead of producing an empty chart.
+/// Sprinkler reports
+/// View water balance, water use, or weather for every area. Leave the dates
+/// blank to see the recent period. Dates outside the available history are
+/// automatically adjusted to the earliest or latest available date.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 // This public Avro/schema union must expose the chart composition directly;
 // boxing the response fields would change their generated chart shape.
 #[allow(clippy::large_enum_variant)]
 pub enum SprinklerReportProtocolV1 {
-    /// Get water balance
-    /// Requests calculated available water and agronomic reference lines for
-    /// every configured zone.
+    /// View water balance
+    /// Shows estimated plant-available water and watering events for every area.
     #[libertas_request]
     #[libertas_next_response(WaterBalanceV1)]
     GetWaterBalanceV1 {
         /// First date
-        /// Optional inclusive UTC calendar date. Leave null for the server
-        /// default.
+        /// Optional. Leave blank to use the recent period.
         #[libertas_date_only]
         starts_on: Option<u32>,
         /// Last date
-        /// Optional inclusive UTC calendar date. Leave null for the server
-        /// default.
+        /// Optional. Leave blank to use the recent period.
         #[libertas_date_only]
         ends_on: Option<u32>,
     },
     /// Water balance
-    /// Facets calculated available water, plant-specific reference lines, and
-    /// watering decision markers across every configured zone.
+    /// Estimated plant-available water, important levels, and watering events.
     #[libertas_response]
     #[libertas_next_request(GetWaterBalanceV1)]
     #[libertas_chart(layer)]
     WaterBalanceV1(SprinklerWaterBalanceChartV1),
-    /// Get water usage
-    /// Requests daily rain and observed irrigation accounting for every zone.
-    /// Null bounds select the latest 31 local calendar days plus the forecast
-    /// horizon; a custom window may span up to two years. Every input retains
-    /// its actual Hub-local calendar date.
+    /// View water use
+    /// Shows daily rain and watering for every area. Leave the dates blank for
+    /// the latest 31 days; a selected period can cover up to two years.
     #[libertas_request]
     #[libertas_next_response(WaterUsageV1)]
     GetWaterUsageV1 {
         /// First date
-        /// Optional inclusive Hub-local calendar date. Leave null for the server
-        /// default.
+        /// Optional. Leave blank to use the latest 31 days.
         #[libertas_date_only]
         starts_on: Option<u32>,
         /// Last date
-        /// Optional inclusive Hub-local calendar date. Leave null for the server
-        /// default.
+        /// Optional. Leave blank to use the latest 31 days.
         #[libertas_date_only]
         ends_on: Option<u32>,
     },
-    /// Water usage
-    /// Daily rain and estimated irrigation by Hub-local calendar date and zone.
+    /// Water use
+    /// Daily rain and estimated watering by local date and area.
     #[libertas_response]
     #[libertas_next_request(GetWaterUsageV1)]
     #[libertas_chart(layer)]
     WaterUsageV1(SprinklerWaterUsageChartV1),
-    /// Get weather and ET
-    /// Requests shared site weather plus every zone's modeled ET gaps.
+    /// View weather
+    /// Shows recorded and forecast temperature, humidity, wind, and water loss.
     #[libertas_request]
     #[libertas_next_response(WeatherEtV1)]
     GetWeatherEtV1 {
         /// First date
-        /// Optional inclusive UTC calendar date. Leave null for the server
-        /// default.
+        /// Optional. Leave blank to use the recent period.
         #[libertas_date_only]
         starts_on: Option<u32>,
         /// Last date
-        /// Optional inclusive UTC calendar date. Leave null for the server
-        /// default.
+        /// Optional. Leave blank to use the recent period.
         #[libertas_date_only]
         ends_on: Option<u32>,
     },
-    /// Weather and ET
-    /// Shared observed/forecast weather and per-zone modeled ET gaps.
+    /// Weather
+    /// Recorded and forecast temperature, humidity, wind, and estimated water loss.
     #[libertas_response]
     #[libertas_next_request(GetWeatherEtV1)]
     #[libertas_chart(vconcat)]
@@ -1819,33 +1711,26 @@ pub enum SprinklerDataV1 {
     },
 }
 
-/// Sprinkler zone
-/// Configures the physical facts needed to calculate and execute watering for
-/// one area. The water amount adjuster and hold-offs are runtime data.
+/// Watered area
+/// Set up one lawn, garden, or planted area that is watered independently.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerZoneV1 {
-    /// Zone valve
-    /// A Matter Irrigation System logical device exposing the Valve
-    /// Configuration and Control server cluster for reads, subscriptions, and
-    /// Open and Close commands.
+    /// Water valve
+    /// Choose the valve that controls this area.
     #[libertas_device_type("BQEBAUABgQED")]
     #[libertas_ui_header]
     #[libertas_unique]
     pub valve: LibertasDevice,
     /// Plant type
-    /// The curated water-storage and weather-demand profile for this zone.
+    /// Choose what grows in this area.
     #[libertas_default(Lawn)]
     pub plant_type: SprinklerPlantTypeV1,
-    /// Sprinkler head type
-    /// The delivery style used to estimate valve-open time. The water amount
-    /// adjuster corrects the automatic amount without exposing flow-rate setup.
+    /// Watering method
+    /// Choose how water is delivered in this area.
     #[libertas_default(RotorsLowRate)]
     pub sprinkler_head_type: SprinklerHeadTypeV1,
-    /// State endpoint
-    /// Exposes an essential regular-user state by default, offers complete
-    /// advanced state on demand, groups end-user settings in one configuration
-    /// view, and accepts independent adjuster, hold-off, and watering-mode
-    /// actions.
+    /// Area controls
+    /// Choose where this area's status, settings, and controls will be available.
     #[libertas_endpoint_schema(SprinklerZoneProtocolV1)]
     #[libertas_endpoint_server]
     #[libertas_endpoint_base_objects("^.valve")]
@@ -10445,53 +10330,47 @@ fn initial_active_state(
     }
 }
 
-/// Sprinkler agent
-/// Runs a weather-aware multi-zone sprinkler controller. The weather endpoint
-/// supplies the tailored sprinkler history, current conditions, and forecast
-/// shared by all zones. Each zone exposes an essential state by default,
-/// complete advanced details on demand, and persists its own recent-water
-/// state.
+/// Smart Sprinkler
+/// Automatically waters each area according to its plants, recent rain, and
+/// weather forecast. It also provides water-use charts and cold-weather
+/// reminders.
 #[libertas_data_schema(SprinklerDataV1)]
 #[libertas_permissions(SPRINKLER_PERMISSIONS)]
 #[libertas_string_resources(APP_STRINGS)]
 #[libertas_export]
 pub fn libertas_sprinkler(
     /*
-     * Weather server
-     * The client endpoint for `SprinklerWeatherProtocolV1`. The application
-     * subscribes at startup for more precise planning. Missing or stale weather
-     * falls back to an offline estimate; fresh unsafe conditions delay watering.
+     * Weather service
+     * Choose the local weather service used for rain, temperature, wind, and
+     * forecasts. Smart Sprinkler can use saved estimates during short outages.
      */
     #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)] weather_server: LibertasEndpoint,
     /*
-     * Sprinkler Report
-     * The system-wide server endpoint for `SprinklerReportProtocolV1`. It
-     * returns three chart-ready report families from indefinitely retained
-     * weather, activity, and daily balance archives.
+     * Sprinkler reports
+     * Choose where water balance, water use, and weather charts will be available.
      */
     #[libertas_endpoint_schema(SprinklerReportProtocolV1)]
     #[libertas_endpoint_server]
     report_server: LibertasEndpoint,
     /*
      * Reminder recipients
-     * One or more Libertas users who receive application reminders. The
-     * current version sends winterization reminders; the shared list can also
-     * serve future reminder types.
+     * Choose the people who should receive reminders to prepare the sprinkler
+     * system for freezing weather.
      * #[libertas_size(min=1, max=16)]
      * #[libertas_unordered]
      * ----
-     * Reminder recipient
-     * One Libertas user authorized to receive sprinkler reminders.
+     * Person to notify
+     * One person who should receive sprinkler reminders.
      * #[libertas_unique]
      */
     reminder_recipients: Vec<LibertasUser>,
     /*
-     * Sprinkler zones
-     * One or more independently scheduled Matter Valve zones.
+     * Watered areas
+     * Add each lawn, garden, or planted area that should be watered independently.
      * #[libertas_size(min=1, max=32)]
      * ----
-     * Sprinkler zone
-     * The physical and endpoint configuration for one watered area.
+     * Watered area
+     * One area with its own valve, plants, and watering method.
      */
     zones: Vec<SprinklerZoneV1>,
 ) {
