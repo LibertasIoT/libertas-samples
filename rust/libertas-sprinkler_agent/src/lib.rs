@@ -1173,6 +1173,62 @@ pub struct SprinklerWaterUsageRowV1 {
 #[libertas_chart(rect)]
 pub type SprinklerWaterUsageMarksV1 = Vec<SprinklerWaterUsageRowV1>;
 
+/// Water summary group
+/// Groups recorded and expected rain together, and actual and planned watering
+/// together.
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
+)]
+pub enum SprinklerWaterUsageSummaryGroupV1 {
+    /// Rain
+    /// Recorded and forecast rain.
+    Rain,
+    /// Irrigation
+    /// Actual and scheduled watering.
+    Irrigation,
+}
+
+/// Water-use summary item
+/// One recorded or planned contribution to a zone's rain or irrigation total.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+pub struct SprinklerWaterUsageSummaryRowV1 {
+    /// Amount start
+    /// Where this contribution begins in its stacked total.
+    #[libertas_chart_channel(x)]
+    #[libertas_chart_scale(id = water_usage_summary_amount, kind = linear, min = 0, zero = true)]
+    pub amount_starts_at_millimeters: f64,
+    /// Amount end
+    /// Where this contribution ends in its stacked total.
+    #[libertas_chart_channel(x2)]
+    pub amount_ends_at_millimeters: f64,
+    /// Water amount
+    /// Total rain or watering represented by this part of the bar.
+    #[libertas_chart_channel(tooltip)]
+    #[libertas_number(min = 0)]
+    pub amount_millimeters: f64,
+    /// Summary group
+    /// Places rain together and irrigation together.
+    #[libertas_chart_channel(yOffset, tooltip)]
+    #[libertas_chart_scale(id = water_usage_summary_group, kind = band, guide = none)]
+    pub group: SprinklerWaterUsageSummaryGroupV1,
+    /// Water source
+    /// Recorded rain, forecast rain, actual watering, or scheduled watering.
+    #[libertas_chart_channel(color, detail, tooltip)]
+    pub input_type: SprinklerWaterInputTypeV1,
+    /// Area
+    /// The watered area represented by this pair of summary bars.
+    #[libertas_chart_channel(y, tooltip)]
+    #[libertas_chart_scale(id = water_usage_summary_zone, kind = band)]
+    #[libertas_device_type("BQEBAUABgQED")]
+    pub zone: LibertasDevice,
+}
+
+/// Water-use summary
+/// Compares total rain with total irrigation for every area. Recorded and
+/// expected amounts remain visibly separate within each stacked bar.
+#[libertas_chart(bar)]
+pub type SprinklerWaterUsageSummaryChartV1 = Vec<SprinklerWaterUsageSummaryRowV1>;
+
 /// Area with no recorded water
 /// Keeps an area visible when it had no rain or watering during the selected dates.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -1199,17 +1255,30 @@ pub struct SprinklerWaterUsageEmptyZoneRowV1 {
 #[libertas_chart(text)]
 pub type SprinklerWaterUsageEmptyZonesV1 = Vec<SprinklerWaterUsageEmptyZoneRowV1>;
 
-/// Water use
-/// Shows rain and watering, while keeping dry or idle areas visible.
+/// Daily water use
+/// Shows rain and watering by date, while keeping dry or idle areas visible.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 #[libertas_chart(layer)]
-pub struct SprinklerWaterUsageChartV1 {
+pub struct SprinklerDailyWaterUsageChartV1 {
     /// Rain and watering
     /// Recorded and planned water amounts.
     pub inputs: SprinklerWaterUsageMarksV1,
     /// Areas with no recorded water
     /// Areas with no rain or watering during the selected dates.
     pub empty_zones: SprinklerWaterUsageEmptyZonesV1,
+}
+
+/// Water use
+/// Combines a compact rain-versus-irrigation summary with daily details.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+#[libertas_chart(vconcat)]
+pub struct SprinklerWaterUsageChartV1 {
+    /// Summary
+    /// Total rain and irrigation for every area during the selected dates.
+    pub summary: SprinklerWaterUsageSummaryChartV1,
+    /// Daily details
+    /// Rain and watering amounts by local calendar date.
+    pub daily: SprinklerDailyWaterUsageChartV1,
 }
 
 /// Weather source
@@ -1457,7 +1526,7 @@ pub enum SprinklerReportProtocolV1 {
     /// Daily rain and estimated watering by local date and area.
     #[libertas_response]
     #[libertas_next_request(GetWaterUsageV1)]
-    #[libertas_chart(layer)]
+    #[libertas_chart(vconcat)]
     WaterUsageV1(SprinklerWaterUsageChartV1),
     /// View weather
     /// Shows recorded and forecast temperature, humidity, wind, and water loss.
@@ -7304,11 +7373,11 @@ fn handle_valve_command_response(
     let successful = match pending.kind {
         ValveCommandKind::Open => matches!(
             decode_command_response::<Open>(data),
-            Ok(MatterResponse::Status(status)) if status.status == 0
+            Ok(MatterResponse::Status(status)) if status == 0
         ),
         ValveCommandKind::Close => matches!(
             decode_command_response::<Close>(data),
-            Ok(MatterResponse::Status(status)) if status.status == 0
+            Ok(MatterResponse::Status(status)) if status == 0
         ),
     };
     if !successful {
@@ -8226,6 +8295,66 @@ fn accumulate_zone_water_inputs(
     }
 }
 
+fn water_usage_summary_rows(
+    zones: &[ReportZoneData],
+    totals: &[UsageAccumulator],
+) -> Vec<SprinklerWaterUsageSummaryRowV1> {
+    let mut rows = Vec::new();
+    for zone in zones {
+        let amount = |input_type| {
+            totals
+                .iter()
+                .filter(|total| total.zone == zone.valve)
+                .map(|total| match input_type {
+                    SprinklerWaterInputTypeV1::Rain => total.rain,
+                    SprinklerWaterInputTypeV1::Irrigation => total.irrigation,
+                    SprinklerWaterInputTypeV1::ForecastRain => total.forecast_rain,
+                    SprinklerWaterInputTypeV1::ScheduledWater => total.scheduled_water,
+                })
+                .map(f64::from)
+                .sum::<f64>()
+        };
+        for (group, input_types) in [
+            (
+                SprinklerWaterUsageSummaryGroupV1::Rain,
+                [
+                    SprinklerWaterInputTypeV1::Rain,
+                    SprinklerWaterInputTypeV1::ForecastRain,
+                ],
+            ),
+            (
+                SprinklerWaterUsageSummaryGroupV1::Irrigation,
+                [
+                    SprinklerWaterInputTypeV1::Irrigation,
+                    SprinklerWaterInputTypeV1::ScheduledWater,
+                ],
+            ),
+        ] {
+            let mut amount_starts_at_millimeters = 0.0_f64;
+            for input_type in input_types {
+                let amount_millimeters = amount(input_type);
+                if amount_millimeters <= 0.0 || !amount_millimeters.is_finite() {
+                    continue;
+                }
+                let amount_ends_at_millimeters = amount_starts_at_millimeters + amount_millimeters;
+                if !amount_ends_at_millimeters.is_finite() {
+                    break;
+                }
+                rows.push(SprinklerWaterUsageSummaryRowV1 {
+                    amount_starts_at_millimeters,
+                    amount_ends_at_millimeters,
+                    amount_millimeters,
+                    group,
+                    input_type,
+                    zone: zone.valve,
+                });
+                amount_starts_at_millimeters = amount_ends_at_millimeters;
+            }
+        }
+    }
+    rows
+}
+
 fn build_water_usage(
     zones: &[ReportZoneData],
     history: &[SprinklerWeatherHistoryPeriodV1],
@@ -8268,6 +8397,7 @@ fn build_water_usage_in_time_zone(
             .cmp(&right.zone)
             .then(left.starts_at.cmp(&right.starts_at))
     });
+    let summary = water_usage_summary_rows(zones, &totals);
     let maximum_total_millimeters = totals
         .iter()
         .filter_map(water_usage_total_millimeters)
@@ -8325,8 +8455,11 @@ fn build_water_usage_in_time_zone(
         })
         .collect();
     Ok(SprinklerWaterUsageChartV1 {
-        inputs,
-        empty_zones,
+        summary,
+        daily: SprinklerDailyWaterUsageChartV1 {
+            inputs,
+            empty_zones,
+        },
     })
 }
 
@@ -8966,9 +9099,10 @@ fn report_response_within_chart_limits(response: &SprinklerReportProtocolV1) -> 
             true
         }
         SprinklerReportProtocolV1::WaterUsageV1(chart) => chart
-            .inputs
+            .summary
             .len()
-            .checked_add(chart.empty_zones.len())
+            .checked_add(chart.daily.inputs.len())
+            .and_then(|total| total.checked_add(chart.daily.empty_zones.len()))
             .is_some_and(|total| total <= MAX_REPORT_CHART_ROWS),
         SprinklerReportProtocolV1::WeatherEtV1(chart) => {
             let total_rows = [
@@ -11071,8 +11205,8 @@ mod tests {
         let SprinklerReportProtocolV1::WaterUsageV1(water_usage) = &responses[1] else {
             panic!("expected water-usage response");
         };
-        assert_eq!(water_usage.inputs.len(), 2);
-        assert!(water_usage.empty_zones.is_empty());
+        assert_eq!(water_usage.daily.inputs.len(), 2);
+        assert!(water_usage.daily.empty_zones.is_empty());
         let SprinklerReportProtocolV1::WeatherEtV1(weather_et) = &responses[2] else {
             panic!("expected weather/ET response");
         };
@@ -11618,10 +11752,10 @@ mod tests {
         assert!(balance.balance.iter().any(|row| row.zone == 8));
         assert!(balance.decisions.iter().any(|row| row.zone == 7));
         assert!(!balance.decisions.iter().any(|row| row.zone == 8));
-        assert!(usage.inputs.iter().any(|row| row.zone == 7));
-        assert!(!usage.inputs.iter().any(|row| row.zone == 8));
-        assert_eq!(usage.empty_zones.len(), 1);
-        assert_eq!(usage.empty_zones[0].zone, 8);
+        assert!(usage.daily.inputs.iter().any(|row| row.zone == 7));
+        assert!(!usage.daily.inputs.iter().any(|row| row.zone == 8));
+        assert_eq!(usage.daily.empty_zones.len(), 1);
+        assert_eq!(usage.daily.empty_zones[0].zone, 8);
     }
 
     #[test]
@@ -11889,8 +12023,9 @@ mod tests {
         )
         .unwrap();
 
-        assert_eq!(chart.inputs.len(), 2);
+        assert_eq!(chart.daily.inputs.len(), 2);
         let rain = chart
+            .daily
             .inputs
             .iter()
             .find(|row| row.input_type == SprinklerWaterInputTypeV1::Rain)
@@ -11898,13 +12033,14 @@ mod tests {
         assert_eq!(rain.bucket_starts_on, 20260810);
         assert!((rain.amount_millimeters - 0.4).abs() < 0.001);
         let forecast_rain = chart
+            .daily
             .inputs
             .iter()
             .find(|row| row.input_type == SprinklerWaterInputTypeV1::ForecastRain)
             .unwrap();
         assert_eq!(forecast_rain.bucket_starts_on, 20260816);
         assert!((forecast_rain.amount_millimeters - 1.1).abs() < 0.001);
-        assert!(!chart.inputs.iter().any(|row| {
+        assert!(!chart.daily.inputs.iter().any(|row| {
             row.bucket_starts_on == 20260810
                 && row.input_type == SprinklerWaterInputTypeV1::ForecastRain
         }));
@@ -11983,7 +12119,8 @@ mod tests {
         .unwrap();
         let row = |zone, at, input_type| {
             let bucket_starts_on = utc_date_only(at).unwrap();
-            rows.inputs
+            rows.daily
+                .inputs
                 .iter()
                 .find(|row| {
                     row.zone == zone
@@ -11992,9 +12129,54 @@ mod tests {
                 })
                 .unwrap()
         };
+        let summary_row = |zone, input_type| {
+            rows.summary
+                .iter()
+                .find(|row| row.zone == zone && row.input_type == input_type)
+                .unwrap()
+        };
 
-        assert_eq!(rows.inputs.len(), 8);
-        assert!(rows.empty_zones.is_empty());
+        assert_eq!(rows.summary.len(), 7);
+        assert_eq!(
+            (
+                summary_row(7, SprinklerWaterInputTypeV1::Rain).group,
+                summary_row(7, SprinklerWaterInputTypeV1::Rain).amount_starts_at_millimeters,
+                summary_row(7, SprinklerWaterInputTypeV1::Rain).amount_ends_at_millimeters,
+            ),
+            (SprinklerWaterUsageSummaryGroupV1::Rain, 0.0, 2.0)
+        );
+        assert_eq!(
+            (
+                summary_row(7, SprinklerWaterInputTypeV1::ForecastRain).group,
+                summary_row(7, SprinklerWaterInputTypeV1::ForecastRain)
+                    .amount_starts_at_millimeters,
+                summary_row(7, SprinklerWaterInputTypeV1::ForecastRain).amount_ends_at_millimeters,
+            ),
+            (SprinklerWaterUsageSummaryGroupV1::Rain, 2.0, 3.0)
+        );
+        assert_eq!(
+            (
+                summary_row(7, SprinklerWaterInputTypeV1::Irrigation).group,
+                summary_row(7, SprinklerWaterInputTypeV1::Irrigation).amount_starts_at_millimeters,
+                summary_row(7, SprinklerWaterInputTypeV1::Irrigation).amount_ends_at_millimeters,
+            ),
+            (SprinklerWaterUsageSummaryGroupV1::Irrigation, 0.0, 9.0)
+        );
+        assert_eq!(
+            (
+                summary_row(7, SprinklerWaterInputTypeV1::ScheduledWater).group,
+                summary_row(7, SprinklerWaterInputTypeV1::ScheduledWater)
+                    .amount_starts_at_millimeters,
+                summary_row(7, SprinklerWaterInputTypeV1::ScheduledWater)
+                    .amount_ends_at_millimeters,
+            ),
+            (SprinklerWaterUsageSummaryGroupV1::Irrigation, 9.0, 12.0)
+        );
+        assert!(rows.summary.iter().all(|row| {
+            row.zone != 8 || row.input_type != SprinklerWaterInputTypeV1::ScheduledWater
+        }));
+        assert_eq!(rows.daily.inputs.len(), 8);
+        assert!(rows.daily.empty_zones.is_empty());
         assert_eq!(
             (
                 row(7, day, SprinklerWaterInputTypeV1::Rain).display_start,
@@ -12044,7 +12226,7 @@ mod tests {
             ),
             (200.0, 250.0)
         );
-        assert!(rows.inputs.iter().all(|row| {
+        assert!(rows.daily.inputs.iter().all(|row| {
             row.zone != 8 || row.input_type != SprinklerWaterInputTypeV1::ScheduledWater
         }));
         assert_eq!(
@@ -12102,14 +12284,17 @@ mod tests {
             Some(range.starts_at),
         )
         .unwrap();
-        assert_eq!(rows.inputs.len(), 2);
-        assert!(rows.empty_zones.is_empty());
+        assert_eq!(rows.summary.len(), 2);
+        assert_eq!(rows.daily.inputs.len(), 2);
+        assert!(rows.daily.empty_zones.is_empty());
         assert!(
-            rows.inputs
+            rows.daily
+                .inputs
                 .iter()
                 .all(|row| row.bucket_starts_on == utc_date_only(day).unwrap())
         );
         let rain = rows
+            .daily
             .inputs
             .iter()
             .find(|row| row.input_type == SprinklerWaterInputTypeV1::Rain)
@@ -12118,6 +12303,7 @@ mod tests {
         assert_eq!(rain.display_start, 0.0);
         assert_eq!(rain.display_end, 200.0);
         let irrigation = rows
+            .daily
             .inputs
             .iter()
             .find(|row| row.input_type == SprinklerWaterInputTypeV1::Irrigation)
@@ -12155,8 +12341,17 @@ mod tests {
             Some(range.starts_at),
         )
         .unwrap();
-        assert_eq!(planned.inputs.len(), 2);
+        assert_eq!(planned.summary.len(), 2);
+        assert!(planned.summary.iter().all(|row| {
+            row.amount_starts_at_millimeters == 0.0
+                && ((row.group == SprinklerWaterUsageSummaryGroupV1::Rain
+                    && row.input_type == SprinklerWaterInputTypeV1::ForecastRain)
+                    || (row.group == SprinklerWaterUsageSummaryGroupV1::Irrigation
+                        && row.input_type == SprinklerWaterInputTypeV1::ScheduledWater))
+        }));
+        assert_eq!(planned.daily.inputs.len(), 2);
         let forecast_rain = planned
+            .daily
             .inputs
             .iter()
             .find(|row| row.input_type == SprinklerWaterInputTypeV1::ForecastRain)
@@ -12165,6 +12360,7 @@ mod tests {
         assert_eq!(forecast_rain.display_start, 0.0);
         assert_eq!(forecast_rain.display_end, 360.0);
         let scheduled_water = planned
+            .daily
             .inputs
             .iter()
             .find(|row| row.input_type == SprinklerWaterInputTypeV1::ScheduledWater)
@@ -12182,8 +12378,9 @@ mod tests {
             Some(range.starts_at),
         )
         .unwrap();
-        assert!(empty.inputs.is_empty());
-        assert_eq!(empty.empty_zones.len(), 1);
+        assert!(empty.summary.is_empty());
+        assert!(empty.daily.inputs.is_empty());
+        assert_eq!(empty.daily.empty_zones.len(), 1);
     }
 
     #[test]

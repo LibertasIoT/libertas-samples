@@ -42,7 +42,7 @@ use libertas::{
 use libertas_hub::HubProtocol;
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
-    libertas_permissions, libertas_string_resources,
+    libertas_permissions, libertas_singleton, libertas_string_resources,
 };
 use libertas_weather::{
     SPRINKLER_CURRENT_FRESHNESS_SECONDS, SPRINKLER_CURRENT_REFRESH_INTERVAL_SECONDS,
@@ -2089,6 +2089,7 @@ fn handle_endpoint_event(
 /// when the location changes.
 #[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentDataV1")]
 #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
+#[libertas_singleton]
 #[libertas_string_resources(APP_STRINGS)]
 pub fn libertas_weather_server(sprinkler_weather: SprinklerWeatherEndpointServerV1) {
     let endpoint = sprinkler_weather.endpoint;
