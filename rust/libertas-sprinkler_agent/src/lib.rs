@@ -1031,6 +1031,7 @@ pub struct SprinklerWaterBalancePointV1 {
     /// When this water level applies.
     #[libertas_chart_channel(x, tooltip, key)]
     #[libertas_chart_scale(id = report_time, kind = utc)]
+    #[libertas_chart_guide(target = x, source = scale, position = bottom)]
     pub at: LibertasDateTime,
     /// Available water
     /// Estimated water available to the plants, from 0 through 100 percent.
@@ -1042,6 +1043,7 @@ pub struct SprinklerWaterBalancePointV1 {
         max = 100,
         zero = true
     )]
+    #[libertas_chart_guide(target = y, source = scale, position = left)]
     pub available_water_percent: f32,
     /// Line
     /// Available water or one important watering level.
@@ -1067,7 +1069,7 @@ pub struct SprinklerWateringDecisionRowV1 {
     /// Time
     /// When watering started, or when it was planned to start.
     #[libertas_chart_channel(x, tooltip)]
-    #[libertas_chart_scale(id = report_time, kind = utc, guide = none)]
+    #[libertas_chart_scale(id = report_time, kind = utc)]
     pub at: LibertasDateTime,
     /// Available water
     /// Estimated plant-available water at that time.
@@ -1077,14 +1079,13 @@ pub struct SprinklerWateringDecisionRowV1 {
         kind = linear,
         min = 0,
         max = 100,
-        zero = true,
-        guide = none
+        zero = true
     )]
     pub available_water_percent: f32,
     /// Area
     /// The watered area for this event.
     #[libertas_chart_channel(row, tooltip)]
-    #[libertas_chart_scale(id = report_zone, kind = band, guide = none)]
+    #[libertas_chart_scale(id = report_zone, kind = band)]
     #[libertas_device_type("BQEBAUABgQED")]
     pub zone: LibertasDevice,
     /// Result
@@ -1141,11 +1142,18 @@ pub struct SprinklerWaterUsageRowV1 {
     /// The local calendar date for this rain or watering amount.
     #[libertas_date_only]
     #[libertas_chart_channel(tooltip)]
+    #[libertas_chart_guide(
+        target = x,
+        source = span,
+        position = bottom,
+        title = none,
+        grid = none
+    )]
     pub bucket_starts_on: u32,
     /// Bar start
     /// Where this amount begins in the chart.
     #[libertas_chart_channel(x)]
-    #[libertas_chart_scale(id = water_usage_display, kind = linear, guide = none)]
+    #[libertas_chart_scale(id = water_usage_display, kind = linear)]
     pub display_start: f64,
     /// Bar end
     /// Where this amount ends in the chart.
@@ -1159,11 +1167,13 @@ pub struct SprinklerWaterUsageRowV1 {
     /// Water source
     /// Recorded rain, watering, expected rain, or planned watering.
     #[libertas_chart_channel(color, detail, tooltip)]
+    #[libertas_chart_scale(id = water_usage_input_type)]
     pub input_type: SprinklerWaterInputTypeV1,
     /// Area
     /// The watered area represented by this row.
     #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(id = report_zone, kind = band)]
+    #[libertas_chart_guide(target = y, source = scale, position = left)]
     #[libertas_device_type("BQEBAUABgQED")]
     pub zone: LibertasDevice,
 }
@@ -1173,61 +1183,106 @@ pub struct SprinklerWaterUsageRowV1 {
 #[libertas_chart(rect)]
 pub type SprinklerWaterUsageMarksV1 = Vec<SprinklerWaterUsageRowV1>;
 
-/// Water summary group
-/// Groups recorded and expected rain together, and actual and planned watering
-/// together.
+/// Rain summary
+/// Labels the shared rain total for all areas.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
-pub enum SprinklerWaterUsageSummaryGroupV1 {
+pub enum SprinklerWaterUsageRainCategoryV1 {
     /// Rain
     /// Recorded and forecast rain.
     Rain,
-    /// Irrigation
-    /// Actual and scheduled watering.
-    Irrigation,
 }
 
-/// Water-use summary item
-/// One recorded or planned contribution to a zone's rain or irrigation total.
+/// Rain-summary item
+/// One recorded or forecast contribution to the shared rain total.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub struct SprinklerWaterUsageSummaryRowV1 {
-    /// Amount start
-    /// Where this contribution begins in its stacked total.
+pub struct SprinklerWaterUsageRainSummaryRowV1 {
+    /// Water amount
+    /// Millimeter scale for the shared rain total.
     #[libertas_chart_channel(x)]
     #[libertas_chart_scale(id = water_usage_summary_amount, kind = linear, min = 0, zero = true)]
+    #[libertas_chart_guide(target = x, source = none)]
     pub amount_starts_at_millimeters: f64,
     /// Amount end
     /// Where this contribution ends in its stacked total.
     #[libertas_chart_channel(x2)]
     pub amount_ends_at_millimeters: f64,
-    /// Water amount
-    /// Total rain or watering represented by this part of the bar.
+    /// Rain amount
+    /// Total rain represented by this part of the bar.
     #[libertas_chart_channel(tooltip)]
     #[libertas_number(min = 0)]
     pub amount_millimeters: f64,
-    /// Summary group
-    /// Places rain together and irrigation together.
-    #[libertas_chart_channel(yOffset, tooltip)]
-    #[libertas_chart_scale(id = water_usage_summary_group, kind = band, guide = none)]
-    pub group: SprinklerWaterUsageSummaryGroupV1,
-    /// Water source
-    /// Recorded rain, forecast rain, actual watering, or scheduled watering.
+    /// Rain source
+    /// Recorded or forecast rain.
     #[libertas_chart_channel(color, detail, tooltip)]
+    #[libertas_chart_scale(id = water_usage_input_type)]
+    #[libertas_chart_guide(target = color, source = none)]
+    pub input_type: SprinklerWaterInputTypeV1,
+    /// Rain
+    /// The shared rain total for every watered area.
+    #[libertas_chart_channel(y, tooltip)]
+    #[libertas_chart_scale(kind = band)]
+    pub category: SprinklerWaterUsageRainCategoryV1,
+}
+
+/// Rain summary
+/// Shows recorded and forecast rain once because every area shares the same
+/// weather data.
+#[libertas_chart(bar)]
+pub type SprinklerWaterUsageRainSummaryChartV1 = Vec<SprinklerWaterUsageRainSummaryRowV1>;
+
+/// Irrigation-summary item
+/// One actual or planned contribution to an area's irrigation total.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+pub struct SprinklerWaterUsageIrrigationSummaryRowV1 {
+    /// Water amount
+    /// Millimeter scale for comparing irrigation with rain.
+    #[libertas_chart_channel(x)]
+    #[libertas_chart_scale(id = water_usage_summary_amount, kind = linear, min = 0, zero = true)]
+    #[libertas_chart_guide(target = x, source = scale, position = bottom)]
+    pub amount_starts_at_millimeters: f64,
+    /// Amount end
+    /// Where this contribution ends in its stacked total.
+    #[libertas_chart_channel(x2)]
+    pub amount_ends_at_millimeters: f64,
+    /// Irrigation amount
+    /// Total watering represented by this part of the bar.
+    #[libertas_chart_channel(tooltip)]
+    #[libertas_number(min = 0)]
+    pub amount_millimeters: f64,
+    /// Watering source
+    /// Actual or scheduled watering.
+    #[libertas_chart_channel(color, detail, tooltip)]
+    #[libertas_chart_scale(id = water_usage_input_type)]
+    #[libertas_chart_guide(target = color, source = scale, position = right)]
     pub input_type: SprinklerWaterInputTypeV1,
     /// Area
-    /// The watered area represented by this pair of summary bars.
+    /// The watered area represented by this irrigation bar.
     #[libertas_chart_channel(y, tooltip)]
-    #[libertas_chart_scale(id = water_usage_summary_zone, kind = band)]
+    #[libertas_chart_scale(kind = band)]
     #[libertas_device_type("BQEBAUABgQED")]
     pub zone: LibertasDevice,
 }
 
-/// Water-use summary
-/// Compares total rain with total irrigation for every area. Recorded and
-/// expected amounts remain visibly separate within each stacked bar.
+/// Irrigation summary
+/// Compares actual and scheduled irrigation for every area.
 #[libertas_chart(bar)]
-pub type SprinklerWaterUsageSummaryChartV1 = Vec<SprinklerWaterUsageSummaryRowV1>;
+pub type SprinklerWaterUsageIrrigationSummaryChartV1 =
+    Vec<SprinklerWaterUsageIrrigationSummaryRowV1>;
+
+/// Water-use summary
+/// Compares the shared rain total with irrigation for every area.
+#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
+#[libertas_chart(vconcat)]
+pub struct SprinklerWaterUsageSummaryChartV1 {
+    /// Rain
+    /// Shared recorded and forecast rain during the selected dates.
+    pub rain: SprinklerWaterUsageRainSummaryChartV1,
+    /// Irrigation
+    /// Actual and scheduled irrigation for every area during the selected dates.
+    pub irrigation: SprinklerWaterUsageIrrigationSummaryChartV1,
+}
 
 /// Area with no recorded water
 /// Keeps an area visible when it had no rain or watering during the selected dates.
@@ -1236,12 +1291,13 @@ pub struct SprinklerWaterUsageEmptyZoneRowV1 {
     /// Label position
     /// Centers the message in the chart.
     #[libertas_chart_channel(x)]
-    #[libertas_chart_scale(kind = point, guide = none)]
+    #[libertas_chart_scale(kind = point)]
+    #[libertas_chart_guide(target = x, source = none)]
     pub horizontal_center: bool,
     /// Area
     /// The watered area with no recorded water.
     #[libertas_chart_channel(y, tooltip, key)]
-    #[libertas_chart_scale(id = report_zone, kind = band, guide = none)]
+    #[libertas_chart_scale(id = report_zone, kind = band)]
     #[libertas_device_type("BQEBAUABgQED")]
     pub zone: LibertasDevice,
     /// Message
@@ -1274,7 +1330,7 @@ pub struct SprinklerDailyWaterUsageChartV1 {
 #[libertas_chart(vconcat)]
 pub struct SprinklerWaterUsageChartV1 {
     /// Summary
-    /// Total rain and irrigation for every area during the selected dates.
+    /// Shared rain and per-area irrigation during the selected dates.
     pub summary: SprinklerWaterUsageSummaryChartV1,
     /// Daily details
     /// Rain and watering amounts by local calendar date.
@@ -1332,6 +1388,7 @@ pub struct SprinklerEtRowV1 {
     /// When this weather period begins.
     #[libertas_chart_channel(x, tooltip)]
     #[libertas_chart_scale(id = report_time, kind = utc)]
+    #[libertas_chart_guide(target = x, source = none)]
     pub starts_at: LibertasDateTime,
     /// Ends at
     /// When this weather period ends.
@@ -1341,6 +1398,7 @@ pub struct SprinklerEtRowV1 {
     /// Water lost through evaporation and plant use.
     #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(kind = linear, min = 0, zero = true)]
+    #[libertas_chart_guide(target = y, source = scale, position = left)]
     pub reference_evapotranspiration_millimeters: f32,
     /// Source
     /// Whether this value was recorded or forecast.
@@ -1365,11 +1423,13 @@ pub struct SprinklerTemperatureRowV1 {
     /// Provider period start.
     #[libertas_chart_channel(x, tooltip, key)]
     #[libertas_chart_scale(id = report_time, kind = utc)]
+    #[libertas_chart_guide(target = x, source = none)]
     pub at: LibertasDateTime,
     /// Temperature
     /// Air temperature in degrees Celsius.
     #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(kind = linear, zero = false)]
+    #[libertas_chart_guide(target = y, source = scale, position = left)]
     pub temperature_celsius: f32,
     /// Measurement
     /// Identifies this line as temperature in the combined panel.
@@ -1395,22 +1455,23 @@ pub struct SprinklerHumidityRowV1 {
     /// Time
     /// Provider period start.
     #[libertas_chart_channel(x, tooltip, key)]
-    #[libertas_chart_scale(id = report_time, kind = utc, guide = none)]
+    #[libertas_chart_scale(id = report_time, kind = utc)]
     pub at: LibertasDateTime,
     /// Relative humidity
     /// Relative humidity percentage.
     #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(kind = linear, min = 0, max = 100, zero = true)]
+    #[libertas_chart_guide(target = y, source = scale, position = right)]
     pub relative_humidity_percent: u8,
     /// Measurement
     /// Identifies this line as relative humidity in the combined panel.
     #[libertas_chart_channel(color, detail, tooltip)]
-    #[libertas_chart_scale(id = temperature_humidity_measurement, guide = none)]
+    #[libertas_chart_scale(id = temperature_humidity_measurement)]
     pub measurement: SprinklerTemperatureHumidityMeasurementV1,
     /// Source
     /// Observed or forecast.
     #[libertas_chart_channel(strokeDash, detail, tooltip)]
-    #[libertas_chart_scale(id = temperature_humidity_source, guide = none)]
+    #[libertas_chart_scale(id = temperature_humidity_source)]
     pub source: SprinklerWeatherChartSourceV1,
 }
 
@@ -1441,11 +1502,13 @@ pub struct SprinklerWindRowV1 {
     /// Provider period start.
     #[libertas_chart_channel(x, tooltip)]
     #[libertas_chart_scale(id = report_time, kind = utc)]
+    #[libertas_chart_guide(target = x, source = scale, position = bottom)]
     pub at: LibertasDateTime,
     /// Wind speed
     /// Sustained wind or gust speed in meters per second.
     #[libertas_chart_channel(y, tooltip)]
     #[libertas_chart_scale(kind = linear, min = 0, zero = true)]
+    #[libertas_chart_guide(target = y, source = scale, position = left)]
     pub meters_per_second: f32,
     /// Series
     /// Observed or forecast sustained wind or gust.
@@ -8298,61 +8361,98 @@ fn accumulate_zone_water_inputs(
 fn water_usage_summary_rows(
     zones: &[ReportZoneData],
     totals: &[UsageAccumulator],
-) -> Vec<SprinklerWaterUsageSummaryRowV1> {
-    let mut rows = Vec::new();
-    for zone in zones {
-        let amount = |input_type| {
-            totals
-                .iter()
-                .filter(|total| total.zone == zone.valve)
-                .map(|total| match input_type {
-                    SprinklerWaterInputTypeV1::Rain => total.rain,
-                    SprinklerWaterInputTypeV1::Irrigation => total.irrigation,
-                    SprinklerWaterInputTypeV1::ForecastRain => total.forecast_rain,
-                    SprinklerWaterInputTypeV1::ScheduledWater => total.scheduled_water,
-                })
-                .map(f64::from)
-                .sum::<f64>()
-        };
-        for (group, input_types) in [
-            (
-                SprinklerWaterUsageSummaryGroupV1::Rain,
-                [
-                    SprinklerWaterInputTypeV1::Rain,
-                    SprinklerWaterInputTypeV1::ForecastRain,
-                ],
-            ),
-            (
-                SprinklerWaterUsageSummaryGroupV1::Irrigation,
-                [
-                    SprinklerWaterInputTypeV1::Irrigation,
-                    SprinklerWaterInputTypeV1::ScheduledWater,
-                ],
-            ),
+) -> (
+    Vec<SprinklerWaterUsageRainSummaryRowV1>,
+    Vec<SprinklerWaterUsageIrrigationSummaryRowV1>,
+) {
+    let amount = |zone, input_type| {
+        totals
+            .iter()
+            .filter(|total| total.zone == zone)
+            .map(|total| match input_type {
+                SprinklerWaterInputTypeV1::Rain => total.rain,
+                SprinklerWaterInputTypeV1::Irrigation => total.irrigation,
+                SprinklerWaterInputTypeV1::ForecastRain => total.forecast_rain,
+                SprinklerWaterInputTypeV1::ScheduledWater => total.scheduled_water,
+            })
+            .map(f64::from)
+            .sum::<f64>()
+    };
+
+    // Weather history and forecasts belong to the sprinkler location, not to
+    // an individual zone. They are duplicated in daily zone accumulators only
+    // so each zone's detailed chart can show its complete water input.
+    let mut rain_rows = Vec::new();
+    if let Some(zone) = zones.first() {
+        let mut amount_starts_at_millimeters = 0.0_f64;
+        for input_type in [
+            SprinklerWaterInputTypeV1::Rain,
+            SprinklerWaterInputTypeV1::ForecastRain,
         ] {
-            let mut amount_starts_at_millimeters = 0.0_f64;
-            for input_type in input_types {
-                let amount_millimeters = amount(input_type);
-                if amount_millimeters <= 0.0 || !amount_millimeters.is_finite() {
-                    continue;
-                }
-                let amount_ends_at_millimeters = amount_starts_at_millimeters + amount_millimeters;
-                if !amount_ends_at_millimeters.is_finite() {
-                    break;
-                }
-                rows.push(SprinklerWaterUsageSummaryRowV1 {
-                    amount_starts_at_millimeters,
-                    amount_ends_at_millimeters,
-                    amount_millimeters,
-                    group,
-                    input_type,
-                    zone: zone.valve,
-                });
-                amount_starts_at_millimeters = amount_ends_at_millimeters;
+            let amount_millimeters = amount(zone.valve, input_type);
+            if amount_millimeters <= 0.0 || !amount_millimeters.is_finite() {
+                continue;
             }
+            let amount_ends_at_millimeters = amount_starts_at_millimeters + amount_millimeters;
+            if !amount_ends_at_millimeters.is_finite() {
+                break;
+            }
+            rain_rows.push(SprinklerWaterUsageRainSummaryRowV1 {
+                amount_starts_at_millimeters,
+                amount_ends_at_millimeters,
+                amount_millimeters,
+                input_type,
+                category: SprinklerWaterUsageRainCategoryV1::Rain,
+            });
+            amount_starts_at_millimeters = amount_ends_at_millimeters;
+        }
+        if rain_rows.is_empty() {
+            rain_rows.push(SprinklerWaterUsageRainSummaryRowV1 {
+                amount_starts_at_millimeters: 0.0,
+                amount_ends_at_millimeters: 0.0,
+                amount_millimeters: 0.0,
+                input_type: SprinklerWaterInputTypeV1::Rain,
+                category: SprinklerWaterUsageRainCategoryV1::Rain,
+            });
         }
     }
-    rows
+
+    let mut irrigation_rows = Vec::new();
+    for zone in zones {
+        let zone_row_start = irrigation_rows.len();
+        let mut amount_starts_at_millimeters = 0.0_f64;
+        for input_type in [
+            SprinklerWaterInputTypeV1::Irrigation,
+            SprinklerWaterInputTypeV1::ScheduledWater,
+        ] {
+            let amount_millimeters = amount(zone.valve, input_type);
+            if amount_millimeters <= 0.0 || !amount_millimeters.is_finite() {
+                continue;
+            }
+            let amount_ends_at_millimeters = amount_starts_at_millimeters + amount_millimeters;
+            if !amount_ends_at_millimeters.is_finite() {
+                break;
+            }
+            irrigation_rows.push(SprinklerWaterUsageIrrigationSummaryRowV1 {
+                amount_starts_at_millimeters,
+                amount_ends_at_millimeters,
+                amount_millimeters,
+                input_type,
+                zone: zone.valve,
+            });
+            amount_starts_at_millimeters = amount_ends_at_millimeters;
+        }
+        if irrigation_rows.len() == zone_row_start {
+            irrigation_rows.push(SprinklerWaterUsageIrrigationSummaryRowV1 {
+                amount_starts_at_millimeters: 0.0,
+                amount_ends_at_millimeters: 0.0,
+                amount_millimeters: 0.0,
+                input_type: SprinklerWaterInputTypeV1::Irrigation,
+                zone: zone.valve,
+            });
+        }
+    }
+    (rain_rows, irrigation_rows)
 }
 
 fn build_water_usage(
@@ -8397,7 +8497,7 @@ fn build_water_usage_in_time_zone(
             .cmp(&right.zone)
             .then(left.starts_at.cmp(&right.starts_at))
     });
-    let summary = water_usage_summary_rows(zones, &totals);
+    let (rain_summary, irrigation_summary) = water_usage_summary_rows(zones, &totals);
     let maximum_total_millimeters = totals
         .iter()
         .filter_map(water_usage_total_millimeters)
@@ -8455,7 +8555,10 @@ fn build_water_usage_in_time_zone(
         })
         .collect();
     Ok(SprinklerWaterUsageChartV1 {
-        summary,
+        summary: SprinklerWaterUsageSummaryChartV1 {
+            rain: rain_summary,
+            irrigation: irrigation_summary,
+        },
         daily: SprinklerDailyWaterUsageChartV1 {
             inputs,
             empty_zones,
@@ -9100,8 +9203,10 @@ fn report_response_within_chart_limits(response: &SprinklerReportProtocolV1) -> 
         }
         SprinklerReportProtocolV1::WaterUsageV1(chart) => chart
             .summary
+            .rain
             .len()
-            .checked_add(chart.daily.inputs.len())
+            .checked_add(chart.summary.irrigation.len())
+            .and_then(|total| total.checked_add(chart.daily.inputs.len()))
             .and_then(|total| total.checked_add(chart.daily.empty_zones.len()))
             .is_some_and(|total| total <= MAX_REPORT_CHART_ROWS),
         SprinklerReportProtocolV1::WeatherEtV1(chart) => {
@@ -11754,6 +11859,18 @@ mod tests {
         assert!(!balance.decisions.iter().any(|row| row.zone == 8));
         assert!(usage.daily.inputs.iter().any(|row| row.zone == 7));
         assert!(!usage.daily.inputs.iter().any(|row| row.zone == 8));
+        assert_eq!(usage.summary.rain.len(), 1);
+        assert_eq!(usage.summary.rain[0].amount_millimeters, 0.0);
+        assert!(usage.summary.irrigation.iter().any(|row| row.zone == 7));
+        let idle_summary = usage
+            .summary
+            .irrigation
+            .iter()
+            .find(|row| row.zone == 8)
+            .unwrap();
+        assert_eq!(idle_summary.amount_starts_at_millimeters, 0.0);
+        assert_eq!(idle_summary.amount_ends_at_millimeters, 0.0);
+        assert_eq!(idle_summary.amount_millimeters, 0.0);
         assert_eq!(usage.daily.empty_zones.len(), 1);
         assert_eq!(usage.daily.empty_zones[0].zone, 8);
     }
@@ -12129,50 +12246,60 @@ mod tests {
                 })
                 .unwrap()
         };
-        let summary_row = |zone, input_type| {
+        let rain_summary_row = |input_type| {
             rows.summary
+                .rain
+                .iter()
+                .find(|row| row.input_type == input_type)
+                .unwrap()
+        };
+        let irrigation_summary_row = |zone, input_type| {
+            rows.summary
+                .irrigation
                 .iter()
                 .find(|row| row.zone == zone && row.input_type == input_type)
                 .unwrap()
         };
 
-        assert_eq!(rows.summary.len(), 7);
+        assert_eq!(rows.summary.rain.len(), 2);
+        assert_eq!(rows.summary.irrigation.len(), 3);
         assert_eq!(
             (
-                summary_row(7, SprinklerWaterInputTypeV1::Rain).group,
-                summary_row(7, SprinklerWaterInputTypeV1::Rain).amount_starts_at_millimeters,
-                summary_row(7, SprinklerWaterInputTypeV1::Rain).amount_ends_at_millimeters,
+                rain_summary_row(SprinklerWaterInputTypeV1::Rain).category,
+                rain_summary_row(SprinklerWaterInputTypeV1::Rain).amount_starts_at_millimeters,
+                rain_summary_row(SprinklerWaterInputTypeV1::Rain).amount_ends_at_millimeters,
             ),
-            (SprinklerWaterUsageSummaryGroupV1::Rain, 0.0, 2.0)
+            (SprinklerWaterUsageRainCategoryV1::Rain, 0.0, 2.0)
         );
         assert_eq!(
             (
-                summary_row(7, SprinklerWaterInputTypeV1::ForecastRain).group,
-                summary_row(7, SprinklerWaterInputTypeV1::ForecastRain)
+                rain_summary_row(SprinklerWaterInputTypeV1::ForecastRain).category,
+                rain_summary_row(SprinklerWaterInputTypeV1::ForecastRain)
                     .amount_starts_at_millimeters,
-                summary_row(7, SprinklerWaterInputTypeV1::ForecastRain).amount_ends_at_millimeters,
-            ),
-            (SprinklerWaterUsageSummaryGroupV1::Rain, 2.0, 3.0)
-        );
-        assert_eq!(
-            (
-                summary_row(7, SprinklerWaterInputTypeV1::Irrigation).group,
-                summary_row(7, SprinklerWaterInputTypeV1::Irrigation).amount_starts_at_millimeters,
-                summary_row(7, SprinklerWaterInputTypeV1::Irrigation).amount_ends_at_millimeters,
-            ),
-            (SprinklerWaterUsageSummaryGroupV1::Irrigation, 0.0, 9.0)
-        );
-        assert_eq!(
-            (
-                summary_row(7, SprinklerWaterInputTypeV1::ScheduledWater).group,
-                summary_row(7, SprinklerWaterInputTypeV1::ScheduledWater)
-                    .amount_starts_at_millimeters,
-                summary_row(7, SprinklerWaterInputTypeV1::ScheduledWater)
+                rain_summary_row(SprinklerWaterInputTypeV1::ForecastRain)
                     .amount_ends_at_millimeters,
             ),
-            (SprinklerWaterUsageSummaryGroupV1::Irrigation, 9.0, 12.0)
+            (SprinklerWaterUsageRainCategoryV1::Rain, 2.0, 3.0)
         );
-        assert!(rows.summary.iter().all(|row| {
+        assert_eq!(
+            (
+                irrigation_summary_row(7, SprinklerWaterInputTypeV1::Irrigation)
+                    .amount_starts_at_millimeters,
+                irrigation_summary_row(7, SprinklerWaterInputTypeV1::Irrigation)
+                    .amount_ends_at_millimeters,
+            ),
+            (0.0, 9.0)
+        );
+        assert_eq!(
+            (
+                irrigation_summary_row(7, SprinklerWaterInputTypeV1::ScheduledWater)
+                    .amount_starts_at_millimeters,
+                irrigation_summary_row(7, SprinklerWaterInputTypeV1::ScheduledWater)
+                    .amount_ends_at_millimeters,
+            ),
+            (9.0, 12.0)
+        );
+        assert!(rows.summary.irrigation.iter().all(|row| {
             row.zone != 8 || row.input_type != SprinklerWaterInputTypeV1::ScheduledWater
         }));
         assert_eq!(rows.daily.inputs.len(), 8);
@@ -12284,7 +12411,8 @@ mod tests {
             Some(range.starts_at),
         )
         .unwrap();
-        assert_eq!(rows.summary.len(), 2);
+        assert_eq!(rows.summary.rain.len(), 1);
+        assert_eq!(rows.summary.irrigation.len(), 1);
         assert_eq!(rows.daily.inputs.len(), 2);
         assert!(rows.daily.empty_zones.is_empty());
         assert!(
@@ -12341,14 +12469,22 @@ mod tests {
             Some(range.starts_at),
         )
         .unwrap();
-        assert_eq!(planned.summary.len(), 2);
-        assert!(planned.summary.iter().all(|row| {
-            row.amount_starts_at_millimeters == 0.0
-                && ((row.group == SprinklerWaterUsageSummaryGroupV1::Rain
-                    && row.input_type == SprinklerWaterInputTypeV1::ForecastRain)
-                    || (row.group == SprinklerWaterUsageSummaryGroupV1::Irrigation
-                        && row.input_type == SprinklerWaterInputTypeV1::ScheduledWater))
-        }));
+        assert_eq!(planned.summary.rain.len(), 1);
+        assert_eq!(planned.summary.irrigation.len(), 1);
+        assert_eq!(
+            (
+                planned.summary.rain[0].amount_starts_at_millimeters,
+                planned.summary.rain[0].input_type,
+            ),
+            (0.0, SprinklerWaterInputTypeV1::ForecastRain)
+        );
+        assert_eq!(
+            (
+                planned.summary.irrigation[0].amount_starts_at_millimeters,
+                planned.summary.irrigation[0].input_type,
+            ),
+            (0.0, SprinklerWaterInputTypeV1::ScheduledWater)
+        );
         assert_eq!(planned.daily.inputs.len(), 2);
         let forecast_rain = planned
             .daily
@@ -12378,7 +12514,11 @@ mod tests {
             Some(range.starts_at),
         )
         .unwrap();
-        assert!(empty.summary.is_empty());
+        assert_eq!(empty.summary.rain.len(), 1);
+        assert_eq!(empty.summary.rain[0].amount_millimeters, 0.0);
+        assert_eq!(empty.summary.irrigation.len(), 1);
+        assert_eq!(empty.summary.irrigation[0].zone, zone().valve);
+        assert_eq!(empty.summary.irrigation[0].amount_millimeters, 0.0);
         assert!(empty.daily.inputs.is_empty());
         assert_eq!(empty.daily.empty_zones.len(), 1);
     }
