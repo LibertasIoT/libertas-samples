@@ -84,17 +84,18 @@ const MAX_WATER_USAGE_REPORT_RANGE_SECONDS: u64 =
 const DEFAULT_REPORT_RANGE_SECONDS: u64 = 7 * 24 * 60 * 60;
 const DEFAULT_WATER_USAGE_REPORT_RANGE_SECONDS: u64 = 31 * 24 * 60 * 60;
 const DEFAULT_WEATHER_HISTORY_SECONDS: u64 = 2 * 24 * 60 * 60;
-// Water-usage rectangles use synthetic, guide-free display seconds because
+// Water-usage rectangles use synthetic display seconds because
 // their horizontal length represents water depth rather than elapsed time. The
 // App orders every occupied real UTC bucket once across all zones, then places
 // its horizontal stack in that broken-time sequence. Every maximum stack spans
 // 600 synthetic seconds, and the chart-wide maximum amount supplies one
 // display-seconds-per-millimeter scale. Integer endpoints preserve that
 // proportion except for bounded whole-second allocation needed to keep every
-// positive contributor nondegenerate. The real bucket remains tooltip data.
-// Keeping this projection entirely here is essential: clients render the
-// supplied positive x/x2 intervals literally and must never infer, repair, or
-// restack provider geometry.
+// positive contributor nondegenerate. The real bucket remains tooltip data and
+// supplies the localized span-guide label. Keeping this projection entirely
+// here is essential: clients render the supplied positive x/x2 intervals and
+// authored guide labels literally; they must never infer, repair, or restack
+// provider geometry.
 const WATER_USAGE_DISPLAY_FULL_SCALE_SECONDS: u64 = 600;
 // Thirty display seconds is five percent of a full stack: perceptible between
 // occupied dates without allowing empty calendar time to flatten amount ratios.

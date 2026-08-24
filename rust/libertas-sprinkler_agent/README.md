@@ -76,9 +76,11 @@ and the weather/ET response aligns provider ET, a combined dual-axis
 temperature/humidity panel, and sustained wind and gusts. Modeled ET remains an
 internal water-balance input rather than a sparse standalone panel. Each sparse
 usage bucket begins one horizontal colored stack in its zone lane. The App emits
-numeric `display_start,display_end` synthetic seconds on a
-hidden linear x guide, while the real Hub-local calendar date stays in
-tooltip-only `bucket_starts_on`.
+numeric `display_start,display_end` synthetic seconds on a linear x scale. The
+real Hub-local calendar date in `bucket_starts_on` explicitly owns a generic
+span guide: clients merge each date's visible intervals and center its
+localized label over every connected span. The synthetic seconds never become
+guide labels.
 Every response uses a 600-second full stack and a chart-wide maximum water
 amount to form one seconds-per-millimeter scale. Rectangle lengths remain
 amount-proportional except for bounded whole-second allocation needed to keep
