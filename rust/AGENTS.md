@@ -162,6 +162,11 @@ with the appropriate roles: `#[libertas_request]`, `#[libertas_response]`,
 `#[libertas_cacheable]`, and `#[libertas_copy_from("path")]` only when their
 transaction semantics are actually implemented.
 
+Name the protocol union itself without a version suffix because it is the
+stable container for the endpoint contract. Version independently evolvable
+request, response, and subscription payloads and variants (for example, `V1`),
+and append new variants without renaming the protocol union.
+
 ## Persistent data
 
 Every type written to the Libertas database must be a variant of one
@@ -209,6 +214,9 @@ and may be translated.
 
 Persistence rules:
 
+- Name the persistent-data union without a version suffix. It is the stable
+  container for all stored payload generations; version payload types and
+  variants when needed without renaming the union.
 - Treat enum variant order and variant-field order as an on-disk ABI: Avro
   encoding is positional. Never reorder or repurpose existing variants/fields.
   Append compatible variants or implement an explicit migration.
@@ -488,9 +496,10 @@ expanded.
   such as `V1`. Once published, treat a versioned type's name, field and variant
   order, field types, units, optionality, and meaning as immutable.
 - Before the initial `libertas-weather` schema is published, keep every current
-  schema and message at `V1` and freely reshape that V1 design. Do not retain
-  superseded design-only variants for compatibility. The immutability and
-  append-only rules begin when a schema is published.
+  independently evolvable payload and message variant at `V1` and freely
+  reshape that V1 design. Protocol and persistent-data union containers remain
+  versionless. Do not retain superseded design-only variants for compatibility.
+  The immutability and append-only rules begin when a schema is published.
 - Introduce a new versioned type for an incompatible change. Keep older versions
   available; do not rename a versioned type to `Latest` or silently redirect an
   unversioned alias.
@@ -557,7 +566,7 @@ expanded.
 
 `libertas-weather_agent` is a `std` Libertas application library intended to
 serve weather protocols tailored to a wide range of Libertas applications. Its
-first implemented service is `SprinklerWeatherProtocolV1`. Until another
+first implemented service is `SprinklerWeatherProtocol`. Until another
 service is implemented, its application configuration exposes exactly one
 endpoint marked with `#[libertas_endpoint_server]`; do not model the endpoint
 operation as another protocol field. Keep each future application-specific
@@ -704,7 +713,7 @@ Reshape V1 directly when the design changes; do not retain old configuration
 fields, protocol variants, sidecar schema files, or migration code for
 compatibility.
 
-- Configuration contains one shared `SprinklerWeatherProtocolV1` client
+- Configuration contains one shared `SprinklerWeatherProtocol` client
   endpoint, one to 16 unique `LibertasUser` reminder recipients, and one or more
   `SprinklerZoneV1` values. The current reminders cover winterization; the
   recipient list may serve future reminder types. A zone contains exactly one
@@ -726,7 +735,7 @@ compatibility.
   maximum Matter report interval is 30 seconds; if no valve report arrives for
   90 seconds, mark its state unavailable and resend the complete app
   subscription outside any active state borrow.
-- Expose `SprinklerZoneProtocolV1` on every zone state endpoint. `GetStateV1` is
+- Expose `SprinklerZoneProtocol` on every zone state endpoint. `GetStateV1` is
   both the one-shot and subscription request because the
   endpoint operation is outside the protocol value. Every accepted request
   returns `StateV1`; a subscription additionally receives `StateV1` reports
@@ -766,11 +775,11 @@ compatibility.
   Do not start automatic watering until the first non-null Matter current-state
   report establishes the valve's state, and never treat the presence of the
   required Active slot alone as permission to actuate.
-- Persist every zone independently as `SprinklerDataV1::ZoneMemoryV1`, keyed by
+- Persist every zone independently as `SprinklerData::ZoneMemoryV1`, keyed by
   its valve object. The memory contains the watering percentage, hold-offs, a
   folded water-balance baseline, and no event vector. Persist every historical
   weather period and observed irrigation interval separately as a
-  `SprinklerDataV1::WaterEventV1` record in the valve-keyed indexed
+  `SprinklerData::WaterEventV1` record in the valve-keyed indexed
   `SPRINKLER_WATER_EVENTS_V1` resource. Derive its index deterministically from
   start time and event kind so weather corrections and merged valve checkpoints
   replace only their matching record while weather and irrigation at the same
@@ -782,7 +791,7 @@ compatibility.
   double-count them after restart. Initialize missing or invalid compact memory
   deterministically and preserve its effect across restarts.
 - Persist the shared watering mode independently as
-  `SprinklerDataV1::WateringModeV1`, keyed by the weather endpoint. Default
+  `SprinklerData::WateringModeV1`, keyed by the weather endpoint. Default
   missing or invalid state to Active. Winterization is a hard interlock: do not
   calculate or expose an Active slot, do not issue automatic open commands, and
   close a controller-opened valve while leaving manual valve ownership alone.
@@ -912,7 +921,7 @@ legacy fields or migrations.
   demands that must later be reconciled into the shared physical thermostat;
   never represent shared equipment as independently actuated room equipment.
 - Define every externally visible room runtime transaction as a variant of
-  `BuildingHvacRoomProtocolV1`. `RoomDataV1` is both the complete response and
+  `BuildingHvacRoomProtocol`. `RoomDataV1` is both the complete response and
   subscription report and carries writable room intent beside read-only state,
   per-station indoor data, local outdoor station data, statistics, learned
   cross-zone influences, and calculated plan. Include each configured indoor
@@ -986,9 +995,9 @@ legacy fields or migrations.
   Avoid a Matter write when calculated targets are already applied within 0.05
   degrees Celsius. Calculation types are implementation APIs, not additional
   endpoint runtime schema; user-visible state remains in
-  `BuildingHvacRoomProtocolV1`.
+  `BuildingHvacRoomProtocol`.
 - Define every database value as a variant of
-  `BuildingHvacPersistentDataV1`. Persist room control, statistics with bounded
+  `BuildingHvacPersistentData`. Persist room control, statistics with bounded
   recent condition periods, cross-zone learning state, each room's last accepted
   indoor station sections, each local outdoor temperature, humidity, and
   air-quality section, and each cached weather section independently. A partial
@@ -1011,7 +1020,7 @@ legacy fields or migrations.
   prediction; never weaken thermostat, equipment, freeze, smoke, or life-safety
   constraints.
 - Keep `BuildingHvacWeatherClientV1` as a client endpoint using
-  `BuildingHvacWeatherProtocolV1`. The HVAC controller must not perform provider
+  `BuildingHvacWeatherProtocol`. The HVAC controller must not perform provider
   HTTP requests. When runtime integration is added, subscribe at startup, use
   exact cursor continuity and reset rules, and treat stale or missing outdoor
   air quality as unknown rather than safe.
