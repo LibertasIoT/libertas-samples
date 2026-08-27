@@ -1,5 +1,6 @@
 //! Virtual Sprinkler Valves
 //! Lets you try sprinkler apps without installing physical irrigation hardware.
+//! #[libertas_string_resources(APP_STRINGS)]
 #![no_std]
 #![forbid(unsafe_code)]
 
@@ -9,14 +10,13 @@ use alloc::{boxed::Box, rc::Rc, vec::Vec};
 use core::cell::RefCell;
 
 use libertas::{
-    InlineByteBuffer, LIBERTAS_BROADCAST_DEST, LibertasDevice, LibertasVirtualDevice,
-    NotificationArgument, libertas_data_read_single, libertas_data_write_single,
+    InlineByteBuffer, LIBERTAS_BROADCAST_DEST, LibertasDevice, LibertasMessageArgument,
+    LibertasVirtualDevice, libertas_data_read_single, libertas_data_write_single,
     libertas_device_send_response, libertas_get_sys_ticks, libertas_register_device_listener,
     libertas_timer_cancel, libertas_timer_new_interval, libertas_timer_update_interval,
 };
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
-    libertas_string_resources,
 };
 use libertas_matter::{
     IMStatusCode, MatterAttribute, MatterDevice, MatterReadCluster, MatterRequestContext,
@@ -42,7 +42,7 @@ const DEFAULT_OPEN_DURATION_SECONDS: u32 = 10 * 60;
 const MICROSECONDS_PER_SECOND: u64 = 1_000_000;
 
 pub const APP_STRINGS: [(&str, &str); 1] =
-    [("DEFAULT_OPEN_DURATION", "Saved watering duration for %1$s.")];
+    [("DEFAULT_OPEN_DURATION", "Saved watering duration for {0}.")];
 const DEFAULT_OPEN_DURATION_RESOURCE: &str = APP_STRINGS[0].0;
 
 /// Persistent valve data.
@@ -56,6 +56,7 @@ pub enum ValveData {
     /// Matter DefaultOpenDuration attribute.
     DefaultOpenDuration {
         /// DefaultOpenDuration, in seconds.
+        #[libertas_time_interval]
         value: u32,
     },
 }
@@ -124,14 +125,14 @@ fn remaining_duration_seconds(expiration_ticks: Option<u64>, now: u64) -> Option
 fn read_default_open_duration(device: LibertasDevice) -> Option<ValveData> {
     libertas_data_read_single(
         DEFAULT_OPEN_DURATION_RESOURCE,
-        &[NotificationArgument::Object(device)],
+        &[LibertasMessageArgument::Object(device)],
     )
 }
 
 fn persist_default_open_duration(device: LibertasDevice, value: u32) {
     libertas_data_write_single(
         DEFAULT_OPEN_DURATION_RESOURCE,
-        &[NotificationArgument::Object(device)],
+        &[LibertasMessageArgument::Object(device)],
         &ValveData::DefaultOpenDuration { value },
     );
 }
@@ -570,7 +571,6 @@ fn status_for_handler_error(error: Error) -> IMStatusCode {
 /// Creates sprinkler valves for demonstrations and testing. Only one valve can
 /// water at a time.
 #[libertas_data_schema(ValveData)]
-#[libertas_string_resources(APP_STRINGS)]
 pub fn virtual_irrigation_controller(
     /*
      * Sprinkler valves

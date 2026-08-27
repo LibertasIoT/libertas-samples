@@ -15,7 +15,7 @@ use std::{
 };
 
 use libertas::{
-    IndexDirection, LibertasDateTime, LibertasEndpoint, NotificationArgument,
+    IndexDirection, LibertasDateTime, LibertasEndpoint, LibertasMessageArgument,
     libertas_data_open_indexed, libertas_data_read_indexed, libertas_data_read_indexed_range,
     libertas_data_remove_indexed_records, libertas_data_write_indexed,
 };
@@ -188,6 +188,7 @@ pub struct BuildingHvacMachineLearningFeatureV1 {
     /// Feature value
     /// Finite value in the unit stated by `name`. Absence means genuinely
     /// unavailable or inapplicable input and is passed to XGBoost as `NaN`.
+    #[libertas_format("0.###")]
     pub value: Option<f32>,
 }
 
@@ -304,6 +305,7 @@ pub struct BuildingHvacMachineLearningIndexedFeatureV1 {
     pub index: u16,
     /// Value
     /// Finite present value. Missing values have no indexed entry.
+    #[libertas_format("0.###")]
     pub value: f32,
 }
 
@@ -419,12 +421,18 @@ pub struct BuildingHvacMachineLearningSampleV1 {
     pub features: BuildingHvacMachineLearningFeatureVectorV1,
     /// Fifteen-minute temperature change
     /// Fused room temperature after 15 minutes minus the observed temperature.
+    #[libertas_format("0.###")]
+    #[libertas_physical_unit("celsius")]
     pub temperature_change_15_minutes_celsius: Option<f32>,
     /// Thirty-minute temperature change
     /// Fused room temperature after 30 minutes minus the observed temperature.
+    #[libertas_format("0.###")]
+    #[libertas_physical_unit("celsius")]
     pub temperature_change_30_minutes_celsius: Option<f32>,
     /// Sixty-minute temperature change
     /// Fused room temperature after 60 minutes minus the observed temperature.
+    #[libertas_format("0.###")]
+    #[libertas_physical_unit("celsius")]
     pub temperature_change_60_minutes_celsius: Option<f32>,
 }
 
@@ -483,13 +491,18 @@ pub struct BuildingHvacMachineLearningValidationV1 {
     /// Candidate RMSE
     /// Root mean square temperature-change error in degrees Celsius on the
     /// time-forward holdout.
+    #[libertas_format("0.###")]
+    #[libertas_physical_unit("celsius")]
     pub candidate_rmse_celsius: f32,
     /// Baseline RMSE
     /// Root mean square error of predicting no temperature change on the same
     /// holdout.
+    #[libertas_format("0.###")]
+    #[libertas_physical_unit("celsius")]
     pub deterministic_baseline_rmse_celsius: f32,
     /// Improvement
     /// Fractional RMSE reduction relative to the deterministic baseline.
+    #[libertas_format("0.###")]
     #[libertas_number(min = 0, max = 1)]
     pub improvement_normalized: f32,
 }
@@ -555,6 +568,7 @@ pub struct BuildingHvacMachineLearningModelV1 {
     pub maximum_tree_depth: u32,
     /// Learning rate
     /// XGBoost shrinkage used during fitting.
+    #[libertas_format("0.###")]
     #[libertas_number(min = 0, max = 1)]
     pub learning_rate: f32,
     /// Validation
@@ -713,6 +727,8 @@ pub struct BuildingHvacThermalPredictionV1 {
     /// Predicted temperature change
     /// Degrees Celsius relative to current room temperature. Positive values
     /// predict warming and negative values predict cooling.
+    #[libertas_format("0.###")]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub temperature_change_celsius: f32,
     /// Prediction source
@@ -852,19 +868,17 @@ impl BuildingHvacMachineLearningHistory {
         }
         let index = i64::try_from(sample.observed_at)
             .map_err(|_| BuildingHvacMachineLearningHistoryError::InvalidSample)?;
-        let key = [NotificationArgument::Object(sample.room_endpoint)];
+        let key = [LibertasMessageArgument::Object(sample.room_endpoint)];
         let database = libertas_data_open_indexed(BUILDING_HVAC_ML_SAMPLE_RESOURCE, &key);
-        let merged = if let Some(existing) = libertas_data_read_indexed::<
-            crate::BuildingHvacPersistentDataV1,
-        >(database.handle, index)
+        let merged = if let Some(existing) =
+            libertas_data_read_indexed::<crate::BuildingHvacPersistentData>(database.handle, index)
             && existing.index == index
         {
             match existing.data {
-                crate::BuildingHvacPersistentDataV1::MachineLearningSampleV1 {
-                    sample: existing,
-                } if existing.observed_at == sample.observed_at
-                    && existing.room_endpoint == sample.room_endpoint
-                    && existing.features == sample.features =>
+                crate::BuildingHvacPersistentData::MachineLearningSampleV1 { sample: existing }
+                    if existing.observed_at == sample.observed_at
+                        && existing.room_endpoint == sample.room_endpoint
+                        && existing.features == sample.features =>
                 {
                     merge_sample_targets(existing, sample)?
                 }
@@ -875,7 +889,7 @@ impl BuildingHvacMachineLearningHistory {
         } else {
             sample
         };
-        let value = crate::BuildingHvacPersistentDataV1::MachineLearningSampleV1 { sample: merged };
+        let value = crate::BuildingHvacPersistentData::MachineLearningSampleV1 { sample: merged };
         libertas_data_write_indexed(database.handle, index, &value);
 
         let oldest_retained = now_utc.saturating_sub(BUILDING_HVAC_ML_HISTORY_RETENTION_SECONDS);
@@ -909,10 +923,10 @@ impl BuildingHvacMachineLearningHistory {
         if !feature_manifest_is_well_formed(expected_feature_names) {
             return Vec::new();
         }
-        let key = [NotificationArgument::Object(room_endpoint)];
+        let key = [LibertasMessageArgument::Object(room_endpoint)];
         let database = libertas_data_open_indexed(BUILDING_HVAC_ML_SAMPLE_RESOURCE, &key);
         let mut records = Vec::new();
-        libertas_data_read_indexed_range::<crate::BuildingHvacPersistentDataV1>(
+        libertas_data_read_indexed_range::<crate::BuildingHvacPersistentData>(
             database.handle,
             index,
             IndexDirection::Below,
@@ -922,7 +936,7 @@ impl BuildingHvacMachineLearningHistory {
         let mut samples: Vec<_> = records
             .into_iter()
             .filter_map(|record| match record.data {
-                crate::BuildingHvacPersistentDataV1::MachineLearningSampleV1 { sample }
+                crate::BuildingHvacPersistentData::MachineLearningSampleV1 { sample }
                     if i64::try_from(sample.observed_at) == Ok(record.index)
                         && sample.room_endpoint == room_endpoint
                         && sample.observed_at <= through_utc
