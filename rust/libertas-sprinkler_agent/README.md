@@ -5,7 +5,7 @@ weather-aware irrigation schedules.
 
 Configuration contains:
 
-- one `SprinklerWeatherProtocolV1` client endpoint shared by all zones;
+- one `SprinklerWeatherProtocol` client endpoint shared by all zones;
 - one system-wide `Sprinkler Report` server endpoint;
 - one to 16 unique Libertas users who receive application reminders, currently
   including system-wide winterization reminders;

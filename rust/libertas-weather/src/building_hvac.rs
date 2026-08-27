@@ -128,11 +128,15 @@ pub enum BuildingHvacPrecipitationKindV1 {
 pub struct BuildingHvacOutdoorConditionsV1 {
     /// Dry-bulb temperature
     /// Outdoor air temperature at two meters above ground in degrees Celsius.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     pub dry_bulb_temperature_celsius: f32,
     /// Dew-point temperature
     /// Outdoor dew-point temperature at two meters above ground in degrees
     /// Celsius. Together with pressure, this supports humidity-ratio, enthalpy,
     /// wet-bulb, condensation-risk, and latent-load calculations.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     pub dew_point_temperature_celsius: f32,
     /// Relative humidity
     /// Outdoor relative humidity at two meters above ground as an integer
@@ -140,34 +144,44 @@ pub struct BuildingHvacOutdoorConditionsV1 {
     /// validation; psychrometric calculations should use one consistent input
     /// set rather than mixing disagreeing redundant values.
     #[libertas_number(min = 0, max = 100)]
+    #[libertas_physical_unit("percent")]
     pub relative_humidity_percent: u8,
     /// Surface pressure
     /// Atmospheric pressure at the building elevation in hectopascals. Surface
     /// pressure, rather than pressure reduced to sea level, is used for
     /// psychrometric calculations.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("hectopascal")]
     pub surface_pressure_hectopascals: f32,
     /// Wind speed
     /// Sustained outdoor wind speed at 10 meters above ground in meters per
     /// second. A building model may use it to estimate infiltration and
     /// pressure-driven outdoor-air loads.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("meter-per-second")]
     pub wind_speed_meters_per_second: f32,
     /// Wind gust
     /// Peak outdoor wind gust at 10 meters above ground in meters per second.
     /// It supports conservative control of exposed dampers and equipment.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("meter-per-second")]
     pub wind_gust_meters_per_second: f32,
     /// Wind direction
     /// Direction from which the wind originates in degrees clockwise from true
     /// north. Zero and 360 both represent north. Direction is useful only when
     /// the building model knows façade orientation.
     #[libertas_number(min = 0, max = 360)]
+    #[libertas_physical_unit("degree")]
     pub wind_direction_degrees: u16,
     /// Precipitation
     /// Total liquid water equivalent accumulated over the containing interval,
     /// in millimeters.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("millimeter")]
     pub precipitation_millimeters: f32,
     /// Precipitation kind
     /// The liquid or frozen precipitation phase affecting exposed HVAC
@@ -179,31 +193,41 @@ pub struct BuildingHvacOutdoorConditionsV1 {
     /// sun below the horizon. Use the containing current record's `valid_at` or
     /// the midpoint of a containing history or forecast period together with
     /// the building site coordinates to calculate this value.
+    #[libertas_format("0.#")]
     #[libertas_number(min = -90, max = 90)]
+    #[libertas_physical_unit("degree")]
     pub solar_elevation_degrees: f32,
     /// Solar azimuth
     /// Direction of the sun's center in degrees clockwise from true north at
     /// the same represented observation time. HVAC machine-learning consumers
     /// convert this cyclic angle to sine and cosine instead of interpreting the
     /// raw degree value as ordinal.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0, max = 360)]
+    #[libertas_physical_unit("degree")]
     pub solar_azimuth_degrees: f32,
     /// Global horizontal irradiance
     /// Total direct and diffuse solar power incident on a horizontal surface in
     /// watts per square meter. This is the primary whole-building solar-gain
     /// input.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("watt-per-square-meter")]
     pub global_horizontal_irradiance_watts_per_square_meter: f32,
     /// Direct normal irradiance
     /// Direct solar power incident on a surface normal to the sun in watts per
     /// square meter. Oriented façade and shading models may use this value.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("watt-per-square-meter")]
     pub direct_normal_irradiance_watts_per_square_meter: f32,
     /// Diffuse horizontal irradiance
     /// Diffuse-sky solar power incident on a horizontal surface in watts per
     /// square meter. Oriented façade and shading models may use this value with
     /// direct normal irradiance.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("watt-per-square-meter")]
     pub diffuse_horizontal_irradiance_watts_per_square_meter: f32,
 }
 
@@ -316,6 +340,7 @@ pub struct BuildingHvacWeatherForecastPeriodV1 {
     /// Probability of measurable precipitation during this period as an integer
     /// percentage from 0 through 100.
     #[libertas_number(min = 0, max = 100)]
+    #[libertas_physical_unit("percent")]
     pub precipitation_probability_percent: u8,
     /// Outdoor conditions
     /// Predicted temperature, moisture, pressure, wind, precipitation, and solar
@@ -373,20 +398,28 @@ pub struct BuildingHvacOutdoorAirQualityPeriodV1 {
     pub duration_seconds: u32,
     /// Fine particulate matter
     /// Modeled outdoor PM2.5 concentration in micrograms per cubic meter.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("microgram-per-cubic-meter")]
     pub particulate_matter_2_5_micrograms_per_cubic_meter: f32,
     /// Particulate matter
     /// Modeled outdoor PM10 concentration in micrograms per cubic meter.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("microgram-per-cubic-meter")]
     pub particulate_matter_10_micrograms_per_cubic_meter: f32,
     /// Ozone
     /// Modeled outdoor ozone concentration in micrograms per cubic meter.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("microgram-per-cubic-meter")]
     pub ozone_micrograms_per_cubic_meter: f32,
     /// Nitrogen dioxide
     /// Modeled outdoor nitrogen-dioxide concentration in micrograms per cubic
     /// meter.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("microgram-per-cubic-meter")]
     pub nitrogen_dioxide_micrograms_per_cubic_meter: f32,
 }
 
@@ -789,7 +822,7 @@ pub enum BuildingHvacWeatherRecoveryV1 {
 /// whole-building HVAC weather. The Libertas endpoint operation, not a field in
 /// this arbitrary message contract, selects one-shot or subscription behavior.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub enum BuildingHvacWeatherProtocolV1 {
+pub enum BuildingHvacWeatherProtocol {
     /// Get building HVAC weather
     /// Performs a one-shot incremental read or starts or resumes a subscription.
     /// The server replays retained changes after `after_cursor` when possible or
@@ -856,11 +889,15 @@ pub struct BuildingHvacWeatherLocationV1 {
     /// Longitude
     /// WGS84 longitude in decimal degrees. Locations west of Greenwich use
     /// negative values.
+    #[libertas_format("0.#####")]
     #[libertas_number(min = -180, max = 180)]
+    #[libertas_physical_unit("degree")]
     pub longitude_degrees: f64,
     /// Latitude
     /// WGS84 latitude in decimal degrees.
+    #[libertas_format("0.#####")]
     #[libertas_number(min = -90, max = 90)]
+    #[libertas_physical_unit("degree")]
     pub latitude_degrees: f64,
 }
 
@@ -870,7 +907,7 @@ pub struct BuildingHvacWeatherLocationV1 {
 /// partial provider failure cannot erase another section. Subscription cursors,
 /// journals, peers, and PeerAlive deadlines are not persistent.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub enum BuildingHvacWeatherPersistentDataV1 {
+pub enum BuildingHvacWeatherPersistentData {
     /// Building location
     /// Stores the last valid site coordinates received from the Libertas Hub.
     LocationV1 {
@@ -1107,8 +1144,8 @@ mod tests {
             }
         );
         assert_round_trip!(
-            BuildingHvacWeatherProtocolV1,
-            BuildingHvacWeatherProtocolV1::BuildingHvacWeatherIncrementV1 {
+            BuildingHvacWeatherProtocol,
+            BuildingHvacWeatherProtocol::BuildingHvacWeatherIncrementV1 {
                 report: incremental_report()
             }
         );
@@ -1120,8 +1157,8 @@ mod tests {
             }
         );
         assert_round_trip!(
-            BuildingHvacWeatherPersistentDataV1,
-            BuildingHvacWeatherPersistentDataV1::OutdoorAirQualityV1 {
+            BuildingHvacWeatherPersistentData,
+            BuildingHvacWeatherPersistentData::OutdoorAirQualityV1 {
                 outdoor_air_quality: air_quality()
             }
         );
@@ -1130,21 +1167,21 @@ mod tests {
     #[test]
     fn all_protocol_transactions_round_trip_through_avro() {
         let values = [
-            BuildingHvacWeatherProtocolV1::GetBuildingHvacWeatherV1 {
+            BuildingHvacWeatherProtocol::GetBuildingHvacWeatherV1 {
                 after_cursor: Some(cursor(CURSOR_TIMESTAMP, 20)),
                 history_range: Some(history_range()),
                 include_current: true,
                 forecast_range: Some(forecast_range()),
                 outdoor_air_quality_range: Some(air_quality_range()),
             },
-            BuildingHvacWeatherProtocolV1::BuildingHvacWeatherRecoveryV1 {
+            BuildingHvacWeatherProtocol::BuildingHvacWeatherRecoveryV1 {
                 maximum_wait_interval_seconds:
                     BUILDING_HVAC_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: BuildingHvacWeatherRecoveryV1::ReplayedV1 {
                     report: incremental_report(),
                 },
             },
-            BuildingHvacWeatherProtocolV1::BuildingHvacWeatherRecoveryV1 {
+            BuildingHvacWeatherProtocol::BuildingHvacWeatherRecoveryV1 {
                 maximum_wait_interval_seconds:
                     BUILDING_HVAC_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: BuildingHvacWeatherRecoveryV1::ResetV1 {
@@ -1153,7 +1190,7 @@ mod tests {
                     snapshot: snapshot(),
                 },
             },
-            BuildingHvacWeatherProtocolV1::BuildingHvacWeatherRecoveryV1 {
+            BuildingHvacWeatherProtocol::BuildingHvacWeatherRecoveryV1 {
                 maximum_wait_interval_seconds:
                     BUILDING_HVAC_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: BuildingHvacWeatherRecoveryV1::ErrorV1 {
@@ -1161,37 +1198,37 @@ mod tests {
                     retry_after_seconds: Some(60),
                 },
             },
-            BuildingHvacWeatherProtocolV1::BuildingHvacWeatherIncrementV1 {
+            BuildingHvacWeatherProtocol::BuildingHvacWeatherIncrementV1 {
                 report: incremental_report(),
             },
         ];
 
         for value in values {
-            assert_round_trip!(BuildingHvacWeatherProtocolV1, value);
+            assert_round_trip!(BuildingHvacWeatherProtocol, value);
         }
     }
 
     #[test]
     fn every_persistent_section_round_trips_independently() {
         let values = [
-            BuildingHvacWeatherPersistentDataV1::LocationV1 {
+            BuildingHvacWeatherPersistentData::LocationV1 {
                 location: BuildingHvacWeatherLocationV1 {
                     longitude_degrees: -74.006,
                     latitude_degrees: 40.7128,
                 },
             },
-            BuildingHvacWeatherPersistentDataV1::HistoryV1 { history: history() },
-            BuildingHvacWeatherPersistentDataV1::CurrentV1 { current: current() },
-            BuildingHvacWeatherPersistentDataV1::ForecastV1 {
+            BuildingHvacWeatherPersistentData::HistoryV1 { history: history() },
+            BuildingHvacWeatherPersistentData::CurrentV1 { current: current() },
+            BuildingHvacWeatherPersistentData::ForecastV1 {
                 forecast: forecast(),
             },
-            BuildingHvacWeatherPersistentDataV1::OutdoorAirQualityV1 {
+            BuildingHvacWeatherPersistentData::OutdoorAirQualityV1 {
                 outdoor_air_quality: air_quality(),
             },
         ];
 
         for value in values {
-            assert_round_trip!(BuildingHvacWeatherPersistentDataV1, value);
+            assert_round_trip!(BuildingHvacWeatherPersistentData, value);
         }
     }
 
@@ -1297,14 +1334,14 @@ mod tests {
         }
 
         let protocols = [
-            BuildingHvacWeatherProtocolV1::GetBuildingHvacWeatherV1 {
+            BuildingHvacWeatherProtocol::GetBuildingHvacWeatherV1 {
                 after_cursor: None,
                 history_range: None,
                 include_current: false,
                 forecast_range: None,
                 outdoor_air_quality_range: None,
             },
-            BuildingHvacWeatherProtocolV1::BuildingHvacWeatherRecoveryV1 {
+            BuildingHvacWeatherProtocol::BuildingHvacWeatherRecoveryV1 {
                 maximum_wait_interval_seconds:
                     BUILDING_HVAC_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: BuildingHvacWeatherRecoveryV1::ErrorV1 {
@@ -1312,7 +1349,7 @@ mod tests {
                     retry_after_seconds: None,
                 },
             },
-            BuildingHvacWeatherProtocolV1::BuildingHvacWeatherIncrementV1 {
+            BuildingHvacWeatherProtocol::BuildingHvacWeatherIncrementV1 {
                 report: incremental_report(),
             },
         ];
@@ -1321,18 +1358,18 @@ mod tests {
         }
 
         let persistent_values = [
-            BuildingHvacWeatherPersistentDataV1::LocationV1 {
+            BuildingHvacWeatherPersistentData::LocationV1 {
                 location: BuildingHvacWeatherLocationV1 {
                     longitude_degrees: -74.006,
                     latitude_degrees: 40.7128,
                 },
             },
-            BuildingHvacWeatherPersistentDataV1::HistoryV1 { history: history() },
-            BuildingHvacWeatherPersistentDataV1::CurrentV1 { current: current() },
-            BuildingHvacWeatherPersistentDataV1::ForecastV1 {
+            BuildingHvacWeatherPersistentData::HistoryV1 { history: history() },
+            BuildingHvacWeatherPersistentData::CurrentV1 { current: current() },
+            BuildingHvacWeatherPersistentData::ForecastV1 {
                 forecast: forecast(),
             },
-            BuildingHvacWeatherPersistentDataV1::OutdoorAirQualityV1 {
+            BuildingHvacWeatherPersistentData::OutdoorAirQualityV1 {
                 outdoor_air_quality: air_quality(),
             },
         ];
@@ -1447,14 +1484,14 @@ mod tests {
 
     #[test]
     fn truncated_persistent_data_is_rejected() {
-        let encoded = BuildingHvacWeatherPersistentDataV1::ForecastV1 {
+        let encoded = BuildingHvacWeatherPersistentData::ForecastV1 {
             forecast: forecast(),
         }
         .to_avro();
         let mut offset = 0;
 
         assert!(
-            BuildingHvacWeatherPersistentDataV1::avro_decode(
+            BuildingHvacWeatherPersistentData::avro_decode(
                 &encoded[..encoded.len() - 1],
                 &mut offset
             )

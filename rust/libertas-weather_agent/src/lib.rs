@@ -5,6 +5,7 @@
 //! Local Weather uses the Hub's location to request the right forecast. It
 //! remembers the latest good weather during short internet or location-service
 //! interruptions and updates automatically when the Hub moves.
+//! #[libertas_string_resources(APP_STRINGS)]
 #![forbid(unsafe_code)]
 
 extern crate alloc;
@@ -26,7 +27,7 @@ use std::{
 use libertas::{
     IndexDirection, IndexedData, LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasEndpoint,
     LibertasEndpointHandlerResult, LibertasEndpointMessage, LibertasEndpointStandardStatus,
-    LibertasEndpointStatus, LogLevel, NotificationArgument, OP_ENDPOINT_DATA,
+    LibertasEndpointStatus, LibertasMessageArgument, LogLevel, OP_ENDPOINT_DATA,
     OP_ENDPOINT_PEER_ALIVE, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ,
     OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_data_open_indexed,
     libertas_data_read_indexed_range, libertas_data_read_single,
@@ -42,7 +43,7 @@ use libertas::{
 use libertas_hub::HubProtocol;
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
-    libertas_permissions, libertas_singleton, libertas_string_resources,
+    libertas_permissions, libertas_singleton,
 };
 use libertas_weather::{
     SPRINKLER_CURRENT_FRESHNESS_SECONDS, SPRINKLER_CURRENT_REFRESH_INTERVAL_SECONDS,
@@ -53,11 +54,11 @@ use libertas_weather::{
     SPRINKLER_SUBSCRIPTION_REPLAY_WINDOW_SECONDS, SprinklerCurrentWeatherV1,
     SprinklerWeatherChangeV1, SprinklerWeatherCursorV1, SprinklerWeatherForecastPeriodV1,
     SprinklerWeatherForecastV1, SprinklerWeatherHistoryMetadataV1, SprinklerWeatherHistoryPeriodV2,
-    SprinklerWeatherHistoryV2, SprinklerWeatherIncrementalReportV1, SprinklerWeatherProtocolV1,
+    SprinklerWeatherHistoryV2, SprinklerWeatherIncrementalReportV1, SprinklerWeatherProtocol,
     SprinklerWeatherRecoveryErrorV1, SprinklerWeatherRecoveryV1, SprinklerWeatherResetReasonV1,
     SprinklerWeatherSectionV1, SprinklerWeatherSnapshotV2, SprinklerWeatherTimeRangeV1,
 };
-pub use libertas_weather::{SprinklerWeatherLocationV1, SprinklerWeatherPersistentDataV1};
+pub use libertas_weather::{SprinklerWeatherLocationV1, SprinklerWeatherPersistentData};
 use reqwest::{blocking::Client, redirect::Policy};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
@@ -83,23 +84,23 @@ const LOCATION_EQUALITY_TOLERANCE_DEGREES: f64 = 0.000_001;
 pub const APP_STRINGS: [(&str, &str); 6] = [
     (
         "SPRINKLER_WEATHER_HISTORY_METADATA_V1",
-        "Saved sprinkler weather update time for %1$s.",
+        "Saved sprinkler weather update time for {0}.",
     ),
     (
         "SPRINKLER_WEATHER_HISTORY_PERIODS_V1",
-        "Saved recent sprinkler weather for %1$s.",
+        "Saved recent sprinkler weather for {0}.",
     ),
     (
         "SPRINKLER_CURRENT_WEATHER_V1",
-        "Saved current sprinkler weather for %1$s.",
+        "Saved current sprinkler weather for {0}.",
     ),
     (
         "SPRINKLER_WEATHER_FORECAST_V1",
-        "Saved sprinkler weather forecast for %1$s.",
+        "Saved sprinkler weather forecast for {0}.",
     ),
     (
         "SPRINKLER_WEATHER_LOCATION_V1",
-        "Saved location used for sprinkler weather at %1$s.",
+        "Saved location used for sprinkler weather at {0}.",
     ),
     (
         "libertas.permission.ACCESS_FINE_LOCATION",
@@ -118,7 +119,7 @@ const LOCATION_RESOURCE: &str = APP_STRINGS[4].0;
 pub struct SprinklerWeatherEndpointServerV1 {
     /// Weather service
     /// Choose where sprinkler apps can get weather updates.
-    #[libertas_endpoint_schema(SprinklerWeatherProtocolV1)]
+    #[libertas_endpoint_schema(SprinklerWeatherProtocol)]
     #[libertas_endpoint_server]
     #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
     #[libertas_ui_header]
@@ -270,12 +271,12 @@ struct WeatherServerState {
 }
 
 struct PreparedResponse {
-    message: SprinklerWeatherProtocolV1,
+    message: SprinklerWeatherProtocol,
     accepted: bool,
 }
 
 struct ChangePublication {
-    report: Option<SprinklerWeatherProtocolV1>,
+    report: Option<SprinklerWeatherProtocol>,
 }
 
 fn unix_time_seconds() -> Result<u64, String> {
@@ -707,10 +708,10 @@ impl WeatherServerState {
 
     fn prepare_response(
         &mut self,
-        request: SprinklerWeatherProtocolV1,
+        request: SprinklerWeatherProtocol,
         now_ticks: u64,
     ) -> Option<PreparedResponse> {
-        let SprinklerWeatherProtocolV1::GetWeatherV1 {
+        let SprinklerWeatherProtocol::GetWeatherV1 {
             after_cursor,
             history_range,
             include_current,
@@ -729,7 +730,7 @@ impl WeatherServerState {
         let accepted = !matches!(recovery, SprinklerWeatherRecoveryV1::ErrorV1 { .. });
 
         Some(PreparedResponse {
-            message: SprinklerWeatherProtocolV1::WeatherRecoveryV1 {
+            message: SprinklerWeatherProtocol::WeatherRecoveryV1 {
                 maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery,
             },
@@ -1005,7 +1006,7 @@ impl WeatherServerState {
         self.prune_journal(now_ticks);
 
         ChangePublication {
-            report: Some(SprinklerWeatherProtocolV1::WeatherIncrementV1 { report }),
+            report: Some(SprinklerWeatherProtocol::WeatherIncrementV1 { report }),
         }
     }
 
@@ -1071,14 +1072,14 @@ fn empty_report(cursor: SprinklerWeatherCursorV1) -> SprinklerWeatherIncremental
     }
 }
 
-fn persistent_key(endpoint: LibertasEndpoint) -> [NotificationArgument<'static>; 1] {
-    [NotificationArgument::Object(endpoint)]
+fn persistent_key(endpoint: LibertasEndpoint) -> [LibertasMessageArgument<'static>; 1] {
+    [LibertasMessageArgument::Object(endpoint)]
 }
 
 fn load_location(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherLocationV1> {
     let key = persistent_key(endpoint);
     match libertas_data_read_single(LOCATION_RESOURCE, &key) {
-        Some(SprinklerWeatherPersistentDataV1::LocationV1 { location })
+        Some(SprinklerWeatherPersistentData::LocationV1 { location })
             if valid_weather_location(location) =>
         {
             Some(location)
@@ -1126,10 +1127,10 @@ fn valid_history_period(period: &SprinklerWeatherHistoryPeriodV2) -> bool {
 }
 
 fn indexed_history_record_is_current(
-    record: &IndexedData<SprinklerWeatherPersistentDataV1>,
+    record: &IndexedData<SprinklerWeatherPersistentData>,
     metadata: SprinklerWeatherHistoryMetadataV1,
 ) -> bool {
-    let SprinklerWeatherPersistentDataV1::HistoryPeriodV2 { period } = &record.data else {
+    let SprinklerWeatherPersistentData::HistoryPeriodV2 { period } = &record.data else {
         return false;
     };
     let Some(ends_at) = period
@@ -1156,7 +1157,7 @@ struct IndexedHistoryReconstruction {
 
 fn reconstruct_indexed_history(
     metadata: SprinklerWeatherHistoryMetadataV1,
-    records: &[IndexedData<SprinklerWeatherPersistentDataV1>],
+    records: &[IndexedData<SprinklerWeatherPersistentData>],
 ) -> IndexedHistoryReconstruction {
     let mut accepted = Vec::new();
     let mut records_to_remove = Vec::new();
@@ -1164,7 +1165,7 @@ fn reconstruct_indexed_history(
     for record in records {
         if matches!(
             record.data,
-            SprinklerWeatherPersistentDataV1::HistoryPeriodV1 { .. }
+            SprinklerWeatherPersistentData::HistoryPeriodV1 { .. }
         ) {
             // V1 has no temperature, humidity, wind, or gust fields. Never
             // reinterpret it as a V2 sample or manufacture zero-valued
@@ -1177,7 +1178,7 @@ fn reconstruct_indexed_history(
             records_to_remove.push(record.index);
             continue;
         }
-        let SprinklerWeatherPersistentDataV1::HistoryPeriodV2 { period } = &record.data else {
+        let SprinklerWeatherPersistentData::HistoryPeriodV2 { period } = &record.data else {
             unreachable!();
         };
         accepted.push((record.index, *period));
@@ -1218,7 +1219,7 @@ fn clear_indexed_history(endpoint: LibertasEndpoint) {
 fn load_indexed_history(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherHistoryV2> {
     let key = persistent_key(endpoint);
     let metadata = match libertas_data_read_single(HISTORY_METADATA_RESOURCE, &key) {
-        Some(SprinklerWeatherPersistentDataV1::HistoryMetadataV1 { metadata })
+        Some(SprinklerWeatherPersistentData::HistoryMetadataV1 { metadata })
             if valid_history_metadata(metadata) =>
         {
             metadata
@@ -1236,7 +1237,7 @@ fn load_indexed_history(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherHi
         return None;
     }
     let mut records = Vec::new();
-    libertas_data_read_indexed_range::<SprinklerWeatherPersistentDataV1>(
+    libertas_data_read_indexed_range::<SprinklerWeatherPersistentData>(
         database.handle,
         database.max_index,
         IndexDirection::Below,
@@ -1264,15 +1265,13 @@ fn load_snapshot(endpoint: LibertasEndpoint) -> SprinklerWeatherSnapshotV2 {
     let key = persistent_key(endpoint);
     let history = load_indexed_history(endpoint);
     let current = match libertas_data_read_single(CURRENT_RESOURCE, &key) {
-        Some(SprinklerWeatherPersistentDataV1::CurrentV1 { current })
-            if valid_current(&current) =>
-        {
+        Some(SprinklerWeatherPersistentData::CurrentV1 { current }) if valid_current(&current) => {
             Some(current)
         }
         _ => None,
     };
     let forecast = match libertas_data_read_single(FORECAST_RESOURCE, &key) {
-        Some(SprinklerWeatherPersistentDataV1::ForecastV1 { forecast })
+        Some(SprinklerWeatherPersistentData::ForecastV1 { forecast })
             if valid_forecast(&forecast) =>
         {
             Some(forecast)
@@ -1356,7 +1355,7 @@ fn persist_indexed_history(
         libertas_data_write_indexed(
             database.handle,
             index,
-            &SprinklerWeatherPersistentDataV1::HistoryPeriodV2 { period },
+            &SprinklerWeatherPersistentData::HistoryPeriodV2 { period },
         );
     }
     for index in delta.removals {
@@ -1365,7 +1364,7 @@ fn persist_indexed_history(
     libertas_data_write_single(
         HISTORY_METADATA_RESOURCE,
         &key,
-        &SprinklerWeatherPersistentDataV1::HistoryMetadataV1 {
+        &SprinklerWeatherPersistentData::HistoryMetadataV1 {
             metadata: history_metadata(history),
         },
     );
@@ -1391,7 +1390,7 @@ fn publish_persisted_history_change(
 fn publish_persisted_change(
     shared: &Rc<RefCell<WeatherServerState>>,
     resource: &'static str,
-    persistent: SprinklerWeatherPersistentDataV1,
+    persistent: SprinklerWeatherPersistentData,
     change: SprinklerWeatherChangeV1,
     now_utc: LibertasDateTime,
 ) {
@@ -1419,7 +1418,7 @@ fn handle_provider_message(shared: &Rc<RefCell<WeatherServerState>>, message: Pr
             publish_persisted_change(
                 shared,
                 CURRENT_RESOURCE,
-                SprinklerWeatherPersistentDataV1::CurrentV1 { current },
+                SprinklerWeatherPersistentData::CurrentV1 { current },
                 SprinklerWeatherChangeV1::CurrentReplaceV1 { current },
                 now_utc,
             );
@@ -1442,7 +1441,7 @@ fn handle_provider_message(shared: &Rc<RefCell<WeatherServerState>>, message: Pr
                     publish_persisted_change(
                         shared,
                         FORECAST_RESOURCE,
-                        SprinklerWeatherPersistentDataV1::ForecastV1 {
+                        SprinklerWeatherPersistentData::ForecastV1 {
                             forecast: forecast.clone(),
                         },
                         SprinklerWeatherChangeV1::ForecastReplaceV1 { forecast },
@@ -1859,7 +1858,7 @@ fn accept_hub_location(
     libertas_data_write_single(
         LOCATION_RESOURCE,
         &key,
-        &SprinklerWeatherPersistentDataV1::LocationV1 { location },
+        &SprinklerWeatherPersistentData::LocationV1 { location },
     );
     state.borrow_mut().location = Some(location);
 
@@ -2045,7 +2044,7 @@ fn update_peer_alive_timer(shared: &Rc<RefCell<WeatherServerState>>) {
 fn handle_endpoint_event(
     endpoint: LibertasEndpoint,
     opcode: u8,
-    request: Option<SprinklerWeatherProtocolV1>,
+    request: Option<SprinklerWeatherProtocol>,
     context: &mut Box<dyn core::any::Any>,
     transaction_id: u32,
     peer: u32,
@@ -2087,10 +2086,9 @@ fn handle_endpoint_event(
 /// Gets local conditions and forecasts using the Hub's location. It remembers
 /// the latest good weather during short outages and refreshes automatically
 /// when the location changes.
-#[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentDataV1")]
+#[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentData")]
 #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
 #[libertas_singleton]
-#[libertas_string_resources(APP_STRINGS)]
 pub fn libertas_weather_server(sprinkler_weather: SprinklerWeatherEndpointServerV1) {
     let endpoint = sprinkler_weather.endpoint;
     let cached_location = load_location(endpoint);
@@ -2148,7 +2146,7 @@ pub fn libertas_weather_server(sprinkler_weather: SprinklerWeatherEndpointServer
     );
     shared.borrow_mut().peer_alive_timer = peer_alive_timer;
 
-    libertas_register_endpoint_listener::<SprinklerWeatherProtocolV1, _>(
+    libertas_register_endpoint_listener::<SprinklerWeatherProtocol, _>(
         endpoint,
         handle_endpoint_event,
         Box::new(Rc::clone(&shared)),
@@ -2573,7 +2571,7 @@ mod tests {
         assert_eq!(state.snapshot.history, Some(replacement.clone()));
         assert_eq!(state.cursor, Some(cursor(NEW_EPOCH, 1)));
         assert_eq!(state.journal.len(), 1);
-        let Some(SprinklerWeatherProtocolV1::WeatherIncrementV1 { report }) = &publication.report
+        let Some(SprinklerWeatherProtocol::WeatherIncrementV1 { report }) = &publication.report
         else {
             panic!("expected incremental broadcast report");
         };
@@ -2624,7 +2622,7 @@ mod tests {
         assert!(state.snapshot.current.is_none());
         assert!(state.snapshot.forecast.is_some());
         assert_eq!(state.cursor, Some(cursor(NEW_EPOCH, 1)));
-        let Some(SprinklerWeatherProtocolV1::WeatherIncrementV1 { report }) = &publication.report
+        let Some(SprinklerWeatherProtocol::WeatherIncrementV1 { report }) = &publication.report
         else {
             panic!("expected incremental clear broadcast");
         };
@@ -2904,19 +2902,19 @@ mod tests {
         let records = vec![
             IndexedData {
                 index: history_period_index(&second).unwrap(),
-                data: SprinklerWeatherPersistentDataV1::HistoryPeriodV2 { period: second },
+                data: SprinklerWeatherPersistentData::HistoryPeriodV2 { period: second },
             },
             IndexedData {
                 index: history_period_index(&mismatched).unwrap() + 1,
-                data: SprinklerWeatherPersistentDataV1::HistoryPeriodV2 { period: mismatched },
+                data: SprinklerWeatherPersistentData::HistoryPeriodV2 { period: mismatched },
             },
             IndexedData {
                 index: wrong_variant_index,
-                data: SprinklerWeatherPersistentDataV1::CurrentV1 { current: current() },
+                data: SprinklerWeatherPersistentData::CurrentV1 { current: current() },
             },
             IndexedData {
                 index: history_period_index(&first).unwrap(),
-                data: SprinklerWeatherPersistentDataV1::HistoryPeriodV2 { period: first },
+                data: SprinklerWeatherPersistentData::HistoryPeriodV2 { period: first },
             },
         ];
 
@@ -2942,13 +2940,13 @@ mod tests {
         let records = vec![
             IndexedData {
                 index: legacy_index,
-                data: SprinklerWeatherPersistentDataV1::HistoryPeriodV1 {
+                data: SprinklerWeatherPersistentData::HistoryPeriodV1 {
                     period: legacy_period,
                 },
             },
             IndexedData {
                 index: history_period_index(&v2_period).unwrap(),
-                data: SprinklerWeatherPersistentDataV1::HistoryPeriodV2 { period: v2_period },
+                data: SprinklerWeatherPersistentData::HistoryPeriodV2 { period: v2_period },
             },
         ];
 
@@ -3046,7 +3044,7 @@ mod tests {
         assert!(
             state
                 .prepare_response(
-                    SprinklerWeatherProtocolV1::WeatherIncrementV1 {
+                    SprinklerWeatherProtocol::WeatherIncrementV1 {
                         report: empty_report(cursor(NEW_EPOCH, 0)),
                     },
                     0,
@@ -3056,7 +3054,7 @@ mod tests {
 
         let prepared = state
             .prepare_response(
-                SprinklerWeatherProtocolV1::GetWeatherV1 {
+                SprinklerWeatherProtocol::GetWeatherV1 {
                     after_cursor: None,
                     history_range: None,
                     include_current: true,
@@ -3068,7 +3066,7 @@ mod tests {
         assert!(prepared.accepted);
         assert!(matches!(
             prepared.message,
-            SprinklerWeatherProtocolV1::WeatherRecoveryV1 {
+            SprinklerWeatherProtocol::WeatherRecoveryV1 {
                 maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 ..
             }
@@ -3080,7 +3078,7 @@ mod tests {
         let mut state = WeatherServerState::new(ENDPOINT, None, snapshot());
         let prepared = state
             .prepare_response(
-                SprinklerWeatherProtocolV1::GetWeatherV1 {
+                SprinklerWeatherProtocol::GetWeatherV1 {
                     after_cursor: None,
                     history_range: None,
                     include_current: true,
@@ -3093,7 +3091,7 @@ mod tests {
         assert!(!prepared.accepted);
         assert!(matches!(
             prepared.message,
-            SprinklerWeatherProtocolV1::WeatherRecoveryV1 {
+            SprinklerWeatherProtocol::WeatherRecoveryV1 {
                 recovery: SprinklerWeatherRecoveryV1::ErrorV1 {
                     error: SprinklerWeatherRecoveryErrorV1::TemporarilyUnavailable,
                     retry_after_seconds: Some(RETRY_WITHOUT_UTC_SECONDS),

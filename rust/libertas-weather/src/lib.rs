@@ -43,10 +43,10 @@ pub use building_hvac::{
     BuildingHvacWeatherCursorV1, BuildingHvacWeatherForecastPeriodV1,
     BuildingHvacWeatherForecastV1, BuildingHvacWeatherHistoryPeriodV1,
     BuildingHvacWeatherHistoryV1, BuildingHvacWeatherIncrementalReportV1,
-    BuildingHvacWeatherLocationV1, BuildingHvacWeatherPersistentDataV1,
-    BuildingHvacWeatherProtocolV1, BuildingHvacWeatherRecoveryErrorV1,
-    BuildingHvacWeatherRecoveryV1, BuildingHvacWeatherResetReasonV1, BuildingHvacWeatherSectionV1,
-    BuildingHvacWeatherSnapshotV1, BuildingHvacWeatherTimeRangeV1,
+    BuildingHvacWeatherLocationV1, BuildingHvacWeatherPersistentData, BuildingHvacWeatherProtocol,
+    BuildingHvacWeatherRecoveryErrorV1, BuildingHvacWeatherRecoveryV1,
+    BuildingHvacWeatherResetReasonV1, BuildingHvacWeatherSectionV1, BuildingHvacWeatherSnapshotV1,
+    BuildingHvacWeatherTimeRangeV1,
 };
 
 /// Current weather refresh interval
@@ -125,13 +125,17 @@ pub struct SprinklerWeatherHistoryPeriodV1 {
     /// Total precipitation, including the water equivalent of frozen
     /// precipitation, accumulated during this period in millimeters. This is a
     /// required water input to the irrigation balance.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("millimeter")]
     pub precipitation_millimeters: f32,
     /// Reference evapotranspiration
     /// FAO-56 reference evapotranspiration accumulated during this period in
     /// millimeters. This is the weather-driven water loss before applying a
     /// plant-specific crop coefficient.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("millimeter")]
     pub reference_evapotranspiration_millimeters: f32,
 }
 
@@ -153,31 +157,42 @@ pub struct SprinklerWeatherHistoryPeriodV2 {
     /// Precipitation
     /// Total precipitation, including the water equivalent of frozen
     /// precipitation, accumulated during this period in millimeters.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("millimeter")]
     pub precipitation_millimeters: f32,
     /// Reference evapotranspiration
     /// FAO-56 reference evapotranspiration accumulated during this period in
     /// millimeters.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("millimeter")]
     pub reference_evapotranspiration_millimeters: f32,
     /// Temperature
     /// Air temperature at two meters above ground in degrees Celsius during
     /// this historical period.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     pub temperature_celsius: f32,
     /// Relative humidity
     /// Relative humidity at two meters above ground, expressed as an integer
     /// percentage from 0 through 100 during this historical period.
     #[libertas_number(min = 0, max = 100)]
+    #[libertas_physical_unit("percent")]
     pub relative_humidity_percent: u8,
     /// Wind speed
     /// Sustained wind speed at 10 meters above ground in meters per second
     /// during this historical period.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("meter-per-second")]
     pub wind_speed_meters_per_second: f32,
     /// Wind gust
     /// Peak wind gust speed at 10 meters above ground in meters per second
     /// during this historical period.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("meter-per-second")]
     pub wind_gust_meters_per_second: f32,
 }
 
@@ -305,34 +320,45 @@ pub struct SprinklerCurrentWeatherV1 {
     /// Temperature
     /// Air temperature at two meters above ground in degrees Celsius. The
     /// sprinkler uses it to inhibit watering near or below freezing.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     pub temperature_celsius: f32,
     /// Relative humidity
     /// Relative humidity at two meters above ground, expressed as a percentage
     /// from 0 through 100. The sprinkler uses it to avoid unnecessarily long
     /// foliage-wetness periods when overhead watering is required.
     #[libertas_number(min = 0, max = 100)]
+    #[libertas_physical_unit("percent")]
     pub relative_humidity_percent: u8,
     /// Precipitation
     /// Total rain, showers, and water-equivalent frozen precipitation
     /// accumulated during `interval_seconds`, in millimeters. The sprinkler uses
     /// a nonzero value to inhibit watering while precipitation is occurring.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("millimeter")]
     pub precipitation_millimeters: f32,
     /// Reference evapotranspiration
     /// FAO-56 reference evapotranspiration accumulated during
     /// `interval_seconds`, in millimeters. It can extend the water balance until
     /// the next completed historical period is available.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("millimeter")]
     pub reference_evapotranspiration_millimeters: f32,
     /// Wind speed
     /// Sustained wind speed at 10 meters above ground in meters per second. The
     /// consuming sprinkler applies its configured wind threshold.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("meter-per-second")]
     pub wind_speed_meters_per_second: f32,
     /// Wind gust
     /// Peak wind gust speed at 10 meters above ground in meters per second. The
     /// consuming sprinkler uses it with sustained wind to avoid spray drift.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("meter-per-second")]
     pub wind_gust_meters_per_second: f32,
 }
 
@@ -364,39 +390,51 @@ pub struct SprinklerWeatherForecastPeriodV1 {
     /// Predicted air temperature at two meters above ground in degrees Celsius.
     /// The sprinkler uses it to avoid watering during forecast freezing
     /// conditions.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     pub temperature_celsius: f32,
     /// Relative humidity
     /// Predicted relative humidity at two meters above ground, expressed as an
     /// integer percentage from 0 through 100. Together with solar position and
     /// sprinkler-head type, this helps avoid prolonged foliage wetness.
     #[libertas_number(min = 0, max = 100)]
+    #[libertas_physical_unit("percent")]
     pub relative_humidity_percent: u8,
     /// Precipitation probability
     /// Probability of measurable precipitation during this period, expressed as
     /// an integer percentage from 0 through 100. This expresses forecast
     /// uncertainty separately from expected precipitation amount.
     #[libertas_number(min = 0, max = 100)]
+    #[libertas_physical_unit("percent")]
     pub precipitation_probability_percent: u8,
     /// Expected precipitation
     /// Predicted total rain, showers, and water-equivalent frozen precipitation
     /// accumulated during this period in millimeters.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("millimeter")]
     pub expected_precipitation_millimeters: f32,
     /// Reference evapotranspiration
     /// Predicted FAO-56 reference evapotranspiration accumulated during this
     /// period in millimeters.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("millimeter")]
     pub reference_evapotranspiration_millimeters: f32,
     /// Wind speed
     /// Predicted sustained wind speed at 10 meters above ground in meters per
     /// second.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("meter-per-second")]
     pub wind_speed_meters_per_second: f32,
     /// Wind gust
     /// Predicted peak wind gust speed at 10 meters above ground in meters per
     /// second. The sprinkler uses this with sustained wind to avoid scheduling
     /// watering during likely spray drift.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("meter-per-second")]
     pub wind_gust_meters_per_second: f32,
 }
 
@@ -885,7 +923,7 @@ pub enum SprinklerWeatherRecoveryV1 {
 /// The Libertas endpoint status contract rejects malformed Avro and values used
 /// in the wrong message role; those transport errors are not recovery variants.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub enum SprinklerWeatherProtocolV1 {
+pub enum SprinklerWeatherProtocol {
     /// Get sprinkler weather
     /// Performs a one-shot incremental read or starts or resumes an incremental
     /// subscription. The Libertas endpoint operation selects the behavior; it is
@@ -958,11 +996,15 @@ pub struct SprinklerWeatherLocationV1 {
     /// Longitude
     /// WGS84 longitude in decimal degrees. Locations west of Greenwich use
     /// negative values.
+    #[libertas_format("0.#####")]
     #[libertas_number(min = -180, max = 180)]
+    #[libertas_physical_unit("degree")]
     pub longitude_degrees: f64,
     /// Latitude
     /// WGS84 latitude in decimal degrees.
+    #[libertas_format("0.#####")]
     #[libertas_number(min = -90, max = 90)]
+    #[libertas_physical_unit("degree")]
     pub latitude_degrees: f64,
 }
 
@@ -990,7 +1032,7 @@ pub struct SprinklerWeatherHistoryMetadataV1 {
 /// Subscription cursors and replay journals are intentionally absent: resetting
 /// them must not erase these records.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub enum SprinklerWeatherPersistentDataV1 {
+pub enum SprinklerWeatherPersistentData {
     /// Sprinkler site location
     /// Stores the last valid location reported by the Libertas Hub. The cached
     /// value lets provider refreshes continue while the Hub is temporarily
@@ -1176,19 +1218,19 @@ mod tests {
         }
     }
 
-    fn assert_protocol_round_trip(value: SprinklerWeatherProtocolV1) {
+    fn assert_protocol_round_trip(value: SprinklerWeatherProtocol) {
         let encoded = value.to_avro();
         let mut offset = 0;
-        let decoded = SprinklerWeatherProtocolV1::avro_decode(&encoded, &mut offset).unwrap();
+        let decoded = SprinklerWeatherProtocol::avro_decode(&encoded, &mut offset).unwrap();
 
         assert_eq!(decoded, value);
         assert_eq!(offset, encoded.len());
     }
 
-    fn assert_persistent_round_trip(value: SprinklerWeatherPersistentDataV1) {
+    fn assert_persistent_round_trip(value: SprinklerWeatherPersistentData) {
         let encoded = value.to_avro();
         let mut offset = 0;
-        let decoded = SprinklerWeatherPersistentDataV1::avro_decode(&encoded, &mut offset).unwrap();
+        let decoded = SprinklerWeatherPersistentData::avro_decode(&encoded, &mut offset).unwrap();
 
         assert_eq!(decoded, value);
         assert_eq!(offset, encoded.len());
@@ -1216,12 +1258,12 @@ mod tests {
             0x04, 0x02, 0xa0, 0x38, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00, 0x80, 0x3e,
         ];
         assert_eq!(
-            SprinklerWeatherPersistentDataV1::HistoryPeriodV1 { period }.to_avro(),
+            SprinklerWeatherPersistentData::HistoryPeriodV1 { period }.to_avro(),
             legacy_persistent_bytes
         );
         assert_eq!(
-            SprinklerWeatherPersistentDataV1::from_avro(&legacy_persistent_bytes),
-            Ok(SprinklerWeatherPersistentDataV1::HistoryPeriodV1 { period })
+            SprinklerWeatherPersistentData::from_avro(&legacy_persistent_bytes),
+            Ok(SprinklerWeatherPersistentData::HistoryPeriodV1 { period })
         );
     }
 
@@ -1249,21 +1291,21 @@ mod tests {
     }
 
     #[test]
-    fn weather_protocol_v1_round_trips_through_avro() {
+    fn weather_protocol_round_trips_through_avro() {
         let values = [
-            SprinklerWeatherProtocolV1::GetWeatherV1 {
+            SprinklerWeatherProtocol::GetWeatherV1 {
                 after_cursor: Some(cursor(CURSOR_TIMESTAMP, 10)),
                 history_range: Some(history_range()),
                 include_current: true,
                 forecast_range: Some(forecast_range()),
             },
-            SprinklerWeatherProtocolV1::WeatherRecoveryV1 {
+            SprinklerWeatherProtocol::WeatherRecoveryV1 {
                 maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: SprinklerWeatherRecoveryV1::ReplayedV1 {
                     report: incremental_report(),
                 },
             },
-            SprinklerWeatherProtocolV1::WeatherRecoveryV1 {
+            SprinklerWeatherProtocol::WeatherRecoveryV1 {
                 maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: SprinklerWeatherRecoveryV1::ResetV1 {
                     reason: SprinklerWeatherResetReasonV1::CursorExpired,
@@ -1271,7 +1313,7 @@ mod tests {
                     snapshot: snapshot(),
                 },
             },
-            SprinklerWeatherProtocolV1::WeatherRecoveryV1 {
+            SprinklerWeatherProtocol::WeatherRecoveryV1 {
                 maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: SprinklerWeatherRecoveryV1::ResetV1 {
                     reason: SprinklerWeatherResetReasonV1::InitialSubscription,
@@ -1283,7 +1325,7 @@ mod tests {
                     },
                 },
             },
-            SprinklerWeatherProtocolV1::WeatherRecoveryV1 {
+            SprinklerWeatherProtocol::WeatherRecoveryV1 {
                 maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: SprinklerWeatherRecoveryV1::ResetAtSiteV1 {
                     reason: SprinklerWeatherResetReasonV1::InitialSubscription,
@@ -1292,7 +1334,7 @@ mod tests {
                     snapshot: snapshot(),
                 },
             },
-            SprinklerWeatherProtocolV1::WeatherRecoveryV1 {
+            SprinklerWeatherProtocol::WeatherRecoveryV1 {
                 maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: SprinklerWeatherRecoveryV1::ResetAtSiteV2 {
                     reason: SprinklerWeatherResetReasonV1::InitialSubscription,
@@ -1301,14 +1343,14 @@ mod tests {
                     snapshot: snapshot_v2(),
                 },
             },
-            SprinklerWeatherProtocolV1::WeatherRecoveryV1 {
+            SprinklerWeatherProtocol::WeatherRecoveryV1 {
                 maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: SprinklerWeatherRecoveryV1::ErrorV1 {
                     error: SprinklerWeatherRecoveryErrorV1::TemporarilyUnavailable,
                     retry_after_seconds: Some(60),
                 },
             },
-            SprinklerWeatherProtocolV1::WeatherIncrementV1 {
+            SprinklerWeatherProtocol::WeatherIncrementV1 {
                 report: incremental_report(),
             },
         ];
@@ -1321,23 +1363,23 @@ mod tests {
     #[test]
     fn persistent_sections_round_trip_independently() {
         let values = [
-            SprinklerWeatherPersistentDataV1::HistoryMetadataV1 {
+            SprinklerWeatherPersistentData::HistoryMetadataV1 {
                 metadata: SprinklerWeatherHistoryMetadataV1 {
                     retrieved_at: history().retrieved_at,
                     valid_until: history().valid_until,
                 },
             },
-            SprinklerWeatherPersistentDataV1::HistoryPeriodV1 {
+            SprinklerWeatherPersistentData::HistoryPeriodV1 {
                 period: history().periods[0],
             },
-            SprinklerWeatherPersistentDataV1::CurrentV1 { current: current() },
-            SprinklerWeatherPersistentDataV1::ForecastV1 {
+            SprinklerWeatherPersistentData::CurrentV1 { current: current() },
+            SprinklerWeatherPersistentData::ForecastV1 {
                 forecast: forecast(),
             },
-            SprinklerWeatherPersistentDataV1::LocationV1 {
+            SprinklerWeatherPersistentData::LocationV1 {
                 location: location(),
             },
-            SprinklerWeatherPersistentDataV1::HistoryPeriodV2 {
+            SprinklerWeatherPersistentData::HistoryPeriodV2 {
                 period: history_v2().periods[0],
             },
         ];
@@ -1350,7 +1392,7 @@ mod tests {
     #[test]
     fn union_discriminants_are_stable() {
         assert_eq!(
-            SprinklerWeatherProtocolV1::GetWeatherV1 {
+            SprinklerWeatherProtocol::GetWeatherV1 {
                 after_cursor: None,
                 history_range: None,
                 include_current: false,
@@ -1361,7 +1403,7 @@ mod tests {
             Some(&0)
         );
         assert_eq!(
-            SprinklerWeatherProtocolV1::WeatherRecoveryV1 {
+            SprinklerWeatherProtocol::WeatherRecoveryV1 {
                 maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: SprinklerWeatherRecoveryV1::ErrorV1 {
                     error: SprinklerWeatherRecoveryErrorV1::InvalidRange,
@@ -1373,7 +1415,7 @@ mod tests {
             Some(&2)
         );
         assert_eq!(
-            SprinklerWeatherProtocolV1::WeatherIncrementV1 {
+            SprinklerWeatherProtocol::WeatherIncrementV1 {
                 report: incremental_report(),
             }
             .to_avro()
@@ -1382,7 +1424,7 @@ mod tests {
         );
 
         assert_eq!(
-            SprinklerWeatherPersistentDataV1::LocationV1 {
+            SprinklerWeatherPersistentData::LocationV1 {
                 location: location()
             }
             .to_avro()
@@ -1390,7 +1432,7 @@ mod tests {
             Some(&0)
         );
         assert_eq!(
-            SprinklerWeatherPersistentDataV1::HistoryMetadataV1 {
+            SprinklerWeatherPersistentData::HistoryMetadataV1 {
                 metadata: SprinklerWeatherHistoryMetadataV1 {
                     retrieved_at: history().retrieved_at,
                     valid_until: history().valid_until,
@@ -1401,7 +1443,7 @@ mod tests {
             Some(&2)
         );
         assert_eq!(
-            SprinklerWeatherPersistentDataV1::HistoryPeriodV1 {
+            SprinklerWeatherPersistentData::HistoryPeriodV1 {
                 period: history().periods[0],
             }
             .to_avro()
@@ -1409,13 +1451,13 @@ mod tests {
             Some(&4)
         );
         assert_eq!(
-            SprinklerWeatherPersistentDataV1::CurrentV1 { current: current() }
+            SprinklerWeatherPersistentData::CurrentV1 { current: current() }
                 .to_avro()
                 .first(),
             Some(&6)
         );
         assert_eq!(
-            SprinklerWeatherPersistentDataV1::ForecastV1 {
+            SprinklerWeatherPersistentData::ForecastV1 {
                 forecast: forecast()
             }
             .to_avro()
@@ -1423,7 +1465,7 @@ mod tests {
             Some(&8)
         );
         assert_eq!(
-            SprinklerWeatherPersistentDataV1::HistoryPeriodV2 {
+            SprinklerWeatherPersistentData::HistoryPeriodV2 {
                 period: history_v2().periods[0],
             }
             .to_avro()
@@ -1679,18 +1721,15 @@ mod tests {
 
     #[test]
     fn truncated_persistent_data_is_rejected() {
-        let encoded = SprinklerWeatherPersistentDataV1::ForecastV1 {
+        let encoded = SprinklerWeatherPersistentData::ForecastV1 {
             forecast: forecast(),
         }
         .to_avro();
         let mut offset = 0;
 
         assert!(
-            SprinklerWeatherPersistentDataV1::avro_decode(
-                &encoded[..encoded.len() - 1],
-                &mut offset
-            )
-            .is_err()
+            SprinklerWeatherPersistentData::avro_decode(&encoded[..encoded.len() - 1], &mut offset)
+                .is_err()
         );
     }
 }

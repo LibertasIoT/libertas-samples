@@ -230,7 +230,7 @@ struct RoomRuntime {
     urgent: BuildingHvacUrgentNotificationEngine,
     machine_learning: BuildingHvacRoomMachineLearningV1,
     plan: Option<BuildingHvacRoomPlanV1>,
-    last_report: Option<BuildingHvacRoomProtocolV1>,
+    last_report: Option<BuildingHvacRoomProtocol>,
     last_endpoint_signal_ticks: Option<u64>,
     last_condition_boundary: Option<LibertasDateTime>,
     pending_features: Vec<PendingFeatures>,
@@ -325,7 +325,7 @@ struct ShutdownContext {
 struct RoomPersistence {
     resource: &'static str,
     endpoint: LibertasEndpoint,
-    value: BuildingHvacPersistentDataV1,
+    value: BuildingHvacPersistentData,
 }
 
 struct UrgentSubmission {
@@ -339,11 +339,11 @@ fn absolute_ticks(now_ticks: u64, seconds: u32) -> u64 {
     now_ticks.saturating_add(u64::from(seconds).saturating_mul(MICROSECONDS_PER_SECOND))
 }
 
-fn room_key(endpoint: LibertasEndpoint) -> [NotificationArgument<'static>; 1] {
-    [NotificationArgument::Object(endpoint)]
+fn room_key(endpoint: LibertasEndpoint) -> [LibertasMessageArgument<'static>; 1] {
+    [LibertasMessageArgument::Object(endpoint)]
 }
 
-fn singleton_key() -> &'static [NotificationArgument<'static>] {
+fn singleton_key() -> &'static [LibertasMessageArgument<'static>] {
     &[]
 }
 
@@ -368,10 +368,10 @@ fn restored_sensor_states(
     sensors: &[BuildingHvacIndoorSensorV1],
 ) -> Vec<BuildingHvacIndoorSensorStateV1> {
     let defaults = default_sensor_states(sensors);
-    let Some(BuildingHvacPersistentDataV1::RoomSensorStateV1 { sensors: restored }) =
+    let Some(BuildingHvacPersistentData::RoomSensorStateV1 { sensors: restored }) =
         libertas_data_read_single(ROOM_SENSOR_STATE_RESOURCE, &room_key(endpoint))
     else {
-        let value = BuildingHvacPersistentDataV1::RoomSensorStateV1 {
+        let value = BuildingHvacPersistentData::RoomSensorStateV1 {
             sensors: defaults.clone(),
         };
         libertas_data_write_single(ROOM_SENSOR_STATE_RESOURCE, &room_key(endpoint), &value);
@@ -387,7 +387,7 @@ fn restored_sensor_states(
     if valid {
         restored
     } else {
-        let value = BuildingHvacPersistentDataV1::RoomSensorStateV1 {
+        let value = BuildingHvacPersistentData::RoomSensorStateV1 {
             sensors: defaults.clone(),
         };
         libertas_data_write_single(ROOM_SENSOR_STATE_RESOURCE, &room_key(endpoint), &value);
@@ -396,7 +396,7 @@ fn restored_sensor_states(
 }
 
 fn restore_control(endpoint: LibertasEndpoint) -> (u64, BuildingHvacRoomControlV1) {
-    if let Some(BuildingHvacPersistentDataV1::RoomControlV1 {
+    if let Some(BuildingHvacPersistentData::RoomControlV1 {
         control_revision,
         control,
     }) = libertas_data_read_single(ROOM_CONTROL_RESOURCE, &room_key(endpoint))
@@ -408,7 +408,7 @@ fn restore_control(endpoint: LibertasEndpoint) -> (u64, BuildingHvacRoomControlV
     libertas_data_write_single(
         ROOM_CONTROL_RESOURCE,
         &room_key(endpoint),
-        &BuildingHvacPersistentDataV1::RoomControlV1 {
+        &BuildingHvacPersistentData::RoomControlV1 {
             control_revision: 0,
             control,
         },
@@ -458,7 +458,7 @@ fn restore_room_history(
     Vec<BuildingHvacPersistedRoomConditionPeriodV1>,
     Option<BuildingHvacRoomStatisticsV1>,
 ) {
-    if let Some(BuildingHvacPersistentDataV1::RoomStatisticsV1 {
+    if let Some(BuildingHvacPersistentData::RoomStatisticsV1 {
         statistics,
         recent_conditions,
     }) = libertas_data_read_single(ROOM_STATISTICS_RESOURCE, &room_key(endpoint))
@@ -516,7 +516,7 @@ fn restore_learning(
     own_thermostat: LibertasDevice,
     configured_thermostats: &[LibertasDevice],
 ) -> BuildingHvacRoomLearningStateV1 {
-    if let Some(BuildingHvacPersistentDataV1::RoomLearningV1 { learning }) =
+    if let Some(BuildingHvacPersistentData::RoomLearningV1 { learning }) =
         libertas_data_read_single(ROOM_LEARNING_RESOURCE, &room_key(endpoint))
         && valid_learning(&learning, own_thermostat, configured_thermostats)
     {
@@ -526,7 +526,7 @@ fn restore_learning(
     libertas_data_write_single(
         ROOM_LEARNING_RESOURCE,
         &room_key(endpoint),
-        &BuildingHvacPersistentDataV1::RoomLearningV1 {
+        &BuildingHvacPersistentData::RoomLearningV1 {
             learning: learning.clone(),
         },
     );
@@ -535,7 +535,7 @@ fn restore_learning(
 
 fn restore_urgent(endpoint: LibertasEndpoint) -> BuildingHvacUrgentNotificationEngine {
     let conditions = match libertas_data_read_single(ROOM_URGENT_RESOURCE, &room_key(endpoint)) {
-        Some(BuildingHvacPersistentDataV1::RoomUrgentNotificationStateV1 { conditions }) => {
+        Some(BuildingHvacPersistentData::RoomUrgentNotificationStateV1 { conditions }) => {
             conditions
         }
         _ => Vec::new(),
@@ -565,7 +565,7 @@ fn restore_local_outdoor(
     let configuration = configuration?;
     let temperature =
         match libertas_data_read_single(LOCAL_OUTDOOR_TEMPERATURE_RESOURCE, singleton_key()) {
-            Some(BuildingHvacPersistentDataV1::LocalOutdoorTemperatureV1 { temperature })
+            Some(BuildingHvacPersistentData::LocalOutdoorTemperatureV1 { temperature })
                 if temperature.is_well_formed() =>
             {
                 Some(temperature)
@@ -574,7 +574,7 @@ fn restore_local_outdoor(
         };
     let humidity = configuration.humidity_sensor.and_then(|_| {
         match libertas_data_read_single(LOCAL_OUTDOOR_HUMIDITY_RESOURCE, singleton_key()) {
-            Some(BuildingHvacPersistentDataV1::LocalOutdoorHumidityV1 { humidity })
+            Some(BuildingHvacPersistentData::LocalOutdoorHumidityV1 { humidity })
                 if humidity.is_well_formed() =>
             {
                 Some(humidity)
@@ -585,7 +585,7 @@ fn restore_local_outdoor(
     let air_quality =
         configuration.air_quality_sensor.and_then(|_| {
             match libertas_data_read_single(LOCAL_OUTDOOR_AIR_QUALITY_RESOURCE, singleton_key()) {
-                Some(BuildingHvacPersistentDataV1::LocalOutdoorAirQualityV1 { air_quality })
+                Some(BuildingHvacPersistentData::LocalOutdoorAirQualityV1 { air_quality })
                     if air_quality.is_well_formed() =>
                 {
                     Some(air_quality)
@@ -708,7 +708,7 @@ fn valid_weather_snapshot(snapshot: &BuildingHvacWeatherSnapshotV1) -> bool {
 
 fn restore_weather() -> BuildingHvacWeatherSnapshotV1 {
     let history = match libertas_data_read_single(WEATHER_HISTORY_RESOURCE, singleton_key()) {
-        Some(BuildingHvacPersistentDataV1::WeatherHistoryV1 { history })
+        Some(BuildingHvacPersistentData::WeatherHistoryV1 { history })
             if valid_weather_history(&history) =>
         {
             Some(history)
@@ -716,7 +716,7 @@ fn restore_weather() -> BuildingHvacWeatherSnapshotV1 {
         _ => None,
     };
     let current = match libertas_data_read_single(WEATHER_CURRENT_RESOURCE, singleton_key()) {
-        Some(BuildingHvacPersistentDataV1::WeatherCurrentV1 { current })
+        Some(BuildingHvacPersistentData::WeatherCurrentV1 { current })
             if valid_current_weather(&current) =>
         {
             Some(current)
@@ -724,7 +724,7 @@ fn restore_weather() -> BuildingHvacWeatherSnapshotV1 {
         _ => None,
     };
     let forecast = match libertas_data_read_single(WEATHER_FORECAST_RESOURCE, singleton_key()) {
-        Some(BuildingHvacPersistentDataV1::WeatherForecastV1 { forecast })
+        Some(BuildingHvacPersistentData::WeatherForecastV1 { forecast })
             if valid_weather_forecast(&forecast) =>
         {
             Some(forecast)
@@ -733,7 +733,7 @@ fn restore_weather() -> BuildingHvacWeatherSnapshotV1 {
     };
     let outdoor_air_quality =
         match libertas_data_read_single(OUTDOOR_AIR_QUALITY_RESOURCE, singleton_key()) {
-            Some(BuildingHvacPersistentDataV1::OutdoorAirQualityV1 {
+            Some(BuildingHvacPersistentData::OutdoorAirQualityV1 {
                 outdoor_air_quality,
             }) if valid_outdoor_air_quality(&outdoor_air_quality) => Some(outdoor_air_quality),
             _ => None,
@@ -748,7 +748,7 @@ fn restore_weather() -> BuildingHvacWeatherSnapshotV1 {
 
 fn restore_external_features() -> BuildingHvacExternalFeatureSnapshotV1 {
     match libertas_data_read_single(EXTERNAL_FEATURE_INPUTS_RESOURCE, singleton_key()) {
-        Some(BuildingHvacPersistentDataV1::ExternalFeatureInputsV1 { snapshot })
+        Some(BuildingHvacPersistentData::ExternalFeatureInputsV1 { snapshot })
             if snapshot.is_well_formed() =>
         {
             snapshot
@@ -766,7 +766,7 @@ fn persist_weather(previous: &BuildingHvacWeatherSnapshotV1, next: &BuildingHvac
             Some(history) => libertas_data_write_single(
                 WEATHER_HISTORY_RESOURCE,
                 singleton_key(),
-                &BuildingHvacPersistentDataV1::WeatherHistoryV1 {
+                &BuildingHvacPersistentData::WeatherHistoryV1 {
                     history: history.clone(),
                 },
             ),
@@ -778,7 +778,7 @@ fn persist_weather(previous: &BuildingHvacWeatherSnapshotV1, next: &BuildingHvac
             Some(current) => libertas_data_write_single(
                 WEATHER_CURRENT_RESOURCE,
                 singleton_key(),
-                &BuildingHvacPersistentDataV1::WeatherCurrentV1 { current },
+                &BuildingHvacPersistentData::WeatherCurrentV1 { current },
             ),
             None => libertas_data_remove_single(WEATHER_CURRENT_RESOURCE, singleton_key()),
         }
@@ -788,7 +788,7 @@ fn persist_weather(previous: &BuildingHvacWeatherSnapshotV1, next: &BuildingHvac
             Some(forecast) => libertas_data_write_single(
                 WEATHER_FORECAST_RESOURCE,
                 singleton_key(),
-                &BuildingHvacPersistentDataV1::WeatherForecastV1 {
+                &BuildingHvacPersistentData::WeatherForecastV1 {
                     forecast: forecast.clone(),
                 },
             ),
@@ -800,7 +800,7 @@ fn persist_weather(previous: &BuildingHvacWeatherSnapshotV1, next: &BuildingHvac
             Some(outdoor_air_quality) => libertas_data_write_single(
                 OUTDOOR_AIR_QUALITY_RESOURCE,
                 singleton_key(),
-                &BuildingHvacPersistentDataV1::OutdoorAirQualityV1 {
+                &BuildingHvacPersistentData::OutdoorAirQualityV1 {
                     outdoor_air_quality: outdoor_air_quality.clone(),
                 },
             ),
@@ -852,7 +852,7 @@ fn persist_room_sensors(endpoint: LibertasEndpoint, sensors: Vec<BuildingHvacInd
     libertas_data_write_single(
         ROOM_SENSOR_STATE_RESOURCE,
         &room_key(endpoint),
-        &BuildingHvacPersistentDataV1::RoomSensorStateV1 { sensors },
+        &BuildingHvacPersistentData::RoomSensorStateV1 { sensors },
     );
 }
 
@@ -1375,7 +1375,7 @@ fn handle_device_event(
             Some(temperature) => libertas_data_write_single(
                 LOCAL_OUTDOOR_TEMPERATURE_RESOURCE,
                 singleton_key(),
-                &BuildingHvacPersistentDataV1::LocalOutdoorTemperatureV1 { temperature },
+                &BuildingHvacPersistentData::LocalOutdoorTemperatureV1 { temperature },
             ),
             None => {
                 libertas_data_remove_single(LOCAL_OUTDOOR_TEMPERATURE_RESOURCE, singleton_key())
@@ -1387,7 +1387,7 @@ fn handle_device_event(
             Some(humidity) => libertas_data_write_single(
                 LOCAL_OUTDOOR_HUMIDITY_RESOURCE,
                 singleton_key(),
-                &BuildingHvacPersistentDataV1::LocalOutdoorHumidityV1 { humidity },
+                &BuildingHvacPersistentData::LocalOutdoorHumidityV1 { humidity },
             ),
             None => libertas_data_remove_single(LOCAL_OUTDOOR_HUMIDITY_RESOURCE, singleton_key()),
         }
@@ -1397,7 +1397,7 @@ fn handle_device_event(
             Some(air_quality) => libertas_data_write_single(
                 LOCAL_OUTDOOR_AIR_QUALITY_RESOURCE,
                 singleton_key(),
-                &BuildingHvacPersistentDataV1::LocalOutdoorAirQualityV1 { air_quality },
+                &BuildingHvacPersistentData::LocalOutdoorAirQualityV1 { air_quality },
             ),
             None => {
                 libertas_data_remove_single(LOCAL_OUTDOOR_AIR_QUALITY_RESOURCE, singleton_key())
@@ -1643,9 +1643,9 @@ fn formatted_room_status(room: &RoomRuntime) -> Vec<u8> {
     libertas_formatted_text(
         "HVAC_ROOM_STATUS",
         &[
-            NotificationArgument::LiteralText(comfort),
-            NotificationArgument::LiteralText(activity_text(room.state.activity)),
-            NotificationArgument::LiteralText(air_quality_text(room)),
+            LibertasMessageArgument::LiteralText(comfort),
+            LibertasMessageArgument::LiteralText(activity_text(room.state.activity)),
+            LibertasMessageArgument::LiteralText(air_quality_text(room)),
         ],
     )
 }
@@ -1654,12 +1654,12 @@ fn room_report(
     state: &ControllerState,
     room_index: usize,
     now: Option<LibertasDateTime>,
-) -> BuildingHvacRoomProtocolV1 {
+) -> BuildingHvacRoomProtocol {
     let room = &state.rooms[room_index];
     let outdoor_air_analytics = state.weather.current.as_ref().and_then(|current| {
         now.and_then(|now| BuildingHvacAnalyticsEngine::new().analyze_outdoor_air(now, current))
     });
-    BuildingHvacRoomProtocolV1::RoomDataV1 {
+    BuildingHvacRoomProtocol::RoomDataV1 {
         formatted_room_status: formatted_room_status(room),
         maximum_wait_interval_seconds: BUILDING_HVAC_ROOM_MAXIMUM_WAIT_INTERVAL_SECONDS,
         control_revision: room.control_revision,
@@ -1811,7 +1811,7 @@ fn reject_control(
 ) {
     libertas_endpoint_response(
         endpoint,
-        &BuildingHvacRoomProtocolV1::RoomControlRejectedV1 {
+        &BuildingHvacRoomProtocol::RoomControlRejectedV1 {
             formatted_rejection: formatted_rejection(error),
             error,
             current_control_revision,
@@ -1825,7 +1825,7 @@ fn reject_control(
 fn handle_room_endpoint(
     endpoint: LibertasEndpoint,
     opcode: u8,
-    message: LibertasEndpointMessage<BuildingHvacRoomProtocolV1>,
+    message: LibertasEndpointMessage<BuildingHvacRoomProtocol>,
     context: &mut Box<dyn Any>,
     transaction_id: LibertasTransId,
     peer: u32,
@@ -1845,7 +1845,7 @@ fn handle_room_endpoint(
     };
     let subscription = opcode == OP_ENDPOINT_SUB_REQ;
     match message {
-        BuildingHvacRoomProtocolV1::GetRoomV1 => {
+        BuildingHvacRoomProtocol::GetRoomV1 => {
             let now = libertas_get_utc_time();
             let response = room_report(&context.shared.borrow(), context.room_index, now);
             libertas_endpoint_response(endpoint, &response, transaction_id, peer);
@@ -1859,7 +1859,7 @@ fn handle_room_endpoint(
                 room.last_report = Some(response);
             }
         }
-        BuildingHvacRoomProtocolV1::ReplaceRoomControlV1 {
+        BuildingHvacRoomProtocol::ReplaceRoomControlV1 {
             expected_revision,
             control,
         } => {
@@ -1919,7 +1919,7 @@ fn handle_room_endpoint(
             libertas_data_write_single(
                 ROOM_CONTROL_RESOURCE,
                 &room_key(endpoint),
-                &BuildingHvacPersistentDataV1::RoomControlV1 {
+                &BuildingHvacPersistentData::RoomControlV1 {
                     control_revision: next_revision,
                     control,
                 },
@@ -1936,8 +1936,8 @@ fn handle_room_endpoint(
             let response = room_report(&context.shared.borrow(), context.room_index, now);
             libertas_endpoint_response(endpoint, &response, transaction_id, peer);
         }
-        BuildingHvacRoomProtocolV1::RoomDataV1 { .. }
-        | BuildingHvacRoomProtocolV1::RoomControlRejectedV1 { .. } => {
+        BuildingHvacRoomProtocol::RoomDataV1 { .. }
+        | BuildingHvacRoomProtocol::RoomControlRejectedV1 { .. } => {
             return LibertasEndpointHandlerResult::InvalidMessage;
         }
     }
@@ -2170,10 +2170,10 @@ fn accept_weather_recovery(
     }
 }
 
-fn weather_request(shared: &Rc<RefCell<ControllerState>>) -> BuildingHvacWeatherProtocolV1 {
+fn weather_request(shared: &Rc<RefCell<ControllerState>>) -> BuildingHvacWeatherProtocol {
     let now = libertas_get_utc_time();
     let state = shared.borrow();
-    BuildingHvacWeatherProtocolV1::GetBuildingHvacWeatherV1 {
+    BuildingHvacWeatherProtocol::GetBuildingHvacWeatherV1 {
         after_cursor: state.weather_cursor,
         history_range: now.map(|now| BuildingHvacWeatherTimeRangeV1 {
             starts_at: now.saturating_sub(u64::from(BUILDING_HVAC_HISTORY_WINDOW_SECONDS)),
@@ -2220,7 +2220,7 @@ fn subscribe_weather(shared: &Rc<RefCell<ControllerState>>) {
 fn handle_weather_endpoint(
     _endpoint: LibertasEndpoint,
     opcode: u8,
-    message: LibertasEndpointMessage<BuildingHvacWeatherProtocolV1>,
+    message: LibertasEndpointMessage<BuildingHvacWeatherProtocol>,
     context: &mut Box<dyn Any>,
     _transaction_id: LibertasTransId,
     _peer: u32,
@@ -2272,7 +2272,7 @@ fn handle_weather_endpoint(
         (
             OP_ENDPOINT_RSP,
             LibertasEndpointMessage::Data(
-                BuildingHvacWeatherProtocolV1::BuildingHvacWeatherRecoveryV1 {
+                BuildingHvacWeatherProtocol::BuildingHvacWeatherRecoveryV1 {
                     maximum_wait_interval_seconds,
                     recovery,
                 },
@@ -2303,7 +2303,7 @@ fn handle_weather_endpoint(
         (
             OP_ENDPOINT_DATA,
             LibertasEndpointMessage::Data(
-                BuildingHvacWeatherProtocolV1::BuildingHvacWeatherIncrementV1 { report },
+                BuildingHvacWeatherProtocol::BuildingHvacWeatherIncrementV1 { report },
             ),
         ) => {
             let accepted = accept_weather_report(shared, report);
@@ -2482,7 +2482,7 @@ fn accept_external_features(
     libertas_data_write_single(
         EXTERNAL_FEATURE_INPUTS_RESOURCE,
         singleton_key(),
-        &BuildingHvacPersistentDataV1::ExternalFeatureInputsV1 {
+        &BuildingHvacPersistentData::ExternalFeatureInputsV1 {
             snapshot: snapshot.clone(),
         },
     );
@@ -2523,7 +2523,7 @@ fn subscribe_external_features(shared: &Rc<RefCell<ControllerState>>) {
     };
     libertas_endpoint_subscribe_request(
         endpoint,
-        &BuildingHvacExternalFeatureProtocolV1::GetExternalFeaturesV1,
+        &BuildingHvacExternalFeatureProtocol::GetExternalFeaturesV1,
     );
     arm_external_feature_retry(shared, EXTERNAL_FEATURE_RETRY_SECONDS);
 }
@@ -2531,7 +2531,7 @@ fn subscribe_external_features(shared: &Rc<RefCell<ControllerState>>) {
 fn handle_external_feature_endpoint(
     _endpoint: LibertasEndpoint,
     opcode: u8,
-    message: LibertasEndpointMessage<BuildingHvacExternalFeatureProtocolV1>,
+    message: LibertasEndpointMessage<BuildingHvacExternalFeatureProtocol>,
     context: &mut Box<dyn Any>,
     _transaction_id: LibertasTransId,
     _peer: u32,
@@ -2582,7 +2582,7 @@ fn handle_external_feature_endpoint(
         (
             OP_ENDPOINT_RSP,
             LibertasEndpointMessage::Data(
-                BuildingHvacExternalFeatureProtocolV1::ExternalFeaturesV1 {
+                BuildingHvacExternalFeatureProtocol::ExternalFeaturesV1 {
                     maximum_wait_interval_seconds,
                     snapshot,
                 },
@@ -2601,7 +2601,7 @@ fn handle_external_feature_endpoint(
         (
             OP_ENDPOINT_DATA,
             LibertasEndpointMessage::Data(
-                BuildingHvacExternalFeatureProtocolV1::ExternalFeatureUpdateV1 { snapshot },
+                BuildingHvacExternalFeatureProtocol::ExternalFeatureUpdateV1 { snapshot },
             ),
         ) => {
             let accepted = accept_external_features(shared, snapshot);
@@ -2615,7 +2615,7 @@ fn handle_external_feature_endpoint(
         (
             OP_ENDPOINT_RSP,
             LibertasEndpointMessage::Data(
-                BuildingHvacExternalFeatureProtocolV1::ExternalFeaturesErrorV1 {
+                BuildingHvacExternalFeatureProtocol::ExternalFeaturesErrorV1 {
                     retry_after_seconds,
                     ..
                 },
@@ -2896,7 +2896,7 @@ fn build_plan(
     BuildingHvacRoomPlanV1 {
         formatted_schedule: libertas_formatted_text(
             "HVAC_ROOM_SCHEDULE",
-            &[NotificationArgument::LiteralText(&summary)],
+            &[LibertasMessageArgument::LiteralText(&summary)],
         ),
         calculated_at: now,
         valid_until: now.saturating_add(CONDITION_PERIOD_SECONDS),
@@ -3008,7 +3008,7 @@ fn append_condition_periods(
                 persistence.push(RoomPersistence {
                     resource: ROOM_LEARNING_RESOURCE,
                     endpoint: room.configuration.control_endpoint,
-                    value: BuildingHvacPersistentDataV1::RoomLearningV1 {
+                    value: BuildingHvacPersistentData::RoomLearningV1 {
                         learning: room.learning.clone(),
                     },
                 });
@@ -3018,7 +3018,7 @@ fn append_condition_periods(
             persistence.push(RoomPersistence {
                 resource: ROOM_STATISTICS_RESOURCE,
                 endpoint: room.configuration.control_endpoint,
-                value: BuildingHvacPersistentDataV1::RoomStatisticsV1 {
+                value: BuildingHvacPersistentData::RoomStatisticsV1 {
                     statistics: statistics.clone(),
                     recent_conditions: room.recent_conditions.clone(),
                 },
@@ -4881,7 +4881,7 @@ fn handle_wakeup(context: &mut Box<dyn Any>) {
                 libertas_data_write_single(
                     BUILDING_HVAC_ML_MODELS_RESOURCE,
                     &room_key(updated.room_endpoint),
-                    &BuildingHvacPersistentDataV1::MachineLearningModelsV1 {
+                    &BuildingHvacPersistentData::MachineLearningModelsV1 {
                         models: updated.clone(),
                     },
                 );
@@ -5135,7 +5135,7 @@ pub(super) fn start(
         let endpoint = shared.borrow().rooms[room_index]
             .configuration
             .control_endpoint;
-        libertas_register_endpoint_status_listener::<BuildingHvacRoomProtocolV1, _>(
+        libertas_register_endpoint_status_listener::<BuildingHvacRoomProtocol, _>(
             endpoint,
             handle_room_endpoint,
             Box::new(RoomContext {
@@ -5144,13 +5144,13 @@ pub(super) fn start(
             }),
         );
     }
-    libertas_register_endpoint_status_listener::<BuildingHvacWeatherProtocolV1, _>(
+    libertas_register_endpoint_status_listener::<BuildingHvacWeatherProtocol, _>(
         weather.endpoint,
         handle_weather_endpoint,
         Box::new(Rc::clone(&shared)),
     );
     if let Some(client) = external_feature_client {
-        libertas_register_endpoint_status_listener::<BuildingHvacExternalFeatureProtocolV1, _>(
+        libertas_register_endpoint_status_listener::<BuildingHvacExternalFeatureProtocol, _>(
             client.endpoint,
             handle_external_feature_endpoint,
             Box::new(Rc::clone(&shared)),

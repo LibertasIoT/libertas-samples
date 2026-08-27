@@ -6,6 +6,7 @@
 //! and select the people who should receive important heating and cooling
 //! warnings. Each room gets its own comfort controls, current conditions, and
 //! schedule.
+//! #[libertas_string_resources(APP_STRINGS)]
 #![forbid(unsafe_code)]
 
 extern crate alloc;
@@ -13,14 +14,13 @@ extern crate alloc;
 use alloc::{boxed::Box, string::String, vec::Vec};
 
 use libertas::{
-    LibertasDateTime, LibertasDevice, LibertasEndpoint, LibertasUser, LogLevel,
-    NotificationArgument, NotificationImportance, libertas_data_read_single,
-    libertas_data_write_single, libertas_log, libertas_notification_send,
-    libertas_shutdown_complete, libertas_wake_up,
+    LibertasDateTime, LibertasDevice, LibertasEndpoint, LibertasMessageArgument, LibertasUser,
+    LogLevel, NotificationImportance, libertas_data_read_single, libertas_data_write_single,
+    libertas_log, libertas_notification_send, libertas_shutdown_complete, libertas_wake_up,
 };
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
-    libertas_permissions, libertas_string_resources,
+    libertas_permissions,
 };
 
 mod machine_learning;
@@ -57,7 +57,7 @@ pub use libertas_weather::{
     BuildingHvacPrecipitationKindV1, BuildingHvacWeatherChangeV1, BuildingHvacWeatherCursorV1,
     BuildingHvacWeatherForecastPeriodV1, BuildingHvacWeatherForecastV1,
     BuildingHvacWeatherHistoryPeriodV1, BuildingHvacWeatherHistoryV1,
-    BuildingHvacWeatherIncrementalReportV1, BuildingHvacWeatherProtocolV1,
+    BuildingHvacWeatherIncrementalReportV1, BuildingHvacWeatherProtocol,
     BuildingHvacWeatherRecoveryErrorV1, BuildingHvacWeatherRecoveryV1,
     BuildingHvacWeatherResetReasonV1, BuildingHvacWeatherSectionV1, BuildingHvacWeatherSnapshotV1,
     BuildingHvacWeatherTimeRangeV1,
@@ -218,9 +218,9 @@ pub const BUILDING_HVAC_EXCESSIVE_HEAT_RECOVERY_TEMPERATURE_CELSIUS: f32 = 32.0;
 
 /// Building climate localized strings
 /// Templates used by FormattedText runtime values. The encoded byte arrays
-/// carry these resource identifiers and Notification-compatible typed
-/// arguments; clients select the localized template before printf-style
-/// rendering. Urgent temperature resources receive room `LiteralText` and
+/// carry these package-local resource identifiers and typed Libertas Message
+/// Arguments; clients select the localized LMF1 template when rendering.
+/// Urgent temperature resources receive room `LiteralText` and
 /// `UnitFloat("temperature-celsius")`; unavailable control receives room and
 /// `UnitUnsigned("duration-seconds")`; not-recovering resources receive room,
 /// duration, and temperature in that order. Recovery receives room,
@@ -231,9 +231,9 @@ const BUILDING_CLIMATE_PERMISSIONS: &[&str] = &["libertas.permission.ACCESS_FINE
 pub static APP_STRINGS: [(&str, &str); 34] = [
     (
         "HVAC_ROOM_STATUS",
-        "Room status: %1$s. HVAC: %2$s. Air quality: %3$s.",
+        "Room status: {0}. HVAC: {1}. Air quality: {2}.",
     ),
-    ("HVAC_ROOM_SCHEDULE", "Calculated schedule: %1$s."),
+    ("HVAC_ROOM_SCHEDULE", "Calculated schedule: {0}."),
     (
         "HVAC_CONTROL_REVISION_CONFLICT",
         "The room changed on another client. Review the current settings and retry.",
@@ -256,27 +256,27 @@ pub static APP_STRINGS: [(&str, &str); 34] = [
     ),
     (
         "HVAC_URGENT_FREEZE_RISK",
-        "Urgent HVAC warning for %1$s: room temperature is %2$s. Check heating and protect plumbing. This is not a life-safety alarm.",
+        "Urgent HVAC warning for {0}: room temperature is {1}. Check heating and protect plumbing. This is not a life-safety alarm.",
     ),
     (
         "HVAC_URGENT_EXCESSIVE_HEAT",
-        "Urgent HVAC warning for %1$s: room temperature is %2$s. Check cooling and the room promptly. This is not a life-safety alarm.",
+        "Urgent HVAC warning for {0}: room temperature is {1}. Check cooling and the room promptly. This is not a life-safety alarm.",
     ),
     (
         "HVAC_URGENT_CONTROL_UNAVAILABLE",
-        "Urgent HVAC warning for %1$s: trustworthy temperature or thermostat data has been unavailable for %2$s. Check the sensors and thermostat.",
+        "Urgent HVAC warning for {0}: trustworthy temperature or thermostat data has been unavailable for {1}. Check the sensors and thermostat.",
     ),
     (
         "HVAC_URGENT_HEATING_NOT_RECOVERING",
-        "Urgent HVAC warning for %1$s: heating has not restored the room after %2$s; current temperature is %3$s. Check the heating system.",
+        "Urgent HVAC warning for {0}: heating has not restored the room after {1}; current temperature is {2}. Check the heating system.",
     ),
     (
         "HVAC_URGENT_COOLING_NOT_RECOVERING",
-        "Urgent HVAC warning for %1$s: cooling has not restored the room after %2$s; current temperature is %3$s. Check the cooling system.",
+        "Urgent HVAC warning for {0}: cooling has not restored the room after {1}; current temperature is {2}. Check the cooling system.",
     ),
     (
         "HVAC_URGENT_CONDITION_RECOVERED",
-        "HVAC warning cleared for %1$s: %2$s. Current temperature is %3$s.",
+        "HVAC warning cleared for {0}: {1}. Current temperature is {2}.",
     ),
     ("HVAC_CONDITION_FREEZE_RISK", "freeze risk"),
     ("HVAC_CONDITION_EXCESSIVE_HEAT", "excessive heat"),
@@ -294,31 +294,28 @@ pub static APP_STRINGS: [(&str, &str); 34] = [
     ),
     (
         "HVAC_ROOM_URGENT_NOTIFICATION_STATE",
-        "Urgent HVAC notification state for %1$s.",
+        "Urgent HVAC notification state for {0}.",
     ),
     (
         "HVAC_ML_MODELS",
-        "Accepted building climate thermal prediction models for %1$s.",
+        "Accepted building climate thermal prediction models for {0}.",
     ),
-    (
-        "HVAC_ML_SAMPLE",
-        "Thermal learning sample history for %1$s.",
-    ),
+    ("HVAC_ML_SAMPLE", "Thermal learning sample history for {0}."),
     (
         "HVAC_ROOM_CONTROL",
-        "Room HVAC control and revision for %1$s.",
+        "Room HVAC control and revision for {0}.",
     ),
     (
         "HVAC_ROOM_STATISTICS",
-        "Room HVAC statistics and recent conditions for %1$s.",
+        "Room HVAC statistics and recent conditions for {0}.",
     ),
     (
         "HVAC_ROOM_LEARNING",
-        "Room HVAC continuous-learning state for %1$s.",
+        "Room HVAC continuous-learning state for {0}.",
     ),
     (
         "HVAC_ROOM_SENSOR_STATE",
-        "Room environmental sensor state for %1$s.",
+        "Room environmental sensor state for {0}.",
     ),
     (
         "HVAC_LOCAL_OUTDOOR_TEMPERATURE",
@@ -419,17 +416,22 @@ pub struct BuildingHvacRoomControlV1 {
     /// Preferred heating temperature
     /// The lowest preferred room temperature in degrees Celsius. It must be
     /// lower than `preferred_cooling_temperature_celsius`.
+    #[libertas_format("0.#")]
     #[libertas_number(min = -50, max = 100, step = 0.1)]
+    #[libertas_physical_unit("celsius")]
     pub preferred_heating_temperature_celsius: f32,
     /// Preferred cooling temperature
     /// The highest preferred room temperature in degrees Celsius. It must be
     /// higher than `preferred_heating_temperature_celsius`.
+    #[libertas_format("0.#")]
     #[libertas_number(min = -50, max = 100, step = 0.1)]
+    #[libertas_physical_unit("celsius")]
     pub preferred_cooling_temperature_celsius: f32,
     /// Comfort or savings
     /// A normalized room preference from -1.0 for stronger energy-cost
     /// optimization, through 0.0 for balanced operation, to 1.0 for stronger
     /// comfort optimization. Hard safety and temperature limits are unchanged.
+    #[libertas_format("0.##")]
     #[libertas_number(min = -1, max = 1, step = 0.05)]
     pub comfort_or_savings_normalized: f32,
 }
@@ -614,6 +616,8 @@ pub struct BuildingHvacActiveUrgentConditionV1 {
     /// Room temperature
     /// The latest fresh room temperature in degrees Celsius when the condition
     /// has a trustworthy measurement. It is absent for unavailable control.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub temperature_celsius: Option<f32>,
     /// Last notification time
@@ -690,6 +694,8 @@ pub struct BuildingHvacPersistedUrgentConditionV1 {
     /// absent only while temperature control is unavailable. Retaining it lets
     /// a restart preserve the last confirmed evidence without treating it as a
     /// new current sensor reading.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     pub last_temperature_celsius: Option<f32>,
     /// Last notification time
     /// The UTC time when this occurrence was most recently submitted to the
@@ -868,6 +874,7 @@ pub struct BuildingHvacAirMeasurementV1 {
     pub kind: BuildingHvacAirMeasurementKindV1,
     /// Measured value in reported unit
     /// The finite nonnegative numeric value in `reported_unit`.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0)]
     #[libertas_read_only]
     pub measured_value_in_reported_unit: f32,
@@ -909,7 +916,9 @@ pub struct BuildingHvacTemperatureReadingV1 {
     pub valid_until: LibertasDateTime,
     /// Temperature
     /// Measured air temperature in degrees Celsius.
+    #[libertas_format("0.##")]
     #[libertas_number(min = -100, max = 100, step = 0.01)]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub temperature_celsius: f32,
 }
@@ -941,7 +950,9 @@ pub struct BuildingHvacHumidityReadingV1 {
     pub valid_until: LibertasDateTime,
     /// Relative humidity
     /// Measured relative humidity as a percentage.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0, max = 100, step = 0.01)]
+    #[libertas_physical_unit("percent")]
     #[libertas_read_only]
     pub relative_humidity_percent: f32,
 }
@@ -1152,23 +1163,31 @@ pub struct BuildingHvacRoomObservedStateV1 {
     /// Room temperature
     /// The robust fused room temperature in degrees Celsius. It is absent when
     /// no configured temperature sensor has a fresh valid value.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub temperature_celsius: Option<f32>,
     /// Room relative humidity
     /// The robust fused room relative humidity as a percentage. It is absent
     /// when no configured humidity sensor has a fresh valid value.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("percent")]
     #[libertas_read_only]
     pub relative_humidity_percent: Option<f32>,
     /// Effective heating setpoint
     /// The heating setpoint in degrees Celsius currently requested from the
     /// shared physical thermostat after room arbitration. It is absent before
     /// the thermostat is ready or when the room requests no heating demand.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub effective_heating_setpoint_celsius: Option<f32>,
     /// Effective cooling setpoint
     /// The cooling setpoint in degrees Celsius currently requested from the
     /// shared physical thermostat after room arbitration. It is absent before
     /// the thermostat is ready or when the room requests no cooling demand.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub effective_cooling_setpoint_celsius: Option<f32>,
     /// HVAC activity
@@ -1226,17 +1245,23 @@ pub struct BuildingHvacOutdoorAirAnalyticsV1 {
     /// Humidity ratio
     /// Kilograms of water vapor per kilogram of dry air, derived from dew point
     /// and surface pressure.
+    #[libertas_format("0.####")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("kilogram-per-kilogram")]
     #[libertas_read_only]
     pub humidity_ratio_kilograms_water_per_kilogram_dry_air: f32,
     /// Moist-air enthalpy
     /// Approximate kilojoules per kilogram of dry air, derived from dry-bulb
     /// temperature and humidity ratio.
+    #[libertas_format("0.##")]
+    #[libertas_physical_unit("kilojoule-per-kilogram")]
     #[libertas_read_only]
     pub moist_air_enthalpy_kilojoules_per_kilogram_dry_air: f32,
     /// Wet-bulb temperature
     /// Approximate thermodynamic wet-bulb temperature in degrees Celsius,
     /// solved from pressure and the derived humidity ratio.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub wet_bulb_temperature_celsius: f32,
 }
@@ -1280,15 +1305,21 @@ pub struct BuildingHvacRoomStatisticsV1 {
     pub temperature_sample_count: u64,
     /// Minimum temperature
     /// The lowest accepted fused room temperature in degrees Celsius.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub minimum_temperature_celsius: f32,
     /// Mean temperature
     /// The time-weighted mean accepted fused room temperature in degrees
     /// Celsius.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub mean_temperature_celsius: f32,
     /// Maximum temperature
     /// The highest accepted fused room temperature in degrees Celsius.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub maximum_temperature_celsius: f32,
     /// Temperature data availability
@@ -1300,13 +1331,17 @@ pub struct BuildingHvacRoomStatisticsV1 {
     /// Below-heating comfort
     /// Accumulated temperature deficit below the active preferred heating
     /// target, in degree-minutes Celsius.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("celsius-minute")]
     #[libertas_read_only]
     pub below_heating_comfort_degree_minutes_celsius: f32,
     /// Above-cooling comfort
     /// Accumulated temperature excess above the active preferred cooling target,
     /// in degree-minutes Celsius.
+    #[libertas_format("0.#")]
     #[libertas_number(min = 0)]
+    #[libertas_physical_unit("celsius-minute")]
     #[libertas_read_only]
     pub above_cooling_comfort_degree_minutes_celsius: f32,
     /// Humidity samples
@@ -1316,6 +1351,8 @@ pub struct BuildingHvacRoomStatisticsV1 {
     /// Mean relative humidity
     /// The time-weighted mean accepted fused room relative humidity percentage.
     /// It is absent when the room has no humidity samples in the window.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("percent")]
     #[libertas_read_only]
     pub mean_relative_humidity_percent: Option<f32>,
     /// Heating activity
@@ -1386,11 +1423,15 @@ pub struct BuildingHvacRoomPlanPeriodV1 {
     /// Heating setpoint
     /// The effective heating setpoint in degrees Celsius for the period. It is
     /// absent when this room contributes no heating demand.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub heating_setpoint_celsius: Option<f32>,
     /// Cooling setpoint
     /// The effective cooling setpoint in degrees Celsius for the period. It is
     /// absent when this room contributes no cooling demand.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     #[libertas_read_only]
     pub cooling_setpoint_celsius: Option<f32>,
     /// Plan reason
@@ -1407,8 +1448,8 @@ pub struct BuildingHvacRoomPlanPeriodV1 {
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct BuildingHvacRoomPlanV1 {
     /// Formatted schedule
-    /// Notification-compatible Avro bytes containing a localized string
-    /// resource and typed printf-style arguments summarizing the calculated
+    /// Canonical formatted-text bytes containing a package-local resource key
+    /// and typed Libertas Message Arguments summarizing the calculated
     /// periods, setpoints, and principal reasons. It is a derived presentation
     /// of `periods`; clients performing calculations must use the structured
     /// fields below. Do not Base64-wrap this byte array.
@@ -1475,10 +1516,13 @@ pub struct BuildingHvacCrossZoneInfluenceV1 {
     /// Predicted room temperature rise in degrees Celsius per hour of source
     /// thermostat heating. It is absent until sufficient identifiable evidence
     /// exists.
+    #[libertas_format("0.###")]
+    #[libertas_physical_unit("celsius-per-hour")]
     #[libertas_read_only]
     pub heating_temperature_rise_celsius_per_runtime_hour: Option<f32>,
     /// Heating confidence
     /// Normalized confidence from 0.0 through 1.0 in the heating-effect estimate.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0, max = 1)]
     #[libertas_read_only]
     pub heating_confidence_normalized: f32,
@@ -1486,10 +1530,13 @@ pub struct BuildingHvacCrossZoneInfluenceV1 {
     /// Predicted room temperature drop in degrees Celsius per hour of source
     /// thermostat cooling. It is absent until sufficient identifiable evidence
     /// exists.
+    #[libertas_format("0.###")]
+    #[libertas_physical_unit("celsius-per-hour")]
     #[libertas_read_only]
     pub cooling_temperature_drop_celsius_per_runtime_hour: Option<f32>,
     /// Cooling confidence
     /// Normalized confidence from 0.0 through 1.0 in the cooling-effect estimate.
+    #[libertas_format("0.##")]
     #[libertas_number(min = 0, max = 1)]
     #[libertas_read_only]
     pub cooling_confidence_normalized: f32,
@@ -1505,7 +1552,7 @@ pub struct BuildingHvacCrossZoneInfluenceV1 {
 /// report for one room. The configured endpoint identifies the room, so messages
 /// never carry a reorder-sensitive room-array index.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub enum BuildingHvacRoomProtocolV1 {
+pub enum BuildingHvacRoomProtocol {
     /// Get room
     /// Reads the current room runtime or starts a subscription. The endpoint
     /// operation selects one-shot or subscription behavior.
@@ -1536,8 +1583,8 @@ pub enum BuildingHvacRoomProtocolV1 {
     #[libertas_subscription_data]
     RoomDataV1 {
         /// Formatted room status
-        /// Notification-compatible Avro bytes containing a localized string
-        /// resource and typed printf-style arguments for current comfort, HVAC
+        /// Canonical formatted-text bytes containing a package-local resource
+        /// key and typed Libertas Message Arguments for current comfort, HVAC
         /// activity, noteworthy air measurements, and the next schedule change.
         /// It is a derived view only; clients and control logic must use the
         /// structured fields in this message. Do not Base64-wrap this byte
@@ -1603,6 +1650,7 @@ pub enum BuildingHvacRoomProtocolV1 {
         /// Passive model confidence
         /// Normalized confidence from 0.0 through 1.0 in the passive outdoor
         /// coupling estimate.
+        #[libertas_format("0.##")]
         #[libertas_number(min = 0, max = 1)]
         #[libertas_read_only]
         passive_model_confidence_normalized: f32,
@@ -1636,8 +1684,8 @@ pub enum BuildingHvacRoomProtocolV1 {
     #[libertas_response]
     RoomControlRejectedV1 {
         /// Formatted rejection
-        /// Notification-compatible Avro bytes containing the localized resource
-        /// and typed printf-style arguments that explain the rejection and safe
+        /// Canonical formatted-text bytes containing the package-local resource
+        /// key and typed Libertas Message Arguments that explain the rejection and safe
         /// next action. It is derived from `error` and the current structured
         /// control state and is not Base64-wrapped.
         #[libertas_formatted_text]
@@ -1671,7 +1719,7 @@ pub struct BuildingHvacRoomV1 {
     /// Room controls
     /// Choose where this room's comfort settings, conditions, and schedule will
     /// be available.
-    #[libertas_endpoint_schema(BuildingHvacRoomProtocolV1)]
+    #[libertas_endpoint_schema(BuildingHvacRoomProtocol)]
     #[libertas_endpoint_server]
     #[libertas_unique]
     pub control_endpoint: LibertasEndpoint,
@@ -1804,7 +1852,7 @@ pub struct BuildingHvacBuildingV1 {
 pub struct BuildingHvacWeatherClientV1 {
     /// Weather service
     /// Choose where current conditions, forecasts, and outdoor air quality come from.
-    #[libertas_endpoint_schema(BuildingHvacWeatherProtocolV1)]
+    #[libertas_endpoint_schema(BuildingHvacWeatherProtocol)]
     pub endpoint: LibertasEndpoint,
 }
 
@@ -1838,6 +1886,7 @@ pub struct BuildingHvacExternalFeatureInputV1 {
     /// Value
     /// Finite value in the unit stated by `feature_name`. A semantic zero must
     /// be sent as zero; omit an unavailable feature from the snapshot.
+    #[libertas_format("0.###")]
     pub value: f32,
 }
 
@@ -1915,7 +1964,7 @@ pub enum BuildingHvacExternalFeatureInputErrorV1 {
 /// utility, equipment, occupancy, calendar, and metering inputs. The endpoint
 /// operation distinguishes a one-shot read from a subscription.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub enum BuildingHvacExternalFeatureProtocolV1 {
+pub enum BuildingHvacExternalFeatureProtocol {
     /// Get external features
     /// Reads the current snapshot or starts a subscription.
     #[libertas_request]
@@ -1970,7 +2019,7 @@ pub enum BuildingHvacExternalFeatureProtocolV1 {
 pub struct BuildingHvacExternalFeatureClientV1 {
     /// Information service
     /// Choose where the optional building information comes from.
-    #[libertas_endpoint_schema(BuildingHvacExternalFeatureProtocolV1)]
+    #[libertas_endpoint_schema(BuildingHvacExternalFeatureProtocol)]
     pub endpoint: LibertasEndpoint,
 }
 
@@ -1991,10 +2040,14 @@ pub struct BuildingHvacPersistedRoomConditionPeriodV1 {
     /// Room temperature
     /// The time-weighted room temperature in degrees Celsius. It is absent for
     /// a period with no trustworthy room-temperature coverage.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     pub temperature_celsius: Option<f32>,
     /// Room relative humidity
     /// The time-weighted room relative humidity percentage. It is absent for a
     /// period with no trustworthy humidity coverage.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("percent")]
     pub relative_humidity_percent: Option<f32>,
     /// HVAC activity
     /// The dominant thermostat activity observed during this period.
@@ -2002,14 +2055,20 @@ pub struct BuildingHvacPersistedRoomConditionPeriodV1 {
     /// Effective heating setpoint
     /// The time-weighted effective heating setpoint in degrees Celsius. It is
     /// absent when the room contributed no heating target.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     pub effective_heating_setpoint_celsius: Option<f32>,
     /// Effective cooling setpoint
     /// The time-weighted effective cooling setpoint in degrees Celsius. It is
     /// absent when the room contributed no cooling target.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     pub effective_cooling_setpoint_celsius: Option<f32>,
     /// Outdoor dry-bulb temperature
     /// The time-aligned cached outdoor dry-bulb temperature in degrees Celsius.
     /// It is absent when no weather period covered this room period.
+    #[libertas_format("0.#")]
+    #[libertas_physical_unit("celsius")]
     pub outdoor_dry_bulb_temperature_celsius: Option<f32>,
 }
 
@@ -2029,18 +2088,22 @@ pub struct BuildingHvacOnlineRegressionStateV1 {
     pub accepted_observation_count: u64,
     /// Effective sample weight
     /// The quality-weighted observation count after age-based forgetting.
+    #[libertas_format("0.###")]
     #[libertas_number(min = 0)]
     pub effective_sample_weight: f64,
     /// Weighted input squared sum
     /// The decayed sum of quality weight multiplied by squared model input.
+    #[libertas_format("0.###")]
     #[libertas_number(min = 0)]
     pub weighted_input_squared_sum: f64,
     /// Weighted input-output sum
     /// The decayed sum of quality weight multiplied by model input and observed
     /// output.
+    #[libertas_format("0.###")]
     pub weighted_input_output_sum: f64,
     /// Weighted output squared sum
     /// The decayed sum of quality weight multiplied by squared observed output.
+    #[libertas_format("0.###")]
     #[libertas_number(min = 0)]
     pub weighted_output_squared_sum: f64,
 }
@@ -2382,7 +2445,7 @@ impl BuildingHvacRoomLearningStateV1 {
 /// weather records are singleton sections. No record contains subscription
 /// cursors, peer state, or transaction identifiers.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub enum BuildingHvacPersistentDataV1 {
+pub enum BuildingHvacPersistentData {
     /// Room control
     /// Stores the last accepted writable room intent and its optimistic
     /// concurrency revision. It is written before publishing accepted runtime
@@ -2591,9 +2654,9 @@ impl BuildingHvacUrgentNotificationAction {
                 return false;
             };
             let arguments = [
-                NotificationArgument::LiteralText(room_name),
-                NotificationArgument::ResourceText(self.condition.condition_name_resource()),
-                NotificationArgument::UnitFloat {
+                LibertasMessageArgument::LiteralText(room_name),
+                LibertasMessageArgument::ResourceText(self.condition.condition_name_resource()),
+                LibertasMessageArgument::UnitFloat {
                     unit_type: "temperature-celsius",
                     value: temperature_celsius,
                 },
@@ -2616,8 +2679,8 @@ impl BuildingHvacUrgentNotificationAction {
                     return false;
                 };
                 let arguments = [
-                    NotificationArgument::LiteralText(room_name),
-                    NotificationArgument::UnitFloat {
+                    LibertasMessageArgument::LiteralText(room_name),
+                    LibertasMessageArgument::UnitFloat {
                         unit_type: "temperature-celsius",
                         value: temperature_celsius,
                     },
@@ -2632,8 +2695,8 @@ impl BuildingHvacUrgentNotificationAction {
             }
             BuildingHvacUrgentConditionV1::TemperatureControlUnavailable => {
                 let arguments = [
-                    NotificationArgument::LiteralText(room_name),
-                    NotificationArgument::UnitUnsigned {
+                    LibertasMessageArgument::LiteralText(room_name),
+                    LibertasMessageArgument::UnitUnsigned {
                         unit_type: "duration-seconds",
                         value: elapsed_seconds,
                     },
@@ -2652,12 +2715,12 @@ impl BuildingHvacUrgentNotificationAction {
                     return false;
                 };
                 let arguments = [
-                    NotificationArgument::LiteralText(room_name),
-                    NotificationArgument::UnitUnsigned {
+                    LibertasMessageArgument::LiteralText(room_name),
+                    LibertasMessageArgument::UnitUnsigned {
                         unit_type: "duration-seconds",
                         value: elapsed_seconds,
                     },
-                    NotificationArgument::UnitFloat {
+                    LibertasMessageArgument::UnitFloat {
                         unit_type: "temperature-celsius",
                         value: temperature_celsius,
                     },
@@ -2825,8 +2888,8 @@ impl BuildingHvacUrgentNotificationEngine {
             return 0;
         }
 
-        let key = [NotificationArgument::Object(room_endpoint)];
-        let value = BuildingHvacPersistentDataV1::RoomUrgentNotificationStateV1 {
+        let key = [LibertasMessageArgument::Object(room_endpoint)];
+        let value = BuildingHvacPersistentData::RoomUrgentNotificationStateV1 {
             conditions: self.conditions.clone(),
         };
         libertas_data_write_single("HVAC_ROOM_URGENT_NOTIFICATION_STATE", &key, &value);
@@ -4185,8 +4248,8 @@ fn restore_machine_learning_models(
         .rooms
         .iter()
         .map(|room| {
-            let key = [NotificationArgument::Object(room.control_endpoint)];
-            if let Some(BuildingHvacPersistentDataV1::MachineLearningModelsV1 { models }) =
+            let key = [LibertasMessageArgument::Object(room.control_endpoint)];
+            if let Some(BuildingHvacPersistentData::MachineLearningModelsV1 { models }) =
                 libertas_data_read_single(BUILDING_HVAC_ML_MODELS_RESOURCE, &key)
                 && models.room_endpoint == room.control_endpoint
                 && models.is_well_formed()
@@ -4195,7 +4258,7 @@ fn restore_machine_learning_models(
             }
 
             let models = BuildingHvacMachineLearningModelSetV1::empty(room.control_endpoint);
-            let value = BuildingHvacPersistentDataV1::MachineLearningModelsV1 {
+            let value = BuildingHvacPersistentData::MachineLearningModelsV1 {
                 models: models.clone(),
             };
             libertas_data_write_single(BUILDING_HVAC_ML_MODELS_RESOURCE, &key, &value);
@@ -4209,9 +4272,8 @@ fn restore_machine_learning_models(
 /// comfortable. It provides room-by-room controls and schedules, and sends
 /// selected people important heating and cooling warnings. These warnings are
 /// not life-safety alarms.
-#[libertas_data_schema(BuildingHvacPersistentDataV1)]
+#[libertas_data_schema(BuildingHvacPersistentData)]
 #[libertas_permissions(BUILDING_CLIMATE_PERMISSIONS)]
-#[libertas_string_resources(APP_STRINGS)]
 pub fn libertas_building_climate(
     /*
      * Building
@@ -4276,9 +4338,12 @@ pub fn libertas_building_climate(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use alloc::{string::ToString, vec};
+    use alloc::{
+        string::{String, ToString},
+        vec,
+    };
     use libertas::{
-        AvroDecode, NotificationArgument, libertas_formatted_text, libertas_formatted_text_decode,
+        AvroDecode, LibertasMessageArgument, LibertasMessageArgumentDecode, libertas_formatted_text,
     };
 
     macro_rules! assert_round_trip {
@@ -4432,7 +4497,7 @@ mod tests {
     fn formatted_schedule() -> Vec<u8> {
         libertas_formatted_text(
             "HVAC_ROOM_SCHEDULE",
-            &[NotificationArgument::LiteralText(
+            &[LibertasMessageArgument::LiteralText(
                 "Next 15 minutes: maintain 20.0–24.0 °C for room comfort",
             )],
         )
@@ -4442,15 +4507,24 @@ mod tests {
         libertas_formatted_text(
             "HVAC_ROOM_STATUS",
             &[
-                NotificationArgument::LiteralText("22.4 °C and 46% RH"),
-                NotificationArgument::LiteralText("idle"),
-                NotificationArgument::LiteralText("good"),
+                LibertasMessageArgument::LiteralText("22.4 °C and 46% RH"),
+                LibertasMessageArgument::LiteralText("idle"),
+                LibertasMessageArgument::LiteralText("good"),
             ],
         )
     }
 
     fn formatted_revision_conflict() -> Vec<u8> {
         libertas_formatted_text("HVAC_CONTROL_REVISION_CONFLICT", &[])
+    }
+
+    fn decode_formatted_text(encoded: &[u8]) -> (String, Vec<LibertasMessageArgumentDecode>) {
+        let mut offset = 0;
+        let resource_name = String::avro_decode(encoded, &mut offset).unwrap();
+        let arguments =
+            Vec::<LibertasMessageArgumentDecode>::avro_decode(encoded, &mut offset).unwrap();
+        assert_eq!(offset, encoded.len());
+        (resource_name, arguments)
     }
 
     fn plan() -> BuildingHvacRoomPlanV1 {
@@ -4525,8 +4599,8 @@ mod tests {
             .collect()
     }
 
-    fn room_data() -> BuildingHvacRoomProtocolV1 {
-        BuildingHvacRoomProtocolV1::RoomDataV1 {
+    fn room_data() -> BuildingHvacRoomProtocol {
+        BuildingHvacRoomProtocol::RoomDataV1 {
             formatted_room_status: formatted_room_status(),
             maximum_wait_interval_seconds: BUILDING_HVAC_ROOM_MAXIMUM_WAIT_INTERVAL_SECONDS,
             control_revision: 3,
@@ -4743,53 +4817,53 @@ mod tests {
         }
     }
 
-    fn persistent_values() -> [BuildingHvacPersistentDataV1; 15] {
+    fn persistent_values() -> [BuildingHvacPersistentData; 15] {
         [
-            BuildingHvacPersistentDataV1::RoomControlV1 {
+            BuildingHvacPersistentData::RoomControlV1 {
                 control_revision: 3,
                 control: BuildingHvacRoomControlV1::default(),
             },
-            BuildingHvacPersistentDataV1::RoomStatisticsV1 {
+            BuildingHvacPersistentData::RoomStatisticsV1 {
                 statistics: statistics(),
                 recent_conditions: vec![persisted_condition()],
             },
-            BuildingHvacPersistentDataV1::RoomLearningV1 {
+            BuildingHvacPersistentData::RoomLearningV1 {
                 learning: room_learning(),
             },
-            BuildingHvacPersistentDataV1::RoomSensorStateV1 {
+            BuildingHvacPersistentData::RoomSensorStateV1 {
                 sensors: vec![indoor_sensor_state()],
             },
-            BuildingHvacPersistentDataV1::LocalOutdoorTemperatureV1 {
+            BuildingHvacPersistentData::LocalOutdoorTemperatureV1 {
                 temperature: local_outdoor_temperature(),
             },
-            BuildingHvacPersistentDataV1::LocalOutdoorHumidityV1 {
+            BuildingHvacPersistentData::LocalOutdoorHumidityV1 {
                 humidity: local_outdoor_humidity(),
             },
-            BuildingHvacPersistentDataV1::LocalOutdoorAirQualityV1 {
+            BuildingHvacPersistentData::LocalOutdoorAirQualityV1 {
                 air_quality: local_outdoor_air_quality(),
             },
-            BuildingHvacPersistentDataV1::WeatherHistoryV1 {
+            BuildingHvacPersistentData::WeatherHistoryV1 {
                 history: weather_history(),
             },
-            BuildingHvacPersistentDataV1::WeatherCurrentV1 {
+            BuildingHvacPersistentData::WeatherCurrentV1 {
                 current: current_weather(),
             },
-            BuildingHvacPersistentDataV1::WeatherForecastV1 {
+            BuildingHvacPersistentData::WeatherForecastV1 {
                 forecast: weather_forecast(),
             },
-            BuildingHvacPersistentDataV1::OutdoorAirQualityV1 {
+            BuildingHvacPersistentData::OutdoorAirQualityV1 {
                 outdoor_air_quality: outdoor_air_quality(),
             },
-            BuildingHvacPersistentDataV1::ExternalFeatureInputsV1 {
+            BuildingHvacPersistentData::ExternalFeatureInputsV1 {
                 snapshot: external_feature_snapshot(),
             },
-            BuildingHvacPersistentDataV1::RoomUrgentNotificationStateV1 {
+            BuildingHvacPersistentData::RoomUrgentNotificationStateV1 {
                 conditions: vec![persisted_urgent_condition()],
             },
-            BuildingHvacPersistentDataV1::MachineLearningModelsV1 {
+            BuildingHvacPersistentData::MachineLearningModelsV1 {
                 models: BuildingHvacMachineLearningModelSetV1::empty(100),
             },
-            BuildingHvacPersistentDataV1::MachineLearningSampleV1 {
+            BuildingHvacPersistentData::MachineLearningSampleV1 {
                 sample: machine_learning_sample(),
             },
         ]
@@ -5120,13 +5194,13 @@ mod tests {
     #[test]
     fn room_protocol_transactions_round_trip_through_avro() {
         let values = [
-            BuildingHvacRoomProtocolV1::GetRoomV1,
-            BuildingHvacRoomProtocolV1::ReplaceRoomControlV1 {
+            BuildingHvacRoomProtocol::GetRoomV1,
+            BuildingHvacRoomProtocol::ReplaceRoomControlV1 {
                 expected_revision: 3,
                 control: BuildingHvacRoomControlV1::default(),
             },
             room_data(),
-            BuildingHvacRoomProtocolV1::RoomControlRejectedV1 {
+            BuildingHvacRoomProtocol::RoomControlRejectedV1 {
                 formatted_rejection: formatted_revision_conflict(),
                 error: BuildingHvacRoomControlErrorV1::RevisionConflict,
                 current_control_revision: 3,
@@ -5135,23 +5209,24 @@ mod tests {
         ];
 
         for value in values {
-            assert_round_trip!(BuildingHvacRoomProtocolV1, value);
+            assert_round_trip!(BuildingHvacRoomProtocol, value);
         }
     }
 
     #[test]
-    fn formatted_runtime_byte_arrays_use_notification_resource_arguments() {
-        let status = libertas_formatted_text_decode(&formatted_room_status()).unwrap();
-        assert_eq!(status.resource_name, "HVAC_ROOM_STATUS");
-        assert_eq!(status.arguments.len(), 3);
+    fn formatted_runtime_byte_arrays_use_message_resource_arguments() {
+        let (status_resource, status_arguments) = decode_formatted_text(&formatted_room_status());
+        assert_eq!(status_resource, "HVAC_ROOM_STATUS");
+        assert_eq!(status_arguments.len(), 3);
 
-        let schedule = libertas_formatted_text_decode(&formatted_schedule()).unwrap();
-        assert_eq!(schedule.resource_name, "HVAC_ROOM_SCHEDULE");
-        assert_eq!(schedule.arguments.len(), 1);
+        let (schedule_resource, schedule_arguments) = decode_formatted_text(&formatted_schedule());
+        assert_eq!(schedule_resource, "HVAC_ROOM_SCHEDULE");
+        assert_eq!(schedule_arguments.len(), 1);
 
-        let rejection = libertas_formatted_text_decode(&formatted_revision_conflict()).unwrap();
-        assert_eq!(rejection.resource_name, "HVAC_CONTROL_REVISION_CONFLICT");
-        assert!(rejection.arguments.is_empty());
+        let (rejection_resource, rejection_arguments) =
+            decode_formatted_text(&formatted_revision_conflict());
+        assert_eq!(rejection_resource, "HVAC_CONTROL_REVISION_CONFLICT");
+        assert!(rejection_arguments.is_empty());
     }
 
     #[test]
@@ -5723,7 +5798,7 @@ mod tests {
     #[test]
     fn persistent_variants_round_trip_independently() {
         for value in persistent_values() {
-            assert_round_trip!(BuildingHvacPersistentDataV1, value);
+            assert_round_trip!(BuildingHvacPersistentData, value);
         }
     }
 
@@ -5995,15 +6070,15 @@ mod tests {
             BuildingHvacExternalFeatureInputErrorV1::InvalidSourceData
         );
         assert_round_trip!(
-            BuildingHvacExternalFeatureProtocolV1,
-            BuildingHvacExternalFeatureProtocolV1::ExternalFeaturesV1 {
+            BuildingHvacExternalFeatureProtocol,
+            BuildingHvacExternalFeatureProtocol::ExternalFeaturesV1 {
                 maximum_wait_interval_seconds: 300,
                 snapshot: external_feature_snapshot(),
             }
         );
         assert_round_trip!(
-            BuildingHvacExternalFeatureProtocolV1,
-            BuildingHvacExternalFeatureProtocolV1::ExternalFeaturesErrorV1 {
+            BuildingHvacExternalFeatureProtocol,
+            BuildingHvacExternalFeatureProtocol::ExternalFeaturesErrorV1 {
                 error: BuildingHvacExternalFeatureInputErrorV1::TemporarilyUnavailable,
                 retry_after_seconds: 60,
             }
@@ -6288,13 +6363,13 @@ mod tests {
         }
 
         let protocols = [
-            BuildingHvacRoomProtocolV1::GetRoomV1,
-            BuildingHvacRoomProtocolV1::ReplaceRoomControlV1 {
+            BuildingHvacRoomProtocol::GetRoomV1,
+            BuildingHvacRoomProtocol::ReplaceRoomControlV1 {
                 expected_revision: 3,
                 control: BuildingHvacRoomControlV1::default(),
             },
             room_data(),
-            BuildingHvacRoomProtocolV1::RoomControlRejectedV1 {
+            BuildingHvacRoomProtocol::RoomControlRejectedV1 {
                 formatted_rejection: formatted_revision_conflict(),
                 error: BuildingHvacRoomControlErrorV1::RevisionConflict,
                 current_control_revision: 3,
