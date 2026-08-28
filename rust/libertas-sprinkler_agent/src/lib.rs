@@ -10690,12 +10690,13 @@ fn initial_active_state(
 }
 
 /// Smart Sprinkler
-/// Manages a smart sprinkler or irrigation system using the zone valves, plant
-/// types, watering-head types, preferred watering periods, watering pauses,
-/// reminder recipients, and per-zone watering percentages chosen by the user.
-/// It adjusts each area's watering for recent rain and forecast weather, shows
-/// current status and upcoming watering plans, provides water-balance, water-use,
-/// and weather charts, and sends reminders before freezing weather.
+/// The system manages a smart sprinkler or irrigation system. The user chooses
+/// the zone valves, plant types, watering-head types, preferred watering periods,
+/// watering pauses, and reminder recipients. The user can manually change the
+/// watering percentage for each zone at any time. The system calculates each
+/// zone's watering from its plants, recent rain, and forecast weather. The system
+/// shows current status and upcoming watering plans, provides water-balance,
+/// water-use, and weather charts, and sends reminders before freezing weather.
 #[libertas_data_schema(SprinklerData)]
 #[libertas_permissions(SPRINKLER_PERMISSIONS)]
 #[libertas_export]
