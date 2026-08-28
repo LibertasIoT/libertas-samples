@@ -4268,10 +4268,23 @@ fn restore_machine_learning_models(
 }
 
 /// Smart Building Climate
-/// Coordinates thermostats, room sensors, and weather to keep each room
-/// comfortable. It provides room-by-room controls and schedules, and sends
-/// selected people important heating and cooling warnings. These warnings are
-/// not life-safety alarms.
+/// Keeps each room comfortable while balancing comfort and energy use across
+/// thermostats that may serve more than one room. The user names the rooms,
+/// assigns their thermostats and indoor sensors, optionally chooses outdoor
+/// sensors, and chooses local weather, additional building information, and
+/// people to notify. The user can select each room's heating and cooling mode,
+/// preferred temperature range, and balance between comfort and savings. The
+/// climate controller combines current sensor readings and weather with
+/// available energy-price, occupancy, window, calendar, meter, and central
+/// equipment information. The climate controller automatically learns how
+/// rooms respond, coordinates shared thermostats, adjusts bounded heating and
+/// cooling setpoints, and calculates upcoming room plans. The climate
+/// controller shows room and outdoor conditions, air quality, sensor
+/// availability, heating or cooling activity, effective setpoints, comfort
+/// statistics, learned behavior, and upcoming plans. The climate controller
+/// sends selected people warnings, reminders, and recovery messages for freeze
+/// risk, excessive heat, unavailable control, or ineffective heating and
+/// cooling; these are not life-safety alarms.
 #[libertas_data_schema(BuildingHvacPersistentData)]
 #[libertas_permissions(BUILDING_CLIMATE_PERMISSIONS)]
 pub fn libertas_building_climate(

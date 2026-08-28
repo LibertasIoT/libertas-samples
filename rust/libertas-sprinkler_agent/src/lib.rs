@@ -10690,13 +10690,19 @@ fn initial_active_state(
 }
 
 /// Smart Sprinkler
-/// The system automatically waters each lawn, garden, or planted area according
-/// to its plants, recent rain, and forecast weather. The user chooses each area's
-/// zone valve, plant type, watering-head type, preferred watering periods, and
-/// watering pauses. The user chooses reminder recipients. The user can manually
-/// change the watering percentage for each zone at any time. The system shows
-/// current status and upcoming watering plans, provides water-balance, water-use,
-/// and weather charts, and sends reminders before freezing weather.
+/// Waters each lawn, garden, or planted area according to its plants, watering
+/// method, recent rain, forecast weather, and user-selected adjustments. The
+/// user chooses the weather source, where area controls and reports will be
+/// available, reminder recipients, and each area's valve, plant type, and
+/// watering method. The user can manually change each area's watering
+/// percentage and no-watering periods at any time, or winterize and reactivate
+/// the whole system. The sprinkler automatically schedules and operates each
+/// valve around rain, forecast precipitation, wind, freezing temperatures,
+/// plant needs, and no-watering periods, and uses saved estimates during short
+/// weather outages. The sprinkler shows each area's current status, water
+/// estimate, valve state, and upcoming watering plan. The sprinkler provides
+/// water-balance, daily water-use, and recorded-and-forecast weather graphs,
+/// and sends selected people reminders before freezing weather.
 #[libertas_data_schema(SprinklerData)]
 #[libertas_permissions(SPRINKLER_PERMISSIONS)]
 #[libertas_export]

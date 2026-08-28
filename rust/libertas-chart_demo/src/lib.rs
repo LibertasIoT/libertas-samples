@@ -3332,7 +3332,13 @@ fn handle_gallery_request(
 }
 
 /// Chart gallery
-/// Creates an interactive endpoint for exploring every Libertas chart type.
+/// Lets people explore every Libertas chart type with polished, interactive
+/// sample data. The user can choose individual examples or composed dashboards.
+/// The gallery shows business portfolios, energy and sales histories,
+/// forecasts, distributions and uncertainty, activity patterns, traffic
+/// shares, geographic regions, network relationships, flows, direct labels,
+/// and layered or polar comparisons. Each example demonstrates its applicable
+/// axes, legends, tooltips, shapes, colors, labels, and layout.
 #[libertas_export]
 pub fn chart_demo(
     /*

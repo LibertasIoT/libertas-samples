@@ -568,8 +568,15 @@ fn status_for_handler_error(error: Error) -> IMStatusCode {
 }
 
 /// Virtual Sprinkler Valves
-/// Creates sprinkler valves for demonstrations and testing. Only one valve can
-/// water at a time.
+/// Lets people try sprinkler applications without installing physical
+/// irrigation hardware. The user chooses one or more virtual valves and can set
+/// the default watering duration for each valve. The user or a sprinkler
+/// application can open a valve indefinitely, open it for a chosen duration, or
+/// close it. The valve controller automatically closes timed watering and
+/// closes any other valve before opening a new one, so only one valve waters at
+/// a time. The valve controller shows each valve's open or closed state,
+/// selected duration, default duration, and remaining time, and remembers the
+/// default duration across restarts.
 #[libertas_data_schema(ValveData)]
 pub fn virtual_irrigation_controller(
     /*
