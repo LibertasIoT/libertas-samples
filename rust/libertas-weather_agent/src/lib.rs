@@ -2083,9 +2083,18 @@ fn handle_endpoint_event(
 }
 
 /// Local Weather
-/// Gets local conditions and forecasts using the Hub's location. It remembers
-/// the latest good weather during short outages and refreshes automatically
-/// when the location changes.
+/// Provides current local weather, recent hourly conditions, and forecasts for
+/// sprinkler planning. The user chooses where sprinkler applications receive
+/// this information. The weather service uses the Libertas installation's
+/// location to retrieve temperature, relative humidity, precipitation,
+/// estimated water loss from soil and plants, wind speed, and wind gusts from
+/// Open-Meteo. The weather service automatically refreshes current conditions,
+/// recent history, and a seven-day forecast and reports changes to sprinkler
+/// applications. The weather service preserves the latest valid information
+/// across restarts and short internet or location-service outages and refreshes
+/// for a new location when the installation moves. Location access and an
+/// internet connection are required for fresh information. Only one Local
+/// Weather service can run at a time.
 #[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentData")]
 #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
 #[libertas_singleton]
