@@ -1,0 +1,1 @@
+Object.defineProperty(exports,Symbol.toStringTag,{value:`Module`});function e(){libertasLog(2,`Hello world.`),libertasLog(2,`Hello world 6.`)}exports.test_log=e;

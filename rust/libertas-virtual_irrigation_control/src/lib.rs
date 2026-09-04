@@ -577,6 +577,8 @@ fn status_for_handler_error(error: Error) -> IMStatusCode {
 /// a time. The valve controller shows each valve's open or closed state,
 /// selected duration, default duration, and remaining time, and remembers the
 /// default duration across restarts.
+/// [DefaultTaskName]
+/// Virtual sprinkler valves
 #[libertas_data_schema(ValveData)]
 pub fn virtual_irrigation_controller(
     /*

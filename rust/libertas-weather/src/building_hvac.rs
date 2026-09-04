@@ -830,6 +830,7 @@ pub enum BuildingHvacWeatherProtocol {
     /// fallback ranges.
     #[libertas_request]
     #[libertas_subscription_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(BuildingHvacWeatherRecoveryV1)]
     GetBuildingHvacWeatherV1 {
         /// Resume cursor

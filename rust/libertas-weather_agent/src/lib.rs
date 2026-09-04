@@ -42,8 +42,8 @@ use libertas::{
 };
 use libertas_hub::HubProtocol;
 use libertas_macros::{
-    LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
-    libertas_permissions, libertas_singleton,
+    LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_access_host,
+    libertas_data_schema, libertas_permissions, libertas_singleton,
 };
 use libertas_weather::{
     SPRINKLER_CURRENT_FRESHNESS_SECONDS, SPRINKLER_CURRENT_REFRESH_INTERVAL_SECONDS,
@@ -81,13 +81,13 @@ const LOCATION_EQUALITY_TOLERANCE_DEGREES: f64 = 0.000_001;
 
 /// Saved weather information
 /// Names and descriptions for information kept between restarts.
-pub const APP_STRINGS: [(&str, &str); 6] = [
+pub const APP_STRINGS: [(&str, &str); 7] = [
     (
         "SPRINKLER_WEATHER_HISTORY_METADATA_V1",
         "Saved sprinkler weather update time for {0}.",
     ),
     (
-        "SPRINKLER_WEATHER_HISTORY_PERIODS_V1",
+        "SPRINKLER_WEATHER_HISTORY_PERIODS_V2",
         "Saved recent sprinkler weather for {0}.",
     ),
     (
@@ -101,6 +101,10 @@ pub const APP_STRINGS: [(&str, &str); 6] = [
     (
         "SPRINKLER_WEATHER_LOCATION_V1",
         "Saved location used for sprinkler weather at {0}.",
+    ),
+    (
+        "api.open-meteo.com",
+        "Connect to Open-Meteo to retrieve current conditions, recent history, and forecasts for sprinkler planning.",
     ),
     (
         "libertas.permission.ACCESS_FINE_LOCATION",
@@ -119,10 +123,13 @@ const LOCATION_RESOURCE: &str = APP_STRINGS[4].0;
 pub struct SprinklerWeatherEndpointServerV1 {
     /// Weather service
     /// Choose where sprinkler apps can get weather updates.
+    /// [DefaultText]
+    /// Sprinkler weather service
     #[libertas_endpoint_schema(SprinklerWeatherProtocol)]
     #[libertas_endpoint_server]
     #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
     #[libertas_ui_header]
+    #[libertas_exclude_ui]
     pub endpoint: LibertasEndpoint,
 }
 
@@ -818,8 +825,7 @@ impl WeatherServerState {
             }
         } else {
             // A V2 snapshot is meaningful only once it is bound to a provider
-            // site. Do not fall back to a legacy reset that cannot carry V2
-            // history; ask the client to retry after Hub location recovery.
+            // site, so ask the client to retry after Hub location recovery.
             SprinklerWeatherRecoveryV1::ErrorV1 {
                 error: SprinklerWeatherRecoveryErrorV1::TemporarilyUnavailable,
                 retry_after_seconds: Some(RETRY_WITHOUT_UTC_SECONDS),
@@ -979,13 +985,7 @@ impl WeatherServerState {
                 SprinklerWeatherSectionV1::Current => self.snapshot.current = None,
                 SprinklerWeatherSectionV1::Forecast => self.snapshot.forecast = None,
             },
-            // Legacy history changes cannot populate the V2 cache because
-            // their positional payload has no temperature, humidity, or wind.
-            // The V2 server never emits them and does not advance its cursor
-            // for an attempted internal legacy publication.
-            SprinklerWeatherChangeV1::HistoryPeriodsUpsertV1 { .. }
-            | SprinklerWeatherChangeV1::HistoryPeriodsRemoveV1 { .. }
-            | SprinklerWeatherChangeV1::HistoryReplaceV1 { .. }
+            SprinklerWeatherChangeV1::HistoryPeriodsRemoveV1 { .. }
             | SprinklerWeatherChangeV1::HistoryPeriodsUpsertV2 { .. }
             | SprinklerWeatherChangeV1::ForecastPeriodsUpsertV1 { .. }
             | SprinklerWeatherChangeV1::ForecastPeriodsRemoveV1 { .. } => {
@@ -1152,7 +1152,6 @@ fn indexed_history_record_is_current(
 struct IndexedHistoryReconstruction {
     history: Option<SprinklerWeatherHistoryV2>,
     records_to_remove: Vec<i64>,
-    legacy_v1_records_found: bool,
 }
 
 fn reconstruct_indexed_history(
@@ -1161,19 +1160,7 @@ fn reconstruct_indexed_history(
 ) -> IndexedHistoryReconstruction {
     let mut accepted = Vec::new();
     let mut records_to_remove = Vec::new();
-    let mut legacy_v1_records_found = false;
     for record in records {
-        if matches!(
-            record.data,
-            SprinklerWeatherPersistentData::HistoryPeriodV1 { .. }
-        ) {
-            // V1 has no temperature, humidity, wind, or gust fields. Never
-            // reinterpret it as a V2 sample or manufacture zero-valued
-            // observations during migration.
-            legacy_v1_records_found = true;
-            records_to_remove.push(record.index);
-            continue;
-        }
         if !indexed_history_record_is_current(record, metadata) {
             records_to_remove.push(record.index);
             continue;
@@ -1199,7 +1186,6 @@ fn reconstruct_indexed_history(
     IndexedHistoryReconstruction {
         history: valid_history(&history).then_some(history),
         records_to_remove,
-        legacy_v1_records_found,
     }
 }
 
@@ -1245,13 +1231,6 @@ fn load_indexed_history(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherHi
         &mut records,
     );
     let reconstruction = reconstruct_indexed_history(metadata, &records);
-    if reconstruction.legacy_v1_records_found {
-        // A mixed V1/V2 cache can be produced by a stop during migration. It
-        // is not a complete V2 history, so clear the bounded cache and its
-        // metadata. The missing section schedules an immediate provider fetch.
-        clear_indexed_history(endpoint);
-        return None;
-    }
     for index in reconstruction.records_to_remove {
         libertas_data_remove_indexed_records(database.handle, index, index);
     }
@@ -2095,8 +2074,11 @@ fn handle_endpoint_event(
 /// for a new location when the installation moves. Location access and an
 /// internet connection are required for fresh information. Only one Local
 /// Weather service can run at a time.
+/// [DefaultTaskName]
+/// Local weather
 #[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentData")]
 #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
+#[libertas_access_host("api.open-meteo.com")]
 #[libertas_singleton]
 pub fn libertas_weather_server(sprinkler_weather: SprinklerWeatherEndpointServerV1) {
     let endpoint = sprinkler_weather.endpoint;
@@ -2208,9 +2190,7 @@ mod tests {
     use alloc::vec;
     use libertas::AvroDecode;
     use libertas_weather::{
-        SprinklerWeatherChangeV1, SprinklerWeatherForecastPeriodV1,
-        SprinklerWeatherHistoryPeriodV1, SprinklerWeatherHistoryPeriodV2,
-        SprinklerWeatherHistoryV1,
+        SprinklerWeatherChangeV1, SprinklerWeatherForecastPeriodV1, SprinklerWeatherHistoryPeriodV2,
     };
 
     const OLD_EPOCH: LibertasDateTime = 1_784_972_800;
@@ -2234,15 +2214,6 @@ mod tests {
             reference_evapotranspiration_millimeters: 0.2,
             wind_speed_meters_per_second: 2.5,
             wind_gust_meters_per_second: 4.5,
-        }
-    }
-
-    fn legacy_history_period(starts_at: LibertasDateTime) -> SprinklerWeatherHistoryPeriodV1 {
-        SprinklerWeatherHistoryPeriodV1 {
-            starts_at,
-            duration_seconds: 3_600,
-            precipitation_millimeters: 2.0,
-            reference_evapotranspiration_millimeters: 0.2,
         }
     }
 
@@ -2595,28 +2566,6 @@ mod tests {
     }
 
     #[test]
-    fn legacy_history_change_is_never_published_as_v2() {
-        let original = snapshot();
-        let mut state = WeatherServerState::new(ENDPOINT, Some(NEW_EPOCH), original.clone());
-        let publication = state.apply_change(
-            SprinklerWeatherChangeV1::HistoryReplaceV1 {
-                history: SprinklerWeatherHistoryV1 {
-                    retrieved_at: OLD_EPOCH,
-                    valid_until: OLD_EPOCH + 7_200,
-                    periods: vec![legacy_history_period(OLD_EPOCH - 3_600)],
-                },
-            },
-            100,
-            NEW_EPOCH,
-        );
-
-        assert!(publication.report.is_none());
-        assert_eq!(state.snapshot, original);
-        assert_eq!(state.cursor, Some(cursor(NEW_EPOCH, 0)));
-        assert!(state.journal.is_empty());
-    }
-
-    #[test]
     fn location_change_clear_is_an_incremental_weather_change() {
         let mut state = WeatherServerState::new(ENDPOINT, Some(NEW_EPOCH), snapshot());
         let publication = state.apply_change(
@@ -2929,54 +2878,12 @@ mod tests {
 
         let reconstructed = reconstruct_indexed_history(metadata, &records);
         assert_eq!(reconstructed.history, Some(expected));
-        assert!(!reconstructed.legacy_v1_records_found);
         assert_eq!(
             reconstructed.records_to_remove,
             vec![
                 wrong_variant_index,
                 history_period_index(&mismatched).unwrap() + 1
             ]
-        );
-    }
-
-    #[test]
-    fn legacy_v1_history_is_flagged_for_cache_reset_without_fabricated_metrics() {
-        let expected = history();
-        let metadata = history_metadata(&expected);
-        let v2_period = expected.periods[1];
-        let legacy_period = legacy_history_period(OLD_EPOCH - 7_200);
-        let legacy_index = i64::try_from(legacy_period.starts_at).unwrap();
-        let records = vec![
-            IndexedData {
-                index: legacy_index,
-                data: SprinklerWeatherPersistentData::HistoryPeriodV1 {
-                    period: legacy_period,
-                },
-            },
-            IndexedData {
-                index: history_period_index(&v2_period).unwrap(),
-                data: SprinklerWeatherPersistentData::HistoryPeriodV2 { period: v2_period },
-            },
-        ];
-
-        let reconstructed = reconstruct_indexed_history(metadata, &records);
-
-        assert!(reconstructed.legacy_v1_records_found);
-        assert_eq!(reconstructed.records_to_remove, vec![legacy_index]);
-        assert_eq!(
-            reconstructed
-                .history
-                .expect("the pure scan may retain independently valid V2 rows")
-                .periods,
-            vec![v2_period]
-        );
-
-        let mut post_migration_snapshot = snapshot();
-        post_migration_snapshot.history = None;
-        assert_eq!(
-            startup_refresh_delays(&post_migration_snapshot, Some(OLD_EPOCH + 300)).1,
-            0,
-            "clearing legacy history must schedule an immediate hourly refetch"
         );
     }
 

@@ -120,6 +120,16 @@ Common schema attributes:
   `#[libertas_endpoint_server]`,
   `#[libertas_endpoint_base_objects("path")]`
 
+Every Endpoint server field must define a truthful, one-line localized default
+name with `[DefaultText]` in its source documentation. This is document metadata,
+not `#[libertas_default(...)]`: on an Endpoint client, `libertas_default` names a
+recommended `developer-package::function` task process instead.
+
+Every application function must likewise define a truthful, one-line localized
+initial task name with `[DefaultTaskName]` in its source documentation.
+`[DefaultText]` is invalid on a function; it remains specific to effective
+`String` fields and Endpoint server fields.
+
 Functions that require platform permissions must declare them with a const
 string array and `#[libertas_permissions(...)]`. Every permission must also be
 a key in that function's `#[libertas_string_resources(...)]` constant, with a
@@ -160,7 +170,30 @@ with the appropriate roles: `#[libertas_request]`, `#[libertas_response]`,
 `#[libertas_subscription_request]`, or `#[libertas_subscription_data]`. Use
 `#[libertas_next_request(...)]`, `#[libertas_next_response(...)]`,
 `#[libertas_cacheable]`, and `#[libertas_copy_from("path")]` only when their
-transaction semantics are actually implemented.
+transaction semantics are actually implemented. A mutating request must declare
+`#[libertas_access_privilege("Write")]`; omission permits either Read or Write
+access and Libertas cannot infer that an application operation mutates state.
+
+Add the no-argument `#[libertas_error]` marker beside
+`#[libertas_response]` only when the complete typed response is an error. It
+does not imply the Response role or change the payload, Avro encoding, routing,
+or transition graph. Clients consume it out of band without installing or
+visualizing it, preserve the current interaction and response data, and keep
+retry available. Put the most useful user-facing explanation in its first
+`#[libertas_formatted_text]` field; otherwise clients use a generalized
+localized error.
+
+A normal Response with no effective `#[libertas_next_request(...)]` is a
+terminal, non-transition acknowledgement, commonly a shared Success or Failure.
+It completes the in-flight attempt without replacing the current response or
+`CopyFrom` context, changing current request choices, or displacing live
+subscription data; omission never enables every Request. A Response with a
+non-empty NextRequest installs as the current protocol value and exposes exactly
+those named next requests. For a variant that is both Response and
+SubscriptionData, the runtime operation controls: a correlated Response follows
+the acknowledgement rule, while Data always installs or refreshes live state.
+An Error response uses its higher-priority out-of-band behavior even if it has a
+NextRequest.
 
 Name the protocol union itself without a version suffix because it is the
 stable container for the endpoint contract. Version independently evolvable
@@ -715,12 +748,15 @@ compatibility.
 
 - Configuration contains one shared `SprinklerWeatherProtocol` client
   endpoint, one to 16 unique `LibertasUser` reminder recipients, and one or more
-  `SprinklerZoneV1` values. The current reminders cover winterization; the
-  recipient list may serve future reminder types. A zone contains exactly one
-  Matter Irrigation System valve, one curated plant type, one curated
-  sprinkler-head type, and one state server endpoint. Do not restore soil, raw
-  `field_capacity`, measured application-rate configuration, per-zone
-  reminder-recipient lists, or another watering adjustment.
+  `SprinklerZoneV1` values. Recommend the bundled weather server with
+  `#[libertas_default("libertas-weather_agent::libertas_weather_server")]` on
+  that client Endpoint; keep the selector editable and do not use `Fixed`. The
+  current reminders cover winterization; the recipient list may serve future
+  reminder types. A zone contains exactly one Matter Irrigation System valve,
+  one curated plant type, one curated sprinkler-head type, and one state server
+  endpoint. Do not restore soil, raw `field_capacity`, measured application-rate
+  configuration, per-zone reminder-recipient lists, or another watering
+  adjustment.
 - Use the Device Type Editor descriptor for a Matter Irrigation System device
   with the Valve Configuration and Control server cluster. Control the valve
   with the generated typed `Open` and `Close` commands, and observe generated
@@ -737,41 +773,55 @@ compatibility.
   subscription outside any active state borrow.
 - Expose `SprinklerZoneProtocol` on every zone state endpoint. `GetStateV1` is
   both the one-shot and subscription request because the
-  endpoint operation is outside the protocol value. Every accepted request
-  returns `StateV1`; a subscription additionally receives `StateV1` reports
-  after later calculation, adjuster, hold-off, weather, valve, watering-mode, or
-  water-ledger changes.
-- Expose one idempotent `SetWateringModeV1` request with the mutually exclusive
-  `SprinklerWateringModeV1::Active` and `Winterization` values. The mode is
-  system-wide even though the request is accepted through a zone state
-  endpoint. Persist it once, keyed by the shared weather endpoint, before
-  reporting every zone. Do not expose separate Suspend and Resume requests.
+  endpoint operation is outside the protocol value. Every accepted
+  `GetStateV1` returns `StateV1`; a subscription additionally receives
+  `StateV1` reports after later calculation, water-percentage, no-watering,
+  weather, valve, active-state, or water-ledger changes.
+- Keep every user-writable runtime value in one
+  `SprinklerZoneConfigurationV1`: `watering_percent`, normalized
+  `no_watering_periods`, and the system-wide `active` state. Make
+  `GetConfigurationV1` both a one-shot and subscription request and make
+  `ConfigurationV1` both its correlated response and subscription data. It
+  exposes the three independent `SetWateringPercentV1`,
+  `ReplaceNoWateringPeriodsV1`, and `SetActiveV1` requests. Each mutation
+  returns terminal `SuccessV1` or typed `FailureV1`; neither declares
+  NextRequest, and Failure is marked `#[libertas_error]` with its formatted
+  explanation first. Persist and apply an accepted change, publish the
+  authoritative Configuration Data report, then send Success so the installed
+  subscription state and CopyFrom context are preserved. A rejection sends
+  only Failure and leaves state unchanged.
+- Map public `active` to the mutually exclusive internal
+  `SprinklerWateringModeV1::Active` and `Winterization` values. It is
+  system-wide even though `SetActiveV1` is accepted through a zone state
+  endpoint. Persist it once, keyed by the shared weather endpoint, and publish
+  Configuration and State for every zone before success. Do not expose separate
+  Suspend and Resume requests.
 - The only runtime watering adjustment is
   `watering_percent`, an integer percentage from 20 through 200 in steps of 10.
   Apply it directly to the adaptive replenishment, with 100% selecting the
   adaptive amount. Persist the accepted value before reporting its changed
   schedule. The plant profile, sprinkler-head profile, weather history,
   forecast, and observed valve time provide every other amount input.
-- Hold-off periods are runtime schedule constraints, not application
-  configuration. Validate nonzero representable half-open intervals, limit the
-  replacement list to 64 values, sort it, merge overlapping or touching
-  intervals, and shift the complete calculated valve-open slot until it no
-  longer overlaps a hold-off. Persist the normalized replacement before
-  reporting the new schedule. Omit expired constraints from the exposed
-  schedule without reinterpreting their persisted interval.
+- No-watering periods are runtime schedule constraints, not application
+  startup configuration. Validate nonzero representable half-open intervals,
+  limit the replacement list to 64 values, sort it, merge overlapping or
+  touching intervals, and shift the complete calculated valve-open slot until
+  it no longer overlaps one. Persist the normalized replacement before
+  reporting the new schedule and Configuration. Removing expired constraints
+  is also a Configuration change.
 - `SprinklerZoneStateV1` is the user-visible Active/Winterization union. Put every
   current zone field inside its `ActiveV1` payload, represented by
   `SprinklerZoneActiveStateV1`; do not leave common current-data fields outside
-  the union. Keep the watering percentage first because it is the only user
-  input, followed by the demand-estimate source and daily reference rate,
+  the union. Writable values belong only to Configuration; Active state starts
+  with the demand-estimate source and daily reference rate, followed by
   calculation time, decision or constraint, next watering slot, planned water,
   estimated deficit, seven-day precipitation and observed irrigation totals,
-  normalized hold-offs, observed valve-state availability, valve-open state,
-  and valve fault bitmap. Project a future threshold-crossing slot even when
-  water is not needed yet. The Active slot is required and remains the best
-  agronomic estimate when valve state is unavailable, faulted, open, or
-  command-pending; expose those execution constraints through the condition and
-  valve fields instead. `WinterizationV1` contains no fabricated schedule data.
+  observed valve-state availability, valve-open state, and valve fault bitmap.
+  Project a future threshold-crossing slot even when water is not needed yet.
+  The Active slot is required and remains the best agronomic estimate when
+  valve state is unavailable, faulted, open, or command-pending; expose those
+  execution constraints through the condition and valve fields instead.
+  `WinterizationV1` contains no fabricated schedule data.
   Do not start automatic watering until the first non-null Matter current-state
   report establishes the valve's state, and never treat the presence of the
   required Active slot alone as permission to actuate.
@@ -927,8 +977,18 @@ legacy fields or migrations.
   cross-zone influences, and calculated plan. Include each configured indoor
   station's optional capabilities in its room state and the same building-level
   outdoor station state on each room endpoint so `GetRoomV1` can query
-  discovered measurements. Replace writable intent atomically with an expected
-  control revision; sensor-only changes do not increment that revision.
+  discovered measurements. Give `RoomDataV1` the
+  `#[libertas_next_request(ReplaceRoomControlV1)]` transition so a correlated
+  get installs the authoritative room data and exposes its write action. Replace
+  writable intent atomically with an expected control revision; sensor-only
+  changes do not increment that revision. After an accepted replacement,
+  persist it and publish the authoritative `RoomDataV1` Data report before the
+  correlated terminal `RoomControlAcceptedV1` acknowledgement so the
+  acknowledgement cannot displace newer live state. Reject a replacement with
+  terminal `RoomControlRejectedV1`, marked with `#[libertas_error]`; its first
+  field is the formatted explanation. Neither terminal response declares
+  NextRequest, so accepted and rejected attempts preserve the installed room
+  interaction, and rejection leaves retry available.
 - Put `#[libertas_formatted_text]` on the bounded byte-array summaries in room
   data, calculated plans, and rejected writes. Encode each byte array with
   `libertas_formatted_text` as a string-resource identifier followed by the same

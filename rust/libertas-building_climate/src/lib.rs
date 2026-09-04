@@ -1558,13 +1558,17 @@ pub enum BuildingHvacRoomProtocol {
     /// operation selects one-shot or subscription behavior.
     #[libertas_request]
     #[libertas_subscription_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(RoomDataV1)]
     GetRoomV1,
     /// Replace room control
     /// Atomically replaces all writable room intent when `expected_revision`
-    /// still matches the server's current room revision.
+    /// still matches the server's current room revision. Its accepted or
+    /// rejected acknowledgement leaves the current room data installed; an
+    /// accepted change is published separately as authoritative room data.
     #[libertas_request]
-    #[libertas_next_response("RoomDataV1,RoomControlRejectedV1")]
+    #[libertas_access_privilege("Write")]
+    #[libertas_next_response("RoomControlAcceptedV1,RoomControlRejectedV1")]
     ReplaceRoomControlV1 {
         /// Expected revision
         /// The revision from the last fully received room runtime. A mismatch
@@ -1576,11 +1580,13 @@ pub enum BuildingHvacRoomProtocol {
     },
     /// Room data
     /// Carries the complete authoritative room runtime. It is returned for a
-    /// room request or accepted control replacement, and reported to subscribers
-    /// after a visible change. No-change liveness uses PeerAlive instead of
-    /// repeating UI-visible data.
+    /// room request and reported to subscribers after a visible change. An
+    /// accepted control replacement publishes this data before its correlated
+    /// acknowledgement. No-change liveness uses PeerAlive instead of repeating
+    /// UI-visible data.
     #[libertas_response]
     #[libertas_subscription_data]
+    #[libertas_next_request(ReplaceRoomControlV1)]
     RoomDataV1 {
         /// Formatted room status
         /// Canonical formatted-text bytes containing a package-local resource
@@ -1679,9 +1685,10 @@ pub enum BuildingHvacRoomProtocol {
     },
     /// Room control rejected
     /// Rejects a control replacement without changing persistent or runtime
-    /// state. The current revision and control let a client reconcile before
-    /// retrying.
+    /// state. This error is presented without replacing the current room data,
+    /// and the current revision and control let a client reconcile before retrying.
     #[libertas_response]
+    #[libertas_error]
     RoomControlRejectedV1 {
         /// Formatted rejection
         /// Canonical formatted-text bytes containing the package-local resource
@@ -1704,6 +1711,17 @@ pub enum BuildingHvacRoomProtocol {
         #[libertas_read_only]
         current_control: BuildingHvacRoomControlV1,
     },
+    /// Room control accepted
+    /// Confirms that the complete room control was persisted and applied. This
+    /// acknowledgement does not replace the authoritative room data published
+    /// immediately before it.
+    #[libertas_response]
+    RoomControlAcceptedV1 {
+        /// Accepted control revision
+        /// The new control revision assigned to the accepted replacement.
+        #[libertas_read_only]
+        control_revision: u64,
+    },
 }
 
 /// Room
@@ -1719,6 +1737,8 @@ pub struct BuildingHvacRoomV1 {
     /// Room controls
     /// Choose where this room's comfort settings, conditions, and schedule will
     /// be available.
+    /// [DefaultText]
+    /// Room controls
     #[libertas_endpoint_schema(BuildingHvacRoomProtocol)]
     #[libertas_endpoint_server]
     #[libertas_unique]
@@ -1969,6 +1989,7 @@ pub enum BuildingHvacExternalFeatureProtocol {
     /// Reads the current snapshot or starts a subscription.
     #[libertas_request]
     #[libertas_subscription_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response("ExternalFeaturesV1,ExternalFeaturesErrorV1")]
     GetExternalFeaturesV1,
     /// External features
@@ -1998,6 +2019,7 @@ pub enum BuildingHvacExternalFeatureProtocol {
     /// External feature error
     /// Correlated typed error. The previous persistent snapshot remains intact.
     #[libertas_response]
+    #[libertas_error]
     ExternalFeaturesErrorV1 {
         /// Error
         /// Provider or validation failure.
@@ -4285,6 +4307,8 @@ fn restore_machine_learning_models(
 /// sends selected people warnings, reminders, and recovery messages for freeze
 /// risk, excessive heat, unavailable control, or ineffective heating and
 /// cooling; these are not life-safety alarms.
+/// [DefaultTaskName]
+/// Smart building climate
 #[libertas_data_schema(BuildingHvacPersistentData)]
 #[libertas_permissions(BUILDING_CLIMATE_PERMISSIONS)]
 pub fn libertas_building_climate(
@@ -5218,6 +5242,9 @@ mod tests {
                 error: BuildingHvacRoomControlErrorV1::RevisionConflict,
                 current_control_revision: 3,
                 current_control: BuildingHvacRoomControlV1::default(),
+            },
+            BuildingHvacRoomProtocol::RoomControlAcceptedV1 {
+                control_revision: 4,
             },
         ];
 
@@ -6387,6 +6414,9 @@ mod tests {
                 error: BuildingHvacRoomControlErrorV1::RevisionConflict,
                 current_control_revision: 3,
                 current_control: BuildingHvacRoomControlV1::default(),
+            },
+            BuildingHvacRoomProtocol::RoomControlAcceptedV1 {
+                control_revision: 4,
             },
         ];
         for (index, value) in protocols.iter().enumerate() {

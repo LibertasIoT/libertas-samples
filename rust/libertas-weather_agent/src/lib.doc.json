@@ -1,0 +1,50 @@
+{
+  "DocumentVersion": "0.0.2",
+  "Locale": "en",
+  "DisplayName": "Local Weather",
+  "Description": "Keeps recent conditions and forecasts available to apps such as Smart\nSprinkler.\nLocal Weather uses the Hub's location to request the right forecast. It\nremembers the latest good weather during short internet or location-service\ninterruptions and updates automatically when the Hub moves.",
+  "StringResources": {
+    "libertas.permission.ACCESS_FINE_LOCATION": "Use the Hub's location to request the correct local weather forecast.",
+    "api.open-meteo.com": "Connect to Open-Meteo to retrieve current conditions, recent history, and forecasts for sprinkler planning.",
+    "SPRINKLER_WEATHER_LOCATION_V1": "Saved location used for sprinkler weather at {0}.",
+    "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "Saved recent sprinkler weather for {0}.",
+    "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "Saved sprinkler weather update time for {0}.",
+    "SPRINKLER_WEATHER_FORECAST_V1": "Saved sprinkler weather forecast for {0}.",
+    "SPRINKLER_CURRENT_WEATHER_V1": "Saved current sprinkler weather for {0}."
+  },
+  "List": [
+    {
+      "Name": "libertas_weather_server",
+      "DisplayName": "Local Weather",
+      "Description": "Provides current local weather, recent hourly conditions, and forecasts for\nsprinkler planning. The user chooses where sprinkler applications receive\nthis information. The weather service uses the Libertas installation's\nlocation to retrieve temperature, relative humidity, precipitation,\nestimated water loss from soil and plants, wind speed, and wind gusts from\nOpen-Meteo. The weather service automatically refreshes current conditions,\nrecent history, and a seven-day forecast and reports changes to sprinkler\napplications. The weather service preserves the latest valid information\nacross restarts and short internet or location-service outages and refreshes\nfor a new location when the installation moves. Location access and an\ninternet connection are required for fresh information. Only one Local\nWeather service can run at a time.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "sprinkler_weather",
+          "Description": ""
+        }
+      ],
+      "DefaultTaskName": "Local weather"
+    }
+  ],
+  "Types": [
+    {
+      "Name": "SprinklerWeatherEndpointServerV1",
+      "DisplayName": "Sprinkler weather service",
+      "Description": "Makes local weather available to Smart Sprinkler.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler weather service",
+          "Description": "Makes local weather available to Smart Sprinkler."
+        },
+        {
+          "Type": 1,
+          "Name": "Weather service",
+          "Description": "Choose where sprinkler apps can get weather updates.",
+          "DefaultText": "Sprinkler weather service"
+        }
+      ]
+    }
+  ]
+}

@@ -108,42 +108,10 @@ pub const SPRINKLER_SUBSCRIPTION_REPLAY_WINDOW_SECONDS: u32 = 24 * 60 * 60;
 /// never synthetic application data.
 pub const SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS: u32 = 20 * 60;
 
-/// Sprinkler weather history period
-/// Contains the precipitation input and reference evapotranspiration loss for
-/// one completed period in a sprinkler irrigation water balance.
-#[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub struct SprinklerWeatherHistoryPeriodV1 {
-    /// Start time
-    /// The inclusive date and time at which this historical period begins.
-    pub starts_at: LibertasDateTime,
-    /// Duration
-    /// The length of this historical period in seconds. Open-Meteo history
-    /// normally uses 3,600-second periods.
-    #[libertas_time_interval]
-    pub duration_seconds: u32,
-    /// Precipitation
-    /// Total precipitation, including the water equivalent of frozen
-    /// precipitation, accumulated during this period in millimeters. This is a
-    /// required water input to the irrigation balance.
-    #[libertas_format("0.##")]
-    #[libertas_number(min = 0)]
-    #[libertas_physical_unit("millimeter")]
-    pub precipitation_millimeters: f32,
-    /// Reference evapotranspiration
-    /// FAO-56 reference evapotranspiration accumulated during this period in
-    /// millimeters. This is the weather-driven water loss before applying a
-    /// plant-specific crop coefficient.
-    #[libertas_format("0.##")]
-    #[libertas_number(min = 0)]
-    #[libertas_physical_unit("millimeter")]
-    pub reference_evapotranspiration_millimeters: f32,
-}
-
 /// Sprinkler weather history period V2
 /// Extends the completed-period water balance with the temperature, humidity,
 /// sustained-wind, and gust observations needed to explain irrigation
-/// decisions. V1 remains unchanged so previously persisted and transmitted
-/// records retain their positional Avro layout.
+/// decisions.
 #[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerWeatherHistoryPeriodV2 {
     /// Start time
@@ -196,56 +164,6 @@ pub struct SprinklerWeatherHistoryPeriodV2 {
     pub wind_gust_meters_per_second: f32,
 }
 
-impl From<SprinklerWeatherHistoryPeriodV2> for SprinklerWeatherHistoryPeriodV1 {
-    /// Retains the V1 water-balance fields while deliberately discarding the
-    /// V2-only explanatory observations.
-    /// #[libertas_ignored]
-    fn from(period: SprinklerWeatherHistoryPeriodV2) -> Self {
-        Self {
-            starts_at: period.starts_at,
-            duration_seconds: period.duration_seconds,
-            precipitation_millimeters: period.precipitation_millimeters,
-            reference_evapotranspiration_millimeters: period
-                .reference_evapotranspiration_millimeters,
-        }
-    }
-}
-
-/// Sprinkler weather history
-/// Contains recent completed hourly periods used to reconstruct and update the
-/// sprinkler irrigation water balance. The last successful value is retained
-/// when a later history refresh fails.
-#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub struct SprinklerWeatherHistoryV1 {
-    /// Retrieved at
-    /// The date and time when the complete history section was last retrieved,
-    /// validated, and accepted.
-    pub retrieved_at: LibertasDateTime,
-    /// Valid until
-    /// The exclusive freshness deadline. The history is fresh while the current
-    /// time is earlier than this value and stale at or after this value. Stale
-    /// history remains available as degraded cached input.
-    pub valid_until: LibertasDateTime,
-    /// History periods
-    /// Completed periods ordered from oldest to newest. A normal response covers
-    /// the previous seven days at one-hour resolution; a shorter list is valid
-    /// partial history.
-    /// ----
-    /// History period
-    /// Precipitation and reference evapotranspiration for one completed period.
-    pub periods: Vec<SprinklerWeatherHistoryPeriodV1>,
-}
-
-impl SprinklerWeatherHistoryV1 {
-    /// History freshness
-    /// Returns `true` when `now` is earlier than `valid_until`. Equality means
-    /// the section has expired.
-    /// #[libertas_ignored]
-    pub fn is_fresh_at(&self, now: LibertasDateTime) -> bool {
-        now < self.valid_until
-    }
-}
-
 /// Sprinkler weather history V2
 /// Contains recent completed periods with the full weather observations used
 /// for both irrigation calculations and decision-explanation charts.
@@ -275,19 +193,6 @@ impl SprinklerWeatherHistoryV2 {
     /// #[libertas_ignored]
     pub fn is_fresh_at(&self, now: LibertasDateTime) -> bool {
         now < self.valid_until
-    }
-}
-
-impl From<SprinklerWeatherHistoryV2> for SprinklerWeatherHistoryV1 {
-    /// Retains the complete V1 water-balance history while deliberately
-    /// discarding V2-only explanatory observations.
-    /// #[libertas_ignored]
-    fn from(history: SprinklerWeatherHistoryV2) -> Self {
-        Self {
-            retrieved_at: history.retrieved_at,
-            valid_until: history.valid_until,
-            periods: history.periods.into_iter().map(Into::into).collect(),
-        }
     }
 }
 
@@ -554,23 +459,6 @@ impl SprinklerWeatherTimeRangeV1 {
     }
 }
 
-/// Sprinkler weather snapshot
-/// Contains the last successfully accepted value of each requested weather
-/// section. Missing sections have no usable cached value; stale sections remain
-/// present with their original `valid_until` timestamps.
-#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub struct SprinklerWeatherSnapshotV1 {
-    /// Recent history
-    /// The requested historical periods, when usable cached history exists.
-    pub history: Option<SprinklerWeatherHistoryV1>,
-    /// Current conditions
-    /// The last accepted current conditions when requested and available.
-    pub current: Option<SprinklerCurrentWeatherV1>,
-    /// Forecast
-    /// The requested forecast periods, when usable cached forecast data exists.
-    pub forecast: Option<SprinklerWeatherForecastV1>,
-}
-
 /// Sprinkler weather snapshot V2
 /// Contains independently available full-observation history, current
 /// conditions, and forecast sections. Missing sections have no usable cached
@@ -610,25 +498,6 @@ pub enum SprinklerWeatherSectionV1 {
 /// Variant order and field order are part of the append-only Avro wire format.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum SprinklerWeatherChangeV1 {
-    /// Upsert historical periods
-    /// Marks a successful history refresh and inserts or replaces periods by
-    /// `starts_at`. An empty period list updates only retrieval and freshness
-    /// metadata.
-    HistoryPeriodsUpsertV1 {
-        /// Retrieved at
-        /// The successful retrieval and validation time for the history section.
-        retrieved_at: LibertasDateTime,
-        /// Valid until
-        /// The new exclusive freshness deadline for the history section.
-        valid_until: LibertasDateTime,
-        /// Historical periods
-        /// Periods to insert or replace, ordered from oldest to newest.
-        /// ----
-        /// Historical period
-        /// One completed V1 precipitation and reference-evapotranspiration
-        /// period keyed by `starts_at`.
-        periods: Vec<SprinklerWeatherHistoryPeriodV1>,
-    },
     /// Remove historical periods
     /// Removes cached historical periods whose start times fall within the
     /// supplied half-open range.
@@ -681,14 +550,6 @@ pub enum SprinklerWeatherChangeV1 {
         /// The independently cached section to clear.
         section: SprinklerWeatherSectionV1,
     },
-    /// Replace history
-    /// Replaces the complete historical section after a successful provider
-    /// refresh. Periods absent from the replacement are no longer cached.
-    HistoryReplaceV1 {
-        /// History
-        /// The complete newly accepted historical section.
-        history: SprinklerWeatherHistoryV1,
-    },
     /// Replace forecast
     /// Replaces the complete forecast section after a successful provider
     /// refresh. Periods absent from the replacement are no longer cached.
@@ -708,7 +569,7 @@ pub enum SprinklerWeatherChangeV1 {
     },
     /// Upsert historical periods V2
     /// Marks a successful history refresh and inserts or replaces full-weather
-    /// periods by `starts_at` without changing the legacy V1 wire layout.
+    /// periods by `starts_at`.
     HistoryPeriodsUpsertV2 {
         /// Retrieved at
         /// The successful retrieval and validation time for the history section.
@@ -844,28 +705,6 @@ pub enum SprinklerWeatherRecoveryV1 {
         /// The contiguous change range beginning at the requested cursor.
         report: SprinklerWeatherIncrementalReportV1,
     },
-    /// Reset with snapshot
-    /// Establishes a new cursor when replay is impossible or no cursor was
-    /// supplied. History and forecast sections are limited to the fallback
-    /// ranges requested by the client. A server cursor reset changes only
-    /// transient cursor state: the returned snapshot is rebuilt from retained
-    /// persistent sections and, when necessary, data retrieved from Open-Meteo.
-    ResetV1 {
-        /// Reset reason
-        /// The reason a snapshot replaced incremental replay.
-        reason: SprinklerWeatherResetReasonV1,
-        /// Current cursor
-        /// The cursor representing the returned snapshot. Subsequent reports
-        /// begin with this value as `from_cursor`. For `ServerCursorReset`, its
-        /// epoch timestamp is strictly newer and its sequence is lower than the
-        /// request cursor. The sequence can be greater than zero when changes
-        /// occurred after the server reset and before this response.
-        cursor: SprinklerWeatherCursorV1,
-        /// Weather snapshot
-        /// The available cached sections constrained by the requested fallback
-        /// ranges.
-        snapshot: SprinklerWeatherSnapshotV1,
-    },
     /// Recovery error
     /// Rejects the request without changing the client's cursor or local
     /// weather state.
@@ -878,28 +717,9 @@ pub enum SprinklerWeatherRecoveryV1 {
         /// request parameters must change before a retry can succeed.
         retry_after_seconds: Option<u32>,
     },
-    /// Reset with site snapshot
-    /// Establishes a new cursor and explicitly binds the returned snapshot to
-    /// its provider site. New servers use this variant whenever a valid Hub
-    /// location is known; `ResetV1` remains decodable for older servers.
-    ResetAtSiteV1 {
-        /// Reset reason
-        /// The reason a snapshot replaced incremental replay.
-        reason: SprinklerWeatherResetReasonV1,
-        /// Current cursor
-        /// The cursor representing the returned snapshot.
-        cursor: SprinklerWeatherCursorV1,
-        /// Site location
-        /// WGS84 location used to obtain the returned weather sections.
-        location: SprinklerWeatherLocationV1,
-        /// Weather snapshot
-        /// Available cached sections constrained by requested fallback ranges.
-        snapshot: SprinklerWeatherSnapshotV1,
-    },
     /// Reset with site snapshot V2
     /// Establishes a new cursor and binds a full-observation history snapshot
-    /// to its provider site. This append-only variant leaves all V1 recovery
-    /// discriminants unchanged.
+    /// to its provider site.
     ResetAtSiteV2 {
         /// Reset reason
         /// The reason a snapshot replaced incremental replay.
@@ -931,6 +751,7 @@ pub enum SprinklerWeatherProtocol {
     /// `after_cursor` when possible, or returns a range-limited cached snapshot.
     #[libertas_request]
     #[libertas_subscription_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(WeatherRecoveryV1)]
     GetWeatherV1 {
         /// Resume cursor
@@ -1049,14 +870,14 @@ pub enum SprinklerWeatherPersistentData {
         /// Retrieval and freshness timestamps for the accepted indexed set.
         metadata: SprinklerWeatherHistoryMetadataV1,
     },
-    /// History period
-    /// Stores one completed hourly period in indexed data, keyed by its start
-    /// timestamp so corrections replace only that hour.
-    HistoryPeriodV1 {
+    /// History period V2
+    /// Stores one completed full-weather period in indexed data. It occupies
+    /// the removed V1 period's union position; the V2 history resource name
+    /// keeps those incompatible indexed records separate.
+    HistoryPeriodV2 {
         /// History period
-        /// One completed V1 precipitation and reference-evapotranspiration
-        /// input.
-        period: SprinklerWeatherHistoryPeriodV1,
+        /// Temperature, humidity, precipitation, reference ET, wind, and gusts.
+        period: SprinklerWeatherHistoryPeriodV2,
     },
     /// Current conditions
     /// Stores the last successfully retrieved and validated current-condition
@@ -1077,14 +898,6 @@ pub enum SprinklerWeatherPersistentData {
         /// timestamps.
         forecast: SprinklerWeatherForecastV1,
     },
-    /// History period V2
-    /// Stores one completed full-weather period in indexed data. This variant
-    /// is appended so every previously persisted discriminant remains stable.
-    HistoryPeriodV2 {
-        /// History period
-        /// Temperature, humidity, precipitation, reference ET, wind, and gusts.
-        period: SprinklerWeatherHistoryPeriodV2,
-    },
 }
 
 #[cfg(test)]
@@ -1095,19 +908,6 @@ mod tests {
 
     const CURSOR_TIMESTAMP: LibertasDateTime = 1_784_972_800;
     const LATER_CURSOR_TIMESTAMP: LibertasDateTime = CURSOR_TIMESTAMP + 60;
-
-    fn history() -> SprinklerWeatherHistoryV1 {
-        SprinklerWeatherHistoryV1 {
-            retrieved_at: 1_784_972_800,
-            valid_until: 1_784_980_000,
-            periods: vec![SprinklerWeatherHistoryPeriodV1 {
-                starts_at: 1_784_969_200,
-                duration_seconds: 3_600,
-                precipitation_millimeters: 4.2,
-                reference_evapotranspiration_millimeters: 0.2,
-            }],
-        }
-    }
 
     fn history_v2() -> SprinklerWeatherHistoryV2 {
         SprinklerWeatherHistoryV2 {
@@ -1187,14 +987,6 @@ mod tests {
         }
     }
 
-    fn snapshot() -> SprinklerWeatherSnapshotV1 {
-        SprinklerWeatherSnapshotV1 {
-            history: Some(history()),
-            current: Some(current()),
-            forecast: Some(forecast()),
-        }
-    }
-
     fn snapshot_v2() -> SprinklerWeatherSnapshotV2 {
         SprinklerWeatherSnapshotV2 {
             history: Some(history_v2()),
@@ -1237,38 +1029,7 @@ mod tests {
     }
 
     #[test]
-    fn legacy_history_period_v1_keeps_its_fixed_positional_bytes() {
-        let period = SprinklerWeatherHistoryPeriodV1 {
-            starts_at: 1,
-            duration_seconds: 3_600,
-            precipitation_millimeters: 1.5,
-            reference_evapotranspiration_millimeters: 0.25,
-        };
-        let legacy_period_bytes = [
-            0x02, 0xa0, 0x38, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00, 0x80, 0x3e,
-        ];
-
-        assert_eq!(period.to_avro(), legacy_period_bytes);
-        assert_eq!(
-            SprinklerWeatherHistoryPeriodV1::from_avro(&legacy_period_bytes),
-            Ok(period)
-        );
-
-        let legacy_persistent_bytes = [
-            0x04, 0x02, 0xa0, 0x38, 0x00, 0x00, 0xc0, 0x3f, 0x00, 0x00, 0x80, 0x3e,
-        ];
-        assert_eq!(
-            SprinklerWeatherPersistentData::HistoryPeriodV1 { period }.to_avro(),
-            legacy_persistent_bytes
-        );
-        assert_eq!(
-            SprinklerWeatherPersistentData::from_avro(&legacy_persistent_bytes),
-            Ok(SprinklerWeatherPersistentData::HistoryPeriodV1 { period })
-        );
-    }
-
-    #[test]
-    fn v2_history_shapes_round_trip_and_project_the_v1_balance() {
+    fn v2_history_shapes_round_trip() {
         let v2 = history_v2();
         let changes = [
             SprinklerWeatherChangeV1::HistoryPeriodsUpsertV2 {
@@ -1285,9 +1046,6 @@ mod tests {
             let encoded = change.to_avro();
             assert_eq!(SprinklerWeatherChangeV1::from_avro(&encoded), Ok(change));
         }
-
-        let projected: SprinklerWeatherHistoryV1 = v2.into();
-        assert_eq!(projected, history());
     }
 
     #[test]
@@ -1303,35 +1061,6 @@ mod tests {
                 maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
                 recovery: SprinklerWeatherRecoveryV1::ReplayedV1 {
                     report: incremental_report(),
-                },
-            },
-            SprinklerWeatherProtocol::WeatherRecoveryV1 {
-                maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
-                recovery: SprinklerWeatherRecoveryV1::ResetV1 {
-                    reason: SprinklerWeatherResetReasonV1::CursorExpired,
-                    cursor: cursor(CURSOR_TIMESTAMP, 12),
-                    snapshot: snapshot(),
-                },
-            },
-            SprinklerWeatherProtocol::WeatherRecoveryV1 {
-                maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
-                recovery: SprinklerWeatherRecoveryV1::ResetV1 {
-                    reason: SprinklerWeatherResetReasonV1::InitialSubscription,
-                    cursor: cursor(CURSOR_TIMESTAMP, 12),
-                    snapshot: SprinklerWeatherSnapshotV1 {
-                        history: Some(history()),
-                        current: None,
-                        forecast: Some(forecast()),
-                    },
-                },
-            },
-            SprinklerWeatherProtocol::WeatherRecoveryV1 {
-                maximum_wait_interval_seconds: SPRINKLER_SUBSCRIPTION_MAXIMUM_WAIT_INTERVAL_SECONDS,
-                recovery: SprinklerWeatherRecoveryV1::ResetAtSiteV1 {
-                    reason: SprinklerWeatherResetReasonV1::InitialSubscription,
-                    cursor: cursor(CURSOR_TIMESTAMP, 12),
-                    location: location(),
-                    snapshot: snapshot(),
                 },
             },
             SprinklerWeatherProtocol::WeatherRecoveryV1 {
@@ -1365,12 +1094,9 @@ mod tests {
         let values = [
             SprinklerWeatherPersistentData::HistoryMetadataV1 {
                 metadata: SprinklerWeatherHistoryMetadataV1 {
-                    retrieved_at: history().retrieved_at,
-                    valid_until: history().valid_until,
+                    retrieved_at: history_v2().retrieved_at,
+                    valid_until: history_v2().valid_until,
                 },
-            },
-            SprinklerWeatherPersistentData::HistoryPeriodV1 {
-                period: history().periods[0],
             },
             SprinklerWeatherPersistentData::CurrentV1 { current: current() },
             SprinklerWeatherPersistentData::ForecastV1 {
@@ -1434,8 +1160,8 @@ mod tests {
         assert_eq!(
             SprinklerWeatherPersistentData::HistoryMetadataV1 {
                 metadata: SprinklerWeatherHistoryMetadataV1 {
-                    retrieved_at: history().retrieved_at,
-                    valid_until: history().valid_until,
+                    retrieved_at: history_v2().retrieved_at,
+                    valid_until: history_v2().valid_until,
                 },
             }
             .to_avro()
@@ -1443,8 +1169,8 @@ mod tests {
             Some(&2)
         );
         assert_eq!(
-            SprinklerWeatherPersistentData::HistoryPeriodV1 {
-                period: history().periods[0],
+            SprinklerWeatherPersistentData::HistoryPeriodV2 {
+                period: history_v2().periods[0],
             }
             .to_avro()
             .first(),
@@ -1464,25 +1190,12 @@ mod tests {
             .first(),
             Some(&8)
         );
-        assert_eq!(
-            SprinklerWeatherPersistentData::HistoryPeriodV2 {
-                period: history_v2().periods[0],
-            }
-            .to_avro()
-            .first(),
-            Some(&10)
-        );
     }
 
     #[test]
     fn incremental_change_discriminants_are_stable() {
         let range = history_range();
         let changes = [
-            SprinklerWeatherChangeV1::HistoryPeriodsUpsertV1 {
-                retrieved_at: history().retrieved_at,
-                valid_until: history().valid_until,
-                periods: history().periods,
-            },
             SprinklerWeatherChangeV1::HistoryPeriodsRemoveV1 { range },
             SprinklerWeatherChangeV1::CurrentReplaceV1 { current: current() },
             SprinklerWeatherChangeV1::ForecastPeriodsUpsertV1 {
@@ -1496,7 +1209,6 @@ mod tests {
             SprinklerWeatherChangeV1::SectionClearV1 {
                 section: SprinklerWeatherSectionV1::Current,
             },
-            SprinklerWeatherChangeV1::HistoryReplaceV1 { history: history() },
             SprinklerWeatherChangeV1::ForecastReplaceV1 {
                 forecast: forecast(),
             },
@@ -1524,20 +1236,9 @@ mod tests {
             SprinklerWeatherRecoveryV1::ReplayedV1 {
                 report: incremental_report(),
             },
-            SprinklerWeatherRecoveryV1::ResetV1 {
-                reason: SprinklerWeatherResetReasonV1::ServerCursorReset,
-                cursor: cursor(LATER_CURSOR_TIMESTAMP, 3),
-                snapshot: snapshot(),
-            },
             SprinklerWeatherRecoveryV1::ErrorV1 {
                 error: SprinklerWeatherRecoveryErrorV1::CursorAhead,
                 retry_after_seconds: None,
-            },
-            SprinklerWeatherRecoveryV1::ResetAtSiteV1 {
-                reason: SprinklerWeatherResetReasonV1::InitialSubscription,
-                cursor: cursor(LATER_CURSOR_TIMESTAMP, 3),
-                location: location(),
-                snapshot: snapshot(),
             },
             SprinklerWeatherRecoveryV1::ResetAtSiteV2 {
                 reason: SprinklerWeatherResetReasonV1::InitialSubscription,
@@ -1651,17 +1352,19 @@ mod tests {
 
     #[test]
     fn server_cursor_reset_preserves_the_weather_snapshot() {
-        let before_reset = snapshot();
-        let recovery = SprinklerWeatherRecoveryV1::ResetV1 {
+        let before_reset = snapshot_v2();
+        let recovery = SprinklerWeatherRecoveryV1::ResetAtSiteV2 {
             reason: SprinklerWeatherResetReasonV1::ServerCursorReset,
             cursor: cursor(LATER_CURSOR_TIMESTAMP, 3),
+            location: location(),
             snapshot: before_reset.clone(),
         };
 
-        let SprinklerWeatherRecoveryV1::ResetV1 {
+        let SprinklerWeatherRecoveryV1::ResetAtSiteV2 {
             reason,
             cursor: reset_cursor,
             snapshot: after_reset,
+            ..
         } = recovery
         else {
             panic!("expected reset recovery");
@@ -1693,7 +1396,7 @@ mod tests {
 
     #[test]
     fn freshness_expires_at_valid_until_boundary() {
-        let history = history();
+        let history = history_v2();
         let current = current();
         let forecast = forecast();
 

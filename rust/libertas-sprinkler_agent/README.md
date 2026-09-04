@@ -47,15 +47,18 @@ hold-off intervals. The default state and subscription show only the current
 watering condition and next watering slot for an active zone; Winterization
 contains no fabricated watering slot. An explicit advanced-state request shows
 the demand source, calculation time, planned amount, estimated deficit, recent
-rain and irrigation, and valve status. A separate configuration interaction
-presents the adjuster and hold-off periods together in one end-user view. From
-there, each setting still has its own independent update action. Expired
-hold-offs are removed on the next schedule evaluation, persisted, and reflected
-in the next default state report and configuration read. One system-wide
-Watering mode control selects Active or Winterization and is persisted locally
-across restarts and internet outages.
+rain and irrigation, and valve status. A separate subscribable configuration
+presents the watering percentage, no-watering periods, and system-wide Active
+state together in one end-user view. Each value has its own independent update
+action. An accepted update publishes the new configuration before returning a
+terminal success acknowledgement; a typed failure leaves the subscribed
+configuration installed for correction and retry. Expired no-watering periods
+are removed on the next schedule evaluation, persisted, and reported through
+the same configuration subscription. The Active state maps to the durable
+Active/Winterization interlock and is persisted locally across restarts and
+internet outages.
 
-While Watering mode is Active, Libertas Notification reminds the configured
+While Active is on, Libertas Notification reminds the configured
 users to winterize. Fresh current conditions or a fresh seven-day forecast at
 3 °C or below trigger the weather reminder at any latitude. When weather is
 unavailable, the cached Hub location provides a seasonal fallback only at 35°
@@ -117,16 +120,20 @@ Forecast rain and scheduled water are clipped at the report-generation time,
 so a past date can never label a projected input. Available water is a
 calculated root-zone balance, not a soil-moisture sensor reading. Water is
 reported as depth in millimeters because the configuration has no zone area or
-flow meter.
+flow meter. If a selected water-balance boundary has no data, the chart carries
+forward the nearest earlier daily checkpoint. With no trustworthy earlier
+state, it leaves the available-water series empty instead of inventing 0%.
 
 Report weather, watering activities, and daily balance/accounting checkpoints
 are retained without an age-based deletion window. Supplying both bounds can
-select any retained water-usage interval up to two years; balance and weather/ET
-remain limited to 31 days. Every request converts its inclusive first and last
-calendar dates to an internal half-open UTC timestamp range, preserving exact
-chart samples while keeping calendar selection simple. This bounds one
-response without limiting how old the requested data may be. Explicit provider
-corrections can replace or remove their matching weather records. The
+select up to 365 days of water balance, two years of water usage, or 31 days of
+weather/ET. If a selected range is longer, the App keeps the final date and
+discards the excess earliest dates instead of rejecting the request. Every
+request converts its inclusive first and last calendar dates to an internal
+half-open UTC timestamp range, preserving exact chart samples while keeping
+calendar selection simple. This bounds one response without limiting how old
+the requested data may be. Explicit provider corrections can replace or remove
+their matching weather records. The
 underlying controller still reconstructs a separate bounded seven-day ledger
 at startup, so it does not load the indefinite report archive into memory.
 

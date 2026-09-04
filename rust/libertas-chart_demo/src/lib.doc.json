@@ -4,15 +4,16 @@
   "DisplayName": "Libertas chart gallery.",
   "Description": "Explore every chart mark and composition with polished, interactive sample data.",
   "StringResources": {
+    "TRAFFIC_SOURCE_LABEL": "{0,LibertasEnum,TrafficSourceV1}\n{1,number,integer}",
+    "DIRECT_LABEL_FAST": "Fast",
     "DIRECT_LABEL_ACT_NOW": "Act now",
-    "DIRECT_LABEL_CLEAR": "Clear",
-    "DIRECT_LABEL_FAST": "Fast"
+    "DIRECT_LABEL_CLEAR": "Clear"
   },
   "List": [
     {
       "Name": "chart_demo",
       "DisplayName": "Chart gallery",
-      "Description": "Creates an interactive endpoint for exploring every Libertas chart type.",
+      "Description": "Lets people explore every Libertas chart type with polished, interactive\nsample data. The user can choose individual examples or composed dashboards.\nThe gallery shows business portfolios, energy and sales histories,\nforecasts, distributions and uncertainty, activity patterns, traffic\nshares, geographic regions, network relationships, flows, direct labels,\nand layered or polar comparisons. Each example demonstrates its applicable\naxes, legends, tooltips, shapes, colors, labels, and layout.",
       "List": [
         {
           "Type": 0,
@@ -23,1080 +24,6 @@
     }
   ],
   "Types": [
-    {
-      "Name": "NetworkEdgesV1",
-      "DisplayName": "Network edges",
-      "Description": "Arbitrary two-endpoint rules connecting nodes.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Network edges",
-          "Description": "Arbitrary two-endpoint rules connecting nodes."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "PerformanceStoryChartV1",
-      "DisplayName": "Performance story",
-      "Description": "Layers recorded points, a fitted trend, and a target on shared scales.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Performance story",
-          "Description": "Layers recorded points, a fitted trend, and a target on shared scales."
-        },
-        {
-          "Type": 1,
-          "Name": "Recorded results",
-          "Description": "Individual performance measurements."
-        },
-        {
-          "Type": 2,
-          "Name": "Trend",
-          "Description": "Smoothed movement through the observations."
-        },
-        {
-          "Type": 3,
-          "Name": "Target",
-          "Description": "Desired response-time threshold."
-        }
-      ]
-    },
-    {
-      "Name": "NetworkRoleV1",
-      "DisplayName": "Network role",
-      "Description": "Functional role of a node in the topology example.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Network role",
-          "Description": "Functional role of a node in the topology example.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Gateway",
-              "Description": "Entry point into the network."
-            },
-            {
-              "Type": 2,
-              "Name": "Service",
-              "Description": "Processing service in the network."
-            },
-            {
-              "Type": 3,
-              "Name": "Storage",
-              "Description": "Persistent storage node."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "HorizontalGroupedBarV1",
-      "DisplayName": "Horizontal grouped bar",
-      "Description": "One portfolio contribution offset vertically within a quarter.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Horizontal grouped bar",
-          "Description": "One portfolio contribution offset vertically within a quarter."
-        },
-        {
-          "Type": 1,
-          "Name": "Revenue",
-          "Description": "Quarterly revenue on the horizontal quantitative axis."
-        },
-        {
-          "Type": 2,
-          "Name": "Quarter",
-          "Description": "Main categorical row."
-        },
-        {
-          "Type": 3,
-          "Name": "Portfolio offset",
-          "Description": "Places portfolios beside one another within each horizontal group."
-        },
-        {
-          "Type": 4,
-          "Name": "Portfolio color",
-          "Description": "Repeats the portfolio identity as color with a legend below the plot."
-        },
-        {
-          "Type": 5,
-          "Name": "Stable key",
-          "Description": "Unique quarter and portfolio identity."
-        }
-      ]
-    },
-    {
-      "Name": "TemperatureHighLowRuleV1",
-      "DisplayName": "Five-minute temperature range",
-      "Description": "The observed low and high within one five-minute bucket.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Five-minute temperature range",
-          "Description": "The observed low and high within one five-minute bucket."
-        },
-        {
-          "Type": 1,
-          "Name": "Bucket midpoint",
-          "Description": "UTC midpoint of this five-minute observation bucket."
-        },
-        {
-          "Type": 2,
-          "Name": "Low temperature",
-          "Description": "Lowest observed temperature in the bucket."
-        },
-        {
-          "Type": 3,
-          "Name": "High temperature",
-          "Description": "Highest observed temperature in the bucket."
-        },
-        {
-          "Type": 4,
-          "Name": "Closing temperature",
-          "Description": "Last observation in the bucket, repeated for a complete tooltip."
-        }
-      ]
-    },
-    {
-      "Name": "NetworkTopologyChartV1",
-      "DisplayName": "Network topology",
-      "Description": "Layers arbitrary link rules below positioned node symbols.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Network topology",
-          "Description": "Layers arbitrary link rules below positioned node symbols."
-        },
-        {
-          "Type": 1,
-          "Name": "Edges",
-          "Description": "Server-computed node connections."
-        },
-        {
-          "Type": 2,
-          "Name": "Nodes",
-          "Description": "Server-computed node positions."
-        }
-      ]
-    },
-    {
-      "Name": "QuarterV1",
-      "DisplayName": "Quarter",
-      "Description": "Quarter used on categorical axes.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Quarter",
-          "Description": "Quarter used on categorical axes.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "First quarter",
-              "Description": "January through March."
-            },
-            {
-              "Type": 2,
-              "Name": "Second quarter",
-              "Description": "April through June."
-            },
-            {
-              "Type": 3,
-              "Name": "Third quarter",
-              "Description": "July through September."
-            },
-            {
-              "Type": 4,
-              "Name": "Fourth quarter",
-              "Description": "October through December."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "GroupedSalesChartV1",
-      "DisplayName": "Grouped sales",
-      "Description": "Side-by-side categorical bars using a nested offset scale.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Grouped sales",
-          "Description": "Side-by-side categorical bars using a nested offset scale."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "FlowStreamV1",
-      "DisplayName": "Flow stream",
-      "Description": "One independently sampled ribbon in the Sankey example.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Flow stream",
-          "Description": "One independently sampled ribbon in the Sankey example.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Direct activation",
-              "Description": "Visits that activate directly."
-            },
-            {
-              "Type": 2,
-              "Name": "Assisted activation",
-              "Description": "Visits that activate after assistance."
-            },
-            {
-              "Type": 3,
-              "Name": "Early exit",
-              "Description": "Visits that leave before activation."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "SankeyNodeV1",
-      "DisplayName": "Sankey node",
-      "Description": "One explicit rectangular flow stage.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Sankey node",
-          "Description": "One explicit rectangular flow stage."
-        },
-        {
-          "Type": 1,
-          "Name": "Node start x",
-          "Description": "Left node boundary."
-        },
-        {
-          "Type": 2,
-          "Name": "Node end x",
-          "Description": "Right node boundary."
-        },
-        {
-          "Type": 3,
-          "Name": "Node start y",
-          "Description": "Lower node boundary."
-        },
-        {
-          "Type": 4,
-          "Name": "Node end y",
-          "Description": "Upper node boundary."
-        },
-        {
-          "Type": 5,
-          "Name": "Stage",
-          "Description": "Localized flow-stage label."
-        },
-        {
-          "Type": 6,
-          "Name": "Visitors",
-          "Description": "Quantity represented by the node."
-        },
-        {
-          "Type": 7,
-          "Name": "Node color",
-          "Description": "Literal fill color."
-        },
-        {
-          "Type": 8,
-          "Name": "Node key",
-          "Description": "Stable stage identity."
-        }
-      ]
-    },
-    {
-      "Name": "FlowStageV1",
-      "DisplayName": "Flow stage",
-      "Description": "Fixed stage identity used by the Sankey example.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Flow stage",
-          "Description": "Fixed stage identity used by the Sankey example.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Visits",
-              "Description": "Incoming visits."
-            },
-            {
-              "Type": 2,
-              "Name": "Evaluation",
-              "Description": "Visits evaluating the product."
-            },
-            {
-              "Type": 3,
-              "Name": "Activated",
-              "Description": "Visits that completed activation."
-            },
-            {
-              "Type": 4,
-              "Name": "Exited",
-              "Description": "Visits that left before activation."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "PortfolioV1",
-      "DisplayName": "Business portfolio",
-      "Description": "Identifies a product family in comparison charts.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Business portfolio",
-          "Description": "Identifies a product family in comparison charts.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Home",
-              "Description": "Consumer products."
-            },
-            {
-              "Type": 2,
-              "Name": "Business",
-              "Description": "Products for professional teams."
-            },
-            {
-              "Type": 3,
-              "Name": "Platform",
-              "Description": "Shared platform services."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "EnergyHistoryPointV1",
-      "DisplayName": "Energy history point",
-      "Description": "One time-series measurement for an energy scenario.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Energy history point",
-          "Description": "One time-series measurement for an energy scenario."
-        },
-        {
-          "Type": 1,
-          "Name": "Time",
-          "Description": "UTC measurement time."
-        },
-        {
-          "Type": 2,
-          "Name": "Power",
-          "Description": "Electrical demand at this time."
-        },
-        {
-          "Type": 3,
-          "Name": "Scenario",
-          "Description": "Line color and detail grouping."
-        },
-        {
-          "Type": 4,
-          "Name": "Scenario dash",
-          "Description": "Repeats the scenario as a dash encoding with its legend below the plot."
-        },
-        {
-          "Type": 5,
-          "Name": "Emphasis",
-          "Description": "Line width on an identity scale."
-        },
-        {
-          "Type": 6,
-          "Name": "Sequence",
-          "Description": "Drawing order within each line."
-        }
-      ]
-    },
-    {
-      "Name": "CapabilityV1",
-      "DisplayName": "Capability",
-      "Description": "Dimension around the capability radar.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Capability",
-          "Description": "Dimension around the capability radar.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Speed",
-              "Description": "Responsiveness and throughput."
-            },
-            {
-              "Type": 2,
-              "Name": "Reliability",
-              "Description": "Stability under normal operation."
-            },
-            {
-              "Type": 3,
-              "Name": "Efficiency",
-              "Description": "Resource efficiency."
-            },
-            {
-              "Type": 4,
-              "Name": "Simplicity",
-              "Description": "Ease of use."
-            },
-            {
-              "Type": 5,
-              "Name": "Reach",
-              "Description": "Breadth of supported use cases."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "PerformanceTargetRuleV1",
-      "DisplayName": "Performance target",
-      "Description": "Horizontal target spanning the demonstrated time range.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Performance target",
-          "Description": "Horizontal target spanning the demonstrated time range."
-        },
-        {
-          "Type": 1,
-          "Name": "Start time",
-          "Description": "Beginning of the target rule."
-        },
-        {
-          "Type": 2,
-          "Name": "End time",
-          "Description": "End of the target rule."
-        },
-        {
-          "Type": 3,
-          "Name": "Target response time",
-          "Description": "Desired maximum response time."
-        },
-        {
-          "Type": 4,
-          "Name": "Scenario",
-          "Description": "Target rule color and detail group."
-        },
-        {
-          "Type": 5,
-          "Name": "Target dash",
-          "Description": "Repeats the target scenario as a dashed line encoding."
-        },
-        {
-          "Type": 6,
-          "Name": "Target width",
-          "Description": "Emphasizes the target line."
-        }
-      ]
-    },
-    {
-      "Name": "TrafficSourceV1",
-      "DisplayName": "Traffic source",
-      "Description": "Source represented by a donut segment.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Traffic source",
-          "Description": "Source represented by a donut segment.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Direct",
-              "Description": "People navigating directly to the product."
-            },
-            {
-              "Type": 2,
-              "Name": "Search",
-              "Description": "Search-engine referrals."
-            },
-            {
-              "Type": 3,
-              "Name": "Partner",
-              "Description": "Partner referrals."
-            },
-            {
-              "Type": 4,
-              "Name": "Campaign",
-              "Description": "Campaign referrals."
-            },
-            {
-              "Type": 5,
-              "Name": "Social",
-              "Description": "Social-media referrals."
-            },
-            {
-              "Type": 6,
-              "Name": "Other",
-              "Description": "Small uncategorized referral sources."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "ProjectedMapVertexV1",
-      "DisplayName": "Projected map vertex",
-      "Description": "One server-projected vertex in a filled region.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Projected map vertex",
-          "Description": "One server-projected vertex in a filled region."
-        },
-        {
-          "Type": 1,
-          "Name": "Projected x",
-          "Description": "Server-computed horizontal coordinate."
-        },
-        {
-          "Type": 2,
-          "Name": "Projected y",
-          "Description": "Server-computed vertical coordinate."
-        },
-        {
-          "Type": 3,
-          "Name": "Region",
-          "Description": "Fill, polygon grouping, and tooltip identity."
-        },
-        {
-          "Type": 4,
-          "Name": "Utilization",
-          "Description": "Region utilization shown in the tooltip."
-        },
-        {
-          "Type": 5,
-          "Name": "Vertex order",
-          "Description": "Stable order within the region boundary."
-        },
-        {
-          "Type": 6,
-          "Name": "Vertex key",
-          "Description": "Stable region and vertex identity."
-        }
-      ]
-    },
-    {
-      "Name": "CandlestickWickV1",
-      "DisplayName": "Candlestick wick",
-      "Description": "One low-to-high rule with complete market tooltip values.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Candlestick wick",
-          "Description": "One low-to-high rule with complete market tooltip values."
-        },
-        {
-          "Type": 1,
-          "Name": "Interval midpoint",
-          "Description": "Center of the candle's time interval."
-        },
-        {
-          "Type": 2,
-          "Name": "Low",
-          "Description": "Lowest value in the interval."
-        },
-        {
-          "Type": 3,
-          "Name": "High",
-          "Description": "Highest value in the interval."
-        },
-        {
-          "Type": 4,
-          "Name": "Open",
-          "Description": "Opening value in the interval."
-        },
-        {
-          "Type": 5,
-          "Name": "Close",
-          "Description": "Closing value in the interval."
-        },
-        {
-          "Type": 6,
-          "Name": "Volume",
-          "Description": "Transaction volume in the interval."
-        },
-        {
-          "Type": 7,
-          "Name": "Direction",
-          "Description": "Whether the interval rose or fell."
-        },
-        {
-          "Type": 8,
-          "Name": "Wick color",
-          "Description": "Literal stroke color for the wick."
-        },
-        {
-          "Type": 9,
-          "Name": "Candle key",
-          "Description": "Stable interval identity."
-        }
-      ]
-    },
-    {
-      "Name": "BoxPlotOutlierV1",
-      "DisplayName": "Box-plot outlier",
-      "Description": "One value outside the server-computed whiskers.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Box-plot outlier",
-          "Description": "One value outside the server-computed whiskers."
-        },
-        {
-          "Type": 1,
-          "Name": "Sample",
-          "Description": "Categorical sample group."
-        },
-        {
-          "Type": 2,
-          "Name": "Latency",
-          "Description": "Outlying measurement."
-        },
-        {
-          "Type": 3,
-          "Name": "Point size",
-          "Description": "Literal outlier radius."
-        },
-        {
-          "Type": 4,
-          "Name": "Outlier key",
-          "Description": "Stable outlier identity."
-        }
-      ]
-    },
-    {
-      "Name": "ForecastConfidenceChartV1",
-      "DisplayName": "Forecast confidence",
-      "Description": "Layers estimate lines over server-computed confidence bands.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Forecast confidence",
-          "Description": "Layers estimate lines over server-computed confidence bands."
-        },
-        {
-          "Type": 1,
-          "Name": "Confidence bands",
-          "Description": "Lower and upper bounds by model."
-        },
-        {
-          "Type": 2,
-          "Name": "Central estimates",
-          "Description": "Model estimates drawn above their bands."
-        }
-      ]
-    },
-    {
-      "Name": "BoxPlotOutliersV1",
-      "DisplayName": "Box-plot outliers",
-      "Description": "Individual outlying measurements.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Box-plot outliers",
-          "Description": "Individual outlying measurements."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "StackedEnergyBarSegmentV1",
-      "DisplayName": "Stacked energy bar segment",
-      "Description": "One cumulative source interval within a quarterly total.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Stacked energy bar segment",
-          "Description": "One cumulative source interval within a quarterly total."
-        },
-        {
-          "Type": 1,
-          "Name": "Quarter",
-          "Description": "Categorical stack position."
-        },
-        {
-          "Type": 2,
-          "Name": "Cumulative start",
-          "Description": "Lower bound computed by the server."
-        },
-        {
-          "Type": 3,
-          "Name": "Cumulative end",
-          "Description": "Upper bound computed by the server."
-        },
-        {
-          "Type": 4,
-          "Name": "Energy source",
-          "Description": "Fill and grouping identity for the segment."
-        },
-        {
-          "Type": 5,
-          "Name": "Segment key",
-          "Description": "Stable quarter and source identity."
-        }
-      ]
-    },
-    {
-      "Name": "EnergySourceV1",
-      "DisplayName": "Energy source",
-      "Description": "Contributor used in explicit stacked-energy charts.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Energy source",
-          "Description": "Contributor used in explicit stacked-energy charts.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Solar",
-              "Description": "Locally generated solar energy."
-            },
-            {
-              "Type": 2,
-              "Name": "Battery",
-              "Description": "Energy discharged from storage."
-            },
-            {
-              "Type": 3,
-              "Name": "Grid",
-              "Description": "Energy imported from the electrical grid."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "SankeyNodesV1",
-      "DisplayName": "Sankey nodes",
-      "Description": "Explicit rectangular flow stages.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Sankey nodes",
-          "Description": "Explicit rectangular flow stages."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "TimeBlockV1",
-      "DisplayName": "Time block",
-      "Description": "Fixed portion of the workday used by the activity heatmap.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Time block",
-          "Description": "Fixed portion of the workday used by the activity heatmap.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Morning",
-              "Description": "Early workday activity."
-            },
-            {
-              "Type": 2,
-              "Name": "Midday",
-              "Description": "Midday activity."
-            },
-            {
-              "Type": 3,
-              "Name": "Afternoon",
-              "Description": "Afternoon activity."
-            },
-            {
-              "Type": 4,
-              "Name": "Evening",
-              "Description": "Late workday activity."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "WeekdayV1",
-      "DisplayName": "Weekday",
-      "Description": "Day used on the activity heatmap.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Weekday",
-          "Description": "Day used on the activity heatmap.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Monday",
-              "Description": "Monday activity."
-            },
-            {
-              "Type": 2,
-              "Name": "Tuesday",
-              "Description": "Tuesday activity."
-            },
-            {
-              "Type": 3,
-              "Name": "Wednesday",
-              "Description": "Wednesday activity."
-            },
-            {
-              "Type": 4,
-              "Name": "Thursday",
-              "Description": "Thursday activity."
-            },
-            {
-              "Type": 5,
-              "Name": "Friday",
-              "Description": "Friday activity."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "ForecastEstimateChartV1",
-      "DisplayName": "Forecast estimate lines",
-      "Description": "Central estimates sharing the confidence-band scales.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Forecast estimate lines",
-          "Description": "Central estimates sharing the confidence-band scales."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "DirectLabelsChartV1",
-      "DisplayName": "Direct labels",
-      "Description": "A text-mark showcase with data-driven content and appearance.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Direct labels",
-          "Description": "A text-mark showcase with data-driven content and appearance."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "ProjectedMapChartV1",
-      "DisplayName": "Server-projected map",
-      "Description": "Filled Cartesian polygons whose projection is owned by the endpoint.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Server-projected map",
-          "Description": "Filled Cartesian polygons whose projection is owned by the endpoint."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "NetworkNodesV1",
-      "DisplayName": "Network nodes",
-      "Description": "Server-positioned and typed topology nodes.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Network nodes",
-          "Description": "Server-positioned and typed topology nodes."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "HorizontalGroupedSalesChartV1",
-      "DisplayName": "Horizontal grouped sales",
-      "Description": "Horizontal bars demonstrating categorical vertical offsets.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Horizontal grouped sales",
-          "Description": "Horizontal bars demonstrating categorical vertical offsets."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "ScenarioV1",
-      "DisplayName": "Scenario",
-      "Description": "Distinguishes recorded, expected, and stretch values.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Scenario",
-          "Description": "Distinguishes recorded, expected, and stretch values.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Recorded",
-              "Description": "A completed measurement."
-            },
-            {
-              "Type": 2,
-              "Name": "Expected",
-              "Description": "The current forecast or plan."
-            },
-            {
-              "Type": 3,
-              "Name": "Stretch",
-              "Description": "An ambitious target."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "PerformancePointV1",
-      "DisplayName": "Performance point",
-      "Description": "One recorded result in the layered performance story.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Performance point",
-          "Description": "One recorded result in the layered performance story."
-        },
-        {
-          "Type": 1,
-          "Name": "Time",
-          "Description": "UTC measurement time."
-        },
-        {
-          "Type": 2,
-          "Name": "Response time",
-          "Description": "Recorded response time."
-        },
-        {
-          "Type": 3,
-          "Name": "Portfolio",
-          "Description": "Point color and detail group."
-        },
-        {
-          "Type": 4,
-          "Name": "Point size",
-          "Description": "Data-driven point emphasis."
-        }
-      ]
-    },
-    {
-      "Name": "PerformanceTrendV1",
-      "DisplayName": "Performance trend",
-      "Description": "A smooth line sharing the point chart's scales.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Performance trend",
-          "Description": "A smooth line sharing the point chart's scales."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "EnergyHistoryChartV1",
-      "DisplayName": "Energy history",
-      "Description": "Recorded, expected, and stretch energy series on a shared UTC timeline.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Energy history",
-          "Description": "Recorded, expected, and stretch energy series on a shared UTC timeline."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "NetworkNodeV1",
-      "DisplayName": "Network node",
-      "Description": "One server-positioned topology node.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Network node",
-          "Description": "One server-positioned topology node."
-        },
-        {
-          "Type": 1,
-          "Name": "Node x",
-          "Description": "Horizontal node coordinate."
-        },
-        {
-          "Type": 2,
-          "Name": "Node y",
-          "Description": "Vertical node coordinate."
-        },
-        {
-          "Type": 3,
-          "Name": "Node",
-          "Description": "Localized node label and stable interaction key."
-        },
-        {
-          "Type": 4,
-          "Name": "Role color",
-          "Description": "Node fill category."
-        },
-        {
-          "Type": 5,
-          "Name": "Role shape",
-          "Description": "Node symbol category."
-        },
-        {
-          "Type": 6,
-          "Name": "Node size",
-          "Description": "Literal node radius."
-        }
-      ]
-    },
     {
       "Name": "ActivityHeatmapCellV1",
       "DisplayName": "Activity heatmap cell",
@@ -1150,19 +77,313 @@
       ]
     },
     {
-      "Name": "CapabilityRadarChartV1",
-      "DisplayName": "Capability radar",
-      "Description": "Overlapping polar polygons for comparing multidimensional profiles.",
+      "Name": "ActivityHeatmapChartV1",
+      "DisplayName": "Activity heatmap",
+      "Description": "Ranged rectangular cells with a time scale, quantitative color, and custom labels.",
       "List": [
         {
           "Type": 0,
-          "Name": "Capability radar",
-          "Description": "Overlapping polar polygons for comparing multidimensional profiles."
+          "Name": "Activity heatmap",
+          "Description": "Ranged rectangular cells with a time scale, quantitative color, and custom labels."
         },
         {
           "Type": 1,
           "Name": "",
           "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "AnnotationMoodV1",
+      "DisplayName": "Annotation mood",
+      "Description": "Semantic color for direct labels.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Annotation mood",
+          "Description": "Semantic color for direct labels.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Positive",
+              "Description": "A favorable result."
+            },
+            {
+              "Type": 2,
+              "Name": "Neutral",
+              "Description": "An informational result."
+            },
+            {
+              "Type": 3,
+              "Name": "Attention",
+              "Description": "A result needing attention."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "ArcFamilyChartV1",
+      "DisplayName": "Arc-family comparison",
+      "Description": "Places a pie and quantitative radial bars side by side.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Arc-family comparison",
+          "Description": "Places a pie and quantitative radial bars side by side."
+        },
+        {
+          "Type": 1,
+          "Name": "Traffic pie",
+          "Description": "Full-radius source shares."
+        },
+        {
+          "Type": 2,
+          "Name": "Radial performance",
+          "Description": "Quantitative radial extents by portfolio."
+        }
+      ]
+    },
+    {
+      "Name": "BoxPlotBodiesV1",
+      "DisplayName": "Box-plot bodies",
+      "Description": "Interquartile ranges rendered as rectangles.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Box-plot bodies",
+          "Description": "Interquartile ranges rendered as rectangles."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "BoxPlotBodyV1",
+      "DisplayName": "Box-plot body",
+      "Description": "Interquartile range for one sample group.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Box-plot body",
+          "Description": "Interquartile range for one sample group."
+        },
+        {
+          "Type": 1,
+          "Name": "Sample",
+          "Description": "Categorical sample group."
+        },
+        {
+          "Type": 2,
+          "Name": "First quartile",
+          "Description": "Lower body endpoint."
+        },
+        {
+          "Type": 3,
+          "Name": "Third quartile",
+          "Description": "Upper body endpoint."
+        },
+        {
+          "Type": 4,
+          "Name": "Portfolio",
+          "Description": "Body fill category."
+        },
+        {
+          "Type": 5,
+          "Name": "Body key",
+          "Description": "Stable sample identity."
+        }
+      ]
+    },
+    {
+      "Name": "BoxPlotChartV1",
+      "DisplayName": "Box plot",
+      "Description": "Layers whiskers, interquartile bodies, medians, and outliers.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Box plot",
+          "Description": "Layers whiskers, interquartile bodies, medians, and outliers."
+        },
+        {
+          "Type": 1,
+          "Name": "Whiskers",
+          "Description": "Low-to-high non-outlier ranges."
+        },
+        {
+          "Type": 2,
+          "Name": "Bodies",
+          "Description": "First-to-third-quartile ranges."
+        },
+        {
+          "Type": 3,
+          "Name": "Medians",
+          "Description": "Zero-height median rectangles."
+        },
+        {
+          "Type": 4,
+          "Name": "Outliers",
+          "Description": "Measurements beyond the whiskers."
+        }
+      ]
+    },
+    {
+      "Name": "BoxPlotMediansV1",
+      "DisplayName": "Box-plot medians",
+      "Description": "One visible zero-height rectangle per sample.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Box-plot medians",
+          "Description": "One visible zero-height rectangle per sample."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "BoxPlotMedianV1",
+      "DisplayName": "Box-plot median",
+      "Description": "Zero-height rectangle retaining a visible one-pixel median.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Box-plot median",
+          "Description": "Zero-height rectangle retaining a visible one-pixel median."
+        },
+        {
+          "Type": 1,
+          "Name": "Sample",
+          "Description": "Categorical sample group."
+        },
+        {
+          "Type": 2,
+          "Name": "Median start",
+          "Description": "Median lower endpoint."
+        },
+        {
+          "Type": 3,
+          "Name": "Median end",
+          "Description": "Equal median upper endpoint."
+        },
+        {
+          "Type": 4,
+          "Name": "Median color",
+          "Description": "Literal fill color."
+        },
+        {
+          "Type": 5,
+          "Name": "Median key",
+          "Description": "Stable sample identity."
+        }
+      ]
+    },
+    {
+      "Name": "BoxPlotOutliersV1",
+      "DisplayName": "Box-plot outliers",
+      "Description": "Individual outlying measurements.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Box-plot outliers",
+          "Description": "Individual outlying measurements."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "BoxPlotOutlierV1",
+      "DisplayName": "Box-plot outlier",
+      "Description": "One value outside the server-computed whiskers.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Box-plot outlier",
+          "Description": "One value outside the server-computed whiskers."
+        },
+        {
+          "Type": 1,
+          "Name": "Sample",
+          "Description": "Categorical sample group."
+        },
+        {
+          "Type": 2,
+          "Name": "Latency",
+          "Description": "Outlying measurement."
+        },
+        {
+          "Type": 3,
+          "Name": "Point size",
+          "Description": "Literal outlier radius."
+        },
+        {
+          "Type": 4,
+          "Name": "Outlier key",
+          "Description": "Stable outlier identity."
+        }
+      ]
+    },
+    {
+      "Name": "BoxPlotWhiskersV1",
+      "DisplayName": "Box-plot whiskers",
+      "Description": "Low-to-high ranges rendered as rules.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Box-plot whiskers",
+          "Description": "Low-to-high ranges rendered as rules."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "BoxPlotWhiskerV1",
+      "DisplayName": "Box-plot whisker",
+      "Description": "Low-to-high range for one sample group.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Box-plot whisker",
+          "Description": "Low-to-high range for one sample group."
+        },
+        {
+          "Type": 1,
+          "Name": "Sample",
+          "Description": "Categorical sample group."
+        },
+        {
+          "Type": 2,
+          "Name": "Low whisker",
+          "Description": "Lowest non-outlier value."
+        },
+        {
+          "Type": 3,
+          "Name": "High whisker",
+          "Description": "Highest non-outlier value."
+        },
+        {
+          "Type": 4,
+          "Name": "Whisker color",
+          "Description": "Literal stroke color."
+        },
+        {
+          "Type": 5,
+          "Name": "Whisker key",
+          "Description": "Stable sample identity."
         }
       ]
     },
@@ -1229,607 +450,60 @@
       ]
     },
     {
-      "Name": "BoxPlotChartV1",
-      "DisplayName": "Box plot",
-      "Description": "Layers whiskers, interquartile bodies, medians, and outliers.",
+      "Name": "BubblePortfolioChartV1",
+      "DisplayName": "Bubble portfolio",
+      "Description": "A faceted bubble chart demonstrating quantitative and categorical point encodings.",
       "List": [
         {
           "Type": 0,
-          "Name": "Box plot",
-          "Description": "Layers whiskers, interquartile bodies, medians, and outliers."
+          "Name": "Bubble portfolio",
+          "Description": "A faceted bubble chart demonstrating quantitative and categorical point encodings."
         },
         {
           "Type": 1,
-          "Name": "Whiskers",
-          "Description": "Low-to-high non-outlier ranges."
-        },
-        {
-          "Type": 2,
-          "Name": "Bodies",
-          "Description": "First-to-third-quartile ranges."
-        },
-        {
-          "Type": 3,
-          "Name": "Medians",
-          "Description": "Zero-height median rectangles."
-        },
-        {
-          "Type": 4,
-          "Name": "Outliers",
-          "Description": "Measurements beyond the whiskers."
+          "Name": "",
+          "Description": ""
         }
       ]
     },
     {
-      "Name": "MarketV1",
-      "DisplayName": "Market",
-      "Description": "Geographic market used for faceting.",
+      "Name": "CandleDirectionV1",
+      "DisplayName": "Candle direction",
+      "Description": "Direction of an open-to-close market interval.",
       "List": [
         {
           "Type": 0,
-          "Name": "Market",
-          "Description": "Geographic market used for faceting.",
+          "Name": "Candle direction",
+          "Description": "Direction of an open-to-close market interval.",
           "Enum": [
             {
               "Type": 1,
-              "Name": "Americas",
-              "Description": "North and South America."
+              "Name": "Rising",
+              "Description": "The close is at or above the open."
             },
             {
               "Type": 2,
-              "Name": "Europe",
-              "Description": "Europe, the Middle East, and Africa."
+              "Name": "Falling",
+              "Description": "The close is below the open."
             }
           ]
         }
       ]
     },
     {
-      "Name": "ReleaseStageV1",
-      "DisplayName": "Release stage",
-      "Description": "Product maturity used for column faceting.",
+      "Name": "CandlestickBodiesV1",
+      "DisplayName": "Candlestick bodies",
+      "Description": "Open-to-close rectangles with server-computed widths.",
       "List": [
         {
           "Type": 0,
-          "Name": "Release stage",
-          "Description": "Product maturity used for column faceting.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Established",
-              "Description": "A broadly available product."
-            },
-            {
-              "Type": 2,
-              "Name": "Emerging",
-              "Description": "A newer product still expanding its audience."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "TrafficDonutChartV1",
-      "DisplayName": "Traffic sources",
-      "Description": "A donut whose categorical fill guide lowers to linked outside labels.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Traffic sources",
-          "Description": "A donut whose categorical fill guide lowers to linked outside labels."
+          "Name": "Candlestick bodies",
+          "Description": "Open-to-close rectangles with server-computed widths."
         },
         {
           "Type": 1,
           "Name": "",
           "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "ForecastEstimatePointV1",
-      "DisplayName": "Forecast estimate point",
-      "Description": "One central estimate layered over a confidence band.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Forecast estimate point",
-          "Description": "One central estimate layered over a confidence band."
-        },
-        {
-          "Type": 1,
-          "Name": "Time",
-          "Description": "Local-time forecast position."
-        },
-        {
-          "Type": 2,
-          "Name": "Estimate",
-          "Description": "Central forecast estimate."
-        },
-        {
-          "Type": 3,
-          "Name": "Forecast model",
-          "Description": "Line color and path grouping."
-        },
-        {
-          "Type": 4,
-          "Name": "Sequence",
-          "Description": "Stable order within the model path."
-        },
-        {
-          "Type": 5,
-          "Name": "Estimate key",
-          "Description": "Stable model and time identity."
-        }
-      ]
-    },
-    {
-      "Name": "StackedEnergyBarsV1",
-      "DisplayName": "Explicit stacked energy bars",
-      "Description": "Server-computed cumulative bounds rendered without client-side stacking.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Explicit stacked energy bars",
-          "Description": "Server-computed cumulative bounds rendered without client-side stacking."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "SankeyRibbonPointV1",
-      "DisplayName": "Sankey ribbon point",
-      "Description": "One sampled lower and upper boundary along a flow ribbon.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Sankey ribbon point",
-          "Description": "One sampled lower and upper boundary along a flow ribbon."
-        },
-        {
-          "Type": 1,
-          "Name": "Flow position",
-          "Description": "Monotonic sampled horizontal position."
-        },
-        {
-          "Type": 2,
-          "Name": "Lower boundary",
-          "Description": "Server-sampled lower ribbon edge."
-        },
-        {
-          "Type": 3,
-          "Name": "Upper boundary",
-          "Description": "Server-sampled upper ribbon edge."
-        },
-        {
-          "Type": 4,
-          "Name": "Stream",
-          "Description": "Ribbon fill, path grouping, and tooltip identity."
-        },
-        {
-          "Type": 5,
-          "Name": "Visitors",
-          "Description": "Flow quantity shown in the tooltip."
-        },
-        {
-          "Type": 6,
-          "Name": "Ribbon opacity",
-          "Description": "Literal alpha preserving overlaps."
-        },
-        {
-          "Type": 7,
-          "Name": "Sample order",
-          "Description": "Stable order within the ribbon path."
-        },
-        {
-          "Type": 8,
-          "Name": "Sample key",
-          "Description": "Stable stream and sample identity."
-        }
-      ]
-    },
-    {
-      "Name": "RadialPerformanceChartV1",
-      "DisplayName": "Radial performance bars",
-      "Description": "Explicit angular lanes with quantitative radial extents.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Radial performance bars",
-          "Description": "Explicit angular lanes with quantitative radial extents."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "StackedEnergyAreasV1",
-      "DisplayName": "Explicit stacked energy areas",
-      "Description": "Server-computed cumulative bands over time.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Explicit stacked energy areas",
-          "Description": "Server-computed cumulative bands over time."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "NetworkEdgeV1",
-      "DisplayName": "Network edge",
-      "Description": "One arbitrary server-positioned link between two nodes.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Network edge",
-          "Description": "One arbitrary server-positioned link between two nodes."
-        },
-        {
-          "Type": 1,
-          "Name": "Source x",
-          "Description": "Horizontal source coordinate."
-        },
-        {
-          "Type": 2,
-          "Name": "Target x",
-          "Description": "Horizontal target coordinate."
-        },
-        {
-          "Type": 3,
-          "Name": "Source y",
-          "Description": "Vertical source coordinate."
-        },
-        {
-          "Type": 4,
-          "Name": "Target y",
-          "Description": "Vertical target coordinate."
-        },
-        {
-          "Type": 5,
-          "Name": "Connection",
-          "Description": "Localized fixed relationship shown in the tooltip."
-        },
-        {
-          "Type": 6,
-          "Name": "Link color",
-          "Description": "Literal edge stroke."
-        },
-        {
-          "Type": 7,
-          "Name": "Link width",
-          "Description": "Literal edge width."
-        },
-        {
-          "Type": 8,
-          "Name": "Edge key",
-          "Description": "Stable link identity."
-        }
-      ]
-    },
-    {
-      "Name": "BoxPlotMediansV1",
-      "DisplayName": "Box-plot medians",
-      "Description": "One visible zero-height rectangle per sample.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Box-plot medians",
-          "Description": "One visible zero-height rectangle per sample."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "PerformanceTargetV1",
-      "DisplayName": "Performance target rule",
-      "Description": "A target line sharing the performance story's scales.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Performance target rule",
-          "Description": "A target line sharing the performance story's scales."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "BoxPlotBodyV1",
-      "DisplayName": "Box-plot body",
-      "Description": "Interquartile range for one sample group.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Box-plot body",
-          "Description": "Interquartile range for one sample group."
-        },
-        {
-          "Type": 1,
-          "Name": "Sample",
-          "Description": "Categorical sample group."
-        },
-        {
-          "Type": 2,
-          "Name": "First quartile",
-          "Description": "Lower body endpoint."
-        },
-        {
-          "Type": 3,
-          "Name": "Third quartile",
-          "Description": "Upper body endpoint."
-        },
-        {
-          "Type": 4,
-          "Name": "Portfolio",
-          "Description": "Body fill category."
-        },
-        {
-          "Type": 5,
-          "Name": "Body key",
-          "Description": "Stable sample identity."
-        }
-      ]
-    },
-    {
-      "Name": "TemperatureHighLowRangesV1",
-      "DisplayName": "Five-minute temperature ranges",
-      "Description": "Vertical low-to-high observations for the last 72 hours.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Five-minute temperature ranges",
-          "Description": "Vertical low-to-high observations for the last 72 hours."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "TemperatureCloseTickV1",
-      "DisplayName": "Five-minute closing-temperature tick",
-      "Description": "A right-facing horizontal rule marking the final observation in a bucket.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Five-minute closing-temperature tick",
-          "Description": "A right-facing horizontal rule marking the final observation in a bucket."
-        },
-        {
-          "Type": 1,
-          "Name": "Bucket midpoint",
-          "Description": "UTC start of the right-facing close tick."
-        },
-        {
-          "Type": 2,
-          "Name": "Bucket end",
-          "Description": "Exclusive UTC end of the five-minute bucket."
-        },
-        {
-          "Type": 3,
-          "Name": "Closing temperature",
-          "Description": "Last observed temperature in the bucket."
-        },
-        {
-          "Type": 4,
-          "Name": "Low temperature",
-          "Description": "Lowest bucket observation, repeated for a complete tooltip."
-        },
-        {
-          "Type": 5,
-          "Name": "High temperature",
-          "Description": "Highest bucket observation, repeated for a complete tooltip."
-        }
-      ]
-    },
-    {
-      "Name": "GroupedSalesBarV1",
-      "DisplayName": "Grouped sales bar",
-      "Description": "One portfolio contribution within a quarter.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Grouped sales bar",
-          "Description": "One portfolio contribution within a quarter."
-        },
-        {
-          "Type": 1,
-          "Name": "Quarter",
-          "Description": "Categorical group on the horizontal axis."
-        },
-        {
-          "Type": 2,
-          "Name": "Portfolio offset",
-          "Description": "Places portfolios beside one another within a quarter."
-        },
-        {
-          "Type": 3,
-          "Name": "Portfolio color",
-          "Description": "Repeats portfolio identity as color with its legend below the plot."
-        },
-        {
-          "Type": 4,
-          "Name": "Revenue",
-          "Description": "Quarterly revenue."
-        },
-        {
-          "Type": 5,
-          "Name": "Stable key",
-          "Description": "Unique quarter and portfolio identity."
-        }
-      ]
-    },
-    {
-      "Name": "CapabilityRadarPointV1",
-      "DisplayName": "Capability radar point",
-      "Description": "One ordered vertex of a polar capability profile.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Capability radar point",
-          "Description": "One ordered vertex of a polar capability profile."
-        },
-        {
-          "Type": 1,
-          "Name": "Angle",
-          "Description": "Angular position on a normalized turn."
-        },
-        {
-          "Type": 2,
-          "Name": "Capability",
-          "Description": "Supplies human-readable labels around the angular guide."
-        },
-        {
-          "Type": 3,
-          "Name": "Score",
-          "Description": "Radial capability score."
-        },
-        {
-          "Type": 4,
-          "Name": "Portfolio",
-          "Description": "Filled profile color and detail group."
-        },
-        {
-          "Type": 5,
-          "Name": "Profile outline",
-          "Description": "Repeats the portfolio as an outline encoding."
-        },
-        {
-          "Type": 6,
-          "Name": "Fill opacity",
-          "Description": "Transparent fill retains overlapping profiles."
-        },
-        {
-          "Type": 7,
-          "Name": "Vertex order",
-          "Description": "Connects capability vertices in a stable order."
-        },
-        {
-          "Type": 8,
-          "Name": "Vertex key",
-          "Description": "Stable identity for interactive focus."
-        }
-      ]
-    },
-    {
-      "Name": "BoxPlotBodiesV1",
-      "DisplayName": "Box-plot bodies",
-      "Description": "Interquartile ranges rendered as rectangles.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Box-plot bodies",
-          "Description": "Interquartile ranges rendered as rectangles."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "TrafficPieChartV1",
-      "DisplayName": "Traffic-source pie",
-      "Description": "Explicit pie geometry with a zero inner radius.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Traffic-source pie",
-          "Description": "Explicit pie geometry with a zero inner radius."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "MapRegionV1",
-      "DisplayName": "Map region",
-      "Description": "Server-projected region in the map example.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Map region",
-          "Description": "Server-projected region in the map example.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "North district",
-              "Description": "The northern projected region."
-            },
-            {
-              "Type": 2,
-              "Name": "Central district",
-              "Description": "The central projected region."
-            },
-            {
-              "Type": 3,
-              "Name": "South district",
-              "Description": "The southern projected region."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "SankeyRibbonsV1",
-      "DisplayName": "Sankey ribbons",
-      "Description": "Server-sampled x-monotonic flow areas.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Sankey ribbons",
-          "Description": "Server-sampled x-monotonic flow areas."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "StackedEnergyChartV1",
-      "DisplayName": "Explicit stacking",
-      "Description": "Compares server-computed stacked bars and stacked areas.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Explicit stacking",
-          "Description": "Compares server-computed stacked bars and stacked areas."
-        },
-        {
-          "Type": 1,
-          "Name": "Stacked bars",
-          "Description": "Quarterly cumulative source intervals."
-        },
-        {
-          "Type": 2,
-          "Name": "Stacked areas",
-          "Description": "Source contributions accumulated over time."
         }
       ]
     },
@@ -1897,6 +571,210 @@
           "Type": 11,
           "Name": "Candle key",
           "Description": "Stable interval identity."
+        }
+      ]
+    },
+    {
+      "Name": "CandlestickChartV1",
+      "DisplayName": "Candlestick chart",
+      "Description": "Layers low-high wicks and open-close bodies on shared scales.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Candlestick chart",
+          "Description": "Layers low-high wicks and open-close bodies on shared scales."
+        },
+        {
+          "Type": 1,
+          "Name": "Wicks",
+          "Description": "Low-to-high interval rules."
+        },
+        {
+          "Type": 2,
+          "Name": "Bodies",
+          "Description": "Open-to-close interval rectangles."
+        }
+      ]
+    },
+    {
+      "Name": "CandlestickWicksV1",
+      "DisplayName": "Candlestick wicks",
+      "Description": "Low-to-high market ranges.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Candlestick wicks",
+          "Description": "Low-to-high market ranges."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "CandlestickWickV1",
+      "DisplayName": "Candlestick wick",
+      "Description": "One low-to-high rule with complete market tooltip values.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Candlestick wick",
+          "Description": "One low-to-high rule with complete market tooltip values."
+        },
+        {
+          "Type": 1,
+          "Name": "Interval midpoint",
+          "Description": "Center of the candle's time interval."
+        },
+        {
+          "Type": 2,
+          "Name": "Low",
+          "Description": "Lowest value in the interval."
+        },
+        {
+          "Type": 3,
+          "Name": "High",
+          "Description": "Highest value in the interval."
+        },
+        {
+          "Type": 4,
+          "Name": "Open",
+          "Description": "Opening value in the interval."
+        },
+        {
+          "Type": 5,
+          "Name": "Close",
+          "Description": "Closing value in the interval."
+        },
+        {
+          "Type": 6,
+          "Name": "Volume",
+          "Description": "Transaction volume in the interval."
+        },
+        {
+          "Type": 7,
+          "Name": "Direction",
+          "Description": "Whether the interval rose or fell."
+        },
+        {
+          "Type": 8,
+          "Name": "Wick color",
+          "Description": "Literal stroke color for the wick."
+        },
+        {
+          "Type": 9,
+          "Name": "Candle key",
+          "Description": "Stable interval identity."
+        }
+      ]
+    },
+    {
+      "Name": "CapabilityRadarChartV1",
+      "DisplayName": "Capability radar",
+      "Description": "Overlapping polar polygons for comparing multidimensional profiles.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Capability radar",
+          "Description": "Overlapping polar polygons for comparing multidimensional profiles."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "CapabilityRadarPointV1",
+      "DisplayName": "Capability radar point",
+      "Description": "One ordered vertex of a polar capability profile.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Capability radar point",
+          "Description": "One ordered vertex of a polar capability profile."
+        },
+        {
+          "Type": 1,
+          "Name": "Angle",
+          "Description": "Angular position on a normalized turn."
+        },
+        {
+          "Type": 2,
+          "Name": "Capability",
+          "Description": "Supplies human-readable labels around the angular guide."
+        },
+        {
+          "Type": 3,
+          "Name": "Score",
+          "Description": "Radial capability score."
+        },
+        {
+          "Type": 4,
+          "Name": "Portfolio",
+          "Description": "Filled profile color and detail group."
+        },
+        {
+          "Type": 5,
+          "Name": "Profile outline",
+          "Description": "Repeats the portfolio as an outline encoding."
+        },
+        {
+          "Type": 6,
+          "Name": "Fill opacity",
+          "Description": "Transparent fill retains overlapping profiles."
+        },
+        {
+          "Type": 7,
+          "Name": "Vertex order",
+          "Description": "Connects capability vertices in a stable order."
+        },
+        {
+          "Type": 8,
+          "Name": "Vertex key",
+          "Description": "Stable identity for interactive focus."
+        }
+      ]
+    },
+    {
+      "Name": "CapabilityV1",
+      "DisplayName": "Capability",
+      "Description": "Dimension around the capability radar.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Capability",
+          "Description": "Dimension around the capability radar.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Speed",
+              "Description": "Responsiveness and throughput."
+            },
+            {
+              "Type": 2,
+              "Name": "Reliability",
+              "Description": "Stability under normal operation."
+            },
+            {
+              "Type": 3,
+              "Name": "Efficiency",
+              "Description": "Resource efficiency."
+            },
+            {
+              "Type": 4,
+              "Name": "Simplicity",
+              "Description": "Ease of use."
+            },
+            {
+              "Type": 5,
+              "Name": "Reach",
+              "Description": "Breadth of supported use cases."
+            }
+          ]
         }
       ]
     },
@@ -2018,7 +896,7 @@
         {
           "Type": 22,
           "Name": "Traffic sources",
-          "Description": "Traffic share by referral source with automatic linked outside labels."
+          "Description": "Traffic share by referral source with category and percentage labels."
         },
         {
           "Type": 23,
@@ -2133,163 +1011,6 @@
       ]
     },
     {
-      "Name": "ArcFamilyChartV1",
-      "DisplayName": "Arc-family comparison",
-      "Description": "Places a pie and quantitative radial bars side by side.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Arc-family comparison",
-          "Description": "Places a pie and quantitative radial bars side by side."
-        },
-        {
-          "Type": 1,
-          "Name": "Traffic pie",
-          "Description": "Full-radius source shares."
-        },
-        {
-          "Type": 2,
-          "Name": "Radial performance",
-          "Description": "Quantitative radial extents by portfolio."
-        }
-      ]
-    },
-    {
-      "Name": "CandlestickBodiesV1",
-      "DisplayName": "Candlestick bodies",
-      "Description": "Open-to-close rectangles with server-computed widths.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Candlestick bodies",
-          "Description": "Open-to-close rectangles with server-computed widths."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "MeasurementUncertaintyChartV1",
-      "DisplayName": "Measurement uncertainty",
-      "Description": "Error intervals rendered as ranged rules.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Measurement uncertainty",
-          "Description": "Error intervals rendered as ranged rules."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "CandlestickChartV1",
-      "DisplayName": "Candlestick chart",
-      "Description": "Layers low-high wicks and open-close bodies on shared scales.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Candlestick chart",
-          "Description": "Layers low-high wicks and open-close bodies on shared scales."
-        },
-        {
-          "Type": 1,
-          "Name": "Wicks",
-          "Description": "Low-to-high interval rules."
-        },
-        {
-          "Type": 2,
-          "Name": "Bodies",
-          "Description": "Open-to-close interval rectangles."
-        }
-      ]
-    },
-    {
-      "Name": "BoxPlotWhiskerV1",
-      "DisplayName": "Box-plot whisker",
-      "Description": "Low-to-high range for one sample group.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Box-plot whisker",
-          "Description": "Low-to-high range for one sample group."
-        },
-        {
-          "Type": 1,
-          "Name": "Sample",
-          "Description": "Categorical sample group."
-        },
-        {
-          "Type": 2,
-          "Name": "Low whisker",
-          "Description": "Lowest non-outlier value."
-        },
-        {
-          "Type": 3,
-          "Name": "High whisker",
-          "Description": "Highest non-outlier value."
-        },
-        {
-          "Type": 4,
-          "Name": "Whisker color",
-          "Description": "Literal stroke color."
-        },
-        {
-          "Type": 5,
-          "Name": "Whisker key",
-          "Description": "Stable sample identity."
-        }
-      ]
-    },
-    {
-      "Name": "RadialPerformanceBarV1",
-      "DisplayName": "Radial performance bar",
-      "Description": "One explicit angular lane and quantitative radial extent.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Radial performance bar",
-          "Description": "One explicit angular lane and quantitative radial extent."
-        },
-        {
-          "Type": 1,
-          "Name": "Bar start",
-          "Description": "Beginning of the angular lane in turns."
-        },
-        {
-          "Type": 2,
-          "Name": "Bar end",
-          "Description": "End of the angular lane in turns."
-        },
-        {
-          "Type": 3,
-          "Name": "Radial baseline",
-          "Description": "Zero-percent radial baseline."
-        },
-        {
-          "Type": 4,
-          "Name": "Score",
-          "Description": "Quantitative radial extent."
-        },
-        {
-          "Type": 5,
-          "Name": "Portfolio",
-          "Description": "Bar fill and grouping identity."
-        },
-        {
-          "Type": 6,
-          "Name": "Bar key",
-          "Description": "Stable portfolio identity."
-        }
-      ]
-    },
-    {
       "Name": "CustomerTierV1",
       "DisplayName": "Customer tier",
       "Description": "Visual point shape for a customer segment.",
@@ -2308,590 +1029,6 @@
               "Type": 2,
               "Name": "Premium",
               "Description": "Premium service tier."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "ForecastRangePointV1",
-      "DisplayName": "Forecast range point",
-      "Description": "One uncertainty interval in a forecast confidence band.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Forecast range point",
-          "Description": "One uncertainty interval in a forecast confidence band."
-        },
-        {
-          "Type": 1,
-          "Name": "Time",
-          "Description": "UTC forecast time."
-        },
-        {
-          "Type": 2,
-          "Name": "Low estimate",
-          "Description": "Lower bound of the forecast interval."
-        },
-        {
-          "Type": 3,
-          "Name": "High estimate",
-          "Description": "Upper bound of the forecast interval."
-        },
-        {
-          "Type": 4,
-          "Name": "Forecast model",
-          "Description": "Fill and detail grouping for the interval."
-        },
-        {
-          "Type": 5,
-          "Name": "Forecast outline",
-          "Description": "Repeats the model as the confidence-band outline."
-        },
-        {
-          "Type": 6,
-          "Name": "Confidence shading",
-          "Description": "Opacity of the forecast band."
-        }
-      ]
-    },
-    {
-      "Name": "OperationsDashboardChartV1",
-      "DisplayName": "Operations dashboard",
-      "Description": "Stacks energy history, forecast ranges, and activity intervals vertically.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Operations dashboard",
-          "Description": "Stacks energy history, forecast ranges, and activity intervals vertically."
-        },
-        {
-          "Type": 1,
-          "Name": "Energy history",
-          "Description": "Multi-series UTC trend panel."
-        },
-        {
-          "Type": 2,
-          "Name": "Forecast range",
-          "Description": "Confidence-band panel with its own UTC x-axis."
-        },
-        {
-          "Type": 3,
-          "Name": "Activity heatmap",
-          "Description": "Time-of-day interval panel with independently labeled axes."
-        }
-      ]
-    },
-    {
-      "Name": "PieSliceV1",
-      "DisplayName": "Pie slice",
-      "Description": "One explicit angular slice extending from the center to the outer radius.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Pie slice",
-          "Description": "One explicit angular slice extending from the center to the outer radius."
-        },
-        {
-          "Type": 1,
-          "Name": "Slice start",
-          "Description": "Beginning of the slice in turns."
-        },
-        {
-          "Type": 2,
-          "Name": "Slice end",
-          "Description": "End of the slice in turns."
-        },
-        {
-          "Type": 3,
-          "Name": "Inner radius",
-          "Description": "Zero makes the annular segment a pie slice."
-        },
-        {
-          "Type": 4,
-          "Name": "Outer radius",
-          "Description": "Full normalized plot radius."
-        },
-        {
-          "Type": 5,
-          "Name": "Traffic source",
-          "Description": "Slice fill and grouping identity."
-        },
-        {
-          "Type": 6,
-          "Name": "Share",
-          "Description": "Source share shown in the tooltip."
-        },
-        {
-          "Type": 7,
-          "Name": "Slice key",
-          "Description": "Stable source identity."
-        }
-      ]
-    },
-    {
-      "Name": "ForecastRangeChartV1",
-      "DisplayName": "Forecast range",
-      "Description": "Layer-ready confidence bands using ranged area marks.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Forecast range",
-          "Description": "Layer-ready confidence bands using ranged area marks."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "BoxPlotMedianV1",
-      "DisplayName": "Box-plot median",
-      "Description": "Zero-height rectangle retaining a visible one-pixel median.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Box-plot median",
-          "Description": "Zero-height rectangle retaining a visible one-pixel median."
-        },
-        {
-          "Type": 1,
-          "Name": "Sample",
-          "Description": "Categorical sample group."
-        },
-        {
-          "Type": 2,
-          "Name": "Median start",
-          "Description": "Median lower endpoint."
-        },
-        {
-          "Type": 3,
-          "Name": "Median end",
-          "Description": "Equal median upper endpoint."
-        },
-        {
-          "Type": 4,
-          "Name": "Median color",
-          "Description": "Literal fill color."
-        },
-        {
-          "Type": 5,
-          "Name": "Median key",
-          "Description": "Stable sample identity."
-        }
-      ]
-    },
-    {
-      "Name": "TemperatureHlcChartV1",
-      "DisplayName": "Five-minute temperature, past 72 hours",
-      "Description": "High-low-close observations layered on shared UTC and Celsius scales.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Five-minute temperature, past 72 hours",
-          "Description": "High-low-close observations layered on shared UTC and Celsius scales."
-        },
-        {
-          "Type": 1,
-          "Name": "High-low ranges",
-          "Description": "One vertical range for every completed five-minute bucket."
-        },
-        {
-          "Type": 2,
-          "Name": "Closing ticks",
-          "Description": "One right-facing close tick for every completed five-minute bucket."
-        }
-      ]
-    },
-    {
-      "Name": "NetworkNodeNameV1",
-      "DisplayName": "Network node",
-      "Description": "Fixed node identity used by the topology example.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Network node",
-          "Description": "Fixed node identity used by the topology example.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Gateway",
-              "Description": "Entry point into the demonstrated topology."
-            },
-            {
-              "Type": 2,
-              "Name": "Rules",
-              "Description": "Rules-processing service."
-            },
-            {
-              "Type": 3,
-              "Name": "Analytics",
-              "Description": "Analytics-processing service."
-            },
-            {
-              "Type": 4,
-              "Name": "Events",
-              "Description": "Event storage."
-            },
-            {
-              "Type": 5,
-              "Name": "History",
-              "Description": "Historical storage."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "SankeyFlowChartV1",
-      "DisplayName": "Sankey flow",
-      "Description": "Layers server-sampled ribbons below explicit stage nodes.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Sankey flow",
-          "Description": "Layers server-sampled ribbons below explicit stage nodes."
-        },
-        {
-          "Type": 1,
-          "Name": "Ribbons",
-          "Description": "Sampled flow paths."
-        },
-        {
-          "Type": 2,
-          "Name": "Nodes",
-          "Description": "Explicit stage rectangles."
-        }
-      ]
-    },
-    {
-      "Name": "PerformanceTrendPointV1",
-      "DisplayName": "Performance trend point",
-      "Description": "One position on a fitted trend line.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Performance trend point",
-          "Description": "One position on a fitted trend line."
-        },
-        {
-          "Type": 1,
-          "Name": "Time",
-          "Description": "UTC trend time."
-        },
-        {
-          "Type": 2,
-          "Name": "Response time",
-          "Description": "Smoothed response time."
-        },
-        {
-          "Type": 3,
-          "Name": "Scenario",
-          "Description": "Trend line style."
-        },
-        {
-          "Type": 4,
-          "Name": "Sequence",
-          "Description": "Drawing order within the trend."
-        }
-      ]
-    },
-    {
-      "Name": "CandleDirectionV1",
-      "DisplayName": "Candle direction",
-      "Description": "Direction of an open-to-close market interval.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Candle direction",
-          "Description": "Direction of an open-to-close market interval.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Rising",
-              "Description": "The close is at or above the open."
-            },
-            {
-              "Type": 2,
-              "Name": "Falling",
-              "Description": "The close is below the open."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "TrafficDonutSegmentV1",
-      "DisplayName": "Traffic donut segment",
-      "Description": "One explicitly positioned annular segment.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Traffic donut segment",
-          "Description": "One explicitly positioned annular segment."
-        },
-        {
-          "Type": 1,
-          "Name": "Arc start",
-          "Description": "Beginning of the segment on a normalized turn."
-        },
-        {
-          "Type": 2,
-          "Name": "Arc end",
-          "Description": "End of the segment on a normalized turn."
-        },
-        {
-          "Type": 3,
-          "Name": "Inner radius",
-          "Description": "Creates the donut hole."
-        },
-        {
-          "Type": 4,
-          "Name": "Outer radius",
-          "Description": "Outer edge of the donut."
-        },
-        {
-          "Type": 5,
-          "Name": "Traffic source",
-          "Description": "Segment fill, linked outside label, detail group, and tooltip category."
-        },
-        {
-          "Type": 6,
-          "Name": "Share",
-          "Description": "Human-readable share in the tooltip."
-        },
-        {
-          "Type": 7,
-          "Name": "Border opacity",
-          "Description": "Separates adjacent segments."
-        },
-        {
-          "Type": 8,
-          "Name": "Segment order",
-          "Description": "Stable clockwise drawing order."
-        },
-        {
-          "Type": 9,
-          "Name": "Segment key",
-          "Description": "Stable identity for interactive focus."
-        }
-      ]
-    },
-    {
-      "Name": "LatencyHistogramBinV1",
-      "DisplayName": "Latency histogram bin",
-      "Description": "One server-computed latency interval and its observed count.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Latency histogram bin",
-          "Description": "One server-computed latency interval and its observed count."
-        },
-        {
-          "Type": 1,
-          "Name": "Bin start",
-          "Description": "Inclusive lower latency bound."
-        },
-        {
-          "Type": 2,
-          "Name": "Bin end",
-          "Description": "Exclusive upper latency bound."
-        },
-        {
-          "Type": 3,
-          "Name": "Observations",
-          "Description": "Number of requests within the interval."
-        },
-        {
-          "Type": 4,
-          "Name": "Bin key",
-          "Description": "Stable interval identity."
-        }
-      ]
-    },
-    {
-      "Name": "PerformancePointsV1",
-      "DisplayName": "Recorded performance",
-      "Description": "Interactive observations for the layered performance story.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Recorded performance",
-          "Description": "Interactive observations for the layered performance story."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "UncertaintyRuleV1",
-      "DisplayName": "Measurement uncertainty rule",
-      "Description": "One vertical low-to-high error interval.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Measurement uncertainty rule",
-          "Description": "One vertical low-to-high error interval."
-        },
-        {
-          "Type": 1,
-          "Name": "Sample",
-          "Description": "Categorical sample position."
-        },
-        {
-          "Type": 2,
-          "Name": "Low estimate",
-          "Description": "Lower end of the error interval."
-        },
-        {
-          "Type": 3,
-          "Name": "High estimate",
-          "Description": "Upper end of the error interval."
-        },
-        {
-          "Type": 4,
-          "Name": "Scenario",
-          "Description": "Rule color and dash pattern."
-        },
-        {
-          "Type": 5,
-          "Name": "Scenario dash",
-          "Description": "Repeats the scenario as a dash encoding."
-        },
-        {
-          "Type": 6,
-          "Name": "Rule width",
-          "Description": "Emphasizes the interval."
-        },
-        {
-          "Type": 7,
-          "Name": "Rule key",
-          "Description": "Stable identity for the sample interval."
-        }
-      ]
-    },
-    {
-      "Name": "BubblePortfolioChartV1",
-      "DisplayName": "Bubble portfolio",
-      "Description": "A faceted bubble chart demonstrating quantitative and categorical point encodings.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Bubble portfolio",
-          "Description": "A faceted bubble chart demonstrating quantitative and categorical point encodings."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "TemperatureCloseTicksV1",
-      "DisplayName": "Five-minute temperature closes",
-      "Description": "Right-facing closing ticks for the last 72 hours.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Five-minute temperature closes",
-          "Description": "Right-facing closing ticks for the last 72 hours."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "CandlestickWicksV1",
-      "DisplayName": "Candlestick wicks",
-      "Description": "Low-to-high market ranges.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Candlestick wicks",
-          "Description": "Low-to-high market ranges."
-        },
-        {
-          "Type": 1,
-          "Name": "",
-          "Description": ""
-        }
-      ]
-    },
-    {
-      "Name": "StackedEnergyAreaPointV1",
-      "DisplayName": "Stacked energy area point",
-      "Description": "One server-computed lower and upper source boundary over time.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Stacked energy area point",
-          "Description": "One server-computed lower and upper source boundary over time."
-        },
-        {
-          "Type": 1,
-          "Name": "Time",
-          "Description": "UTC sample time."
-        },
-        {
-          "Type": 2,
-          "Name": "Cumulative start",
-          "Description": "Lower area boundary computed by the server."
-        },
-        {
-          "Type": 3,
-          "Name": "Cumulative end",
-          "Description": "Upper area boundary computed by the server."
-        },
-        {
-          "Type": 4,
-          "Name": "Energy source",
-          "Description": "Fill and path-grouping identity."
-        },
-        {
-          "Type": 5,
-          "Name": "Sequence",
-          "Description": "Stable order within the source path."
-        },
-        {
-          "Type": 6,
-          "Name": "Point key",
-          "Description": "Stable source and time identity."
-        }
-      ]
-    },
-    {
-      "Name": "AnnotationMoodV1",
-      "DisplayName": "Annotation mood",
-      "Description": "Semantic color for direct labels.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Annotation mood",
-          "Description": "Semantic color for direct labels.",
-          "Enum": [
-            {
-              "Type": 1,
-              "Name": "Positive",
-              "Description": "A favorable result."
-            },
-            {
-              "Type": 2,
-              "Name": "Neutral",
-              "Description": "An informational result."
-            },
-            {
-              "Type": 3,
-              "Name": "Attention",
-              "Description": "A result needing attention."
             }
           ]
         }
@@ -2950,14 +1087,14 @@
       ]
     },
     {
-      "Name": "ActivityHeatmapChartV1",
-      "DisplayName": "Activity heatmap",
-      "Description": "Ranged rectangular cells with a time scale, quantitative color, and custom labels.",
+      "Name": "DirectLabelsChartV1",
+      "DisplayName": "Direct labels",
+      "Description": "A text-mark showcase with data-driven content and appearance.",
       "List": [
         {
           "Type": 0,
-          "Name": "Activity heatmap",
-          "Description": "Ranged rectangular cells with a time scale, quantitative color, and custom labels."
+          "Name": "Direct labels",
+          "Description": "A text-mark showcase with data-driven content and appearance."
         },
         {
           "Type": 1,
@@ -2967,19 +1104,428 @@
       ]
     },
     {
-      "Name": "BoxPlotWhiskersV1",
-      "DisplayName": "Box-plot whiskers",
-      "Description": "Low-to-high ranges rendered as rules.",
+      "Name": "EnergyHistoryChartV1",
+      "DisplayName": "Energy history",
+      "Description": "Recorded, expected, and stretch energy series on a shared UTC timeline.",
       "List": [
         {
           "Type": 0,
-          "Name": "Box-plot whiskers",
-          "Description": "Low-to-high ranges rendered as rules."
+          "Name": "Energy history",
+          "Description": "Recorded, expected, and stretch energy series on a shared UTC timeline."
         },
         {
           "Type": 1,
           "Name": "",
           "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "EnergyHistoryPointV1",
+      "DisplayName": "Energy history point",
+      "Description": "One time-series measurement for an energy scenario.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Energy history point",
+          "Description": "One time-series measurement for an energy scenario."
+        },
+        {
+          "Type": 1,
+          "Name": "Time",
+          "Description": "UTC measurement time."
+        },
+        {
+          "Type": 2,
+          "Name": "Power",
+          "Description": "Electrical demand at this time."
+        },
+        {
+          "Type": 3,
+          "Name": "Scenario",
+          "Description": "Line color and detail grouping."
+        },
+        {
+          "Type": 4,
+          "Name": "Scenario dash",
+          "Description": "Repeats the scenario as a dash encoding with its legend below the plot."
+        },
+        {
+          "Type": 5,
+          "Name": "Emphasis",
+          "Description": "Line width on an identity scale."
+        },
+        {
+          "Type": 6,
+          "Name": "Sequence",
+          "Description": "Drawing order within each line."
+        }
+      ]
+    },
+    {
+      "Name": "EnergySourceV1",
+      "DisplayName": "Energy source",
+      "Description": "Contributor used in explicit stacked-energy charts.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Energy source",
+          "Description": "Contributor used in explicit stacked-energy charts.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Solar",
+              "Description": "Locally generated solar energy."
+            },
+            {
+              "Type": 2,
+              "Name": "Battery",
+              "Description": "Energy discharged from storage."
+            },
+            {
+              "Type": 3,
+              "Name": "Grid",
+              "Description": "Energy imported from the electrical grid."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "FlowStageV1",
+      "DisplayName": "Flow stage",
+      "Description": "Fixed stage identity used by the Sankey example.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Flow stage",
+          "Description": "Fixed stage identity used by the Sankey example.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Visits",
+              "Description": "Incoming visits."
+            },
+            {
+              "Type": 2,
+              "Name": "Evaluation",
+              "Description": "Visits evaluating the product."
+            },
+            {
+              "Type": 3,
+              "Name": "Activated",
+              "Description": "Visits that completed activation."
+            },
+            {
+              "Type": 4,
+              "Name": "Exited",
+              "Description": "Visits that left before activation."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "FlowStreamV1",
+      "DisplayName": "Flow stream",
+      "Description": "One independently sampled ribbon in the Sankey example.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Flow stream",
+          "Description": "One independently sampled ribbon in the Sankey example.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Direct activation",
+              "Description": "Visits that activate directly."
+            },
+            {
+              "Type": 2,
+              "Name": "Assisted activation",
+              "Description": "Visits that activate after assistance."
+            },
+            {
+              "Type": 3,
+              "Name": "Early exit",
+              "Description": "Visits that leave before activation."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "ForecastConfidenceChartV1",
+      "DisplayName": "Forecast confidence",
+      "Description": "Layers estimate lines over server-computed confidence bands.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Forecast confidence",
+          "Description": "Layers estimate lines over server-computed confidence bands."
+        },
+        {
+          "Type": 1,
+          "Name": "Confidence bands",
+          "Description": "Lower and upper bounds by model."
+        },
+        {
+          "Type": 2,
+          "Name": "Central estimates",
+          "Description": "Model estimates drawn above their bands."
+        }
+      ]
+    },
+    {
+      "Name": "ForecastEstimateChartV1",
+      "DisplayName": "Forecast estimate lines",
+      "Description": "Central estimates sharing the confidence-band scales.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Forecast estimate lines",
+          "Description": "Central estimates sharing the confidence-band scales."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ForecastEstimatePointV1",
+      "DisplayName": "Forecast estimate point",
+      "Description": "One central estimate layered over a confidence band.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Forecast estimate point",
+          "Description": "One central estimate layered over a confidence band."
+        },
+        {
+          "Type": 1,
+          "Name": "Time",
+          "Description": "Local-time forecast position."
+        },
+        {
+          "Type": 2,
+          "Name": "Estimate",
+          "Description": "Central forecast estimate."
+        },
+        {
+          "Type": 3,
+          "Name": "Forecast model",
+          "Description": "Line color and path grouping."
+        },
+        {
+          "Type": 4,
+          "Name": "Sequence",
+          "Description": "Stable order within the model path."
+        },
+        {
+          "Type": 5,
+          "Name": "Estimate key",
+          "Description": "Stable model and time identity."
+        }
+      ]
+    },
+    {
+      "Name": "ForecastRangeChartV1",
+      "DisplayName": "Forecast range",
+      "Description": "Layer-ready confidence bands using ranged area marks.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Forecast range",
+          "Description": "Layer-ready confidence bands using ranged area marks."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ForecastRangePointV1",
+      "DisplayName": "Forecast range point",
+      "Description": "One uncertainty interval in a forecast confidence band.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Forecast range point",
+          "Description": "One uncertainty interval in a forecast confidence band."
+        },
+        {
+          "Type": 1,
+          "Name": "Time",
+          "Description": "UTC forecast time."
+        },
+        {
+          "Type": 2,
+          "Name": "Low estimate",
+          "Description": "Lower bound of the forecast interval."
+        },
+        {
+          "Type": 3,
+          "Name": "High estimate",
+          "Description": "Upper bound of the forecast interval."
+        },
+        {
+          "Type": 4,
+          "Name": "Forecast model",
+          "Description": "Fill and detail grouping for the interval."
+        },
+        {
+          "Type": 5,
+          "Name": "Forecast outline",
+          "Description": "Repeats the model as the confidence-band outline."
+        },
+        {
+          "Type": 6,
+          "Name": "Confidence shading",
+          "Description": "Opacity of the forecast band."
+        }
+      ]
+    },
+    {
+      "Name": "GroupedSalesBarV1",
+      "DisplayName": "Grouped sales bar",
+      "Description": "One portfolio contribution within a quarter.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Grouped sales bar",
+          "Description": "One portfolio contribution within a quarter."
+        },
+        {
+          "Type": 1,
+          "Name": "Quarter",
+          "Description": "Categorical group on the horizontal axis."
+        },
+        {
+          "Type": 2,
+          "Name": "Portfolio offset",
+          "Description": "Places portfolios beside one another within a quarter."
+        },
+        {
+          "Type": 3,
+          "Name": "Portfolio color",
+          "Description": "Repeats portfolio identity as color with its legend below the plot."
+        },
+        {
+          "Type": 4,
+          "Name": "Revenue",
+          "Description": "Quarterly revenue."
+        },
+        {
+          "Type": 5,
+          "Name": "Stable key",
+          "Description": "Unique quarter and portfolio identity."
+        }
+      ]
+    },
+    {
+      "Name": "GroupedSalesChartV1",
+      "DisplayName": "Grouped sales",
+      "Description": "Side-by-side categorical bars using a nested offset scale.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Grouped sales",
+          "Description": "Side-by-side categorical bars using a nested offset scale."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "HorizontalGroupedBarV1",
+      "DisplayName": "Horizontal grouped bar",
+      "Description": "One portfolio contribution offset vertically within a quarter.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Horizontal grouped bar",
+          "Description": "One portfolio contribution offset vertically within a quarter."
+        },
+        {
+          "Type": 1,
+          "Name": "Revenue",
+          "Description": "Quarterly revenue on the horizontal quantitative axis."
+        },
+        {
+          "Type": 2,
+          "Name": "Quarter",
+          "Description": "Main categorical row."
+        },
+        {
+          "Type": 3,
+          "Name": "Portfolio offset",
+          "Description": "Places portfolios beside one another within each horizontal group."
+        },
+        {
+          "Type": 4,
+          "Name": "Portfolio color",
+          "Description": "Repeats the portfolio identity as color with a legend below the plot."
+        },
+        {
+          "Type": 5,
+          "Name": "Stable key",
+          "Description": "Unique quarter and portfolio identity."
+        }
+      ]
+    },
+    {
+      "Name": "HorizontalGroupedSalesChartV1",
+      "DisplayName": "Horizontal grouped sales",
+      "Description": "Horizontal bars demonstrating categorical vertical offsets.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Horizontal grouped sales",
+          "Description": "Horizontal bars demonstrating categorical vertical offsets."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "LatencyHistogramBinV1",
+      "DisplayName": "Latency histogram bin",
+      "Description": "One server-computed latency interval and its observed count.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Latency histogram bin",
+          "Description": "One server-computed latency interval and its observed count."
+        },
+        {
+          "Type": 1,
+          "Name": "Bin start",
+          "Description": "Inclusive lower latency bound."
+        },
+        {
+          "Type": 2,
+          "Name": "Bin end",
+          "Description": "Exclusive upper latency bound."
+        },
+        {
+          "Type": 3,
+          "Name": "Observations",
+          "Description": "Number of requests within the interval."
+        },
+        {
+          "Type": 4,
+          "Name": "Bin key",
+          "Description": "Stable interval identity."
         }
       ]
     },
@@ -3001,29 +1547,72 @@
       ]
     },
     {
-      "Name": "RegionalComparisonChartV1",
-      "DisplayName": "Regional comparison",
-      "Description": "Places grouped quarterly sales beside the traffic-source donut.",
+      "Name": "MapRegionV1",
+      "DisplayName": "Map region",
+      "Description": "Server-projected region in the map example.",
       "List": [
         {
           "Type": 0,
-          "Name": "Regional comparison",
-          "Description": "Places grouped quarterly sales beside the traffic-source donut."
+          "Name": "Map region",
+          "Description": "Server-projected region in the map example.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "North district",
+              "Description": "The northern projected region."
+            },
+            {
+              "Type": 2,
+              "Name": "Central district",
+              "Description": "The central projected region."
+            },
+            {
+              "Type": 3,
+              "Name": "South district",
+              "Description": "The southern projected region."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "MarketV1",
+      "DisplayName": "Market",
+      "Description": "Geographic market used for faceting.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Market",
+          "Description": "Geographic market used for faceting.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Americas",
+              "Description": "North and South America."
+            },
+            {
+              "Type": 2,
+              "Name": "Europe",
+              "Description": "Europe, the Middle East, and Africa."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "MeasurementUncertaintyChartV1",
+      "DisplayName": "Measurement uncertainty",
+      "Description": "Error intervals rendered as ranged rules.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Measurement uncertainty",
+          "Description": "Error intervals rendered as ranged rules."
         },
         {
           "Type": 1,
-          "Name": "Quarterly sales",
-          "Description": "Grouped sales bars with their own axes."
-        },
-        {
-          "Type": 2,
-          "Name": "Horizontal sales",
-          "Description": "The same grouping pattern turned horizontally to demonstrate y-offsets."
-        },
-        {
-          "Type": 3,
-          "Name": "Traffic sources",
-          "Description": "Donut segments with a legend below the chart."
+          "Name": "",
+          "Description": ""
         }
       ]
     },
@@ -3061,6 +1650,1423 @@
               "Type": 5,
               "Name": "Rules to history",
               "Description": "Connects rules processing to historical storage."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "NetworkEdgesV1",
+      "DisplayName": "Network edges",
+      "Description": "Arbitrary two-endpoint rules connecting nodes.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Network edges",
+          "Description": "Arbitrary two-endpoint rules connecting nodes."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "NetworkEdgeV1",
+      "DisplayName": "Network edge",
+      "Description": "One arbitrary server-positioned link between two nodes.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Network edge",
+          "Description": "One arbitrary server-positioned link between two nodes."
+        },
+        {
+          "Type": 1,
+          "Name": "Source x",
+          "Description": "Horizontal source coordinate."
+        },
+        {
+          "Type": 2,
+          "Name": "Target x",
+          "Description": "Horizontal target coordinate."
+        },
+        {
+          "Type": 3,
+          "Name": "Source y",
+          "Description": "Vertical source coordinate."
+        },
+        {
+          "Type": 4,
+          "Name": "Target y",
+          "Description": "Vertical target coordinate."
+        },
+        {
+          "Type": 5,
+          "Name": "Connection",
+          "Description": "Localized fixed relationship shown in the tooltip."
+        },
+        {
+          "Type": 6,
+          "Name": "Link color",
+          "Description": "Literal edge stroke."
+        },
+        {
+          "Type": 7,
+          "Name": "Link width",
+          "Description": "Literal edge width."
+        },
+        {
+          "Type": 8,
+          "Name": "Edge key",
+          "Description": "Stable link identity."
+        }
+      ]
+    },
+    {
+      "Name": "NetworkNodeNameV1",
+      "DisplayName": "Network node",
+      "Description": "Fixed node identity used by the topology example.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Network node",
+          "Description": "Fixed node identity used by the topology example.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Gateway",
+              "Description": "Entry point into the demonstrated topology."
+            },
+            {
+              "Type": 2,
+              "Name": "Rules",
+              "Description": "Rules-processing service."
+            },
+            {
+              "Type": 3,
+              "Name": "Analytics",
+              "Description": "Analytics-processing service."
+            },
+            {
+              "Type": 4,
+              "Name": "Events",
+              "Description": "Event storage."
+            },
+            {
+              "Type": 5,
+              "Name": "History",
+              "Description": "Historical storage."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "NetworkNodesV1",
+      "DisplayName": "Network nodes",
+      "Description": "Server-positioned and typed topology nodes.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Network nodes",
+          "Description": "Server-positioned and typed topology nodes."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "NetworkNodeV1",
+      "DisplayName": "Network node",
+      "Description": "One server-positioned topology node.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Network node",
+          "Description": "One server-positioned topology node."
+        },
+        {
+          "Type": 1,
+          "Name": "Node x",
+          "Description": "Horizontal node coordinate."
+        },
+        {
+          "Type": 2,
+          "Name": "Node y",
+          "Description": "Vertical node coordinate."
+        },
+        {
+          "Type": 3,
+          "Name": "Node",
+          "Description": "Localized node label and stable interaction key."
+        },
+        {
+          "Type": 4,
+          "Name": "Role color",
+          "Description": "Node fill category."
+        },
+        {
+          "Type": 5,
+          "Name": "Role shape",
+          "Description": "Node symbol category."
+        },
+        {
+          "Type": 6,
+          "Name": "Node size",
+          "Description": "Literal node radius."
+        }
+      ]
+    },
+    {
+      "Name": "NetworkRoleV1",
+      "DisplayName": "Network role",
+      "Description": "Functional role of a node in the topology example.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Network role",
+          "Description": "Functional role of a node in the topology example.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Gateway",
+              "Description": "Entry point into the network."
+            },
+            {
+              "Type": 2,
+              "Name": "Service",
+              "Description": "Processing service in the network."
+            },
+            {
+              "Type": 3,
+              "Name": "Storage",
+              "Description": "Persistent storage node."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "NetworkTopologyChartV1",
+      "DisplayName": "Network topology",
+      "Description": "Layers arbitrary link rules below positioned node symbols.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Network topology",
+          "Description": "Layers arbitrary link rules below positioned node symbols."
+        },
+        {
+          "Type": 1,
+          "Name": "Edges",
+          "Description": "Server-computed node connections."
+        },
+        {
+          "Type": 2,
+          "Name": "Nodes",
+          "Description": "Server-computed node positions."
+        }
+      ]
+    },
+    {
+      "Name": "OperationsDashboardChartV1",
+      "DisplayName": "Operations dashboard",
+      "Description": "Stacks energy history, forecast ranges, and activity intervals vertically.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Operations dashboard",
+          "Description": "Stacks energy history, forecast ranges, and activity intervals vertically."
+        },
+        {
+          "Type": 1,
+          "Name": "Energy history",
+          "Description": "Multi-series UTC trend panel."
+        },
+        {
+          "Type": 2,
+          "Name": "Forecast range",
+          "Description": "Confidence-band panel with its own UTC x-axis."
+        },
+        {
+          "Type": 3,
+          "Name": "Activity heatmap",
+          "Description": "Time-of-day interval panel with independently labeled axes."
+        }
+      ]
+    },
+    {
+      "Name": "PerformancePointsV1",
+      "DisplayName": "Recorded performance",
+      "Description": "Interactive observations for the layered performance story.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Recorded performance",
+          "Description": "Interactive observations for the layered performance story."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "PerformancePointV1",
+      "DisplayName": "Performance point",
+      "Description": "One recorded result in the layered performance story.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Performance point",
+          "Description": "One recorded result in the layered performance story."
+        },
+        {
+          "Type": 1,
+          "Name": "Time",
+          "Description": "UTC measurement time."
+        },
+        {
+          "Type": 2,
+          "Name": "Response time",
+          "Description": "Recorded response time."
+        },
+        {
+          "Type": 3,
+          "Name": "Portfolio",
+          "Description": "Point color and detail group."
+        },
+        {
+          "Type": 4,
+          "Name": "Point size",
+          "Description": "Data-driven point emphasis."
+        }
+      ]
+    },
+    {
+      "Name": "PerformanceStoryChartV1",
+      "DisplayName": "Performance story",
+      "Description": "Layers recorded points, a fitted trend, and a target on shared scales.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Performance story",
+          "Description": "Layers recorded points, a fitted trend, and a target on shared scales."
+        },
+        {
+          "Type": 1,
+          "Name": "Recorded results",
+          "Description": "Individual performance measurements."
+        },
+        {
+          "Type": 2,
+          "Name": "Trend",
+          "Description": "Smoothed movement through the observations."
+        },
+        {
+          "Type": 3,
+          "Name": "Target",
+          "Description": "Desired response-time threshold."
+        }
+      ]
+    },
+    {
+      "Name": "PerformanceTargetRuleV1",
+      "DisplayName": "Performance target",
+      "Description": "Horizontal target spanning the demonstrated time range.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Performance target",
+          "Description": "Horizontal target spanning the demonstrated time range."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "Beginning of the target rule."
+        },
+        {
+          "Type": 2,
+          "Name": "End time",
+          "Description": "End of the target rule."
+        },
+        {
+          "Type": 3,
+          "Name": "Target response time",
+          "Description": "Desired maximum response time."
+        },
+        {
+          "Type": 4,
+          "Name": "Scenario",
+          "Description": "Target rule color and detail group."
+        },
+        {
+          "Type": 5,
+          "Name": "Target dash",
+          "Description": "Repeats the target scenario as a dashed line encoding."
+        },
+        {
+          "Type": 6,
+          "Name": "Target width",
+          "Description": "Emphasizes the target line."
+        }
+      ]
+    },
+    {
+      "Name": "PerformanceTargetV1",
+      "DisplayName": "Performance target rule",
+      "Description": "A target line sharing the performance story's scales.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Performance target rule",
+          "Description": "A target line sharing the performance story's scales."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "PerformanceTrendPointV1",
+      "DisplayName": "Performance trend point",
+      "Description": "One position on a fitted trend line.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Performance trend point",
+          "Description": "One position on a fitted trend line."
+        },
+        {
+          "Type": 1,
+          "Name": "Time",
+          "Description": "UTC trend time."
+        },
+        {
+          "Type": 2,
+          "Name": "Response time",
+          "Description": "Smoothed response time."
+        },
+        {
+          "Type": 3,
+          "Name": "Scenario",
+          "Description": "Trend line style."
+        },
+        {
+          "Type": 4,
+          "Name": "Sequence",
+          "Description": "Drawing order within the trend."
+        }
+      ]
+    },
+    {
+      "Name": "PerformanceTrendV1",
+      "DisplayName": "Performance trend",
+      "Description": "A smooth line sharing the point chart's scales.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Performance trend",
+          "Description": "A smooth line sharing the point chart's scales."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "PieSliceV1",
+      "DisplayName": "Pie slice",
+      "Description": "One explicit angular slice extending from the center to the outer radius.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Pie slice",
+          "Description": "One explicit angular slice extending from the center to the outer radius."
+        },
+        {
+          "Type": 1,
+          "Name": "Slice start",
+          "Description": "Beginning of the slice in turns."
+        },
+        {
+          "Type": 2,
+          "Name": "Slice end",
+          "Description": "End of the slice in turns."
+        },
+        {
+          "Type": 3,
+          "Name": "Inner radius",
+          "Description": "Zero makes the annular segment a pie slice."
+        },
+        {
+          "Type": 4,
+          "Name": "Outer radius",
+          "Description": "Full normalized plot radius."
+        },
+        {
+          "Type": 5,
+          "Name": "Traffic source",
+          "Description": "Slice fill and grouping identity."
+        },
+        {
+          "Type": 6,
+          "Name": "Share",
+          "Description": "Source share shown in the tooltip."
+        },
+        {
+          "Type": 7,
+          "Name": "Slice key",
+          "Description": "Stable source identity."
+        }
+      ]
+    },
+    {
+      "Name": "PortfolioV1",
+      "DisplayName": "Business portfolio",
+      "Description": "Identifies a product family in comparison charts.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Business portfolio",
+          "Description": "Identifies a product family in comparison charts.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Home",
+              "Description": "Consumer products."
+            },
+            {
+              "Type": 2,
+              "Name": "Business",
+              "Description": "Products for professional teams."
+            },
+            {
+              "Type": 3,
+              "Name": "Platform",
+              "Description": "Shared platform services."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "ProjectedMapChartV1",
+      "DisplayName": "Server-projected map",
+      "Description": "Filled Cartesian polygons whose projection is owned by the endpoint.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Server-projected map",
+          "Description": "Filled Cartesian polygons whose projection is owned by the endpoint."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ProjectedMapVertexV1",
+      "DisplayName": "Projected map vertex",
+      "Description": "One server-projected vertex in a filled region.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Projected map vertex",
+          "Description": "One server-projected vertex in a filled region."
+        },
+        {
+          "Type": 1,
+          "Name": "Projected x",
+          "Description": "Server-computed horizontal coordinate."
+        },
+        {
+          "Type": 2,
+          "Name": "Projected y",
+          "Description": "Server-computed vertical coordinate."
+        },
+        {
+          "Type": 3,
+          "Name": "Region",
+          "Description": "Fill, polygon grouping, and tooltip identity."
+        },
+        {
+          "Type": 4,
+          "Name": "Utilization",
+          "Description": "Region utilization shown in the tooltip."
+        },
+        {
+          "Type": 5,
+          "Name": "Vertex order",
+          "Description": "Stable order within the region boundary."
+        },
+        {
+          "Type": 6,
+          "Name": "Vertex key",
+          "Description": "Stable region and vertex identity."
+        }
+      ]
+    },
+    {
+      "Name": "QuarterV1",
+      "DisplayName": "Quarter",
+      "Description": "Quarter used on categorical axes.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Quarter",
+          "Description": "Quarter used on categorical axes.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "First quarter",
+              "Description": "January through March."
+            },
+            {
+              "Type": 2,
+              "Name": "Second quarter",
+              "Description": "April through June."
+            },
+            {
+              "Type": 3,
+              "Name": "Third quarter",
+              "Description": "July through September."
+            },
+            {
+              "Type": 4,
+              "Name": "Fourth quarter",
+              "Description": "October through December."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "RadialPerformanceBarV1",
+      "DisplayName": "Radial performance bar",
+      "Description": "One explicit angular lane and quantitative radial extent.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Radial performance bar",
+          "Description": "One explicit angular lane and quantitative radial extent."
+        },
+        {
+          "Type": 1,
+          "Name": "Bar start",
+          "Description": "Beginning of the angular lane in turns."
+        },
+        {
+          "Type": 2,
+          "Name": "Bar end",
+          "Description": "End of the angular lane in turns."
+        },
+        {
+          "Type": 3,
+          "Name": "Radial baseline",
+          "Description": "Zero-percent radial baseline."
+        },
+        {
+          "Type": 4,
+          "Name": "Score",
+          "Description": "Quantitative radial extent."
+        },
+        {
+          "Type": 5,
+          "Name": "Portfolio",
+          "Description": "Bar fill and grouping identity."
+        },
+        {
+          "Type": 6,
+          "Name": "Bar key",
+          "Description": "Stable portfolio identity."
+        }
+      ]
+    },
+    {
+      "Name": "RadialPerformanceChartV1",
+      "DisplayName": "Radial performance bars",
+      "Description": "Explicit angular lanes with quantitative radial extents.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Radial performance bars",
+          "Description": "Explicit angular lanes with quantitative radial extents."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "RegionalComparisonChartV1",
+      "DisplayName": "Regional comparison",
+      "Description": "Places grouped quarterly sales beside the traffic-source donut.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Regional comparison",
+          "Description": "Places grouped quarterly sales beside the traffic-source donut."
+        },
+        {
+          "Type": 1,
+          "Name": "Quarterly sales",
+          "Description": "Grouped sales bars with their own axes."
+        },
+        {
+          "Type": 2,
+          "Name": "Horizontal sales",
+          "Description": "The same grouping pattern turned horizontally to demonstrate y-offsets."
+        },
+        {
+          "Type": 3,
+          "Name": "Traffic sources",
+          "Description": "Donut segments with localized two-line automatic labels."
+        }
+      ]
+    },
+    {
+      "Name": "ReleaseStageV1",
+      "DisplayName": "Release stage",
+      "Description": "Product maturity used for column faceting.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Release stage",
+          "Description": "Product maturity used for column faceting.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Established",
+              "Description": "A broadly available product."
+            },
+            {
+              "Type": 2,
+              "Name": "Emerging",
+              "Description": "A newer product still expanding its audience."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "SankeyFlowChartV1",
+      "DisplayName": "Sankey flow",
+      "Description": "Layers server-sampled ribbons below explicit stage nodes.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sankey flow",
+          "Description": "Layers server-sampled ribbons below explicit stage nodes."
+        },
+        {
+          "Type": 1,
+          "Name": "Ribbons",
+          "Description": "Sampled flow paths."
+        },
+        {
+          "Type": 2,
+          "Name": "Nodes",
+          "Description": "Explicit stage rectangles."
+        }
+      ]
+    },
+    {
+      "Name": "SankeyNodesV1",
+      "DisplayName": "Sankey nodes",
+      "Description": "Explicit rectangular flow stages.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sankey nodes",
+          "Description": "Explicit rectangular flow stages."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "SankeyNodeV1",
+      "DisplayName": "Sankey node",
+      "Description": "One explicit rectangular flow stage.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sankey node",
+          "Description": "One explicit rectangular flow stage."
+        },
+        {
+          "Type": 1,
+          "Name": "Node start x",
+          "Description": "Left node boundary."
+        },
+        {
+          "Type": 2,
+          "Name": "Node end x",
+          "Description": "Right node boundary."
+        },
+        {
+          "Type": 3,
+          "Name": "Node start y",
+          "Description": "Lower node boundary."
+        },
+        {
+          "Type": 4,
+          "Name": "Node end y",
+          "Description": "Upper node boundary."
+        },
+        {
+          "Type": 5,
+          "Name": "Stage",
+          "Description": "Localized flow-stage label."
+        },
+        {
+          "Type": 6,
+          "Name": "Visitors",
+          "Description": "Quantity represented by the node."
+        },
+        {
+          "Type": 7,
+          "Name": "Node color",
+          "Description": "Literal fill color."
+        },
+        {
+          "Type": 8,
+          "Name": "Node key",
+          "Description": "Stable stage identity."
+        }
+      ]
+    },
+    {
+      "Name": "SankeyRibbonPointV1",
+      "DisplayName": "Sankey ribbon point",
+      "Description": "One sampled lower and upper boundary along a flow ribbon.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sankey ribbon point",
+          "Description": "One sampled lower and upper boundary along a flow ribbon."
+        },
+        {
+          "Type": 1,
+          "Name": "Flow position",
+          "Description": "Monotonic sampled horizontal position."
+        },
+        {
+          "Type": 2,
+          "Name": "Lower boundary",
+          "Description": "Server-sampled lower ribbon edge."
+        },
+        {
+          "Type": 3,
+          "Name": "Upper boundary",
+          "Description": "Server-sampled upper ribbon edge."
+        },
+        {
+          "Type": 4,
+          "Name": "Stream",
+          "Description": "Ribbon fill, path grouping, and tooltip identity."
+        },
+        {
+          "Type": 5,
+          "Name": "Visitors",
+          "Description": "Flow quantity shown in the tooltip."
+        },
+        {
+          "Type": 6,
+          "Name": "Ribbon opacity",
+          "Description": "Literal alpha preserving overlaps."
+        },
+        {
+          "Type": 7,
+          "Name": "Sample order",
+          "Description": "Stable order within the ribbon path."
+        },
+        {
+          "Type": 8,
+          "Name": "Sample key",
+          "Description": "Stable stream and sample identity."
+        }
+      ]
+    },
+    {
+      "Name": "SankeyRibbonsV1",
+      "DisplayName": "Sankey ribbons",
+      "Description": "Server-sampled x-monotonic flow areas.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sankey ribbons",
+          "Description": "Server-sampled x-monotonic flow areas."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ScenarioV1",
+      "DisplayName": "Scenario",
+      "Description": "Distinguishes recorded, expected, and stretch values.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Scenario",
+          "Description": "Distinguishes recorded, expected, and stretch values.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Recorded",
+              "Description": "A completed measurement."
+            },
+            {
+              "Type": 2,
+              "Name": "Expected",
+              "Description": "The current forecast or plan."
+            },
+            {
+              "Type": 3,
+              "Name": "Stretch",
+              "Description": "An ambitious target."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "StackedEnergyAreaPointV1",
+      "DisplayName": "Stacked energy area point",
+      "Description": "One server-computed lower and upper source boundary over time.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Stacked energy area point",
+          "Description": "One server-computed lower and upper source boundary over time."
+        },
+        {
+          "Type": 1,
+          "Name": "Time",
+          "Description": "UTC sample time."
+        },
+        {
+          "Type": 2,
+          "Name": "Cumulative start",
+          "Description": "Lower area boundary computed by the server."
+        },
+        {
+          "Type": 3,
+          "Name": "Cumulative end",
+          "Description": "Upper area boundary computed by the server."
+        },
+        {
+          "Type": 4,
+          "Name": "Energy source",
+          "Description": "Fill and path-grouping identity."
+        },
+        {
+          "Type": 5,
+          "Name": "Sequence",
+          "Description": "Stable order within the source path."
+        },
+        {
+          "Type": 6,
+          "Name": "Point key",
+          "Description": "Stable source and time identity."
+        }
+      ]
+    },
+    {
+      "Name": "StackedEnergyAreasV1",
+      "DisplayName": "Explicit stacked energy areas",
+      "Description": "Server-computed cumulative bands over time.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Explicit stacked energy areas",
+          "Description": "Server-computed cumulative bands over time."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "StackedEnergyBarSegmentV1",
+      "DisplayName": "Stacked energy bar segment",
+      "Description": "One cumulative source interval within a quarterly total.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Stacked energy bar segment",
+          "Description": "One cumulative source interval within a quarterly total."
+        },
+        {
+          "Type": 1,
+          "Name": "Quarter",
+          "Description": "Categorical stack position."
+        },
+        {
+          "Type": 2,
+          "Name": "Cumulative start",
+          "Description": "Lower bound computed by the server."
+        },
+        {
+          "Type": 3,
+          "Name": "Cumulative end",
+          "Description": "Upper bound computed by the server."
+        },
+        {
+          "Type": 4,
+          "Name": "Energy source",
+          "Description": "Fill and grouping identity for the segment."
+        },
+        {
+          "Type": 5,
+          "Name": "Segment key",
+          "Description": "Stable quarter and source identity."
+        }
+      ]
+    },
+    {
+      "Name": "StackedEnergyBarsV1",
+      "DisplayName": "Explicit stacked energy bars",
+      "Description": "Server-computed cumulative bounds rendered without client-side stacking.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Explicit stacked energy bars",
+          "Description": "Server-computed cumulative bounds rendered without client-side stacking."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "StackedEnergyChartV1",
+      "DisplayName": "Explicit stacking",
+      "Description": "Compares server-computed stacked bars and stacked areas.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Explicit stacking",
+          "Description": "Compares server-computed stacked bars and stacked areas."
+        },
+        {
+          "Type": 1,
+          "Name": "Stacked bars",
+          "Description": "Quarterly cumulative source intervals."
+        },
+        {
+          "Type": 2,
+          "Name": "Stacked areas",
+          "Description": "Source contributions accumulated over time."
+        }
+      ]
+    },
+    {
+      "Name": "TemperatureCloseTicksV1",
+      "DisplayName": "Five-minute temperature closes",
+      "Description": "Right-facing closing ticks for the last 72 hours.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Five-minute temperature closes",
+          "Description": "Right-facing closing ticks for the last 72 hours."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "TemperatureCloseTickV1",
+      "DisplayName": "Five-minute closing-temperature tick",
+      "Description": "A right-facing horizontal rule marking the final observation in a bucket.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Five-minute closing-temperature tick",
+          "Description": "A right-facing horizontal rule marking the final observation in a bucket."
+        },
+        {
+          "Type": 1,
+          "Name": "Bucket midpoint",
+          "Description": "UTC start of the right-facing close tick."
+        },
+        {
+          "Type": 2,
+          "Name": "Bucket end",
+          "Description": "Exclusive UTC end of the five-minute bucket."
+        },
+        {
+          "Type": 3,
+          "Name": "Closing temperature",
+          "Description": "Last observed temperature in the bucket."
+        },
+        {
+          "Type": 4,
+          "Name": "Low temperature",
+          "Description": "Lowest bucket observation, repeated for a complete tooltip."
+        },
+        {
+          "Type": 5,
+          "Name": "High temperature",
+          "Description": "Highest bucket observation, repeated for a complete tooltip."
+        }
+      ]
+    },
+    {
+      "Name": "TemperatureHighLowRangesV1",
+      "DisplayName": "Five-minute temperature ranges",
+      "Description": "Vertical low-to-high observations for the last 72 hours.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Five-minute temperature ranges",
+          "Description": "Vertical low-to-high observations for the last 72 hours."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "TemperatureHighLowRuleV1",
+      "DisplayName": "Five-minute temperature range",
+      "Description": "The observed low and high within one five-minute bucket.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Five-minute temperature range",
+          "Description": "The observed low and high within one five-minute bucket."
+        },
+        {
+          "Type": 1,
+          "Name": "Bucket midpoint",
+          "Description": "UTC midpoint of this five-minute observation bucket."
+        },
+        {
+          "Type": 2,
+          "Name": "Low temperature",
+          "Description": "Lowest observed temperature in the bucket."
+        },
+        {
+          "Type": 3,
+          "Name": "High temperature",
+          "Description": "Highest observed temperature in the bucket."
+        },
+        {
+          "Type": 4,
+          "Name": "Closing temperature",
+          "Description": "Last observation in the bucket, repeated for a complete tooltip."
+        }
+      ]
+    },
+    {
+      "Name": "TemperatureHlcChartV1",
+      "DisplayName": "Five-minute temperature, past 72 hours",
+      "Description": "High-low-close observations layered on shared UTC and Celsius scales.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Five-minute temperature, past 72 hours",
+          "Description": "High-low-close observations layered on shared UTC and Celsius scales."
+        },
+        {
+          "Type": 1,
+          "Name": "High-low ranges",
+          "Description": "One vertical range for every completed five-minute bucket."
+        },
+        {
+          "Type": 2,
+          "Name": "Closing ticks",
+          "Description": "One right-facing close tick for every completed five-minute bucket."
+        }
+      ]
+    },
+    {
+      "Name": "TimeBlockV1",
+      "DisplayName": "Time block",
+      "Description": "Fixed portion of the workday used by the activity heatmap.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Time block",
+          "Description": "Fixed portion of the workday used by the activity heatmap.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Morning",
+              "Description": "Early workday activity."
+            },
+            {
+              "Type": 2,
+              "Name": "Midday",
+              "Description": "Midday activity."
+            },
+            {
+              "Type": 3,
+              "Name": "Afternoon",
+              "Description": "Afternoon activity."
+            },
+            {
+              "Type": 4,
+              "Name": "Evening",
+              "Description": "Late workday activity."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "TrafficDonutChartV1",
+      "DisplayName": "Traffic sources",
+      "Description": "A donut whose categorical fill guide lowers to two-line linked outside labels.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Traffic sources",
+          "Description": "A donut whose categorical fill guide lowers to two-line linked outside labels."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "TrafficDonutSegmentV1",
+      "DisplayName": "Traffic donut segment",
+      "Description": "One explicitly positioned annular segment.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Traffic donut segment",
+          "Description": "One explicitly positioned annular segment."
+        },
+        {
+          "Type": 1,
+          "Name": "Arc start",
+          "Description": "Beginning of the segment on a normalized turn."
+        },
+        {
+          "Type": 2,
+          "Name": "Arc end",
+          "Description": "End of the segment on a normalized turn."
+        },
+        {
+          "Type": 3,
+          "Name": "Inner radius",
+          "Description": "Creates the donut hole."
+        },
+        {
+          "Type": 4,
+          "Name": "Outer radius",
+          "Description": "Outer edge of the donut."
+        },
+        {
+          "Type": 5,
+          "Name": "Traffic source",
+          "Description": "Detail group and tooltip category."
+        },
+        {
+          "Type": 6,
+          "Name": "Arc label",
+          "Description": "Localized two-line category and percentage used for fill and linked labels."
+        },
+        {
+          "Type": 7,
+          "Name": "Share",
+          "Description": "Human-readable share in the tooltip."
+        },
+        {
+          "Type": 8,
+          "Name": "Border opacity",
+          "Description": "Separates adjacent segments."
+        },
+        {
+          "Type": 9,
+          "Name": "Segment order",
+          "Description": "Stable clockwise drawing order."
+        },
+        {
+          "Type": 10,
+          "Name": "Segment key",
+          "Description": "Stable identity for interactive focus."
+        }
+      ]
+    },
+    {
+      "Name": "TrafficPieChartV1",
+      "DisplayName": "Traffic-source pie",
+      "Description": "Explicit pie geometry with a zero inner radius.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Traffic-source pie",
+          "Description": "Explicit pie geometry with a zero inner radius."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "TrafficSourceV1",
+      "DisplayName": "Traffic source",
+      "Description": "Source represented by a donut segment.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Traffic source",
+          "Description": "Source represented by a donut segment.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Direct",
+              "Description": "People navigating directly to the product."
+            },
+            {
+              "Type": 2,
+              "Name": "Search",
+              "Description": "Search-engine referrals."
+            },
+            {
+              "Type": 3,
+              "Name": "Partner",
+              "Description": "Partner referrals."
+            },
+            {
+              "Type": 4,
+              "Name": "Campaign",
+              "Description": "Campaign referrals."
+            },
+            {
+              "Type": 5,
+              "Name": "Social",
+              "Description": "Social-media referrals."
+            },
+            {
+              "Type": 6,
+              "Name": "Other",
+              "Description": "Small uncategorized referral sources."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "UncertaintyRuleV1",
+      "DisplayName": "Measurement uncertainty rule",
+      "Description": "One vertical low-to-high error interval.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Measurement uncertainty rule",
+          "Description": "One vertical low-to-high error interval."
+        },
+        {
+          "Type": 1,
+          "Name": "Sample",
+          "Description": "Categorical sample position."
+        },
+        {
+          "Type": 2,
+          "Name": "Low estimate",
+          "Description": "Lower end of the error interval."
+        },
+        {
+          "Type": 3,
+          "Name": "High estimate",
+          "Description": "Upper end of the error interval."
+        },
+        {
+          "Type": 4,
+          "Name": "Scenario",
+          "Description": "Rule color and dash pattern."
+        },
+        {
+          "Type": 5,
+          "Name": "Scenario dash",
+          "Description": "Repeats the scenario as a dash encoding."
+        },
+        {
+          "Type": 6,
+          "Name": "Rule width",
+          "Description": "Emphasizes the interval."
+        },
+        {
+          "Type": 7,
+          "Name": "Rule key",
+          "Description": "Stable identity for the sample interval."
+        }
+      ]
+    },
+    {
+      "Name": "WeekdayV1",
+      "DisplayName": "Weekday",
+      "Description": "Day used on the activity heatmap.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Weekday",
+          "Description": "Day used on the activity heatmap.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Monday",
+              "Description": "Monday activity."
+            },
+            {
+              "Type": 2,
+              "Name": "Tuesday",
+              "Description": "Tuesday activity."
+            },
+            {
+              "Type": 3,
+              "Name": "Wednesday",
+              "Description": "Wednesday activity."
+            },
+            {
+              "Type": 4,
+              "Name": "Thursday",
+              "Description": "Thursday activity."
+            },
+            {
+              "Type": 5,
+              "Name": "Friday",
+              "Description": "Friday activity."
             }
           ]
         }

@@ -1,0 +1,2187 @@
+{
+  "DocumentVersion": "0.0.1",
+  "Locale": "en",
+  "DisplayName": "Libertas Sprinkler",
+  "Description": "Calculates and executes weather-aware watering schedules for sprinkler zones\ncontrolled by Matter Valve Configuration and Control devices.\nConfiguration identifies the shared sprinkler weather endpoint, one\nchart-ready Sprinkler Report endpoint, reminder recipients, and, for each\nzone, its valve, plant type, sprinkler-head type, and state endpoint. The\ncontroller adapts each watering\nrun from weather, observed valve time, and one user-facing water amount\nadjuster. Hold-off periods remain runtime schedule constraints.\nWhen a fresh forecast and site location are available, the controller moves\na run into the best nearby morning window. It derives solar position from\nUTC and the site coordinates, prefers low evapotranspiration and wind, and\navoids prolonged foliage wetness for overhead watering. A critically dry\nzone still uses the first weather-safe opportunity.\nHold-offs remain hard constraints. The controller waters before one only\nwhen a fresh continuous forecast shows a safe, rain-free opportunity and\ndelaying would produce a critical deficit; otherwise it recalculates the\nmake-up amount and duration at the first legal post-hold-off start.\nEach zone persists compact settings and a folded water-balance baseline.\nRecent precipitation, evapotranspiration, and actual valve-open irrigation\nare incremental indexed records reconstructed into a bounded ledger during\nstartup. If internet weather stops, persisted local demand falls back to an\noffline location-and-season estimate and finally a conservative built-in\nrate. Valve subscriptions count both automatic and manual watering, so a\nrestart or manual run does not cause the controller to water the same\ndeficit twice.",
+  "List": [
+    {
+      "Name": "libertas_sprinkler",
+      "DisplayName": "Sprinkler agent",
+      "Description": "Runs a weather-aware multi-zone sprinkler controller. The weather endpoint\nsupplies the tailored sprinkler history, current conditions, and forecast\nshared by all zones. Each zone exposes an essential state by default,\ncomplete advanced details on demand, and persists its own recent-water\nstate.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Weather server",
+          "Description": "The client endpoint for `SprinklerWeatherProtocol`. The application\nsubscribes at startup for more precise planning. Missing or stale weather\nfalls back to an offline estimate; fresh unsafe conditions delay watering."
+        },
+        {
+          "Type": 1,
+          "Name": "Sprinkler Report",
+          "Description": "The system-wide server endpoint for `SprinklerReportProtocol`. It\nreturns three chart-ready report families from indefinitely retained\nweather, activity, and daily balance archives."
+        },
+        {
+          "Type": 2,
+          "Name": "Reminder recipients",
+          "Description": "One or more Libertas users who receive application reminders. The\ncurrent version sends winterization reminders; the shared list can also\nserve future reminder types."
+        },
+        {
+          "Type": 3,
+          "Name": "Reminder recipient",
+          "Description": "One Libertas user authorized to receive sprinkler reminders."
+        },
+        {
+          "Type": 4,
+          "Name": "Sprinkler zones",
+          "Description": "One or more independently scheduled Matter Valve zones."
+        },
+        {
+          "Type": 5,
+          "Name": "Sprinkler zone",
+          "Description": "The physical and endpoint configuration for one watered area."
+        }
+      ],
+      "Strings": {
+        "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "Freezing weather (%1$s) may damage your sprinkler system. Winterize it, then set Watering mode to Winterization.",
+        "SPRINKLER_REPORT_WEATHER_HISTORY_V2": "Indefinite full-observation sprinkler report weather history for %1$s.",
+        "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "Cold season is approaching at this location. Winterize your sprinkler system, then set Watering mode to Winterization.",
+        "SPRINKLER_WATERING_MODE_V1": "Sprinkler watering mode for %1$s.",
+        "SPRINKLER_DAILY_REPORT_V1": "Indefinite daily sprinkler water accounting for %1$s.",
+        "SPRINKLER_WATERING_ACTIVITIES_V1": "Indefinite sprinkler watering activity for %1$s.",
+        "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "Indefinite sprinkler current-weather observations for %1$s.",
+        "SPRINKLER_REPORT_WEATHER_HISTORY_V1": "Indefinite sprinkler report weather history for %1$s.",
+        "libertas.permission.ACCESS_FINE_LOCATION": "Allow the sprinkler task to receive location-specific conditions and forecasts from the weather agent.",
+        "SPRINKLER_MODELED_WEATHER_GAPS_V1": "Indefinite modeled sprinkler weather gaps for %1$s.",
+        "SPRINKLER_SITE_LOCATION_V1": "Sprinkler site location for %1$s.",
+        "SPRINKLER_ZONE_MEMORY_V1": "Sprinkler water balance and settings for %1$s.",
+        "SPRINKLER_WINTERIZATION_REMINDER_V1": "Sprinkler winterization reminder state for %1$s.",
+        "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V1": "Current sprinkler weather-archive generation for %1$s.",
+        "SPRINKLER_WATER_EVENTS_V1": "Sprinkler water history for %1$s.",
+        "SPRINKLER_WATERING_ACTIVITY_STATE_V1": "Current sprinkler watering activity for %1$s."
+      }
+    }
+  ],
+  "Types": [
+    {
+      "Name": "SprinklerDailyReportV1",
+      "DisplayName": "Daily sprinkler report",
+      "Description": "An indefinitely retained UTC-day checkpoint and water-accounting rollup.\nIt makes an old water-balance window queryable without replaying every event\nsince installation.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Daily sprinkler report",
+          "Description": "An indefinitely retained UTC-day checkpoint and water-accounting rollup.\nIt makes an old water-balance window queryable without replaying every event\nsince installation."
+        },
+        {
+          "Type": 1,
+          "Name": "Day start",
+          "Description": "Inclusive UTC calendar-day boundary used as the indexed record key."
+        },
+        {
+          "Type": 2,
+          "Name": "Day end",
+          "Description": "Exclusive UTC calendar-day boundary."
+        },
+        {
+          "Type": 3,
+          "Name": "Coverage start",
+          "Description": "First instant represented by this checkpoint. It can be later than the\nUTC day boundary on the installation or site-transition day."
+        },
+        {
+          "Type": 4,
+          "Name": "Coverage end",
+          "Description": "Exclusive last instant represented by this checkpoint. It can be before\nthe day boundary for the current partial day."
+        },
+        {
+          "Type": 5,
+          "Name": "Root-zone capacity",
+          "Description": "Modeled plant-profile capacity in millimeters."
+        },
+        {
+          "Type": 6,
+          "Name": "Opening deficit",
+          "Description": "Calculated root-zone deficit at the beginning of the represented day."
+        },
+        {
+          "Type": 7,
+          "Name": "Closing deficit",
+          "Description": "Calculated root-zone deficit at the represented end or latest known time."
+        },
+        {
+          "Type": 8,
+          "Name": "Rain",
+          "Description": "Provider-recorded precipitation assigned to this UTC day."
+        },
+        {
+          "Type": 9,
+          "Name": "Reference evapotranspiration",
+          "Description": "Provider-recorded reference ET assigned to this UTC day before the\nplant-specific crop coefficient is applied."
+        },
+        {
+          "Type": 10,
+          "Name": "Modeled reference evapotranspiration",
+          "Description": "Reference ET used to fill intervals not covered by provider history."
+        },
+        {
+          "Type": 11,
+          "Name": "Modeled demand source",
+          "Description": "Source of the modeled ET amount, omitted when provider history covers\nthe complete represented interval."
+        },
+        {
+          "Type": 12,
+          "Name": "Provider weather coverage",
+          "Description": "Number of seconds in the represented interval covered by accepted\nprovider weather periods."
+        },
+        {
+          "Type": 13,
+          "Name": "Irrigation",
+          "Description": "Water depth estimated from observed valve-open intervals assigned to\nthis UTC day."
+        },
+        {
+          "Type": 14,
+          "Name": "Complete day",
+          "Description": "Whether the checkpoint represents the complete UTC day rather than the\ncurrent partial day."
+        },
+        {
+          "Type": 15,
+          "Name": "Calculated at",
+          "Description": "UTC time when this checkpoint was last rebuilt."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerData",
+      "DisplayName": "Sprinkler persistent data",
+      "Description": "Defines every value written by the sprinkler application. Zone data is\nstored under each Matter Valve; shared system data uses the weather endpoint.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler persistent data",
+          "Description": "Defines every value written by the sprinkler application. Zone data is\nstored under each Matter Valve; shared system data uses the weather endpoint."
+        },
+        {
+          "Type": 1,
+          "Name": "Zone memory",
+          "Description": "Stores one zone's runtime adjuster, constraints, and folded baseline."
+        },
+        {
+          "Type": 2,
+          "Name": "Zone memory",
+          "Description": "The complete restart-safe state for the configured valve."
+        },
+        {
+          "Type": 3,
+          "Name": "Water event",
+          "Description": "Stores one independently indexed weather or irrigation event."
+        },
+        {
+          "Type": 4,
+          "Name": "Water event",
+          "Description": "One completed weather period or accounted valve-open interval."
+        },
+        {
+          "Type": 5,
+          "Name": "Site location",
+          "Description": "Stores the last valid Hub location for offline seasonal estimation."
+        },
+        {
+          "Type": 6,
+          "Name": "Site location",
+          "Description": "The cached WGS84 coordinates for the sprinkler site."
+        },
+        {
+          "Type": 7,
+          "Name": "Watering mode",
+          "Description": "Stores the shared Active or Winterization mode for the sprinkler system."
+        },
+        {
+          "Type": 8,
+          "Name": "Watering mode",
+          "Description": "The restart-safe operating mode shared by every zone."
+        },
+        {
+          "Type": 9,
+          "Name": "Winterization reminder",
+          "Description": "Stores the latest system-wide reminder time and reason."
+        },
+        {
+          "Type": 10,
+          "Name": "Reminder memory",
+          "Description": "Restart-safe throttling state for winterization notifications."
+        },
+        {
+          "Type": 11,
+          "Name": "Report weather period",
+          "Description": "Archives one accepted completed provider period indefinitely for weather,\nET, and decision-explanation charts."
+        },
+        {
+          "Type": 12,
+          "Name": "Weather period",
+          "Description": "Legacy rain and ET for one completed provider period. Existing rows\nremain usable for water balance, but do not invent unavailable wind."
+        },
+        {
+          "Type": 13,
+          "Name": "Watering activity",
+          "Description": "Archives one scheduled, running, completed, skipped, failed, superseded,\nmanual, or legacy watering activity indefinitely."
+        },
+        {
+          "Type": 14,
+          "Name": "Activity",
+          "Description": "Complete durable scheduled-versus-actual lifecycle data."
+        },
+        {
+          "Type": 15,
+          "Name": "Daily report",
+          "Description": "Archives one UTC-day water-accounting and balance checkpoint\nindefinitely so old ranges remain queryable."
+        },
+        {
+          "Type": 16,
+          "Name": "Daily report",
+          "Description": "Rain, ET, estimated irrigation, and opening/closing modeled deficit."
+        },
+        {
+          "Type": 17,
+          "Name": "Watering activity state",
+          "Description": "Stores one bounded restart pointer into the indefinite activity archive."
+        },
+        {
+          "Type": 18,
+          "Name": "Activity state",
+          "Description": "Exact current-activity index, if a nonterminal activity exists."
+        },
+        {
+          "Type": 19,
+          "Name": "Report weather observation",
+          "Description": "Archives one accepted current-condition sample indefinitely. It keeps\n15-minute decision evidence without double-counting rain or ET already\nrepresented by completed hourly history."
+        },
+        {
+          "Type": 20,
+          "Name": "Weather observation",
+          "Description": "Temperature, humidity, wind, gusts, and immediate water inputs at\nthe provider's represented time."
+        },
+        {
+          "Type": 21,
+          "Name": "Report weather archive state",
+          "Description": "Stores the active site generation without deleting prior generations."
+        },
+        {
+          "Type": 22,
+          "Name": "Archive state",
+          "Description": "The active indefinitely retained weather generation."
+        },
+        {
+          "Type": 23,
+          "Name": "Authoritative watering activity state",
+          "Description": "Appended successor to `WateringActivityStateV1`. It retains terminal as\nwell as nonterminal snapshots so either audit write can be repaired after\na restart without changing any existing persistent-data discriminant."
+        },
+        {
+          "Type": 24,
+          "Name": "Activity state",
+          "Description": "Latest complete activity snapshot and its explicit current status."
+        },
+        {
+          "Type": 25,
+          "Name": "Modeled weather gap",
+          "Description": "Archives one exact fallback-ET interval indefinitely. This variant is\nappended so every existing persistent-data discriminant remains stable."
+        },
+        {
+          "Type": 26,
+          "Name": "Modeled gap",
+          "Description": "Exact interval with immutable source and rate provenance."
+        },
+        {
+          "Type": 27,
+          "Name": "Report weather period V2",
+          "Description": "Archives one full accepted provider observation indefinitely. This\nappend-only variant leaves all existing persistent discriminants stable."
+        },
+        {
+          "Type": 28,
+          "Name": "Weather period",
+          "Description": "Temperature, humidity, rain, ET, wind, and gusts for one completed\nprovider period."
+        },
+        {
+          "Type": 29,
+          "Name": "Report weather archive state V2",
+          "Description": "Appended successor whose generation is bound only by explicit provider\nsite messages, without relying on an optional section-clear handshake."
+        },
+        {
+          "Type": 30,
+          "Name": "Archive state",
+          "Description": "Active indefinitely retained provider-site generation."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerEtChartV1",
+      "DisplayName": "Reference evapotranspiration",
+      "Description": "Observed and forecast ET on the shared report time axis.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Reference evapotranspiration",
+          "Description": "Observed and forecast ET on the shared report time axis."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerEtRowV1",
+      "DisplayName": "Weather interval value",
+      "Description": "One observed or forecast ET amount over an explicit interval.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Weather interval value",
+          "Description": "One observed or forecast ET amount over an explicit interval."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "Inclusive provider period start."
+        },
+        {
+          "Type": 2,
+          "Name": "End time",
+          "Description": "Exclusive provider period end."
+        },
+        {
+          "Type": 3,
+          "Name": "Reference evapotranspiration",
+          "Description": "Provider FAO-56 reference ET in millimeters."
+        },
+        {
+          "Type": 4,
+          "Name": "Source",
+          "Description": "Observed or forecast."
+        },
+        {
+          "Type": 5,
+          "Name": "Stable key",
+          "Description": "Server-generated identity for this interval and source."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerHeadTypeV1",
+      "DisplayName": "Sprinkler head type",
+      "Description": "Selects a nominal delivery profile used to translate the adaptive water need\ninto valve-open time. Weather history and observed valve time drive later\ncalculations, while the water amount adjuster provides the only user tuning.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler head type",
+          "Description": "Selects a nominal delivery profile used to translate the adaptive water need\ninto valve-open time. Weather history and observed valve time drive later\ncalculations, while the water amount adjuster provides the only user tuning.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Surface drip",
+              "Description": "Slow, targeted delivery from surface drip emitters."
+            },
+            {
+              "Type": 2,
+              "Name": "Bubblers",
+              "Description": "Concentrated delivery around trees, shrubs, or planting basins."
+            },
+            {
+              "Type": 3,
+              "Name": "Pop-up spray",
+              "Description": "Broad, relatively fast delivery from fixed pop-up spray heads."
+            },
+            {
+              "Type": 4,
+              "Name": "Low-rate rotors",
+              "Description": "Slow broad-area delivery from high-efficiency or multi-stream rotors."
+            },
+            {
+              "Type": 5,
+              "Name": "High-rate rotors",
+              "Description": "Faster broad-area delivery from conventional rotor heads."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerHumidityChartV1",
+      "DisplayName": "Relative humidity",
+      "Description": "Observed and forecast humidity on its own zero-to-100-percent scale.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Relative humidity",
+          "Description": "Observed and forecast humidity on its own zero-to-100-percent scale."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerHumidityRowV1",
+      "DisplayName": "Humidity row",
+      "Description": "One observed or forecast relative-humidity sample.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Humidity row",
+          "Description": "One observed or forecast relative-humidity sample."
+        },
+        {
+          "Type": 1,
+          "Name": "Time",
+          "Description": "Provider period start."
+        },
+        {
+          "Type": 2,
+          "Name": "Relative humidity",
+          "Description": "Relative humidity percentage."
+        },
+        {
+          "Type": 3,
+          "Name": "Measurement",
+          "Description": "Identifies this line as relative humidity in the combined panel."
+        },
+        {
+          "Type": 4,
+          "Name": "Source",
+          "Description": "Observed or forecast."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerModeledWeatherGapV1",
+      "DisplayName": "Modeled weather gap",
+      "Description": "One exact provider-uncovered interval whose fallback reference-ET source and\nrate are frozen when the interval is first recorded. A later accepted\nprovider period may clip or supersede this interval; later fallback estimate\nchanges do not rewrite its provenance.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Modeled weather gap",
+          "Description": "One exact provider-uncovered interval whose fallback reference-ET source and\nrate are frozen when the interval is first recorded. A later accepted\nprovider period may clip or supersede this interval; later fallback estimate\nchanges do not rewrite its provenance."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "Inclusive beginning of the provider-uncovered interval."
+        },
+        {
+          "Type": 2,
+          "Name": "End time",
+          "Description": "Exclusive end of the provider-uncovered interval."
+        },
+        {
+          "Type": 3,
+          "Name": "Reference evapotranspiration rate",
+          "Description": "Frozen fallback reference-ET rate in millimeters per UTC day."
+        },
+        {
+          "Type": 4,
+          "Name": "Demand source",
+          "Description": "Frozen recent-weather, location/season, or conservative provenance."
+        },
+        {
+          "Type": 5,
+          "Name": "Recorded at",
+          "Description": "UTC time at which this interval first acquired its frozen provenance."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerPlantTypeV1",
+      "DisplayName": "Plant type",
+      "Description": "Selects the plant water-storage and weather-demand profile used by the\nzone's adaptive water-balance calculation.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Plant type",
+          "Description": "Selects the plant water-storage and weather-demand profile used by the\nzone's adaptive water-balance calculation.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Lawn",
+              "Description": "Closely planted turf with shallow roots and regular water demand."
+            },
+            {
+              "Type": 2,
+              "Name": "Flowers",
+              "Description": "Ornamental flowering plants with moderate roots and water demand."
+            },
+            {
+              "Type": 3,
+              "Name": "Vegetables",
+              "Description": "Seasonal food crops with moderate roots and relatively high demand."
+            },
+            {
+              "Type": 4,
+              "Name": "Fruit trees",
+              "Description": "Established fruit trees with deeper roots and moderate demand."
+            },
+            {
+              "Type": 5,
+              "Name": "Citrus",
+              "Description": "Citrus trees with deep roots and moderate-to-high demand."
+            },
+            {
+              "Type": 6,
+              "Name": "Trees and bushes",
+              "Description": "Established woody landscape plants with deep roots."
+            },
+            {
+              "Type": 7,
+              "Name": "Xeriscape",
+              "Description": "Drought-adapted planting with low weather-driven water demand."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerReportEmptyStateV1",
+      "DisplayName": "Empty report state",
+      "Description": "Supplies an honest localized annotation when a configured zone has no rows\nfor one chart in the requested time window.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Empty report state",
+          "Description": "Supplies an honest localized annotation when a configured zone has no rows\nfor one chart in the requested time window.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "No recorded water input",
+              "Description": "This zone has no positive rain or observed-irrigation input in the\nrequested window."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerReportProtocol",
+      "DisplayName": "Sprinkler report protocol",
+      "Description": "Exposes three independently requested all-zone charts. Every request can be\nsent immediately with both bounds null; the server then selects a useful\nfixed default window. A client may later resend that chart's request with\none or both calendar-date bounds to customize only its window. A supplied\ndate outside the retained data range is clamped to the first or last\navailable database date instead of producing an empty chart.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler report protocol",
+          "Description": "Exposes three independently requested all-zone charts. Every request can be\nsent immediately with both bounds null; the server then selects a useful\nfixed default window. A client may later resend that chart's request with\none or both calendar-date bounds to customize only its window. A supplied\ndate outside the retained data range is clamped to the first or last\navailable database date instead of producing an empty chart."
+        },
+        {
+          "Type": 1,
+          "Name": "Get water balance",
+          "Description": "Requests calculated available water and agronomic reference lines for\nevery configured zone."
+        },
+        {
+          "Type": 2,
+          "Name": "First date",
+          "Description": "Optional inclusive UTC calendar date. Leave null for the server\ndefault."
+        },
+        {
+          "Type": 3,
+          "Name": "Last date",
+          "Description": "Optional inclusive UTC calendar date. Leave null for the server\ndefault."
+        },
+        {
+          "Type": 4,
+          "Name": "Water balance",
+          "Description": "Facets calculated available water, plant-specific reference lines, and\nwatering decision markers across every configured zone."
+        },
+        {
+          "Type": 5,
+          "Name": "Get water usage",
+          "Description": "Requests daily rain and observed irrigation accounting for every zone.\nNull bounds select the latest 31 local calendar days plus the forecast\nhorizon; a custom window may span up to two years. Every input retains\nits actual Hub-local calendar date."
+        },
+        {
+          "Type": 6,
+          "Name": "First date",
+          "Description": "Optional inclusive Hub-local calendar date. Leave null for the server\ndefault."
+        },
+        {
+          "Type": 7,
+          "Name": "Last date",
+          "Description": "Optional inclusive Hub-local calendar date. Leave null for the server\ndefault."
+        },
+        {
+          "Type": 8,
+          "Name": "Water usage",
+          "Description": "Daily rain and estimated irrigation by Hub-local calendar date and zone."
+        },
+        {
+          "Type": 9,
+          "Name": "Get weather and ET",
+          "Description": "Requests shared site weather plus every zone's modeled ET gaps."
+        },
+        {
+          "Type": 10,
+          "Name": "First date",
+          "Description": "Optional inclusive UTC calendar date. Leave null for the server\ndefault."
+        },
+        {
+          "Type": 11,
+          "Name": "Last date",
+          "Description": "Optional inclusive UTC calendar date. Leave null for the server\ndefault."
+        },
+        {
+          "Type": 12,
+          "Name": "Weather and ET",
+          "Description": "Shared observed/forecast weather and per-zone modeled ET gaps."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerReportWeatherArchiveStateV1",
+      "DisplayName": "Legacy report weather archive state",
+      "Description": "Decodes the original site-generation record whose history-clear handshake\ncould remain pending indefinitely. New writes use\n`SprinklerReportWeatherArchiveStateV2`.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Legacy report weather archive state",
+          "Description": "Decodes the original site-generation record whose history-clear handshake\ncould remain pending indefinitely. New writes use\n`SprinklerReportWeatherArchiveStateV2`."
+        },
+        {
+          "Type": 1,
+          "Name": "Generation",
+          "Description": "Monotonically increases when the Hub location or provider history site\nis cleared."
+        },
+        {
+          "Type": 2,
+          "Name": "Site location",
+          "Description": "The Hub location associated with this generation, when known. The first\nvalid location binds an unassociated generation without advancing it."
+        },
+        {
+          "Type": 3,
+          "Name": "Awaiting history clear",
+          "Description": "A direct Hub location change already opened this generation, so the\nweather agent's matching history-clear event must not open another one."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerReportWeatherArchiveStateV2",
+      "DisplayName": "Report weather archive state",
+      "Description": "Selects the active physical-site generation while older generations remain\nretained but are not mixed into the current sprinkler report. An explicit\nweather-stream site replacement or site-bound reset binds a generation;\nsection clears never act as site-boundary acknowledgements.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Report weather archive state",
+          "Description": "Selects the active physical-site generation while older generations remain\nretained but are not mixed into the current sprinkler report. An explicit\nweather-stream site replacement or site-bound reset binds a generation;\nsection clears never act as site-boundary acknowledgements."
+        },
+        {
+          "Type": 1,
+          "Name": "Generation",
+          "Description": "Monotonically increases for every accepted transition between distinct\nprovider sites."
+        },
+        {
+          "Type": 2,
+          "Name": "Site location",
+          "Description": "Provider location explicitly bound to this generation, when known."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerScheduleConditionV1",
+      "DisplayName": "Sprinkler schedule condition",
+      "Description": "Explains the current calculated schedule and why watering may be deferred.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler schedule condition",
+          "Description": "Explains the current calculated schedule and why watering may be deferred.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Initializing",
+              "Description": "The controller is restoring persisted state and has not completed its\nfirst schedule calculation."
+            },
+            {
+              "Type": 2,
+              "Name": "Water not needed",
+              "Description": "No positive watering amount can be calculated from the current zone\nconfiguration."
+            },
+            {
+              "Type": 3,
+              "Name": "Forecast rain",
+              "Description": "Significant high-probability rain is expected before watering is needed."
+            },
+            {
+              "Type": 4,
+              "Name": "Waiting for safe weather",
+              "Description": "Rain, freezing temperature, or excessive wind currently prevents\nwatering; the displayed future slot is forecast-derived."
+            },
+            {
+              "Type": 5,
+              "Name": "Preempting a hold-off",
+              "Description": "Watering is scheduled before a user hold-off because waiting until the\nfirst legal slot afterward would reach the critical plant-deficit\nthreshold. Preemption requires a fresh, safe forecast whose expected\nrain cannot replace enough of the planned water."
+            },
+            {
+              "Type": 6,
+              "Name": "Held off",
+              "Description": "A user hold-off moved watering to the first legal slot afterward. The\ndisplayed amount and duration are recalculated for that delayed start."
+            },
+            {
+              "Type": 7,
+              "Name": "Scheduled",
+              "Description": "A watering slot has been calculated and is waiting to begin. With a\nfresh forecast and known location, this is the best nearby rising-sun\nperiod after considering plant demand, humidity, evapotranspiration,\nprecipitation, temperature, sprinkler-head drift, and hold-offs."
+            },
+            {
+              "Type": 8,
+              "Name": "Valve command pending",
+              "Description": "A Matter Valve command was sent and is awaiting confirmation."
+            },
+            {
+              "Type": 9,
+              "Name": "Valve state unavailable",
+              "Description": "The controller has not yet observed the Matter Valve's current state and\nwill not start automatic watering."
+            },
+            {
+              "Type": 10,
+              "Name": "Valve open",
+              "Description": "The valve is observed open. Its actual open time is being added to the\nrecent-water ledger whether the opening was automatic or manual."
+            },
+            {
+              "Type": 11,
+              "Name": "Valve fault",
+              "Description": "The Matter Valve reports a fault and automatic watering is inhibited."
+            },
+            {
+              "Type": 12,
+              "Name": "Offline weather estimate",
+              "Description": "Live weather is unavailable, so the schedule uses recent local demand,\na location-and-season estimate, or the conservative built-in fallback."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerTemperatureChartV1",
+      "DisplayName": "Temperature",
+      "Description": "Observed and forecast temperature without mixing its scale with ET or wind.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Temperature",
+          "Description": "Observed and forecast temperature without mixing its scale with ET or wind."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerTemperatureHumidityChartV1",
+      "DisplayName": "Temperature and relative humidity",
+      "Description": "Overlays temperature and humidity in time while retaining independent left\nand right y-axes for their incompatible units.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Temperature and relative humidity",
+          "Description": "Overlays temperature and humidity in time while retaining independent left\nand right y-axes for their incompatible units."
+        },
+        {
+          "Type": 1,
+          "Name": "Temperature",
+          "Description": "Temperature uses the first automatic y guide."
+        },
+        {
+          "Type": 2,
+          "Name": "Relative humidity",
+          "Description": "Relative humidity uses the independent second y guide."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerTemperatureHumidityMeasurementV1",
+      "DisplayName": "Temperature and humidity measurement",
+      "Description": "Distinguishes the two independently scaled lines in the combined weather\npanel.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Temperature and humidity measurement",
+          "Description": "Distinguishes the two independently scaled lines in the combined weather\npanel.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Temperature",
+              "Description": "Air temperature in degrees Celsius."
+            },
+            {
+              "Type": 2,
+              "Name": "Relative humidity",
+              "Description": "Relative humidity percentage."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerTemperatureRowV1",
+      "DisplayName": "Temperature row",
+      "Description": "One observed or forecast air-temperature sample.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Temperature row",
+          "Description": "One observed or forecast air-temperature sample."
+        },
+        {
+          "Type": 1,
+          "Name": "Time",
+          "Description": "Provider period start."
+        },
+        {
+          "Type": 2,
+          "Name": "Temperature",
+          "Description": "Air temperature in degrees Celsius."
+        },
+        {
+          "Type": 3,
+          "Name": "Measurement",
+          "Description": "Identifies this line as temperature in the combined panel."
+        },
+        {
+          "Type": 4,
+          "Name": "Source",
+          "Description": "Observed or forecast."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerTimeSlotV1",
+      "DisplayName": "Sprinkler time slot",
+      "Description": "Defines one half-open schedule or hold-off interval.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler time slot",
+          "Description": "Defines one half-open schedule or hold-off interval."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "The inclusive start date and time in seconds since the Unix epoch."
+        },
+        {
+          "Type": 2,
+          "Name": "Duration",
+          "Description": "The interval length in seconds. A valid slot always has a nonzero\nduration and an end time representable by `LibertasDateTime`."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterBalanceChartV1",
+      "DisplayName": "Water balance",
+      "Description": "Layers calculated all-zone balance lines with decision markers.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Water balance",
+          "Description": "Layers calculated all-zone balance lines with decision markers."
+        },
+        {
+          "Type": 1,
+          "Name": "Available water and thresholds",
+          "Description": "Calculated all-zone balance lines and plant-specific reference lines."
+        },
+        {
+          "Type": 2,
+          "Name": "Watering decisions",
+          "Description": "Scheduled, skipped, failed, manual, and completed activity markers."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterBalanceLinesV1",
+      "DisplayName": "Water-balance lines",
+      "Description": "Calculated available water and agronomic reference lines for every zone.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Water-balance lines",
+          "Description": "Calculated available water and agronomic reference lines for every zone."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterBalancePointV1",
+      "DisplayName": "Water-balance point",
+      "Description": "One calculated or reference point in an all-zone root-zone balance chart.\nAvailable water is modeled from rain, ET, and observed valve time; it is not\na soil-moisture sensor measurement.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Water-balance point",
+          "Description": "One calculated or reference point in an all-zone root-zone balance chart.\nAvailable water is modeled from rain, ET, and observed valve time; it is not\na soil-moisture sensor measurement."
+        },
+        {
+          "Type": 1,
+          "Name": "Time",
+          "Description": "UTC time represented by this balance point."
+        },
+        {
+          "Type": 2,
+          "Name": "Available water",
+          "Description": "Modeled available root-zone water from 0 through 100 percent."
+        },
+        {
+          "Type": 3,
+          "Name": "Series",
+          "Description": "Calculated available water or one agronomic reference line."
+        },
+        {
+          "Type": 4,
+          "Name": "Zone",
+          "Description": "Configured zone represented by this chart facet."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterBalanceSeriesV1",
+      "DisplayName": "Water-balance series",
+      "Description": "Identifies the calculated available-water line or one agronomic reference\nline in each zone facet.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Water-balance series",
+          "Description": "Identifies the calculated available-water line or one agronomic reference\nline in each zone facet.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Available water",
+              "Description": "Calculated root-zone available water."
+            },
+            {
+              "Type": 2,
+              "Name": "Field capacity",
+              "Description": "The modeled root zone is full."
+            },
+            {
+              "Type": 3,
+              "Name": "Watering threshold",
+              "Description": "The normal target-deficit boundary at which watering becomes due."
+            },
+            {
+              "Type": 4,
+              "Name": "Critical threshold",
+              "Description": "The dry boundary used to prioritize urgent watering."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterDemandSourceV1",
+      "DisplayName": "Water demand source",
+      "Description": "Explains the reference evapotranspiration rate used to project the next\nadaptive watering requirement.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Water demand source",
+          "Description": "Explains the reference evapotranspiration rate used to project the next\nadaptive watering requirement.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Recent local weather",
+              "Description": "Uses the average rate reconstructed from persisted local weather events."
+            },
+            {
+              "Type": 2,
+              "Name": "Location and season",
+              "Description": "Uses an offline latitude, hemisphere, and time-of-year estimate."
+            },
+            {
+              "Type": 3,
+              "Name": "Conservative default",
+              "Description": "Uses the built-in reference rate because neither sufficient recent\nweather nor a valid cached location is available."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterEventV1",
+      "DisplayName": "Sprinkler water event",
+      "Description": "Stores one independently indexed weather period or observed irrigation\ninterval in the seven-day water history.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler water event",
+          "Description": "Stores one independently indexed weather period or observed irrigation\ninterval in the seven-day water history."
+        },
+        {
+          "Type": 1,
+          "Name": "Weather period",
+          "Description": "Records provider precipitation and reference evapotranspiration for one\ncompleted historical period."
+        },
+        {
+          "Type": 2,
+          "Name": "Start time",
+          "Description": "The inclusive start of the completed weather period."
+        },
+        {
+          "Type": 3,
+          "Name": "Duration",
+          "Description": "The completed weather period length in seconds."
+        },
+        {
+          "Type": 4,
+          "Name": "Precipitation",
+          "Description": "Provider precipitation accumulated during the period, in\nmillimeters."
+        },
+        {
+          "Type": 5,
+          "Name": "Reference evapotranspiration",
+          "Description": "Provider FAO-56 reference evapotranspiration accumulated during the\nperiod, in millimeters."
+        },
+        {
+          "Type": 6,
+          "Name": "Irrigation interval",
+          "Description": "Records water inferred from actual Matter Valve open time, including\nmanual openings, together with the zone's water amount adjuster during\nthat observed interval."
+        },
+        {
+          "Type": 7,
+          "Name": "Start time",
+          "Description": "The inclusive start of the accounted valve-open interval."
+        },
+        {
+          "Type": 8,
+          "Name": "Duration",
+          "Description": "The observed valve-open interval length in seconds."
+        },
+        {
+          "Type": 9,
+          "Name": "Water amount adjuster",
+          "Description": "The zone's configured watering percentage while this valve-open\ninterval was observed. If the setting changes while the valve is\nopen, the history uses separate adjacent intervals."
+        },
+        {
+          "Type": 10,
+          "Name": "Applied water",
+          "Description": "Estimated water depth calculated from observed open time and the\nconfigured sprinkler-head profile, in millimeters."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWateringActivityStateV1",
+      "DisplayName": "Legacy current watering activity state",
+      "Description": "Decodes the original bounded nonterminal snapshot. New writes use\n`SprinklerWateringActivityStateV2`, which can also repair a terminal audit\nrow after a crash.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Legacy current watering activity state",
+          "Description": "Decodes the original bounded nonterminal snapshot. New writes use\n`SprinklerWateringActivityStateV2`, which can also repair a terminal audit\nrow after a crash."
+        },
+        {
+          "Type": 1,
+          "Name": "Current activity",
+          "Description": "The complete authoritative nonterminal snapshot to reconcile, or no\nvalue when every archived activity is terminal. Keeping the snapshot in\nthis bounded record makes nonterminal restart reconciliation independent\nof an indefinite archive scan."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWateringActivityStateV2",
+      "DisplayName": "Authoritative watering activity state",
+      "Description": "Stores the latest complete lifecycle snapshot before its matching audit-row\nwrite. The explicit current flag distinguishes a restart-reconcilable\nnonterminal activity from a terminal snapshot that only needs audit repair.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Authoritative watering activity state",
+          "Description": "Stores the latest complete lifecycle snapshot before its matching audit-row\nwrite. The explicit current flag distinguishes a restart-reconcilable\nnonterminal activity from a terminal snapshot that only needs audit repair."
+        },
+        {
+          "Type": 1,
+          "Name": "Latest activity",
+          "Description": "Complete latest lifecycle snapshot, or no value before the first\nactivity. Terminal snapshots remain here until a newer activity begins."
+        },
+        {
+          "Type": 2,
+          "Name": "Activity is current",
+          "Description": "True only when the latest activity is scheduled, command-pending, or\nrunning and must be reconciled at startup."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWateringActivityV1",
+      "DisplayName": "Persisted watering activity",
+      "Description": "Keeps scheduled and actual timing separate so the report can explain what\nwas planned, what happened, and why a run was skipped or failed.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Persisted watering activity",
+          "Description": "Keeps scheduled and actual timing separate so the report can explain what\nwas planned, what happened, and why a run was skipped or failed."
+        },
+        {
+          "Type": 1,
+          "Name": "Activity index",
+          "Description": "Stable signed database index reused for every lifecycle update."
+        },
+        {
+          "Type": 2,
+          "Name": "Activity ordinal",
+          "Description": "Collision-safe sequence within the same anchor second and origin."
+        },
+        {
+          "Type": 3,
+          "Name": "Origin",
+          "Description": "Automatic, manual, or unclassifiable legacy activity."
+        },
+        {
+          "Type": 4,
+          "Name": "Outcome",
+          "Description": "Current or terminal durable lifecycle state."
+        },
+        {
+          "Type": 5,
+          "Name": "Reason",
+          "Description": "Durable explanation for the current or terminal outcome."
+        },
+        {
+          "Type": 6,
+          "Name": "Scheduled start",
+          "Description": "Planned automatic start. Manual and legacy activities omit it."
+        },
+        {
+          "Type": 7,
+          "Name": "Scheduled duration",
+          "Description": "Planned automatic valve-open duration in seconds. It is never\noverwritten with the actual observed duration."
+        },
+        {
+          "Type": 8,
+          "Name": "Planned water",
+          "Description": "Planned automatic water depth in millimeters."
+        },
+        {
+          "Type": 9,
+          "Name": "Actual start",
+          "Description": "First observed valve-open time, absent until an open is observed."
+        },
+        {
+          "Type": 10,
+          "Name": "Actual duration",
+          "Description": "Accounted observed valve-open duration in seconds."
+        },
+        {
+          "Type": 11,
+          "Name": "Applied water",
+          "Description": "Water depth estimated from actual open time and the sprinkler-head\nprofile, not from a flow meter."
+        },
+        {
+          "Type": 12,
+          "Name": "Water amount adjuster",
+          "Description": "Zone adjuster in effect when this activity was created."
+        },
+        {
+          "Type": 13,
+          "Name": "Updated at",
+          "Description": "UTC time represented by the latest persisted lifecycle update."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWateringDecisionRowV1",
+      "DisplayName": "Watering decision marker",
+      "Description": "One scheduled, skipped, failed, manual, or completed activity placed at its\ncalculated water-balance position.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Watering decision marker",
+          "Description": "One scheduled, skipped, failed, manual, or completed activity placed at its\ncalculated water-balance position."
+        },
+        {
+          "Type": 1,
+          "Name": "Time",
+          "Description": "Actual start when observed, otherwise the scheduled decision time."
+        },
+        {
+          "Type": 2,
+          "Name": "Available water",
+          "Description": "Calculated available water at the decision time."
+        },
+        {
+          "Type": 3,
+          "Name": "Zone",
+          "Description": "Configured zone valve resolved by the client."
+        },
+        {
+          "Type": 4,
+          "Name": "Outcome",
+          "Description": "Durable activity lifecycle state."
+        },
+        {
+          "Type": 5,
+          "Name": "Origin",
+          "Description": "Automatic, manual, or legacy unknown."
+        },
+        {
+          "Type": 6,
+          "Name": "Reason",
+          "Description": "Durable activity explanation."
+        },
+        {
+          "Type": 7,
+          "Name": "Scheduled duration",
+          "Description": "Planned automatic duration in seconds, or zero when unavailable."
+        },
+        {
+          "Type": 8,
+          "Name": "Actual duration",
+          "Description": "Accounted observed duration in seconds, or zero until unavailable."
+        },
+        {
+          "Type": 9,
+          "Name": "Decision key",
+          "Description": "Stable focus key unique across every configured zone."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWateringDecisionsV1",
+      "DisplayName": "Watering decisions",
+      "Description": "Explains controller and manual activity directly on the water balance.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Watering decisions",
+          "Description": "Explains controller and manual activity directly on the water balance."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWateringModeV1",
+      "DisplayName": "Watering mode",
+      "Description": "Selects whether the sprinkler system is actively watering or winterized.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Watering mode",
+          "Description": "Selects whether the sprinkler system is actively watering or winterized.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Active",
+              "Description": "Automatic watering is enabled."
+            },
+            {
+              "Type": 2,
+              "Name": "Winterization",
+              "Description": "Automatic watering is shut down for the cold season."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWateringOriginV1",
+      "DisplayName": "Watering origin",
+      "Description": "Records whether a valve opening was initiated by the sprinkler controller,\nobserved as an externally owned manual run, or predates origin tracking.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Watering origin",
+          "Description": "Records whether a valve opening was initiated by the sprinkler controller,\nobserved as an externally owned manual run, or predates origin tracking.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Automatic",
+              "Description": "The controller initiated the timed valve-open command."
+            },
+            {
+              "Type": 2,
+              "Name": "Manual",
+              "Description": "The controller observed but did not initiate or own the valve opening."
+            },
+            {
+              "Type": 3,
+              "Name": "Legacy unknown",
+              "Description": "The irrigation predates durable origin tracking and cannot be classified\nhonestly as automatic or manual."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWateringOutcomeV1",
+      "DisplayName": "Watering outcome",
+      "Description": "Durable lifecycle state shown by water-balance decision markers.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Watering outcome",
+          "Description": "Durable lifecycle state shown by water-balance decision markers.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Scheduled",
+              "Description": "A calculated future automatic run is still planned."
+            },
+            {
+              "Type": 2,
+              "Name": "Command pending",
+              "Description": "The durable automatic plan was persisted and the timed valve-open\ncommand was submitted, but an open has not yet been observed."
+            },
+            {
+              "Type": 3,
+              "Name": "Running",
+              "Description": "The valve is observed open and actual delivered water is being counted."
+            },
+            {
+              "Type": 4,
+              "Name": "Completed",
+              "Description": "The valve closed after a nonzero observed open interval."
+            },
+            {
+              "Type": 5,
+              "Name": "Skipped",
+              "Description": "A due plan did not run because a durable safety or scheduling reason\nprevented it."
+            },
+            {
+              "Type": 6,
+              "Name": "Failed",
+              "Description": "A valve command or confirmation failed before useful watering completed."
+            },
+            {
+              "Type": 7,
+              "Name": "Superseded",
+              "Description": "A newer calculation replaced a future plan before it became due."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWateringReasonV1",
+      "DisplayName": "Watering reason",
+      "Description": "Gives the durable controller fact explaining a schedule, skip, failure, or\ninterruption. It never claims a synthetic heat-adjustment percentage.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Watering reason",
+          "Description": "Gives the durable controller fact explaining a schedule, skip, failure, or\ninterruption. It never claims a synthetic heat-adjustment percentage.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Smart schedule",
+              "Description": "The adaptive water-balance schedule selected the run."
+            },
+            {
+              "Type": 2,
+              "Name": "Manual operation",
+              "Description": "The valve opening was externally initiated."
+            },
+            {
+              "Type": 3,
+              "Name": "Forecast rain",
+              "Description": "Forecast precipitation deferred or replaced the due run."
+            },
+            {
+              "Type": 4,
+              "Name": "Observed rain",
+              "Description": "Fresh observed precipitation stopped or prevented watering."
+            },
+            {
+              "Type": 5,
+              "Name": "Freezing weather",
+              "Description": "Fresh observed or forecast temperature was unsafe for irrigation."
+            },
+            {
+              "Type": 6,
+              "Name": "Excessive wind",
+              "Description": "Fresh observed or forecast wind was unsafe for the sprinkler-head type."
+            },
+            {
+              "Type": 7,
+              "Name": "Other unsafe weather",
+              "Description": "Fresh weather was unsafe but did not match a more specific retained\nreason."
+            },
+            {
+              "Type": 8,
+              "Name": "Hold-off",
+              "Description": "A configured hold-off period prevented the due run."
+            },
+            {
+              "Type": 9,
+              "Name": "Winterization",
+              "Description": "System-wide winterization disabled automatic watering."
+            },
+            {
+              "Type": 10,
+              "Name": "Valve unavailable",
+              "Description": "No trustworthy current valve state was available."
+            },
+            {
+              "Type": 11,
+              "Name": "Valve fault",
+              "Description": "The Matter Valve reported a fault."
+            },
+            {
+              "Type": 12,
+              "Name": "Command failed",
+              "Description": "The Matter command could not be encoded or returned a failure status."
+            },
+            {
+              "Type": 13,
+              "Name": "Command timeout",
+              "Description": "The Matter command did not produce a timely confirmation; the observed\nvalve state still determines whether watering ran."
+            },
+            {
+              "Type": 14,
+              "Name": "No open observed",
+              "Description": "A timed open was requested but no open interval was observed."
+            },
+            {
+              "Type": 15,
+              "Name": "Recalculated",
+              "Description": "A newer water-balance calculation replaced a future plan."
+            },
+            {
+              "Type": 16,
+              "Name": "Legacy unknown",
+              "Description": "The retained record does not contain enough evidence for a more precise\nreason."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterInputTypeV1",
+      "DisplayName": "Water input type",
+      "Description": "Distinguishes observed and planned sources contributing water to a zone.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Water input type",
+          "Description": "Distinguishes observed and planned sources contributing water to a zone.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Rain",
+              "Description": "Provider-recorded precipitation."
+            },
+            {
+              "Type": 2,
+              "Name": "Irrigation",
+              "Description": "Water estimated from observed valve-open time and the sprinkler-head\nprofile; this is not a flow-meter measurement."
+            },
+            {
+              "Type": 3,
+              "Name": "Forecast rain",
+              "Description": "Provider forecast precipitation for a future interval."
+            },
+            {
+              "Type": 4,
+              "Name": "Scheduled water",
+              "Description": "Planned automatic irrigation that has not begun yet."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterUsageChartV1",
+      "DisplayName": "Water usage",
+      "Description": "Layers positive rain/irrigation bars with annotations for dry, idle zones.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Water usage",
+          "Description": "Layers positive rain/irrigation bars with annotations for dry, idle zones."
+        },
+        {
+          "Type": 1,
+          "Name": "Water inputs",
+          "Description": "Positive observed and planned water-input segments."
+        },
+        {
+          "Type": 2,
+          "Name": "Empty zones",
+          "Description": "Configured zones with no positive water input in the requested window."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterUsageEmptyZoneRowV1",
+      "DisplayName": "Empty water-usage lane annotation",
+      "Description": "Keeps an otherwise-dry configured zone visible without fabricating a time or\nwater amount.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Empty water-usage lane annotation",
+          "Description": "Keeps an otherwise-dry configured zone visible without fabricating a time or\nwater amount."
+        },
+        {
+          "Type": 1,
+          "Name": "Horizontal center",
+          "Description": "A singleton discrete position centers the annotation without inventing a\nreport timestamp."
+        },
+        {
+          "Type": 2,
+          "Name": "Zone",
+          "Description": "Configured valve device whose empty timeline lane is annotated."
+        },
+        {
+          "Type": 3,
+          "Name": "Empty state",
+          "Description": "Localized explanation for the absence of water-usage marks."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterUsageEmptyZonesV1",
+      "DisplayName": "Empty water-usage lanes",
+      "Description": "Text annotations for configured zones with no positive water input.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Empty water-usage lanes",
+          "Description": "Text annotations for configured zones with no positive water input."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterUsageMarksV1",
+      "DisplayName": "Water usage",
+      "Description": "Places every zone on one shared time axis. Each sparse bucket starts one\nhorizontal colored stack whose segment lengths encode exact water amounts.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Water usage",
+          "Description": "Places every zone on one shared time axis. Each sparse bucket starts one\nhorizontal colored stack whose segment lengths encode exact water amounts."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWaterUsageRowV1",
+      "DisplayName": "Water-usage row",
+      "Description": "One server-positioned water-amount segment on a configured zone's shared\ntimeline lane.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Water-usage row",
+          "Description": "One server-positioned water-amount segment on a configured zone's shared\ntimeline lane."
+        },
+        {
+          "Type": 1,
+          "Name": "Date",
+          "Description": "Hub-local calendar date containing this real sparse daily bucket. This\nis tooltip data; the server-computed display coordinates own the time\naxis."
+        },
+        {
+          "Type": 2,
+          "Name": "Display start",
+          "Description": "Server-computed broken-time horizontal start in synthetic seconds. It\norders occupied real buckets and is not an event time; later colored\nsegments continue the same bucket's amount stack."
+        },
+        {
+          "Type": 3,
+          "Name": "Display end",
+          "Description": "Server-computed broken-time horizontal end in synthetic seconds. Its\ndistance from the start encodes water depth; it is not an event time."
+        },
+        {
+          "Type": 4,
+          "Name": "Water amount",
+          "Description": "Exact rain or irrigation depth represented by this colored segment."
+        },
+        {
+          "Type": 5,
+          "Name": "Input type",
+          "Description": "Rain, observed irrigation, forecast rain, or scheduled irrigation."
+        },
+        {
+          "Type": 6,
+          "Name": "Zone",
+          "Description": "Configured zone valve used as one categorical timeline lane. The client\nresolves its normal device display name."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWeatherChartSourceV1",
+      "DisplayName": "Weather data source",
+      "Description": "Distinguishes completed provider observations from the latest forecast.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Weather data source",
+          "Description": "Distinguishes completed provider observations from the latest forecast.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Historical observation",
+              "Description": "A completed provider historical period."
+            },
+            {
+              "Type": 2,
+              "Name": "Current observation",
+              "Description": "A retained higher-frequency current-condition sample."
+            },
+            {
+              "Type": 3,
+              "Name": "Forecast",
+              "Description": "A future value from the latest available forecast snapshot."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWeatherEtChartV1",
+      "DisplayName": "Weather and ET chart",
+      "Description": "Vertically aligns provider ET, combined temperature/humidity, and wind.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Weather and ET chart",
+          "Description": "Vertically aligns provider ET, combined temperature/humidity, and wind."
+        },
+        {
+          "Type": 1,
+          "Name": "Reference evapotranspiration",
+          "Description": "Observed and forecast ET."
+        },
+        {
+          "Type": 2,
+          "Name": "Temperature and relative humidity",
+          "Description": "Observed and forecast values with independent y-axes."
+        },
+        {
+          "Type": 3,
+          "Name": "Wind",
+          "Description": "Observed and forecast sustained wind and gusts."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWindChartV1",
+      "DisplayName": "Wind and gusts",
+      "Description": "Observed and forecast sustained wind and gusts on one comparable scale.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Wind and gusts",
+          "Description": "Observed and forecast sustained wind and gusts on one comparable scale."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWindRowV1",
+      "DisplayName": "Wind row",
+      "Description": "One sustained-wind or gust sample.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Wind row",
+          "Description": "One sustained-wind or gust sample."
+        },
+        {
+          "Type": 1,
+          "Name": "Time",
+          "Description": "Provider period start."
+        },
+        {
+          "Type": 2,
+          "Name": "Wind speed",
+          "Description": "Sustained wind or gust speed in meters per second."
+        },
+        {
+          "Type": 3,
+          "Name": "Series",
+          "Description": "Observed or forecast sustained wind or gust."
+        },
+        {
+          "Type": 4,
+          "Name": "Stable key",
+          "Description": "Server-generated identity for this time and wind series."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWindSeriesV1",
+      "DisplayName": "Wind series",
+      "Description": "Separates sustained wind and gusts for observed and forecast periods.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Wind series",
+          "Description": "Separates sustained wind and gusts for observed and forecast periods.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Historical sustained wind",
+              "Description": "Sustained wind from a completed historical period."
+            },
+            {
+              "Type": 2,
+              "Name": "Historical gust",
+              "Description": "Peak gust from a completed historical period."
+            },
+            {
+              "Type": 3,
+              "Name": "Current sustained wind",
+              "Description": "Sustained wind from a retained current observation."
+            },
+            {
+              "Type": 4,
+              "Name": "Current gust",
+              "Description": "Peak gust from a retained current observation."
+            },
+            {
+              "Type": 5,
+              "Name": "Forecast sustained wind",
+              "Description": "Predicted sustained wind."
+            },
+            {
+              "Type": 6,
+              "Name": "Forecast gust",
+              "Description": "Predicted peak gust."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWinterizationReminderMemoryV1",
+      "DisplayName": "Winterization reminder memory",
+      "Description": "Persists the most recent system-wide reminder so restarts do not create a\nnotification burst.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Winterization reminder memory",
+          "Description": "Persists the most recent system-wide reminder so restarts do not create a\nnotification burst."
+        },
+        {
+          "Type": 1,
+          "Name": "Last reminded at",
+          "Description": "The date and time when the reminder state was persisted immediately\nbefore its notification was submitted."
+        },
+        {
+          "Type": 2,
+          "Name": "Reminder reason",
+          "Description": "The evidence used for the latest reminder."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerWinterizationReminderReasonV1",
+      "DisplayName": "Winterization reminder reason",
+      "Description": "Records whether the latest reminder came from seasonal location guidance or\nfresh freezing-weather evidence.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Winterization reminder reason",
+          "Description": "Records whether the latest reminder came from seasonal location guidance or\nfresh freezing-weather evidence.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Location and season",
+              "Description": "The site's latitude and current season indicate that cold weather is\napproaching."
+            },
+            {
+              "Type": 2,
+              "Name": "Freezing weather",
+              "Description": "Fresh current conditions or forecast data show a temperature at or\nbelow the sprinkler's cold-weather safety threshold."
+            }
+          ]
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerZoneActiveStateV1",
+      "DisplayName": "Active sprinkler state",
+      "Description": "Exposes calculation, water-balance, and valve diagnostics for a zone that is\nactively calculating automatic watering. End-user settings are exposed by\n`SprinklerZoneConfigurationV1` instead.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Active sprinkler state",
+          "Description": "Exposes calculation, water-balance, and valve diagnostics for a zone that is\nactively calculating automatic watering. End-user settings are exposed by\n`SprinklerZoneConfigurationV1` instead."
+        },
+        {
+          "Type": 1,
+          "Name": "Water demand source",
+          "Description": "The best available source used to estimate when the root zone will next\nneed water."
+        },
+        {
+          "Type": 2,
+          "Name": "Estimated reference evapotranspiration",
+          "Description": "The reference water-loss rate used for projection, in millimeters per\nday. The plant-specific crop coefficient is applied separately."
+        },
+        {
+          "Type": 3,
+          "Name": "Calculated at",
+          "Description": "The date and time represented by this schedule calculation."
+        },
+        {
+          "Type": 4,
+          "Name": "Condition",
+          "Description": "The current watering decision or constraint."
+        },
+        {
+          "Type": 5,
+          "Name": "Next watering",
+          "Description": "The best calculated valve-open slot. Weather or valve availability may\nchange whether it can be executed, but never removes the estimate."
+        },
+        {
+          "Type": 6,
+          "Name": "Planned water",
+          "Description": "The water depth that the next automatic run intends to apply, in\nmillimeters."
+        },
+        {
+          "Type": 7,
+          "Name": "Estimated water deficit",
+          "Description": "The estimated root-zone water deficit in millimeters after applying the\npersisted recent-water ledger."
+        },
+        {
+          "Type": 8,
+          "Name": "Recent precipitation",
+          "Description": "Total precipitation represented by the retained seven-day ledger, in\nmillimeters."
+        },
+        {
+          "Type": 9,
+          "Name": "Recent irrigation",
+          "Description": "Total observed valve-open irrigation represented by the retained\nseven-day ledger, in millimeters."
+        },
+        {
+          "Type": 10,
+          "Name": "Valve open",
+          "Description": "Whether the Matter Valve is currently observed open."
+        },
+        {
+          "Type": 11,
+          "Name": "Valve state known",
+          "Description": "Whether the controller has received a non-null current state for this\nMatter Valve. Automatic watering is inhibited while this is false."
+        },
+        {
+          "Type": 12,
+          "Name": "Valve fault bitmap",
+          "Description": "The current Matter Valve Configuration and Control fault bitmap."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerZoneAdvancedStateV1",
+      "DisplayName": "Advanced sprinkler state",
+      "Description": "Distinguishes complete active zone data from system winterization for users\ndiagnosing a zone or controlling the system watering mode.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Advanced sprinkler state",
+          "Description": "Distinguishes complete active zone data from system winterization for users\ndiagnosing a zone or controlling the system watering mode."
+        },
+        {
+          "Type": 1,
+          "Name": "Active",
+          "Description": "Automatic watering is enabled and all current zone data is available."
+        },
+        {
+          "Type": 2,
+          "Name": "Current state",
+          "Description": "The complete current calculation, water balance, and valve status\nfor the active zone."
+        },
+        {
+          "Type": 3,
+          "Name": "Winterization",
+          "Description": "Automatic watering is disabled for the entire sprinkler system and no\nwatering slot is scheduled."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerZoneConfigurationV1",
+      "DisplayName": "Sprinkler zone configuration",
+      "Description": "Groups the two end-user scheduling settings in one configuration view while\nallowing each setting to be changed independently.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler zone configuration",
+          "Description": "Groups the two end-user scheduling settings in one configuration view while\nallowing each setting to be changed independently."
+        },
+        {
+          "Type": 1,
+          "Name": "Water amount adjuster",
+          "Description": "Percentage of the adaptive watering amount to apply. Use 100% for the\nadaptive amount, less than 100% for less water, and more than 100% for\nmore water."
+        },
+        {
+          "Type": 2,
+          "Name": "Hold-off periods",
+          "Description": "Active sorted, non-overlapping intervals that watering must avoid."
+        },
+        {
+          "Type": 3,
+          "Name": "Hold-off period",
+          "Description": "A half-open interval during which this zone cannot water."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerZoneMemoryV1",
+      "DisplayName": "Sprinkler zone memory",
+      "Description": "Persists the compact restart-safe water amount adjuster, constraints, and\nfolded water-balance baseline for one configured valve. Water events are\nstored separately as incremental indexed records.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler zone memory",
+          "Description": "Persists the compact restart-safe water amount adjuster, constraints, and\nfolded water-balance baseline for one configured valve. Water events are\nstored separately as incremental indexed records."
+        },
+        {
+          "Type": 1,
+          "Name": "Water amount adjuster",
+          "Description": "Percentage of the adaptive watering amount to apply. The default is\n100%."
+        },
+        {
+          "Type": 2,
+          "Name": "Hold-off periods",
+          "Description": "The normalized runtime scheduling constraints."
+        },
+        {
+          "Type": 3,
+          "Name": "Hold-off period",
+          "Description": "A half-open interval during which the zone cannot water."
+        },
+        {
+          "Type": 4,
+          "Name": "Balance baseline time",
+          "Description": "The date and time through which older water inputs have been folded into\n`baseline_deficit_millimeters`."
+        },
+        {
+          "Type": 5,
+          "Name": "Baseline deficit",
+          "Description": "Root-zone water deficit at `balance_baseline_at`, in millimeters."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerZoneProtocol",
+      "DisplayName": "Sprinkler zone protocol",
+      "Description": "Reads or subscribes to regular-user state, retrieves advanced diagnostics,\npresents both end-user settings in one configuration view, and updates the\nwater amount adjuster or hold-off constraints independently.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler zone protocol",
+          "Description": "Reads or subscribes to regular-user state, retrieves advanced diagnostics,\npresents both end-user settings in one configuration view, and updates the\nwater amount adjuster or hold-off constraints independently."
+        },
+        {
+          "Type": 1,
+          "Name": "Get state",
+          "Description": "Requests the essential regular-user state. This first protocol variant\nis the default GUI action and may establish a subscription because the\nendpoint operation is outside this value."
+        },
+        {
+          "Type": 2,
+          "Name": "State",
+          "Description": "Returns or reports the essential current condition and next watering\nschedule. Advanced diagnostics and configuration are available on\ndemand."
+        },
+        {
+          "Type": 3,
+          "Name": "Sprinkler state",
+          "Description": "The essential active-zone state or the Winterization state."
+        },
+        {
+          "Type": 4,
+          "Name": "Get advanced state",
+          "Description": "Requests complete calculation, water-balance, and valve diagnostics for\nthis zone."
+        },
+        {
+          "Type": 5,
+          "Name": "Advanced state",
+          "Description": "Returns complete calculation, water-balance, and valve diagnostics after\nan advanced-state request or watering-mode update."
+        },
+        {
+          "Type": 6,
+          "Name": "Watering mode",
+          "Description": "The current system-wide mode, exposed explicitly so its control can\ninitialize from this response."
+        },
+        {
+          "Type": 7,
+          "Name": "Sprinkler state",
+          "Description": "The active zone diagnostics or the Winterization state."
+        },
+        {
+          "Type": 8,
+          "Name": "Get configuration",
+          "Description": "Opens the zone's single end-user configuration view containing the water\namount adjuster and hold-off periods."
+        },
+        {
+          "Type": 9,
+          "Name": "Configuration",
+          "Description": "Returns both end-user settings together and offers a separate action for\nchanging either one."
+        },
+        {
+          "Type": 10,
+          "Name": "Configuration",
+          "Description": "The current water amount adjuster and hold-off periods."
+        },
+        {
+          "Type": 11,
+          "Name": "Set water amount adjuster",
+          "Description": "Independently updates the user tuning parameter used by the adaptive\ncalculation."
+        },
+        {
+          "Type": 12,
+          "Name": "Water amount adjuster",
+          "Description": "Percentage of the adaptive watering amount to apply. Use 100% for\nthe adaptive amount, less than 100% for less water, and more than\n100% for more water."
+        },
+        {
+          "Type": 13,
+          "Name": "Replace hold-off periods",
+          "Description": "Independently replaces all scheduling constraints for this zone.\nOverlapping or touching periods are normalized into sorted merged\nintervals."
+        },
+        {
+          "Type": 14,
+          "Name": "Hold-off periods",
+          "Description": "The complete replacement list, limited to 64 valid intervals."
+        },
+        {
+          "Type": 15,
+          "Name": "Hold-off period",
+          "Description": "A half-open interval during which the schedule cannot water."
+        },
+        {
+          "Type": 16,
+          "Name": "Set watering mode",
+          "Description": "Selects Active or Winterization for the entire sprinkler system. The\nselected mode persists across restarts and internet outages."
+        },
+        {
+          "Type": 17,
+          "Name": "Watering mode",
+          "Description": "Active enables automatic watering. Winterization shuts it down."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerZoneStateV1",
+      "DisplayName": "Sprinkler state",
+      "Description": "Presents the essential current condition and next watering schedule for a\nregular user, without configuration or diagnostic details.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler state",
+          "Description": "Presents the essential current condition and next watering schedule for a\nregular user, without configuration or diagnostic details."
+        },
+        {
+          "Type": 1,
+          "Name": "Active",
+          "Description": "Automatic watering is enabled and a next watering slot is available."
+        },
+        {
+          "Type": 2,
+          "Name": "Condition",
+          "Description": "The current watering decision or constraint."
+        },
+        {
+          "Type": 3,
+          "Name": "Next watering",
+          "Description": "The best calculated valve-open slot. Weather or valve availability\nmay change whether it can be executed, but never removes the\nestimate."
+        },
+        {
+          "Type": 4,
+          "Name": "Winterization",
+          "Description": "Automatic watering is disabled for the entire sprinkler system and no\nwatering slot is scheduled."
+        }
+      ],
+      "Strings": {}
+    },
+    {
+      "Name": "SprinklerZoneV1",
+      "DisplayName": "Sprinkler zone",
+      "Description": "Configures the physical facts needed to calculate and execute watering for\none area. The water amount adjuster and hold-offs are runtime data.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler zone",
+          "Description": "Configures the physical facts needed to calculate and execute watering for\none area. The water amount adjuster and hold-offs are runtime data."
+        },
+        {
+          "Type": 1,
+          "Name": "Zone valve",
+          "Description": "A Matter Irrigation System logical device exposing the Valve\nConfiguration and Control server cluster for reads, subscriptions, and\nOpen and Close commands."
+        },
+        {
+          "Type": 2,
+          "Name": "Plant type",
+          "Description": "The curated water-storage and weather-demand profile for this zone."
+        },
+        {
+          "Type": 3,
+          "Name": "Sprinkler head type",
+          "Description": "The delivery style used to estimate valve-open time. The water amount\nadjuster corrects the automatic amount without exposing flow-rate setup."
+        },
+        {
+          "Type": 4,
+          "Name": "State endpoint",
+          "Description": "Exposes an essential regular-user state by default, offers complete\nadvanced state on demand, groups end-user settings in one configuration\nview, and accepts independent adjuster, hold-off, and watering-mode\nactions."
+        }
+      ],
+      "Strings": {}
+    }
+  ]
+}

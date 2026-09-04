@@ -1,0 +1,4986 @@
+{
+  "FormatVersion": 1,
+  "PackageName": "libertas-sprinkler_agent",
+  "DefaultLocale": "en",
+  "DefaultDocument": "libertas-sprinkler_agent.en.doc.json",
+  "DocumentShapeSha256": "sha256:859beedab76e04bea69213dc0407db4fa30bc3fc63d9ea87f7bf24ecdabc4718",
+  "ExportedAt": "2026-08-16T15:59:07.823Z",
+  "SourceSchema": {
+    "Attributes": [
+      {
+        "Name": "DefaultLocale",
+        "Value": "en"
+      },
+      {
+        "Name": "no_std",
+        "Value": "true"
+      },
+      {
+        "Name": "Dependencies",
+        "Value": "{\"resolute\":[]}"
+      }
+    ],
+    "Functions": [
+      {
+        "Attributes": [
+          {
+            "Name": "FunctionDataSchema",
+            "Value": "SprinklerData"
+          },
+          {
+            "Name": "Permissions",
+            "Value": "libertas.permission.ACCESS_FINE_LOCATION"
+          },
+          {
+            "Name": "StringResources",
+            "Value": "SPRINKLER_DAILY_REPORT_V1,SPRINKLER_MODELED_WEATHER_GAPS_V1,SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V1,SPRINKLER_REPORT_WEATHER_HISTORY_V1,SPRINKLER_REPORT_WEATHER_HISTORY_V2,SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1,SPRINKLER_SITE_LOCATION_V1,SPRINKLER_WATERING_ACTIVITIES_V1,SPRINKLER_WATERING_ACTIVITY_STATE_V1,SPRINKLER_WATERING_MODE_V1,SPRINKLER_WATER_EVENTS_V1,SPRINKLER_WINTERIZATION_REMINDER_V1,SPRINKLER_WINTERIZATION_SEASON_REMINDER,SPRINKLER_WINTERIZATION_WEATHER_REMINDER,SPRINKLER_ZONE_MEMORY_V1,libertas.permission.ACCESS_FINE_LOCATION"
+          }
+        ],
+        "NativeName": "libertas_sprinkler",
+        "Parameters": [
+          {
+            "Attributes": [
+              {
+                "Name": "ProtocolSchema",
+                "Value": "libertas-weather::SprinklerWeatherProtocol"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 0,
+            "NativeName": "weather_server",
+            "NativeType": "LibertasEndpoint",
+            "Type": "Endpoint"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "EndpointServer",
+                "Value": "true"
+              },
+              {
+                "Name": "ProtocolSchema",
+                "Value": "SprinklerReportProtocol"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "report_server",
+            "NativeType": "LibertasEndpoint",
+            "Type": "Endpoint"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "SizeMax",
+                "Value": "16"
+              },
+              {
+                "Name": "SizeMin",
+                "Value": "1"
+              },
+              {
+                "Name": "Unordered",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [
+                  {
+                    "Name": "Unique",
+                    "Value": "99"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 3,
+                "NativeName": "",
+                "NativeType": "LibertasUser",
+                "Type": "User"
+              }
+            ],
+            "ID": 2,
+            "NativeName": "reminder_recipients",
+            "NativeType": "Vec < LibertasUser >",
+            "Type": "List"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "SizeMax",
+                "Value": "32"
+              },
+              {
+                "Name": "SizeMin",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 5,
+                "NativeName": "",
+                "NativeType": "",
+                "Type": "SprinklerZoneV1"
+              }
+            ],
+            "ID": 4,
+            "NativeName": "zones",
+            "NativeType": "Vec < SprinklerZoneV1 >",
+            "Type": "List"
+          }
+        ]
+      }
+    ],
+    "Revision": {
+      "ContentSha256": "sha256:6dd75a100c44917cd3e37436a35bda89ebf341f5407056f1b4f1841aa7830d6b",
+      "SourceTimestampUtcMs": 1786889082919
+    },
+    "Types": [
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "starts_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "ends_before",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "coverage_starts_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "coverage_ends_before",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "capacity_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 6,
+            "NativeName": "opening_deficit_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 7,
+            "NativeName": "closing_deficit_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 8,
+            "NativeName": "precipitation_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 9,
+            "NativeName": "reference_evapotranspiration_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 10,
+            "NativeName": "modeled_reference_evapotranspiration_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 11,
+            "NativeName": "modeled_demand_source",
+            "NativeType": "Option < SprinklerWaterDemandSourceV1 >",
+            "Type": "SprinklerWaterDemandSourceV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              },
+              {
+                "Name": "TimeInterval",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 12,
+            "NativeName": "provider_weather_coverage_seconds",
+            "NativeType": "u32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 13,
+            "NativeName": "irrigation_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 14,
+            "NativeName": "complete",
+            "NativeType": "bool",
+            "Type": "Boolean"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 15,
+            "NativeName": "calculated_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerDailyReportV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "LibertasData",
+            "Value": "true"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 2,
+                "NativeName": "memory",
+                "NativeType": "",
+                "Type": "SprinklerZoneMemoryV1"
+              }
+            ],
+            "ID": 1,
+            "NativeName": "ZoneMemoryV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 4,
+                "NativeName": "event",
+                "NativeType": "",
+                "Type": "SprinklerWaterEventV1"
+              }
+            ],
+            "ID": 3,
+            "NativeName": "WaterEventV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 6,
+                "NativeName": "location",
+                "NativeType": "",
+                "Type": "libertas-weather::SprinklerWeatherLocationV1"
+              }
+            ],
+            "ID": 5,
+            "NativeName": "SiteLocationV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 8,
+                "NativeName": "mode",
+                "NativeType": "",
+                "Type": "SprinklerWateringModeV1"
+              }
+            ],
+            "ID": 7,
+            "NativeName": "WateringModeV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 10,
+                "NativeName": "memory",
+                "NativeType": "",
+                "Type": "SprinklerWinterizationReminderMemoryV1"
+              }
+            ],
+            "ID": 9,
+            "NativeName": "WinterizationReminderV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 12,
+                "NativeName": "period",
+                "NativeType": "",
+                "Type": "libertas-weather::SprinklerWeatherHistoryPeriodV1"
+              }
+            ],
+            "ID": 11,
+            "NativeName": "ReportWeatherPeriodV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 14,
+                "NativeName": "activity",
+                "NativeType": "",
+                "Type": "SprinklerWateringActivityV1"
+              }
+            ],
+            "ID": 13,
+            "NativeName": "WateringActivityV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 16,
+                "NativeName": "report",
+                "NativeType": "",
+                "Type": "SprinklerDailyReportV1"
+              }
+            ],
+            "ID": 15,
+            "NativeName": "DailyReportV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 18,
+                "NativeName": "state",
+                "NativeType": "",
+                "Type": "SprinklerWateringActivityStateV1"
+              }
+            ],
+            "ID": 17,
+            "NativeName": "WateringActivityStateV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 20,
+                "NativeName": "observation",
+                "NativeType": "",
+                "Type": "libertas-weather::SprinklerCurrentWeatherV1"
+              }
+            ],
+            "ID": 19,
+            "NativeName": "ReportWeatherObservationV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 22,
+                "NativeName": "state",
+                "NativeType": "",
+                "Type": "SprinklerReportWeatherArchiveStateV1"
+              }
+            ],
+            "ID": 21,
+            "NativeName": "ReportWeatherArchiveStateV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 24,
+                "NativeName": "state",
+                "NativeType": "",
+                "Type": "SprinklerWateringActivityStateV2"
+              }
+            ],
+            "ID": 23,
+            "NativeName": "WateringActivityStateV2",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 26,
+                "NativeName": "gap",
+                "NativeType": "",
+                "Type": "SprinklerModeledWeatherGapV1"
+              }
+            ],
+            "ID": 25,
+            "NativeName": "ModeledWeatherGapV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 28,
+                "NativeName": "period",
+                "NativeType": "",
+                "Type": "libertas-weather::SprinklerWeatherHistoryPeriodV2"
+              }
+            ],
+            "ID": 27,
+            "NativeName": "ReportWeatherPeriodV2",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 30,
+                "NativeName": "state",
+                "NativeType": "",
+                "Type": "SprinklerReportWeatherArchiveStateV2"
+              }
+            ],
+            "ID": 29,
+            "NativeName": "ReportWeatherArchiveStateV2",
+            "NativeType": "",
+            "Type": "Table"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerData",
+        "NativeType": "",
+        "Type": "Union"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "bar"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "",
+            "NativeType": "",
+            "Type": "SprinklerEtRowV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerEtChartV1",
+        "NativeType": "Vec < SprinklerEtRowV1 >",
+        "Type": "List"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "x,tooltip"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=report_time,type=utc"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "starts_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "x2,tooltip"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "ends_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "y,tooltip"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "type=linear,min=0,zero=true"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "reference_evapotranspiration_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "color,tooltip,detail"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "source",
+            "NativeType": "",
+            "Type": "SprinklerWeatherChartSourceV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "key"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "sample_key",
+            "NativeType": "String",
+            "Type": "String"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerEtRowV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "SurfaceDrip",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "Bubblers",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "PopupSpray",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "3"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "RotorsLowRate",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "4"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "RotorsHighRate",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerHeadTypeV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "line"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "",
+            "NativeType": "",
+            "Type": "SprinklerHumidityRowV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerHumidityChartV1",
+        "NativeType": "Vec < SprinklerHumidityRowV1 >",
+        "Type": "List"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "x,tooltip,key"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=report_time,type=utc,guide=none"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "y,tooltip"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "type=linear,min=0,max=100,zero=true"
+              },
+              {
+                "Name": "NumberMax",
+                "Value": "255"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u8"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "relative_humidity_percent",
+            "NativeType": "u8",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "color,tooltip,detail"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=temperature_humidity_measurement,guide=none"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "measurement",
+            "NativeType": "",
+            "Type": "SprinklerTemperatureHumidityMeasurementV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "strokeDash,tooltip,detail"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=temperature_humidity_source,guide=none"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "source",
+            "NativeType": "",
+            "Type": "SprinklerWeatherChartSourceV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerHumidityRowV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "starts_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "ends_before",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "reference_evapotranspiration_millimeters_per_day",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "demand_source",
+            "NativeType": "",
+            "Type": "SprinklerWaterDemandSourceV1"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "recorded_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerModeledWeatherGapV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "Lawn",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "Flowers",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "Vegetables",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "3"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "FruitTrees",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "4"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "Citrus",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "5"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 6,
+            "NativeName": "TreesAndBushes",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "6"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 7,
+            "NativeName": "Xeriscape",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerPlantTypeV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "NoRecordedWaterInput",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerReportEmptyStateV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "LibertasProtocol",
+            "Value": "true"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "NextResponse",
+                "Value": "WaterBalanceV1"
+              },
+              {
+                "Name": "Request",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [
+                  {
+                    "Name": "DateOnly",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "NumberMax",
+                    "Value": "4294967295"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u32"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 2,
+                "NativeName": "starts_on",
+                "NativeType": "Option < u32 >",
+                "Type": "Number"
+              },
+              {
+                "Attributes": [
+                  {
+                    "Name": "DateOnly",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "NumberMax",
+                    "Value": "4294967295"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u32"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 3,
+                "NativeName": "ends_on",
+                "NativeType": "Option < u32 >",
+                "Type": "Number"
+              }
+            ],
+            "ID": 1,
+            "NativeName": "GetWaterBalanceV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Chart",
+                "Value": "layer"
+              },
+              {
+                "Name": "NextRequest",
+                "Value": "GetWaterBalanceV1"
+              },
+              {
+                "Name": "Response",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "WaterBalanceV1",
+            "NativeType": "",
+            "Type": "SprinklerWaterBalanceChartV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NextResponse",
+                "Value": "WaterUsageV1"
+              },
+              {
+                "Name": "Request",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [
+                  {
+                    "Name": "DateOnly",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "NumberMax",
+                    "Value": "4294967295"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u32"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 6,
+                "NativeName": "starts_on",
+                "NativeType": "Option < u32 >",
+                "Type": "Number"
+              },
+              {
+                "Attributes": [
+                  {
+                    "Name": "DateOnly",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "NumberMax",
+                    "Value": "4294967295"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u32"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 7,
+                "NativeName": "ends_on",
+                "NativeType": "Option < u32 >",
+                "Type": "Number"
+              }
+            ],
+            "ID": 5,
+            "NativeName": "GetWaterUsageV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Chart",
+                "Value": "layer"
+              },
+              {
+                "Name": "NextRequest",
+                "Value": "GetWaterUsageV1"
+              },
+              {
+                "Name": "Response",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 8,
+            "NativeName": "WaterUsageV1",
+            "NativeType": "",
+            "Type": "SprinklerWaterUsageChartV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NextResponse",
+                "Value": "WeatherEtV1"
+              },
+              {
+                "Name": "Request",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [
+                  {
+                    "Name": "DateOnly",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "NumberMax",
+                    "Value": "4294967295"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u32"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 10,
+                "NativeName": "starts_on",
+                "NativeType": "Option < u32 >",
+                "Type": "Number"
+              },
+              {
+                "Attributes": [
+                  {
+                    "Name": "DateOnly",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "NumberMax",
+                    "Value": "4294967295"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u32"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 11,
+                "NativeName": "ends_on",
+                "NativeType": "Option < u32 >",
+                "Type": "Number"
+              }
+            ],
+            "ID": 9,
+            "NativeName": "GetWeatherEtV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Chart",
+                "Value": "vconcat"
+              },
+              {
+                "Name": "NextRequest",
+                "Value": "GetWeatherEtV1"
+              },
+              {
+                "Name": "Response",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 12,
+            "NativeName": "WeatherEtV1",
+            "NativeType": "",
+            "Type": "SprinklerWeatherEtChartV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerReportProtocol",
+        "NativeType": "",
+        "Type": "Union"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u64"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "generation",
+            "NativeType": "u64",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "location",
+            "NativeType": "Option < SprinklerWeatherLocationV1 >",
+            "Type": "libertas-weather::SprinklerWeatherLocationV1"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "awaiting_history_clear",
+            "NativeType": "bool",
+            "Type": "Boolean"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerReportWeatherArchiveStateV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u64"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "generation",
+            "NativeType": "u64",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "location",
+            "NativeType": "Option < SprinklerWeatherLocationV1 >",
+            "Type": "libertas-weather::SprinklerWeatherLocationV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerReportWeatherArchiveStateV2",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "Initializing",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "WaterNotNeeded",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "ForecastRain",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "3"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "WaitingForSafeWeather",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "4"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "PreemptiveHoldOff",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "5"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 6,
+            "NativeName": "HeldOff",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "6"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 7,
+            "NativeName": "Scheduled",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "7"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 8,
+            "NativeName": "ValveCommandPending",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "8"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 9,
+            "NativeName": "ValveStateUnavailable",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "9"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 10,
+            "NativeName": "ValveOpen",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "10"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 11,
+            "NativeName": "ValveFault",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "11"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 12,
+            "NativeName": "OfflineWeatherEstimate",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerScheduleConditionV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "line"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "",
+            "NativeType": "",
+            "Type": "SprinklerTemperatureRowV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerTemperatureChartV1",
+        "NativeType": "Vec < SprinklerTemperatureRowV1 >",
+        "Type": "List"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "layer"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "temperature",
+            "NativeType": "",
+            "Type": "SprinklerTemperatureChartV1"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "relative_humidity",
+            "NativeType": "",
+            "Type": "SprinklerHumidityChartV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerTemperatureHumidityChartV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "Temperature",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "RelativeHumidity",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerTemperatureHumidityMeasurementV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "x,tooltip,key"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=report_time,type=utc"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "y,tooltip"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "type=linear,zero=false"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "temperature_celsius",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "color,tooltip,detail"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=temperature_humidity_measurement"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "measurement",
+            "NativeType": "",
+            "Type": "SprinklerTemperatureHumidityMeasurementV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "strokeDash,tooltip,detail"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=temperature_humidity_source"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "source",
+            "NativeType": "",
+            "Type": "SprinklerWeatherChartSourceV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerTemperatureRowV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "TableHeader",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "starts_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Default",
+                "Value": "14400"
+              },
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              },
+              {
+                "Name": "TimeInterval",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "duration_seconds",
+            "NativeType": "u32",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerTimeSlotV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "layer"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "balance",
+            "NativeType": "",
+            "Type": "SprinklerWaterBalanceLinesV1"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "decisions",
+            "NativeType": "",
+            "Type": "SprinklerWateringDecisionsV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterBalanceChartV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "line"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "",
+            "NativeType": "",
+            "Type": "SprinklerWaterBalancePointV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterBalanceLinesV1",
+        "NativeType": "Vec < SprinklerWaterBalancePointV1 >",
+        "Type": "List"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "x,tooltip,key"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=report_time,type=utc"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "y,tooltip"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=available_water_percent,type=linear,min=0,max=100,zero=true"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "available_water_percent",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "color,tooltip,detail"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "series",
+            "NativeType": "",
+            "Type": "SprinklerWaterBalanceSeriesV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "tooltip,row"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=report_zone,type=band"
+              },
+              {
+                "Name": "DeviceType",
+                "Value": "BQEBAUABgQED"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "zone",
+            "NativeType": "LibertasDevice",
+            "Type": "Device"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterBalancePointV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "AvailableWater",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "FieldCapacity",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "WateringThreshold",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "3"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "CriticalThreshold",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterBalanceSeriesV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "RecentLocalWeather",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "LocationAndSeason",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "ConservativeDefault",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterDemandSourceV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 2,
+                "NativeName": "starts_at",
+                "NativeType": "LibertasDateTime",
+                "Type": "DateTime"
+              },
+              {
+                "Attributes": [
+                  {
+                    "Name": "NumberMax",
+                    "Value": "4294967295"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u32"
+                  },
+                  {
+                    "Name": "TimeInterval",
+                    "Value": "true"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 3,
+                "NativeName": "duration_seconds",
+                "NativeType": "u32",
+                "Type": "Number"
+              },
+              {
+                "Attributes": [
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "f32"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 4,
+                "NativeName": "precipitation_millimeters",
+                "NativeType": "f32",
+                "Type": "Number"
+              },
+              {
+                "Attributes": [
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "f32"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 5,
+                "NativeName": "reference_evapotranspiration_millimeters",
+                "NativeType": "f32",
+                "Type": "Number"
+              }
+            ],
+            "ID": 1,
+            "NativeName": "WeatherV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 7,
+                "NativeName": "starts_at",
+                "NativeType": "LibertasDateTime",
+                "Type": "DateTime"
+              },
+              {
+                "Attributes": [
+                  {
+                    "Name": "NumberMax",
+                    "Value": "4294967295"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u32"
+                  },
+                  {
+                    "Name": "TimeInterval",
+                    "Value": "true"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 8,
+                "NativeName": "duration_seconds",
+                "NativeType": "u32",
+                "Type": "Number"
+              },
+              {
+                "Attributes": [
+                  {
+                    "Name": "NumberMax",
+                    "Value": "200"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "20"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "10"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u16"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 9,
+                "NativeName": "watering_percent",
+                "NativeType": "u16",
+                "Type": "Number"
+              },
+              {
+                "Attributes": [
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "f32"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 10,
+                "NativeName": "applied_water_millimeters",
+                "NativeType": "f32",
+                "Type": "Number"
+              }
+            ],
+            "ID": 6,
+            "NativeName": "IrrigationV1",
+            "NativeType": "",
+            "Type": "Table"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterEventV1",
+        "NativeType": "",
+        "Type": "Union"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "Rain",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "Irrigation",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "ForecastRain",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "3"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "ScheduledWater",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterInputTypeV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "layer"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "inputs",
+            "NativeType": "",
+            "Type": "SprinklerWaterUsageMarksV1"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "empty_zones",
+            "NativeType": "",
+            "Type": "SprinklerWaterUsageEmptyZonesV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterUsageChartV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "x"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "type=point,guide=none"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "horizontal_center",
+            "NativeType": "bool",
+            "Type": "Boolean"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "y,tooltip,key"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=report_zone,type=band,guide=none"
+              },
+              {
+                "Name": "DeviceType",
+                "Value": "BQEBAUABgQED"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "zone",
+            "NativeType": "LibertasDevice",
+            "Type": "Device"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "text,tooltip"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "empty_state",
+            "NativeType": "",
+            "Type": "SprinklerReportEmptyStateV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterUsageEmptyZoneRowV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "text"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "",
+            "NativeType": "",
+            "Type": "SprinklerWaterUsageEmptyZoneRowV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterUsageEmptyZonesV1",
+        "NativeType": "Vec < SprinklerWaterUsageEmptyZoneRowV1 >",
+        "Type": "List"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "rect"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "",
+            "NativeType": "",
+            "Type": "SprinklerWaterUsageRowV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterUsageMarksV1",
+        "NativeType": "Vec < SprinklerWaterUsageRowV1 >",
+        "Type": "List"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "tooltip"
+              },
+              {
+                "Name": "DateOnly",
+                "Value": "true"
+              },
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "bucket_starts_on",
+            "NativeType": "u32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "x"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=water_usage_display,type=linear,guide=none"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f64"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "display_start",
+            "NativeType": "f64",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "x2"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f64"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "display_end",
+            "NativeType": "f64",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "tooltip"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "amount_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "color,tooltip,detail"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "input_type",
+            "NativeType": "",
+            "Type": "SprinklerWaterInputTypeV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "y,tooltip"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=report_zone,type=band"
+              },
+              {
+                "Name": "DeviceType",
+                "Value": "BQEBAUABgQED"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 6,
+            "NativeName": "zone",
+            "NativeType": "LibertasDevice",
+            "Type": "Device"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWaterUsageRowV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "current_activity",
+            "NativeType": "Option < SprinklerWateringActivityV1 >",
+            "Type": "SprinklerWateringActivityV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWateringActivityStateV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "latest_activity",
+            "NativeType": "Option < SprinklerWateringActivityV1 >",
+            "Type": "SprinklerWateringActivityV1"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "activity_is_current",
+            "NativeType": "bool",
+            "Type": "Boolean"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWateringActivityStateV2",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "i64"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "activity_index",
+            "NativeType": "i64",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "65535"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u16"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "activity_ordinal",
+            "NativeType": "u16",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "origin",
+            "NativeType": "",
+            "Type": "SprinklerWateringOriginV1"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "outcome",
+            "NativeType": "",
+            "Type": "SprinklerWateringOutcomeV1"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "reason",
+            "NativeType": "",
+            "Type": "SprinklerWateringReasonV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 6,
+            "NativeName": "scheduled_starts_at",
+            "NativeType": "Option < LibertasDateTime >",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              },
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              },
+              {
+                "Name": "TimeInterval",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 7,
+            "NativeName": "scheduled_duration_seconds",
+            "NativeType": "Option < u32 >",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 8,
+            "NativeName": "planned_water_millimeters",
+            "NativeType": "Option < f32 >",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 9,
+            "NativeName": "actual_starts_at",
+            "NativeType": "Option < LibertasDateTime >",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              },
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              },
+              {
+                "Name": "TimeInterval",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 10,
+            "NativeName": "actual_duration_seconds",
+            "NativeType": "Option < u32 >",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 11,
+            "NativeName": "applied_water_millimeters",
+            "NativeType": "Option < f32 >",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "200"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "20"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "10"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u16"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 12,
+            "NativeName": "watering_percent",
+            "NativeType": "u16",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 13,
+            "NativeName": "updated_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWateringActivityV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "x,tooltip"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=report_time,type=utc,guide=none"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "y,tooltip"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=available_water_percent,type=linear,min=0,max=100,zero=true,guide=none"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "available_water_percent",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "tooltip,row"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=report_zone,type=band,guide=none"
+              },
+              {
+                "Name": "DeviceType",
+                "Value": "BQEBAUABgQED"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "zone",
+            "NativeType": "LibertasDevice",
+            "Type": "Device"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "color,tooltip,detail"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "outcome",
+            "NativeType": "",
+            "Type": "SprinklerWateringOutcomeV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "tooltip"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "origin",
+            "NativeType": "",
+            "Type": "SprinklerWateringOriginV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "tooltip"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 6,
+            "NativeName": "reason",
+            "NativeType": "",
+            "Type": "SprinklerWateringReasonV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "tooltip"
+              },
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              },
+              {
+                "Name": "TimeInterval",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 7,
+            "NativeName": "scheduled_duration_seconds",
+            "NativeType": "u32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "tooltip"
+              },
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              },
+              {
+                "Name": "TimeInterval",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 8,
+            "NativeName": "actual_duration_seconds",
+            "NativeType": "u32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "key"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 9,
+            "NativeName": "activity_key",
+            "NativeType": "String",
+            "Type": "String"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWateringDecisionRowV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "point"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "",
+            "NativeType": "",
+            "Type": "SprinklerWateringDecisionRowV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWateringDecisionsV1",
+        "NativeType": "Vec < SprinklerWateringDecisionRowV1 >",
+        "Type": "List"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "Active",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "Winterization",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWateringModeV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "Automatic",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "Manual",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "LegacyUnknown",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWateringOriginV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "Scheduled",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "CommandPending",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "Running",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "3"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "Completed",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "4"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "Skipped",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "5"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 6,
+            "NativeName": "Failed",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "6"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 7,
+            "NativeName": "Superseded",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWateringOutcomeV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "SmartSchedule",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "ManualOperation",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "ForecastRain",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "3"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "ObservedRain",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "4"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "FreezingWeather",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "5"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 6,
+            "NativeName": "ExcessiveWind",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "6"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 7,
+            "NativeName": "OtherUnsafeWeather",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "7"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 8,
+            "NativeName": "HoldOff",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "8"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 9,
+            "NativeName": "Winterization",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "9"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 10,
+            "NativeName": "ValveUnavailable",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "10"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 11,
+            "NativeName": "ValveFault",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "11"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 12,
+            "NativeName": "CommandFailed",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "12"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 13,
+            "NativeName": "CommandTimeout",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "13"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 14,
+            "NativeName": "NoOpenObserved",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "14"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 15,
+            "NativeName": "Recalculated",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "15"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 16,
+            "NativeName": "LegacyUnknown",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWateringReasonV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "HistoricalObservation",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "CurrentObservation",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "Forecast",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWeatherChartSourceV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "vconcat"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "reference_evapotranspiration",
+            "NativeType": "",
+            "Type": "SprinklerEtChartV1"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "temperature_and_relative_humidity",
+            "NativeType": "",
+            "Type": "SprinklerTemperatureHumidityChartV1"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "wind",
+            "NativeType": "",
+            "Type": "SprinklerWindChartV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWeatherEtChartV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "Chart",
+            "Value": "line"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "",
+            "NativeType": "",
+            "Type": "SprinklerWindRowV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWindChartV1",
+        "NativeType": "Vec < SprinklerWindRowV1 >",
+        "Type": "List"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "x,tooltip"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "id=report_time,type=utc"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "y,tooltip"
+              },
+              {
+                "Name": "ChartScale",
+                "Value": "type=linear,min=0,zero=true"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "meters_per_second",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "color,tooltip,detail"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "series",
+            "NativeType": "",
+            "Type": "SprinklerWindSeriesV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "ChartChannel",
+                "Value": "key"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "sample_key",
+            "NativeType": "String",
+            "Type": "String"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWindRowV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "HistoricalWind",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "HistoricalGust",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "CurrentWind",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "3"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "CurrentGust",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "4"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "ForecastWind",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "5"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 6,
+            "NativeName": "ForecastGust",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWindSeriesV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "last_reminded_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "reason",
+            "NativeType": "",
+            "Type": "SprinklerWinterizationReminderReasonV1"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWinterizationReminderMemoryV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "LocationAndSeason",
+            "NativeType": "",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "FreezingWeather",
+            "NativeType": "",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerWinterizationReminderReasonV1",
+        "NativeType": "",
+        "Type": "Enumeration"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "water_demand_source",
+            "NativeType": "",
+            "Type": "SprinklerWaterDemandSourceV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "estimated_reference_evapotranspiration_millimeters_per_day",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "calculated_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "condition",
+            "NativeType": "",
+            "Type": "SprinklerScheduleConditionV1"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "next_watering",
+            "NativeType": "",
+            "Type": "SprinklerTimeSlotV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 6,
+            "NativeName": "planned_water_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 7,
+            "NativeName": "estimated_deficit_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 8,
+            "NativeName": "recent_precipitation_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 9,
+            "NativeName": "recent_irrigation_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 10,
+            "NativeName": "valve_is_open",
+            "NativeType": "bool",
+            "Type": "Boolean"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 11,
+            "NativeName": "valve_state_known",
+            "NativeType": "bool",
+            "Type": "Boolean"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "65535"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u16"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 12,
+            "NativeName": "valve_fault_bitmap",
+            "NativeType": "u16",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerZoneActiveStateV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 2,
+                "NativeName": "current",
+                "NativeType": "",
+                "Type": "SprinklerZoneActiveStateV1"
+              }
+            ],
+            "ID": 1,
+            "NativeName": "ActiveV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "WinterizationV1",
+            "NativeType": "",
+            "Type": "Nil"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerZoneAdvancedStateV1",
+        "NativeType": "",
+        "Type": "Union"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "200"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "20"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "10"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u16"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "watering_percent",
+            "NativeType": "u16",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "SizeMax",
+                "Value": "64"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 3,
+                "NativeName": "",
+                "NativeType": "",
+                "Type": "SprinklerTimeSlotV1"
+              }
+            ],
+            "ID": 2,
+            "NativeName": "hold_off_periods",
+            "NativeType": "Vec < SprinklerTimeSlotV1 >",
+            "Type": "List"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerZoneConfigurationV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "200"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "20"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "10"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u16"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "watering_percent",
+            "NativeType": "u16",
+            "Type": "Number"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "SizeMax",
+                "Value": "64"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 3,
+                "NativeName": "",
+                "NativeType": "",
+                "Type": "SprinklerTimeSlotV1"
+              }
+            ],
+            "ID": 2,
+            "NativeName": "hold_off_periods",
+            "NativeType": "Vec < SprinklerTimeSlotV1 >",
+            "Type": "List"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "balance_baseline_at",
+            "NativeType": "LibertasDateTime",
+            "Type": "DateTime"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 5,
+            "NativeName": "baseline_deficit_millimeters",
+            "NativeType": "f32",
+            "Type": "Number"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerZoneMemoryV1",
+        "NativeType": "",
+        "Type": "Table"
+      },
+      {
+        "Attributes": [
+          {
+            "Name": "LibertasProtocol",
+            "Value": "true"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "NextResponse",
+                "Value": "StateV1"
+              },
+              {
+                "Name": "Request",
+                "Value": "true"
+              },
+              {
+                "Name": "SubscriptionRequest",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "GetStateV1",
+            "NativeType": "",
+            "Type": "Nil"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NextRequest",
+                "Value": "GetAdvancedStateV1,GetConfigurationV1"
+              },
+              {
+                "Name": "Response",
+                "Value": "true"
+              },
+              {
+                "Name": "SubscriptionData",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 3,
+                "NativeName": "state",
+                "NativeType": "",
+                "Type": "SprinklerZoneStateV1"
+              }
+            ],
+            "ID": 2,
+            "NativeName": "StateV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NextResponse",
+                "Value": "AdvancedStateV1"
+              },
+              {
+                "Name": "Request",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "GetAdvancedStateV1",
+            "NativeType": "",
+            "Type": "Nil"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NextRequest",
+                "Value": "GetConfigurationV1,SetWateringModeV1"
+              },
+              {
+                "Name": "Response",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 6,
+                "NativeName": "mode",
+                "NativeType": "",
+                "Type": "SprinklerWateringModeV1"
+              },
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 7,
+                "NativeName": "state",
+                "NativeType": "",
+                "Type": "SprinklerZoneAdvancedStateV1"
+              }
+            ],
+            "ID": 5,
+            "NativeName": "AdvancedStateV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NextResponse",
+                "Value": "ConfigurationV1"
+              },
+              {
+                "Name": "Request",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 8,
+            "NativeName": "GetConfigurationV1",
+            "NativeType": "",
+            "Type": "Nil"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NextRequest",
+                "Value": "SetWaterAmountAdjusterV1,ReplaceHoldOffPeriodsV1"
+              },
+              {
+                "Name": "Response",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [
+                  {
+                    "Name": "TableHeader",
+                    "Value": "true"
+                  }
+                ],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 10,
+                "NativeName": "configuration",
+                "NativeType": "",
+                "Type": "SprinklerZoneConfigurationV1"
+              }
+            ],
+            "ID": 9,
+            "NativeName": "ConfigurationV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NextResponse",
+                "Value": "ConfigurationV1"
+              },
+              {
+                "Name": "Request",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [
+                  {
+                    "Name": "CopyFrom",
+                    "Value": "$.configuration.watering_percent"
+                  },
+                  {
+                    "Name": "NumberMax",
+                    "Value": "200"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "20"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "10"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u16"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 12,
+                "NativeName": "watering_percent",
+                "NativeType": "u16",
+                "Type": "Number"
+              }
+            ],
+            "ID": 11,
+            "NativeName": "SetWaterAmountAdjusterV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NextResponse",
+                "Value": "ConfigurationV1"
+              },
+              {
+                "Name": "Request",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [
+                  {
+                    "Name": "CopyFrom",
+                    "Value": "$.configuration.hold_off_periods"
+                  },
+                  {
+                    "Name": "SizeMax",
+                    "Value": "64"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [
+                  {
+                    "Attributes": [],
+                    "BuiltinType": false,
+                    "Children": [],
+                    "ID": 15,
+                    "NativeName": "",
+                    "NativeType": "",
+                    "Type": "SprinklerTimeSlotV1"
+                  }
+                ],
+                "ID": 14,
+                "NativeName": "hold_off_periods",
+                "NativeType": "Vec < SprinklerTimeSlotV1 >",
+                "Type": "List"
+              }
+            ],
+            "ID": 13,
+            "NativeName": "ReplaceHoldOffPeriodsV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "NextResponse",
+                "Value": "AdvancedStateV1"
+              },
+              {
+                "Name": "Request",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [
+                  {
+                    "Name": "CopyFrom",
+                    "Value": "$.mode"
+                  }
+                ],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 17,
+                "NativeName": "mode",
+                "NativeType": "",
+                "Type": "SprinklerWateringModeV1"
+              }
+            ],
+            "ID": 16,
+            "NativeName": "SetWateringModeV1",
+            "NativeType": "",
+            "Type": "Table"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerZoneProtocol",
+        "NativeType": "",
+        "Type": "Union"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "TableHeader",
+                "Value": "true"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 2,
+                "NativeName": "condition",
+                "NativeType": "",
+                "Type": "SprinklerScheduleConditionV1"
+              },
+              {
+                "Attributes": [],
+                "BuiltinType": false,
+                "Children": [],
+                "ID": 3,
+                "NativeName": "next_watering",
+                "NativeType": "",
+                "Type": "SprinklerTimeSlotV1"
+              }
+            ],
+            "ID": 1,
+            "NativeName": "ActiveV1",
+            "NativeType": "",
+            "Type": "Table"
+          },
+          {
+            "Attributes": [],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "WinterizationV1",
+            "NativeType": "",
+            "Type": "Nil"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerZoneStateV1",
+        "NativeType": "",
+        "Type": "Union"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "DeviceType",
+                "Value": "BQEBAUABgQED"
+              },
+              {
+                "Name": "TableHeader",
+                "Value": "true"
+              },
+              {
+                "Name": "Unique",
+                "Value": "99"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "NativeName": "valve",
+            "NativeType": "LibertasDevice",
+            "Type": "Device"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Default",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 2,
+            "NativeName": "plant_type",
+            "NativeType": "",
+            "Type": "SprinklerPlantTypeV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "Default",
+                "Value": "3"
+              }
+            ],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 3,
+            "NativeName": "sprinkler_head_type",
+            "NativeType": "",
+            "Type": "SprinklerHeadTypeV1"
+          },
+          {
+            "Attributes": [
+              {
+                "Name": "BaseObjects",
+                "Value": "^.valve"
+              },
+              {
+                "Name": "EndpointServer",
+                "Value": "true"
+              },
+              {
+                "Name": "ProtocolSchema",
+                "Value": "SprinklerZoneProtocol"
+              },
+              {
+                "Name": "Unique",
+                "Value": "99"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 4,
+            "NativeName": "state_endpoint",
+            "NativeType": "LibertasEndpoint",
+            "Type": "Endpoint"
+          }
+        ],
+        "ID": 0,
+        "NativeName": "SprinklerZoneV1",
+        "NativeType": "",
+        "Type": "Table"
+      }
+    ]
+  }
+}

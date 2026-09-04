@@ -52,11 +52,10 @@ use libertas_matter::{
 use libertas_weather::{
     SPRINKLER_FORECAST_HORIZON_SECONDS, SPRINKLER_HISTORY_WINDOW_SECONDS,
     SprinklerCurrentWeatherV1, SprinklerWeatherChangeV1, SprinklerWeatherCursorV1,
-    SprinklerWeatherForecastPeriodV1, SprinklerWeatherForecastV1, SprinklerWeatherHistoryPeriodV1,
-    SprinklerWeatherHistoryPeriodV2, SprinklerWeatherHistoryV2,
-    SprinklerWeatherIncrementalReportV1, SprinklerWeatherLocationV1, SprinklerWeatherProtocol,
-    SprinklerWeatherRecoveryErrorV1, SprinklerWeatherRecoveryV1, SprinklerWeatherSectionV1,
-    SprinklerWeatherSnapshotV2, SprinklerWeatherTimeRangeV1,
+    SprinklerWeatherForecastPeriodV1, SprinklerWeatherForecastV1, SprinklerWeatherHistoryPeriodV2,
+    SprinklerWeatherHistoryV2, SprinklerWeatherIncrementalReportV1, SprinklerWeatherLocationV1,
+    SprinklerWeatherProtocol, SprinklerWeatherRecoveryErrorV1, SprinklerWeatherRecoveryV1,
+    SprinklerWeatherSectionV1, SprinklerWeatherSnapshotV2, SprinklerWeatherTimeRangeV1,
 };
 
 const MICROSECONDS_PER_SECOND: u64 = 1_000_000;
@@ -81,10 +80,13 @@ const MAX_SPRINKLER_ZONES: usize = 32;
 const WATER_EVENT_INDEX_KIND_COUNT: i64 = 2;
 const REPORT_ACTIVITY_INDEXES_PER_SECOND: i64 = 1_024;
 const REPORT_ACTIVITY_INDEXES_PER_ORIGIN: u16 = 256;
-const MAX_REPORT_RANGE_SECONDS: u64 = 31 * 24 * 60 * 60;
+const MAX_WATER_BALANCE_REPORT_RANGE_DAYS: usize = 365;
+const MAX_WATER_BALANCE_REPORT_RANGE_SECONDS: u64 =
+    MAX_WATER_BALANCE_REPORT_RANGE_DAYS as u64 * 24 * 60 * 60;
 const MAX_WATER_USAGE_REPORT_RANGE_DAYS: usize = 2 * 365;
 const MAX_WATER_USAGE_REPORT_RANGE_SECONDS: u64 =
     MAX_WATER_USAGE_REPORT_RANGE_DAYS as u64 * 24 * 60 * 60;
+const MAX_WEATHER_ET_REPORT_RANGE_SECONDS: u64 = 31 * 24 * 60 * 60;
 const DEFAULT_REPORT_RANGE_SECONDS: u64 = 7 * 24 * 60 * 60;
 const DEFAULT_WATER_USAGE_REPORT_RANGE_SECONDS: u64 = 31 * 24 * 60 * 60;
 const DEFAULT_WEATHER_HISTORY_SECONDS: u64 = 2 * 24 * 60 * 60;
@@ -116,7 +118,9 @@ const MAX_REPORT_ACTIVITIES: usize = 4_096;
 // inspect one immediate predecessor per zone for an interval crossing the left
 // boundary.
 const MAX_REPORT_ACTIVITY_RECORDS_SCANNED: usize = MAX_REPORT_ACTIVITIES + MAX_SPRINKLER_ZONES;
-const MAX_REPORT_DAILY_RECORDS_PER_ZONE: usize = 32;
+// A maximum-length UTC range can touch one partial day at each edge and may
+// also need the closest preceding checkpoint to fill an empty left boundary.
+const MAX_REPORT_DAILY_RECORDS_PER_ZONE: usize = MAX_WATER_BALANCE_REPORT_RANGE_DAYS + 2;
 const MAX_REPORT_MODELED_GAPS: usize = 4_096;
 const MAX_REPORT_CHART_ROWS: usize = 100_000;
 const MAX_REPORT_POINTS_PER_PATH: usize = 20_000;
@@ -165,7 +169,7 @@ const SOUTHERN_WINTERIZATION_SEASON_END_DAY: u16 = 273;
 
 /// Sprinkler text
 /// Names and descriptions for saved information, notifications, and chart labels.
-pub const APP_STRINGS: [(&str, &str); 18] = [
+pub const APP_STRINGS: [(&str, &str); 19] = [
     (
         "SPRINKLER_ZONE_MEMORY_V1",
         "Saved water balance and settings for {0}.",
@@ -184,10 +188,6 @@ pub const APP_STRINGS: [(&str, &str); 18] = [
         "Saved winterization reminder history for {0}.",
     ),
     (
-        "SPRINKLER_REPORT_WEATHER_HISTORY_V1",
-        "Saved weather history for sprinkler reports at {0}.",
-    ),
-    (
         "SPRINKLER_WATERING_ACTIVITIES_V1",
         "Saved watering history for {0}.",
     ),
@@ -196,7 +196,7 @@ pub const APP_STRINGS: [(&str, &str); 18] = [
         "Saved daily water balance for {0}.",
     ),
     (
-        "SPRINKLER_WATERING_ACTIVITY_STATE_V1",
+        "SPRINKLER_WATERING_ACTIVITY_STATE_V2",
         "Current watering activity for {0}.",
     ),
     (
@@ -204,49 +204,58 @@ pub const APP_STRINGS: [(&str, &str); 18] = [
         "Saved current-weather observations for sprinkler reports at {0}.",
     ),
     (
-        "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V1",
+        "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2",
         "Saved location used by sprinkler weather reports at {0}.",
     ),
     (
         "SPRINKLER_WINTERIZATION_WEATHER_REMINDER",
-        "Freezing weather ({0}) may damage your sprinkler system. Winterize it, then set Watering mode to Winterization.",
+        "Freezing weather ({0}) may damage your sprinkler system. Winterize it, then turn Active off.",
     ),
     (
         "SPRINKLER_WINTERIZATION_SEASON_REMINDER",
-        "Cold season is approaching at this location. Winterize your sprinkler system, then set Watering mode to Winterization.",
+        "Cold season is approaching at this location. Winterize your sprinkler system, then turn Active off.",
     ),
     (
         "libertas.permission.ACCESS_FINE_LOCATION",
         "Use this Hub's location to get local weather for automatic watering.",
     ),
     (
-        "SPRINKLER_MODELED_WEATHER_GAPS_V1",
+        "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2",
         "Saved weather estimates used during service interruptions at {0}.",
     ),
     (
-        "SPRINKLER_REPORT_WEATHER_HISTORY_V2",
+        "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2",
         "Saved detailed weather history for sprinkler reports at {0}.",
     ),
     ("SPRINKLER_WATER_USAGE_RAIN_LANE", "Rain"),
     ("SPRINKLER_WATER_USAGE_ZONE_LANE", "{0}"),
+    (
+        "SPRINKLER_INVALID_WATERING_PERCENT",
+        "Water amount must be from 20% through 200% in steps of 10%.",
+    ),
+    (
+        "SPRINKLER_INVALID_NO_WATERING_PERIODS",
+        "Use no more than 64 no-watering periods, each with a valid start and a duration greater than zero.",
+    ),
 ];
 const ZONE_DATA_RESOURCE: &str = APP_STRINGS[0].0;
 const WATER_EVENTS_RESOURCE: &str = APP_STRINGS[1].0;
 const SITE_LOCATION_RESOURCE: &str = APP_STRINGS[2].0;
 const WATERING_MODE_RESOURCE: &str = APP_STRINGS[3].0;
 const WINTERIZATION_REMINDER_RESOURCE: &str = APP_STRINGS[4].0;
-const REPORT_WEATHER_HISTORY_RESOURCE: &str = APP_STRINGS[5].0;
-const WATERING_ACTIVITIES_RESOURCE: &str = APP_STRINGS[6].0;
-const DAILY_REPORT_RESOURCE: &str = APP_STRINGS[7].0;
-const WATERING_ACTIVITY_STATE_RESOURCE: &str = APP_STRINGS[8].0;
-const REPORT_WEATHER_OBSERVATIONS_RESOURCE: &str = APP_STRINGS[9].0;
-const REPORT_WEATHER_ARCHIVE_STATE_RESOURCE: &str = APP_STRINGS[10].0;
-const WINTERIZATION_WEATHER_NOTIFICATION_RESOURCE: &str = APP_STRINGS[11].0;
-const WINTERIZATION_SEASON_NOTIFICATION_RESOURCE: &str = APP_STRINGS[12].0;
-const MODELED_WEATHER_GAPS_RESOURCE: &str = APP_STRINGS[14].0;
-const REPORT_WEATHER_HISTORY_V2_RESOURCE: &str = APP_STRINGS[15].0;
-const WATER_USAGE_RAIN_LANE_RESOURCE: &str = APP_STRINGS[16].0;
-const WATER_USAGE_ZONE_LANE_RESOURCE: &str = APP_STRINGS[17].0;
+const WATERING_ACTIVITIES_RESOURCE: &str = APP_STRINGS[5].0;
+const DAILY_REPORT_RESOURCE: &str = APP_STRINGS[6].0;
+const WATERING_ACTIVITY_STATE_RESOURCE: &str = APP_STRINGS[7].0;
+const REPORT_WEATHER_OBSERVATIONS_RESOURCE: &str = APP_STRINGS[8].0;
+const REPORT_WEATHER_ARCHIVE_STATE_RESOURCE: &str = APP_STRINGS[9].0;
+const WINTERIZATION_WEATHER_NOTIFICATION_RESOURCE: &str = APP_STRINGS[10].0;
+const WINTERIZATION_SEASON_NOTIFICATION_RESOURCE: &str = APP_STRINGS[11].0;
+const MODELED_WEATHER_GAPS_RESOURCE: &str = APP_STRINGS[13].0;
+const REPORT_WEATHER_HISTORY_V2_RESOURCE: &str = APP_STRINGS[14].0;
+const WATER_USAGE_RAIN_LANE_RESOURCE: &str = APP_STRINGS[15].0;
+const WATER_USAGE_ZONE_LANE_RESOURCE: &str = APP_STRINGS[16].0;
+const INVALID_WATERING_PERCENT_RESOURCE: &str = APP_STRINGS[17].0;
+const INVALID_NO_WATERING_PERIODS_RESOURCE: &str = APP_STRINGS[18].0;
 // Older builds duplicated every activity into one indexed database per UTC
 // day. The per-zone activity archive is authoritative, so these databases can
 // be removed without migrating records.
@@ -424,7 +433,8 @@ impl SprinklerValveFaultFlagsV1 {
 }
 
 /// Zone settings
-/// Adjust the water amount or add times when this area must not be watered.
+/// Adjust the water amount, no-watering periods, or whether automatic watering
+/// is active.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct SprinklerZoneConfigurationV1 {
     /// Water amount
@@ -432,6 +442,7 @@ pub struct SprinklerZoneConfigurationV1 {
     /// higher value for more water.
     #[libertas_number(min = 20, max = 200, step = 10)]
     #[libertas_physical_unit("percent")]
+    #[libertas_ui_include_description]
     pub watering_percent: u16,
     /// No-watering periods
     /// Times when watering must be paused.
@@ -439,7 +450,12 @@ pub struct SprinklerZoneConfigurationV1 {
     /// No-watering period
     /// One period when this area must not be watered.
     #[libertas_size(max = 64)]
-    pub hold_off_periods: Vec<SprinklerTimeSlotV1>,
+    #[libertas_ui_include_description]
+    pub no_watering_periods: Vec<SprinklerTimeSlotV1>,
+    /// Active
+    /// Turn automatic watering on. Turn it off after winterizing the system.
+    #[libertas_ui_include_description]
+    pub active: bool,
 }
 
 /// Zone details
@@ -513,6 +529,20 @@ pub enum SprinklerWateringModeV1 {
     /// Winterized
     /// Automatic watering is shut down for the cold season.
     Winterization,
+}
+
+/// Configuration error
+/// Explains why a requested sprinkler setting was not changed.
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
+)]
+pub enum SprinklerZoneConfigurationErrorV1 {
+    /// Invalid water amount
+    /// The percentage was outside the supported range or step.
+    InvalidWateringPercent,
+    /// Invalid no-watering periods
+    /// The replacement contained too many periods or an invalid interval.
+    InvalidNoWateringPeriods,
 }
 
 /// Winterization reminder reason
@@ -591,6 +621,7 @@ pub enum SprinklerZoneProtocol {
     /// Shows what this area is doing and when it will next be watered.
     #[libertas_request]
     #[libertas_subscription_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(StateV1)]
     GetStateV1,
     /// Current status
@@ -606,29 +637,32 @@ pub enum SprinklerZoneProtocol {
     /// View details
     /// Shows the water estimate, watering plan, and valve status.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(AdvancedStateV1)]
     GetAdvancedStateV1,
     /// Zone details
-    /// The water estimate, watering plan, valve status, and watering mode.
+    /// The water estimate, watering plan, and valve status.
     #[libertas_response]
-    #[libertas_next_request("GetConfigurationV1,SetWateringModeV1")]
+    #[libertas_next_request(GetConfigurationV1)]
     AdvancedStateV1 {
-        /// Watering mode
-        /// Whether automatic watering is active or the system is winterized.
-        mode: SprinklerWateringModeV1,
         /// Sprinkler status
         /// Detailed status for this area or the winterized system.
         state: SprinklerZoneAdvancedStateV1,
     },
     /// View settings
-    /// Shows the water amount and no-watering periods for this area.
+    /// Shows the water amount, no-watering periods, and active state.
     #[libertas_request]
+    #[libertas_subscription_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(ConfigurationV1)]
     GetConfigurationV1,
     /// Zone settings
-    /// The current water amount and no-watering periods.
+    /// The current water amount, no-watering periods, and active state. Later
+    /// accepted changes are delivered as subscription data before their
+    /// terminal acknowledgement.
     #[libertas_response]
-    #[libertas_next_request("SetWaterAmountAdjusterV1,ReplaceHoldOffPeriodsV1")]
+    #[libertas_subscription_data]
+    #[libertas_next_request("SetWateringPercentV1,ReplaceNoWateringPeriodsV1,SetActiveV1")]
     ConfigurationV1 {
         /// Settings
         /// The current settings for this area.
@@ -638,46 +672,72 @@ pub enum SprinklerZoneProtocol {
     /// Change water amount
     /// Use more or less water than the recommended amount.
     #[libertas_request]
-    #[libertas_next_response(ConfigurationV1)]
-    SetWaterAmountAdjusterV1 {
+    #[libertas_access_privilege("Write")]
+    #[libertas_next_response("SuccessV1,FailureV1")]
+    SetWateringPercentV1 {
         /// Water amount
         /// Use 100% for the recommended amount, a lower value for less water,
         /// or a higher value for more water.
         #[libertas_number(min = 20, max = 200, step = 10)]
         #[libertas_physical_unit("percent")]
         #[libertas_copy_from("$.configuration.watering_percent")]
+        #[libertas_ui_include_description]
         watering_percent: u16,
     },
     /// Change no-watering periods
     /// Replace the times when this area must not be watered.
     #[libertas_request]
-    #[libertas_next_response(ConfigurationV1)]
-    ReplaceHoldOffPeriodsV1 {
+    #[libertas_access_privilege("Write")]
+    #[libertas_next_response("SuccessV1,FailureV1")]
+    ReplaceNoWateringPeriodsV1 {
         /// No-watering periods
         /// The complete list of times when watering must be paused.
         /// ----
         /// No-watering period
         /// One period when this area must not be watered.
         #[libertas_size(max = 64)]
-        #[libertas_copy_from("$.configuration.hold_off_periods")]
-        hold_off_periods: Vec<SprinklerTimeSlotV1>,
+        #[libertas_copy_from("$.configuration.no_watering_periods")]
+        #[libertas_ui_include_description]
+        no_watering_periods: Vec<SprinklerTimeSlotV1>,
     },
-    /// Change watering mode
-    /// Turn automatic watering on, or mark the entire system as winterized.
+    /// Change active state
+    /// Turn automatic watering on or off.
     #[libertas_request]
-    #[libertas_next_response(AdvancedStateV1)]
-    SetWateringModeV1 {
-        /// Watering mode
-        /// Active enables automatic watering. Winterized keeps it off.
-        #[libertas_copy_from("$.mode")]
-        mode: SprinklerWateringModeV1,
+    #[libertas_access_privilege("Write")]
+    #[libertas_next_response("SuccessV1,FailureV1")]
+    SetActiveV1 {
+        /// Active
+        /// Turn automatic watering on. Turn it off after winterizing the system.
+        #[libertas_copy_from("$.configuration.active")]
+        #[libertas_ui_include_description]
+        active: bool,
+    },
+    /// Change accepted
+    /// Confirms that a requested setting was persisted and applied. The current
+    /// subscribed configuration remains installed.
+    #[libertas_response]
+    SuccessV1,
+    /// Change rejected
+    /// Explains why a requested setting was not changed while preserving the
+    /// current subscribed configuration for correction and retry.
+    #[libertas_response]
+    #[libertas_error]
+    FailureV1 {
+        /// Error message
+        /// A localized explanation of the invalid setting.
+        #[libertas_formatted_text]
+        #[libertas_size(max = 2048)]
+        formatted_error: Vec<u8>,
+        /// Error
+        /// The reason the setting was rejected.
+        error: SprinklerZoneConfigurationErrorV1,
     },
 }
 
 /// Sprinkler report time range
 /// Selects one bounded half-open UTC interval from the indefinitely retained
-/// report archive. Water usage is limited to two years; the other reports are
-/// limited to 31 days. Older ranges remain queryable with another request.
+/// report archive. Water balance is limited to 365 days, water usage to two
+/// years, and weather to 31 days. A longer request keeps its latest days.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct SprinklerReportTimeRangeV1 {
     /// Start time
@@ -914,20 +974,6 @@ pub struct SprinklerWateringActivityV1 {
     pub updated_at: LibertasDateTime,
 }
 
-/// Legacy current watering activity state
-/// Decodes the original bounded nonterminal snapshot. New writes use
-/// `SprinklerWateringActivityStateV2`, which can also repair a terminal audit
-/// row after a crash.
-#[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub struct SprinklerWateringActivityStateV1 {
-    /// Current activity
-    /// The complete authoritative nonterminal snapshot to reconcile, or no
-    /// value when every archived activity is terminal. Keeping the snapshot in
-    /// this bounded record makes nonterminal restart reconciliation independent
-    /// of an indefinite archive scan.
-    pub current_activity: Option<SprinklerWateringActivityV1>,
-}
-
 /// Authoritative watering activity state
 /// Stores the latest complete lifecycle snapshot before its matching audit-row
 /// write. The explicit current flag distinguishes a restart-reconcilable
@@ -942,26 +988,6 @@ pub struct SprinklerWateringActivityStateV2 {
     /// True only when the latest activity is scheduled, command-pending, or
     /// running and must be reconciled at startup.
     pub activity_is_current: bool,
-}
-
-/// Legacy report weather archive state
-/// Decodes the original site-generation record whose history-clear handshake
-/// could remain pending indefinitely. New writes use
-/// `SprinklerReportWeatherArchiveStateV2`.
-#[derive(Clone, Copy, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
-pub struct SprinklerReportWeatherArchiveStateV1 {
-    /// Generation
-    /// Monotonically increases when the Hub location or provider history site
-    /// is cleared.
-    pub generation: u64,
-    /// Site location
-    /// The Hub location associated with this generation, when known. The first
-    /// valid location binds an unassociated generation without advancing it.
-    pub location: Option<SprinklerWeatherLocationV1>,
-    /// Awaiting history clear
-    /// A direct Hub location change already opened this generation, so the
-    /// weather agent's matching history-clear event must not open another one.
-    pub awaiting_history_clear: bool,
 }
 
 /// Report weather archive state
@@ -1600,7 +1626,10 @@ pub struct SprinklerWeatherEtChartV1 {
 pub enum SprinklerReportProtocol {
     /// View water balance
     /// Shows estimated plant-available water and watering events for every area.
+    /// A selected period can cover up to 365 days; a longer selection keeps its
+    /// latest 365 days.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(WaterBalanceV1)]
     GetWaterBalanceV1 {
         /// First date
@@ -1620,8 +1649,10 @@ pub enum SprinklerReportProtocol {
     WaterBalanceV1(SprinklerWaterBalanceChartV1),
     /// View water use
     /// Shows daily rain and watering for every area. Leave the dates blank for
-    /// the latest 31 days; a selected period can cover up to two years.
+    /// the latest 31 days; a selected period can cover up to two years. A longer
+    /// selection keeps its latest two years.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(WaterUsageV1)]
     GetWaterUsageV1 {
         /// First date
@@ -1641,7 +1672,10 @@ pub enum SprinklerReportProtocol {
     WaterUsageV1(SprinklerWaterUsageChartV1),
     /// View weather
     /// Shows recorded and forecast temperature, humidity, wind, and water loss.
+    /// A selected period can cover up to 31 days; a longer selection keeps its
+    /// latest 31 days.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(WeatherEtV1)]
     GetWeatherEtV1 {
         /// First date
@@ -1816,14 +1850,13 @@ pub enum SprinklerData {
         /// Restart-safe throttling state for winterization notifications.
         memory: SprinklerWinterizationReminderMemoryV1,
     },
-    /// Report weather period
-    /// Archives one accepted completed provider period indefinitely for weather,
-    /// ET, and decision-explanation charts.
-    ReportWeatherPeriodV1 {
-        /// Weather period
-        /// Legacy rain and ET for one completed provider period. Existing rows
-        /// remain usable for water balance, but do not invent unavailable wind.
-        period: SprinklerWeatherHistoryPeriodV1,
+    /// Authoritative watering activity state
+    /// Retains terminal as well as nonterminal snapshots so either audit write
+    /// can be repaired after a restart.
+    WateringActivityStateV2 {
+        /// Activity state
+        /// Latest complete activity snapshot and its explicit current status.
+        state: SprinklerWateringActivityStateV2,
     },
     /// Watering activity
     /// Archives one scheduled, running, completed, skipped, failed, superseded,
@@ -1841,12 +1874,12 @@ pub enum SprinklerData {
         /// Rain, ET, estimated irrigation, and opening/closing modeled deficit.
         report: SprinklerDailyReportV1,
     },
-    /// Watering activity state
-    /// Stores one bounded restart pointer into the indefinite activity archive.
-    WateringActivityStateV1 {
-        /// Activity state
-        /// Exact current-activity index, if a nonterminal activity exists.
-        state: SprinklerWateringActivityStateV1,
+    /// Report weather archive state V2
+    /// Its generation is bound only by explicit provider site messages.
+    ReportWeatherArchiveStateV2 {
+        /// Archive state
+        /// Active indefinitely retained provider-site generation.
+        state: SprinklerReportWeatherArchiveStateV2,
     },
     /// Report weather observation
     /// Archives one accepted current-condition sample indefinitely. It keeps
@@ -1858,46 +1891,20 @@ pub enum SprinklerData {
         /// the provider's represented time.
         observation: SprinklerCurrentWeatherV1,
     },
-    /// Report weather archive state
-    /// Stores the active site generation without deleting prior generations.
-    ReportWeatherArchiveStateV1 {
-        /// Archive state
-        /// The active indefinitely retained weather generation.
-        state: SprinklerReportWeatherArchiveStateV1,
-    },
-    /// Authoritative watering activity state
-    /// Appended successor to `WateringActivityStateV1`. It retains terminal as
-    /// well as nonterminal snapshots so either audit write can be repaired after
-    /// a restart without changing any existing persistent-data discriminant.
-    WateringActivityStateV2 {
-        /// Activity state
-        /// Latest complete activity snapshot and its explicit current status.
-        state: SprinklerWateringActivityStateV2,
-    },
-    /// Modeled weather gap
-    /// Archives one exact fallback-ET interval indefinitely. This variant is
-    /// appended so every existing persistent-data discriminant remains stable.
-    ModeledWeatherGapV1 {
-        /// Modeled gap
-        /// Exact interval with immutable source and rate provenance.
-        gap: SprinklerModeledWeatherGapV1,
-    },
     /// Report weather period V2
-    /// Archives one full accepted provider observation indefinitely. This
-    /// append-only variant leaves all existing persistent discriminants stable.
+    /// Archives one full accepted provider observation indefinitely.
     ReportWeatherPeriodV2 {
         /// Weather period
         /// Temperature, humidity, rain, ET, wind, and gusts for one completed
         /// provider period.
         period: SprinklerWeatherHistoryPeriodV2,
     },
-    /// Report weather archive state V2
-    /// Appended successor whose generation is bound only by explicit provider
-    /// site messages, without relying on an optional section-clear handshake.
-    ReportWeatherArchiveStateV2 {
-        /// Archive state
-        /// Active indefinitely retained provider-site generation.
-        state: SprinklerReportWeatherArchiveStateV2,
+    /// Modeled weather gap
+    /// Archives one exact fallback-ET interval indefinitely.
+    ModeledWeatherGapV1 {
+        /// Modeled gap
+        /// Exact interval with immutable source and rate provenance.
+        gap: SprinklerModeledWeatherGapV1,
     },
 }
 
@@ -1921,6 +1928,8 @@ pub struct SprinklerZoneV1 {
     pub sprinkler_head_type: SprinklerHeadTypeV1,
     /// Area controls
     /// Choose where this area's status, settings, and controls will be available.
+    /// [DefaultText]
+    /// Area controls
     #[libertas_endpoint_schema(SprinklerZoneProtocol)]
     #[libertas_endpoint_server]
     #[libertas_endpoint_base_objects("^.valve")]
@@ -2042,10 +2051,12 @@ enum ZoneResponseKind {
     State,
     AdvancedState,
     Configuration,
+    Success,
 }
 
 struct EvaluationOutcome {
     changed_zones: Vec<usize>,
+    changed_configuration_zones: Vec<usize>,
     zone_memories_to_persist: Vec<(LibertasDevice, SprinklerZoneMemoryV1)>,
     activities_to_persist: Vec<(LibertasDevice, SprinklerWateringActivityV1)>,
     daily_reports_to_persist: Vec<(LibertasDevice, Vec<SprinklerDailyReportV1>)>,
@@ -2703,11 +2714,6 @@ fn load_report_weather_archive_state(
         &system_key(weather_endpoint),
     ) {
         Some(SprinklerData::ReportWeatherArchiveStateV2 { state }) => state,
-        Some(SprinklerData::ReportWeatherArchiveStateV1 { state }) => {
-            let migrated = migrate_report_weather_archive_state(state);
-            persist_report_weather_archive_state(weather_endpoint, migrated);
-            migrated
-        }
         _ => {
             let state = SprinklerReportWeatherArchiveStateV2 {
                 generation: 0,
@@ -2720,22 +2726,6 @@ fn load_report_weather_archive_state(
             );
             state
         }
-    }
-}
-
-fn migrate_report_weather_archive_state(
-    legacy: SprinklerReportWeatherArchiveStateV1,
-) -> SprinklerReportWeatherArchiveStateV2 {
-    SprinklerReportWeatherArchiveStateV2 {
-        generation: legacy.generation,
-        // A pending V1 history-clear handshake means the Hub opened the
-        // generation but no provider SiteReplace was observed. Preserve that
-        // reserved generation while leaving it unbound until an explicit
-        // provider-site message arrives.
-        location: (!legacy.awaiting_history_clear)
-            .then_some(legacy.location)
-            .flatten()
-            .filter(|location| valid_site_location(*location)),
     }
 }
 
@@ -2971,43 +2961,6 @@ fn persist_report_weather_periods(
     }
 }
 
-fn valid_legacy_report_weather_period(period: &SprinklerWeatherHistoryPeriodV1) -> bool {
-    period.duration_seconds > 0
-        && period
-            .starts_at
-            .checked_add(u64::from(period.duration_seconds))
-            .is_some()
-        && valid_nonnegative(period.precipitation_millimeters)
-        && valid_nonnegative(period.reference_evapotranspiration_millimeters)
-        && i64::try_from(period.starts_at).is_ok()
-}
-
-fn persist_legacy_report_weather_periods(
-    weather_endpoint: LibertasEndpoint,
-    generation: u64,
-    periods: &[SprinklerWeatherHistoryPeriodV1],
-) {
-    if periods.is_empty() {
-        return;
-    }
-    let database = libertas_data_open_indexed(
-        REPORT_WEATHER_HISTORY_RESOURCE,
-        &report_weather_archive_key(weather_endpoint, generation),
-    );
-    for period in periods {
-        let Ok(index) = i64::try_from(period.starts_at) else {
-            continue;
-        };
-        if valid_legacy_report_weather_period(period) {
-            libertas_data_write_indexed(
-                database.handle,
-                index,
-                &SprinklerData::ReportWeatherPeriodV1 { period: *period },
-            );
-        }
-    }
-}
-
 fn report_weather_replacement_indexes(
     periods: &[SprinklerWeatherHistoryPeriodV2],
 ) -> Option<Vec<i64>> {
@@ -3021,27 +2974,6 @@ fn report_weather_replacement_indexes(
                 return None;
             }
             report_weather_period_index(period)
-        })
-        .collect::<Option<_>>()?;
-    indexes
-        .windows(2)
-        .all(|pair| pair[0] < pair[1])
-        .then_some(indexes)
-}
-
-fn legacy_report_weather_replacement_indexes(
-    periods: &[SprinklerWeatherHistoryPeriodV1],
-) -> Option<Vec<i64>> {
-    if periods.is_empty() || periods.len() > MAX_WEATHER_MESSAGE_PERIODS {
-        return None;
-    }
-    let indexes: Vec<_> = periods
-        .iter()
-        .map(|period| {
-            if !valid_legacy_report_weather_period(period) {
-                return None;
-            }
-            i64::try_from(period.starts_at).ok()
         })
         .collect::<Option<_>>()?;
     indexes
@@ -3126,54 +3058,6 @@ fn replace_report_weather_period_span(
     }
 }
 
-fn replace_legacy_report_weather_period_span(
-    weather_endpoint: LibertasEndpoint,
-    generation: u64,
-    periods: &[SprinklerWeatherHistoryPeriodV1],
-) {
-    let Some(replacement_indexes) = legacy_report_weather_replacement_indexes(periods) else {
-        return;
-    };
-    let first_index = replacement_indexes[0];
-    let last_index = replacement_indexes[replacement_indexes.len() - 1];
-    let database = libertas_data_open_indexed(
-        REPORT_WEATHER_HISTORY_RESOURCE,
-        &report_weather_archive_key(weather_endpoint, generation),
-    );
-    let mut existing_records = Vec::new();
-    if database.count > 0 {
-        libertas_data_read_indexed_range::<SprinklerData>(
-            database.handle,
-            first_index,
-            IndexDirection::Above,
-            MAX_REPORT_WEATHER_REPLACEMENT_RECORDS_SCANNED,
-            &mut existing_records,
-        );
-    }
-    let scan_complete = existing_records.len() < MAX_REPORT_WEATHER_REPLACEMENT_RECORDS_SCANNED
-        || existing_records
-            .last()
-            .is_some_and(|record| record.index > last_index);
-    let existing_indexes: Vec<_> = existing_records
-        .iter()
-        .take_while(|record| record.index <= last_index)
-        .map(|record| record.index)
-        .collect();
-    let stale_indexes =
-        stale_report_weather_period_indexes(&existing_indexes, &replacement_indexes, scan_complete);
-
-    for (period, index) in periods.iter().zip(replacement_indexes) {
-        libertas_data_write_indexed(
-            database.handle,
-            index,
-            &SprinklerData::ReportWeatherPeriodV1 { period: *period },
-        );
-    }
-    for index in stale_indexes {
-        libertas_data_remove_indexed_records(database.handle, index, index);
-    }
-}
-
 fn valid_report_weather_observation(observation: &SprinklerCurrentWeatherV1) -> bool {
     observation.interval_seconds > 0
         && observation.valid_until > observation.retrieved_at
@@ -3192,31 +3076,6 @@ fn valid_weather_history_metadata(
     valid_until: LibertasDateTime,
 ) -> bool {
     retrieved_at > 0 && valid_until > retrieved_at
-}
-
-fn valid_legacy_weather_history_periods(
-    retrieved_at: LibertasDateTime,
-    periods: &[SprinklerWeatherHistoryPeriodV1],
-) -> bool {
-    periods.len() <= MAX_WEATHER_MESSAGE_PERIODS
-        && periods.iter().all(|period| {
-            let Some(ends_at) = period
-                .starts_at
-                .checked_add(u64::from(period.duration_seconds))
-            else {
-                return false;
-            };
-            valid_legacy_report_weather_period(period)
-                && ends_at <= retrieved_at
-                && ends_at
-                    > retrieved_at.saturating_sub(u64::from(SPRINKLER_HISTORY_WINDOW_SECONDS))
-        })
-        && periods.windows(2).all(|pair| {
-            pair[0]
-                .starts_at
-                .checked_add(u64::from(pair[0].duration_seconds))
-                .is_some_and(|ends_at| ends_at <= pair[1].starts_at)
-        })
 }
 
 fn valid_weather_history_periods(
@@ -3242,12 +3101,6 @@ fn valid_weather_history_periods(
                 .checked_add(u64::from(pair[0].duration_seconds))
                 .is_some_and(|ends_at| ends_at <= pair[1].starts_at)
         })
-}
-
-fn valid_legacy_weather_history(history: &libertas_weather::SprinklerWeatherHistoryV1) -> bool {
-    valid_weather_history_metadata(history.retrieved_at, history.valid_until)
-        && !history.periods.is_empty()
-        && valid_legacy_weather_history_periods(history.retrieved_at, &history.periods)
 }
 
 fn valid_weather_history(history: &SprinklerWeatherHistoryV2) -> bool {
@@ -3295,14 +3148,6 @@ fn valid_weather_time_range(range: SprinklerWeatherTimeRangeV1) -> bool {
 
 fn valid_weather_change(change: &SprinklerWeatherChangeV1) -> bool {
     match change {
-        SprinklerWeatherChangeV1::HistoryPeriodsUpsertV1 {
-            retrieved_at,
-            valid_until,
-            periods,
-        } => {
-            valid_weather_history_metadata(*retrieved_at, *valid_until)
-                && valid_legacy_weather_history_periods(*retrieved_at, periods)
-        }
         SprinklerWeatherChangeV1::HistoryPeriodsRemoveV1 { range }
         | SprinklerWeatherChangeV1::ForecastPeriodsRemoveV1 { range } => {
             valid_weather_time_range(*range)
@@ -3319,9 +3164,6 @@ fn valid_weather_change(change: &SprinklerWeatherChangeV1) -> bool {
                 && valid_weather_forecast_periods(periods)
         }
         SprinklerWeatherChangeV1::SectionClearV1 { .. } => true,
-        SprinklerWeatherChangeV1::HistoryReplaceV1 { history } => {
-            valid_legacy_weather_history(history)
-        }
         SprinklerWeatherChangeV1::ForecastReplaceV1 { forecast } => {
             valid_weather_forecast(forecast)
         }
@@ -3336,21 +3178,6 @@ fn valid_weather_change(change: &SprinklerWeatherChangeV1) -> bool {
         }
         SprinklerWeatherChangeV1::HistoryReplaceV2 { history } => valid_weather_history(history),
     }
-}
-
-fn valid_weather_snapshot_v1(snapshot: &libertas_weather::SprinklerWeatherSnapshotV1) -> bool {
-    snapshot
-        .history
-        .as_ref()
-        .is_none_or(valid_legacy_weather_history)
-        && snapshot
-            .current
-            .as_ref()
-            .is_none_or(valid_report_weather_observation)
-        && snapshot
-            .forecast
-            .as_ref()
-            .is_none_or(valid_weather_forecast)
 }
 
 fn valid_weather_snapshot_v2(snapshot: &SprinklerWeatherSnapshotV2) -> bool {
@@ -3417,16 +3244,6 @@ fn archive_weather_changes(
             SprinklerWeatherChangeV1::HistoryReplaceV2 {
                 history: SprinklerWeatherHistoryV2 { periods, .. },
             } => replace_report_weather_period_span(weather_endpoint, generation, periods),
-            SprinklerWeatherChangeV1::HistoryPeriodsUpsertV1 { periods, .. } => {
-                persist_legacy_report_weather_periods(weather_endpoint, generation, periods);
-            }
-            SprinklerWeatherChangeV1::HistoryReplaceV1 { history } => {
-                replace_legacy_report_weather_period_span(
-                    weather_endpoint,
-                    generation,
-                    &history.periods,
-                );
-            }
             // This stream describes the provider's bounded working cache. A
             // removal therefore must not age-prune the separate indefinite
             // report archive. Same-start corrections arrive as upserts.
@@ -3451,19 +3268,6 @@ fn archive_weather_recovery(
     match recovery {
         SprinklerWeatherRecoveryV1::ReplayedV1 { report } => {
             archive_weather_changes(weather_endpoint, generation, &report.changes);
-        }
-        SprinklerWeatherRecoveryV1::ResetV1 { snapshot, .. }
-        | SprinklerWeatherRecoveryV1::ResetAtSiteV1 { snapshot, .. } => {
-            if let Some(history) = &snapshot.history {
-                replace_legacy_report_weather_period_span(
-                    weather_endpoint,
-                    generation,
-                    &history.periods,
-                );
-            }
-            if let Some(current) = snapshot.current {
-                persist_report_weather_observation(weather_endpoint, generation, current);
-            }
         }
         SprinklerWeatherRecoveryV1::ResetAtSiteV2 { snapshot, .. } => {
             if let Some(history) = &snapshot.history {
@@ -3675,20 +3479,9 @@ fn watering_activity_is_current(activity: &SprinklerWateringActivityV1) -> bool 
     )
 }
 
-#[derive(Debug, PartialEq)]
-enum SavedWateringActivityState {
-    Legacy(SprinklerWateringActivityStateV1),
-    Authoritative(SprinklerWateringActivityStateV2),
-}
-
-fn load_watering_activity_state(valve: LibertasDevice) -> Option<SavedWateringActivityState> {
+fn load_watering_activity_state(valve: LibertasDevice) -> Option<SprinklerWateringActivityStateV2> {
     match libertas_data_read_single(WATERING_ACTIVITY_STATE_RESOURCE, &zone_key(valve)) {
-        Some(SprinklerData::WateringActivityStateV1 { state }) => {
-            Some(SavedWateringActivityState::Legacy(state))
-        }
-        Some(SprinklerData::WateringActivityStateV2 { state }) => {
-            Some(SavedWateringActivityState::Authoritative(state))
-        }
+        Some(SprinklerData::WateringActivityStateV2 { state }) => Some(state),
         _ => None,
     }
 }
@@ -3723,57 +3516,32 @@ enum WateringActivityLoadPlan {
     RepairArchive {
         activity: SprinklerWateringActivityV1,
         return_current: bool,
-        migrate_state: bool,
     },
     ClearInvalidState,
-    ReturnEmpty {
-        migrate_state: bool,
-    },
+    ReturnEmpty,
 }
 
 fn watering_activity_load_plan(
-    saved_state: Option<SavedWateringActivityState>,
+    saved_state: Option<SprinklerWateringActivityStateV2>,
 ) -> WateringActivityLoadPlan {
     match saved_state {
         None => WateringActivityLoadPlan::MigrateArchive,
-        Some(SavedWateringActivityState::Legacy(SprinklerWateringActivityStateV1 {
-            current_activity: Some(activity),
-        })) if valid_watering_activity(&activity) && watering_activity_is_current(&activity) => {
-            WateringActivityLoadPlan::RepairArchive {
-                activity,
-                return_current: true,
-                migrate_state: true,
-            }
-        }
-        Some(SavedWateringActivityState::Legacy(SprinklerWateringActivityStateV1 {
-            current_activity: Some(_),
-        })) => WateringActivityLoadPlan::ClearInvalidState,
-        Some(SavedWateringActivityState::Legacy(SprinklerWateringActivityStateV1 {
-            current_activity: None,
-        })) => WateringActivityLoadPlan::ReturnEmpty {
-            migrate_state: true,
-        },
-        Some(SavedWateringActivityState::Authoritative(SprinklerWateringActivityStateV2 {
+        Some(SprinklerWateringActivityStateV2 {
             latest_activity: Some(activity),
             activity_is_current,
-        })) if valid_watering_activity(&activity)
+        }) if valid_watering_activity(&activity)
             && activity_is_current == watering_activity_is_current(&activity) =>
         {
             WateringActivityLoadPlan::RepairArchive {
                 activity,
                 return_current: activity_is_current,
-                migrate_state: false,
             }
         }
-        Some(SavedWateringActivityState::Authoritative(SprinklerWateringActivityStateV2 {
+        Some(SprinklerWateringActivityStateV2 {
             latest_activity: None,
             activity_is_current: false,
-        })) => WateringActivityLoadPlan::ReturnEmpty {
-            migrate_state: false,
-        },
-        Some(SavedWateringActivityState::Authoritative(_)) => {
-            WateringActivityLoadPlan::ClearInvalidState
-        }
+        }) => WateringActivityLoadPlan::ReturnEmpty,
+        Some(_) => WateringActivityLoadPlan::ClearInvalidState,
     }
 }
 
@@ -3800,13 +3568,7 @@ fn load_current_watering_activity(valve: LibertasDevice) -> Option<SprinklerWate
         WateringActivityLoadPlan::RepairArchive {
             activity,
             return_current,
-            migrate_state,
         } => {
-            if migrate_state {
-                // Establish the crash-repairable V2 state before repairing the
-                // legacy audit row for the same ordering guarantee as new writes.
-                persist_watering_activity_state(valve, watering_activity_state(activity.clone()));
-            }
             // Repair a missing or stale audit write from the authoritative
             // bounded snapshot before returning it.
             let database =
@@ -3827,12 +3589,7 @@ fn load_current_watering_activity(valve: LibertasDevice) -> Option<SprinklerWate
         // An explicit empty state is authoritative. Do not even open the audit
         // archive, so a stale nonterminal row cannot be resurrected after a
         // terminal-state write.
-        WateringActivityLoadPlan::ReturnEmpty { migrate_state } => {
-            if migrate_state {
-                persist_watering_activity_state(valve, empty_watering_activity_state());
-            }
-            return None;
-        }
+        WateringActivityLoadPlan::ReturnEmpty => return None,
         WateringActivityLoadPlan::MigrateArchive => {}
     }
 
@@ -4248,7 +4005,7 @@ fn reconcile_zone_modeled_weather_gaps(
 
 #[derive(Default)]
 struct ReportWeatherPeriods {
-    balance: Vec<SprinklerWeatherHistoryPeriodV1>,
+    balance: Vec<SprinklerWeatherHistoryPeriodV2>,
     full: Vec<SprinklerWeatherHistoryPeriodV2>,
 }
 
@@ -4260,78 +4017,48 @@ fn load_report_weather_periods(
     let start = i64::try_from(range.starts_at).map_err(|_| ())?;
     let end = i64::try_from(range.ends_before).map_err(|_| ())?;
     let mut periods = ReportWeatherPeriods::default();
-    for (resource, full_observations) in [
-        (REPORT_WEATHER_HISTORY_RESOURCE, false),
-        (REPORT_WEATHER_HISTORY_V2_RESOURCE, true),
-    ] {
-        let database = libertas_data_open_indexed(
-            resource,
-            &report_weather_archive_key(weather_endpoint, generation),
-        );
-        if database.count == 0 {
-            continue;
-        }
-        let mut records = Vec::new();
-        if start > i64::MIN {
-            libertas_data_read_indexed_range::<SprinklerData>(
-                database.handle,
-                start - 1,
-                IndexDirection::Below,
-                1,
-                &mut records,
-            );
-        }
+    let database = libertas_data_open_indexed(
+        REPORT_WEATHER_HISTORY_V2_RESOURCE,
+        &report_weather_archive_key(weather_endpoint, generation),
+    );
+    if database.count == 0 {
+        return Ok(periods);
+    }
+    let mut records = Vec::new();
+    if start > i64::MIN {
         libertas_data_read_indexed_range::<SprinklerData>(
             database.handle,
-            start,
-            IndexDirection::Above,
-            MAX_REPORT_WEATHER_PERIODS + 65,
+            start - 1,
+            IndexDirection::Below,
+            1,
             &mut records,
         );
-        for record in records {
-            if record.index >= end {
-                break;
-            }
-            match record.data {
-                SprinklerData::ReportWeatherPeriodV1 { period }
-                    if !full_observations
-                        && i64::try_from(period.starts_at) == Ok(record.index)
-                        && valid_legacy_report_weather_period(&period)
-                        && period.starts_at < range.ends_before
-                        && period
-                            .starts_at
-                            .saturating_add(u64::from(period.duration_seconds))
-                            > range.starts_at =>
-                {
-                    periods.balance.push(period);
-                }
-                SprinklerData::ReportWeatherPeriodV2 { period }
-                    if full_observations
-                        && report_weather_period_index(&period) == Some(record.index)
-                        && valid_report_weather_period(&period)
-                        && period.starts_at < range.ends_before
-                        && period
-                            .starts_at
-                            .saturating_add(u64::from(period.duration_seconds))
-                            > range.starts_at =>
-                {
-                    let balance_period = period.into();
-                    if let Some(existing) = periods
-                        .balance
-                        .iter_mut()
-                        .find(|existing| existing.starts_at == period.starts_at)
-                    {
-                        *existing = balance_period;
-                    } else {
-                        periods.balance.push(balance_period);
-                    }
-                    periods.full.push(period);
-                }
-                _ => {}
-            }
-            if periods.balance.len() > MAX_REPORT_WEATHER_PERIODS {
-                return Err(());
-            }
+    }
+    libertas_data_read_indexed_range::<SprinklerData>(
+        database.handle,
+        start,
+        IndexDirection::Above,
+        MAX_REPORT_WEATHER_PERIODS + 65,
+        &mut records,
+    );
+    for record in records {
+        if record.index >= end {
+            break;
+        }
+        if let SprinklerData::ReportWeatherPeriodV2 { period } = record.data
+            && report_weather_period_index(&period) == Some(record.index)
+            && valid_report_weather_period(&period)
+            && period.starts_at < range.ends_before
+            && period
+                .starts_at
+                .saturating_add(u64::from(period.duration_seconds))
+                > range.starts_at
+        {
+            periods.balance.push(period);
+            periods.full.push(period);
+        }
+        if periods.balance.len() > MAX_REPORT_WEATHER_PERIODS {
+            return Err(());
         }
     }
     periods.balance.sort_by_key(|period| period.starts_at);
@@ -4502,6 +4229,17 @@ fn load_report_daily_records(
     let first_day = utc_day_start(range.starts_at);
     let start = i64::try_from(first_day).map_err(|_| ())?;
     let mut records = Vec::new();
+    // Keep the nearest prior checkpoint as the fallback value when the first
+    // selected day has no report of its own.
+    if start > i64::MIN {
+        libertas_data_read_indexed_range::<SprinklerData>(
+            database.handle,
+            start - 1,
+            IndexDirection::Below,
+            1,
+            &mut records,
+        );
+    }
     libertas_data_read_indexed_range::<SprinklerData>(
         database.handle,
         start,
@@ -4517,8 +4255,8 @@ fn load_report_daily_records(
         if let SprinklerData::DailyReportV1 { report } = record.data
             && i64::try_from(report.starts_at) == Ok(record.index)
             && valid_daily_report(&report)
-            && report.starts_at < range.ends_before
-            && report.ends_before > range.starts_at
+            && ((report.starts_at < range.ends_before && report.ends_before > range.starts_at)
+                || report.coverage_ends_before <= range.starts_at)
         {
             reports.push(report);
             if reports.len() > MAX_REPORT_DAILY_RECORDS_PER_ZONE {
@@ -4790,7 +4528,7 @@ fn modeled_gap_balance_intervals(
 }
 
 fn merged_report_provider_intervals(
-    history: &[SprinklerWeatherHistoryPeriodV1],
+    history: &[SprinklerWeatherHistoryPeriodV2],
     starts_at: LibertasDateTime,
     ends_before: LibertasDateTime,
 ) -> Vec<(LibertasDateTime, LibertasDateTime)> {
@@ -6460,10 +6198,14 @@ fn public_zone_advanced_state(
     }
 }
 
-fn public_zone_configuration(zone: &ZoneRuntime) -> SprinklerZoneConfigurationV1 {
+fn public_zone_configuration(
+    zone: &ZoneRuntime,
+    mode: SprinklerWateringModeV1,
+) -> SprinklerZoneConfigurationV1 {
     SprinklerZoneConfigurationV1 {
         watering_percent: zone.memory.watering_percent,
-        hold_off_periods: zone.memory.hold_off_periods.clone(),
+        no_watering_periods: zone.memory.hold_off_periods.clone(),
+        active: mode == SprinklerWateringModeV1::Active,
     }
 }
 
@@ -6746,6 +6488,7 @@ fn evaluate_controller(shared: &Rc<RefCell<ControllerState>>) -> EvaluationOutco
     let now_ticks = libertas_get_sys_ticks();
     let mut state = shared.borrow_mut();
     let mut changed_zones = Vec::new();
+    let mut changed_configuration_zones = Vec::new();
     let mut zone_memories_to_persist = Vec::new();
     let mut activities_to_persist = Vec::new();
     let mut daily_reports_to_persist = Vec::new();
@@ -6784,6 +6527,7 @@ fn evaluate_controller(shared: &Rc<RefCell<ControllerState>>) -> EvaluationOutco
         if prune_expired_hold_offs(&mut zone.memory, now) {
             zone_memories_to_persist.push((zone.configuration.valve, zone.memory.clone()));
             changed_zones.push(zone_index);
+            changed_configuration_zones.push(zone_index);
         }
     }
     let watering_mode = state.watering_mode;
@@ -6898,6 +6642,7 @@ fn evaluate_controller(shared: &Rc<RefCell<ControllerState>>) -> EvaluationOutco
 
     EvaluationOutcome {
         changed_zones,
+        changed_configuration_zones,
         zone_memories_to_persist,
         activities_to_persist,
         daily_reports_to_persist,
@@ -6920,6 +6665,22 @@ fn publish_zone_state(shared: &Rc<RefCell<ControllerState>>, zone_index: usize) 
             zone.configuration.state_endpoint,
             SprinklerZoneProtocol::StateV1 {
                 state: public_state,
+            },
+        )
+    };
+    libertas_endpoint_report(endpoint, &message, None);
+}
+
+fn publish_zone_configuration(shared: &Rc<RefCell<ControllerState>>, zone_index: usize) {
+    let (endpoint, message) = {
+        let state = shared.borrow();
+        let Some(zone) = state.zones.get(zone_index) else {
+            return;
+        };
+        (
+            zone.configuration.state_endpoint,
+            SprinklerZoneProtocol::ConfigurationV1 {
+                configuration: public_zone_configuration(zone, state.watering_mode),
             },
         )
     };
@@ -7125,7 +6886,7 @@ fn execute_controller_action(shared: &Rc<RefCell<ControllerState>>, action: Cont
 fn apply_evaluation_outcome(
     shared: &Rc<RefCell<ControllerState>>,
     outcome: EvaluationOutcome,
-) -> Option<ControllerAction> {
+) -> (Option<ControllerAction>, Vec<usize>) {
     for (valve, memory) in outcome.zone_memories_to_persist {
         persist_zone_memory(valve, &memory);
     }
@@ -7141,14 +6902,23 @@ fn apply_evaluation_outcome(
     for zone_index in outcome.changed_zones {
         publish_zone_state(shared, zone_index);
     }
-    outcome.action
+    (outcome.action, outcome.changed_configuration_zones)
 }
 
 fn dispatch_evaluation(shared: &Rc<RefCell<ControllerState>>, outcome: EvaluationOutcome) {
-    if let Some(action) = apply_evaluation_outcome(shared, outcome) {
+    let (action, mut changed_configuration_zones) = apply_evaluation_outcome(shared, outcome);
+    if let Some(action) = action {
         execute_controller_action(shared, action);
         let follow_up = evaluate_controller(shared);
-        let _ = apply_evaluation_outcome(shared, follow_up);
+        let (_, follow_up_configuration_zones) = apply_evaluation_outcome(shared, follow_up);
+        for zone_index in follow_up_configuration_zones {
+            if !changed_configuration_zones.contains(&zone_index) {
+                changed_configuration_zones.push(zone_index);
+            }
+        }
+    }
+    for zone_index in changed_configuration_zones {
+        publish_zone_configuration(shared, zone_index);
     }
 }
 
@@ -7919,7 +7689,7 @@ fn merge_runtime_activity(zone: &mut ReportZoneData, range: SprinklerReportTimeR
 
 fn water_balance_points(
     zone: &ReportZoneData,
-    history: &[SprinklerWeatherHistoryPeriodV1],
+    history: &[SprinklerWeatherHistoryPeriodV2],
     provider_intervals: &[(LibertasDateTime, LibertasDateTime)],
     range: SprinklerReportTimeRangeV1,
 ) -> Result<Vec<(LibertasDateTime, f32)>, ()> {
@@ -7932,43 +7702,76 @@ fn water_balance_points(
                 && report.coverage_ends_before > range.starts_at
         })
         .max_by_key(|report| report.coverage_starts_at);
-    let anchor = containing_anchor.or_else(|| {
-        zone.daily_reports
-            .iter()
-            .filter(|report| {
-                valid_daily_report(report)
-                    && report.coverage_starts_at >= range.starts_at
-                    && report.coverage_starts_at < range.ends_before
-            })
-            .min_by_key(|report| report.coverage_starts_at)
-    });
-    let Some(anchor) = anchor else {
-        return Ok((zone.active_state.calculated_at >= range.starts_at
-            && zone.active_state.calculated_at < range.ends_before)
-            .then_some((
-                zone.active_state.calculated_at,
-                calculated_available_water_percent(
-                    zone.capacity_millimeters,
-                    zone.active_state.estimated_deficit_millimeters,
-                ),
-            ))
-            .into_iter()
-            .collect());
-    };
-    let starts_at = range.starts_at.max(anchor.coverage_starts_at);
-    let ends_before = zone
+    let preceding_anchor = zone
         .daily_reports
         .iter()
-        .filter(|report| valid_daily_report(report))
-        .map(|report| report.coverage_ends_before)
-        .max()
-        .unwrap_or(anchor.coverage_ends_before)
-        .min(range.ends_before);
-    if starts_at > ends_before {
+        .filter(|report| {
+            valid_daily_report(report) && report.coverage_ends_before <= range.starts_at
+        })
+        .max_by_key(|report| report.coverage_ends_before);
+    let following_anchor = zone
+        .daily_reports
+        .iter()
+        .filter(|report| {
+            valid_daily_report(report)
+                && report.coverage_starts_at >= range.starts_at
+                && report.coverage_starts_at < range.ends_before
+        })
+        .min_by_key(|report| report.coverage_starts_at);
+    let report_anchor = containing_anchor
+        .map(|anchor| {
+            (
+                anchor.coverage_starts_at,
+                range.starts_at,
+                anchor.opening_deficit_millimeters,
+                anchor.capacity_millimeters,
+            )
+        })
+        .or_else(|| {
+            preceding_anchor.map(|anchor| {
+                // No selected data precedes the left edge. Carry the nearest
+                // prior day's closing value to the exact requested boundary.
+                (
+                    range.starts_at,
+                    range.starts_at,
+                    anchor.closing_deficit_millimeters,
+                    anchor.capacity_millimeters,
+                )
+            })
+        })
+        .or_else(|| {
+            following_anchor.map(|anchor| {
+                (
+                    anchor.coverage_starts_at,
+                    anchor.coverage_starts_at,
+                    anchor.opening_deficit_millimeters,
+                    anchor.capacity_millimeters,
+                )
+            })
+        });
+    let active_anchor = || {
+        (zone.active_state.calculated_at > 0
+            && zone.active_state.calculated_at < range.ends_before
+            && zone.capacity_millimeters.is_finite()
+            && zone.capacity_millimeters > 0.0
+            && zone.active_state.estimated_deficit_millimeters.is_finite()
+            && (0.0..=zone.capacity_millimeters)
+                .contains(&zone.active_state.estimated_deficit_millimeters))
+        .then_some((
+            zone.active_state.calculated_at.max(range.starts_at),
+            zone.active_state.calculated_at.max(range.starts_at),
+            zone.active_state.estimated_deficit_millimeters,
+            zone.capacity_millimeters,
+        ))
+    };
+    let Some((replay_starts_at, starts_at, opening_deficit_millimeters, capacity_millimeters)) =
+        report_anchor.or_else(active_anchor)
+    else {
+        // Absence of a trustworthy prior value is represented by no series,
+        // never by a fabricated zero-percent point.
         return Ok(Vec::new());
-    }
-
-    let replay_starts_at = anchor.coverage_starts_at;
+    };
+    let ends_before = range.ends_before;
     let mut intervals = Vec::new();
     for period in history {
         let period_ends_at = period
@@ -8026,18 +7829,18 @@ fn water_balance_points(
         });
     }
     let deficit_at_start = replay_deficit_points(
-        anchor.opening_deficit_millimeters,
-        anchor.capacity_millimeters,
+        opening_deficit_millimeters,
+        capacity_millimeters,
         replay_starts_at,
         starts_at,
         &intervals,
     )
     .last()
     .map(|(_, deficit)| *deficit)
-    .unwrap_or(anchor.opening_deficit_millimeters);
+    .unwrap_or(opening_deficit_millimeters);
     let points = replay_deficit_points(
         deficit_at_start,
-        anchor.capacity_millimeters,
+        capacity_millimeters,
         starts_at,
         ends_before,
         &intervals,
@@ -8050,7 +7853,7 @@ fn water_balance_points(
         .map(|(at, deficit)| {
             (
                 at,
-                calculated_available_water_percent(anchor.capacity_millimeters, deficit),
+                calculated_available_water_percent(capacity_millimeters, deficit),
             )
         })
         .collect())
@@ -8078,7 +7881,7 @@ fn available_water_at(points: &[(LibertasDateTime, f32)], at: LibertasDateTime) 
 
 fn build_water_balance_chart(
     zones: &[ReportZoneData],
-    history: &[SprinklerWeatherHistoryPeriodV1],
+    history: &[SprinklerWeatherHistoryPeriodV2],
     range: SprinklerReportTimeRangeV1,
 ) -> Result<SprinklerWaterBalanceChartV1, ()> {
     // The balance anchor can begin at the UTC-day boundary before the visible
@@ -8388,7 +8191,7 @@ fn accumulate_water_interval(
 
 fn accumulate_zone_water_inputs(
     zone: &ReportZoneData,
-    history: &[SprinklerWeatherHistoryPeriodV1],
+    history: &[SprinklerWeatherHistoryPeriodV2],
     forecast: Option<&SprinklerWeatherForecastV1>,
     range: SprinklerReportTimeRangeV1,
     projection_starts_at: Option<LibertasDateTime>,
@@ -8584,7 +8387,7 @@ fn water_usage_summary_rows(
 
 fn build_water_usage(
     zones: &[ReportZoneData],
-    history: &[SprinklerWeatherHistoryPeriodV1],
+    history: &[SprinklerWeatherHistoryPeriodV2],
     forecast: Option<&SprinklerWeatherForecastV1>,
     range: SprinklerReportTimeRangeV1,
     projection_starts_at: Option<LibertasDateTime>,
@@ -8601,7 +8404,7 @@ fn build_water_usage(
 
 fn build_water_usage_in_time_zone(
     zones: &[ReportZoneData],
-    history: &[SprinklerWeatherHistoryPeriodV1],
+    history: &[SprinklerWeatherHistoryPeriodV2],
     forecast: Option<&SprinklerWeatherForecastV1>,
     range: SprinklerReportTimeRangeV1,
     projection_starts_at: Option<LibertasDateTime>,
@@ -8719,7 +8522,7 @@ fn reserve_report_rows(generated_rows: &mut usize, additional_rows: usize) -> Re
 }
 
 fn build_weather_et_chart(
-    balance_history: &[SprinklerWeatherHistoryPeriodV1],
+    balance_history: &[SprinklerWeatherHistoryPeriodV2],
     full_history: &[SprinklerWeatherHistoryPeriodV2],
     observations: &[SprinklerCurrentWeatherV1],
     forecast: Option<&SprinklerWeatherForecastV1>,
@@ -8730,9 +8533,8 @@ fn build_weather_et_chart(
     let mut relative_humidity = Vec::new();
     let mut wind = Vec::new();
     let mut generated_rows = 0;
-    // Every legacy period still contributes its exact provider ET. Its absent
-    // temperature, humidity, and wind are omitted rather than represented as
-    // synthetic zero observations.
+    // Add provider ET independently from the explanatory observations below so
+    // each measurement keeps its own chart lane and clipping calculation.
     for period in balance_history {
         let period_ends_at = period
             .starts_at
@@ -8934,7 +8736,8 @@ impl SprinklerReportChartKind {
             // to UTC. One extra day here admits the UTC offset change across
             // any accepted local range without admitting another local date.
             Self::WaterUsage => MAX_WATER_USAGE_REPORT_RANGE_SECONDS + SECONDS_PER_DAY,
-            Self::WaterBalance | Self::WeatherEt => MAX_REPORT_RANGE_SECONDS,
+            Self::WaterBalance => MAX_WATER_BALANCE_REPORT_RANGE_SECONDS,
+            Self::WeatherEt => MAX_WEATHER_ET_REPORT_RANGE_SECONDS,
         }
     }
 
@@ -9043,18 +8846,13 @@ fn report_database_data_extent(
     let mut extent = None;
     let existing_names = libertas_data_get_indexed_names();
     let weather_key = report_weather_archive_key(weather_endpoint, weather_generation);
-    for resource in [
-        REPORT_WEATHER_HISTORY_RESOURCE,
+    extend_report_indexed_database_extent(
+        &mut extent,
+        &existing_names,
         REPORT_WEATHER_HISTORY_V2_RESOURCE,
-    ] {
-        extend_report_indexed_database_extent(
-            &mut extent,
-            &existing_names,
-            resource,
-            &weather_key,
-            1,
-        );
-    }
+        &weather_key,
+        1,
+    );
     if kind == SprinklerReportChartKind::WeatherEt {
         extend_report_indexed_database_extent(
             &mut extent,
@@ -9166,7 +8964,7 @@ fn resolve_report_range(
     ends_before: Option<LibertasDateTime>,
     trusted_now: Option<LibertasDateTime>,
 ) -> Option<SprinklerReportTimeRangeV1> {
-    let range = match (starts_at, ends_before) {
+    let mut range = match (starts_at, ends_before) {
         (None, None) => kind.default_range(trusted_now?),
         (Some(starts_at), None) => SprinklerReportTimeRangeV1 {
             starts_at,
@@ -9181,7 +8979,16 @@ fn resolve_report_range(
             ends_before,
         },
     };
-    valid_report_range(range, kind.maximum_span_seconds()).then_some(range)
+    if range.starts_at >= range.ends_before {
+        return None;
+    }
+    let maximum_span_seconds = kind.maximum_span_seconds();
+    if range.ends_before.saturating_sub(range.starts_at) > maximum_span_seconds {
+        // Keep the caller's inclusive final calendar date and discard only the
+        // oldest portion when one response cannot represent the whole request.
+        range.starts_at = range.ends_before.checked_sub(maximum_span_seconds)?;
+    }
+    valid_report_range(range, maximum_span_seconds).then_some(range)
 }
 
 fn resolve_report_date_range(
@@ -9275,11 +9082,18 @@ fn resolve_water_usage_report_date_range(
             }
         }
         (Some(local_start), Some(local_end)) => {
-            if local_start >= local_end
-                || local_end.checked_sub(local_start)? > MAX_WATER_USAGE_REPORT_RANGE_SECONDS
-            {
+            if local_start >= local_end {
                 return None;
             }
+            // Truncate in local calendar time before UTC conversion. This keeps
+            // exactly the latest 730 selected dates even when a DST transition
+            // makes their UTC duration shorter or longer than 730 whole days.
+            let local_start =
+                if local_end.checked_sub(local_start)? > MAX_WATER_USAGE_REPORT_RANGE_SECONDS {
+                    local_end.checked_sub(MAX_WATER_USAGE_REPORT_RANGE_SECONDS)?
+                } else {
+                    local_start
+                };
             SprinklerReportTimeRangeV1 {
                 starts_at: report_local_to_utc_seconds(local_start, time_zone)?,
                 ends_before: report_local_to_utc_seconds(local_end, time_zone)?,
@@ -9616,7 +9430,7 @@ fn handle_report_endpoint(
             } else {
                 history.full.push(period);
             }
-            let balance_period = period.into();
+            let balance_period = period;
             if let Some(saved) = history
                 .balance
                 .iter_mut()
@@ -9719,9 +9533,20 @@ fn handle_report_endpoint(
                     );
                 }
             };
-            for report in live_daily_reports.into_iter().filter(|report| {
-                report.starts_at < range.ends_before && report.ends_before > range.starts_at
-            }) {
+            let live_preceding_report = live_daily_reports
+                .iter()
+                .copied()
+                .filter(|report| {
+                    valid_daily_report(report) && report.coverage_ends_before <= range.starts_at
+                })
+                .max_by_key(|report| report.coverage_ends_before);
+            for report in live_daily_reports
+                .into_iter()
+                .filter(|report| {
+                    report.starts_at < range.ends_before && report.ends_before > range.starts_at
+                })
+                .chain(live_preceding_report)
+            {
                 if let Some(saved) = zone
                     .daily_reports
                     .iter_mut()
@@ -9782,6 +9607,35 @@ fn handle_report_endpoint(
     LibertasEndpointHandlerResult::Handled
 }
 
+fn configuration_failure(error: SprinklerZoneConfigurationErrorV1) -> SprinklerZoneProtocol {
+    let resource = match error {
+        SprinklerZoneConfigurationErrorV1::InvalidWateringPercent => {
+            INVALID_WATERING_PERCENT_RESOURCE
+        }
+        SprinklerZoneConfigurationErrorV1::InvalidNoWateringPeriods => {
+            INVALID_NO_WATERING_PERIODS_RESOURCE
+        }
+    };
+    SprinklerZoneProtocol::FailureV1 {
+        formatted_error: libertas_formatted_text(resource, &[]),
+        error,
+    }
+}
+
+fn reject_configuration(
+    endpoint: LibertasEndpoint,
+    transaction_id: u32,
+    peer: u32,
+    error: SprinklerZoneConfigurationErrorV1,
+) {
+    libertas_endpoint_response(
+        endpoint,
+        &configuration_failure(error),
+        transaction_id,
+        peer,
+    );
+}
+
 fn handle_zone_endpoint(
     endpoint: LibertasEndpoint,
     opcode: u8,
@@ -9807,6 +9661,7 @@ fn handle_zone_endpoint(
     let mut persist_runtime = None;
     let mut persist_mode = None;
     let mut force_all_reports = false;
+    let mut changed_configuration_zones = Vec::new();
     let response_kind;
     match message {
         SprinklerZoneProtocol::GetStateV1 => {
@@ -9821,18 +9676,22 @@ fn handle_zone_endpoint(
             response_kind = ZoneResponseKind::AdvancedState;
         }
         SprinklerZoneProtocol::GetConfigurationV1 => {
+            response_kind = ZoneResponseKind::Configuration;
+        }
+        SprinklerZoneProtocol::SetWateringPercentV1 { watering_percent } => {
             if is_subscription {
                 return LibertasEndpointHandlerResult::Status(
                     LibertasEndpointStandardStatus::InvalidArgument,
                 );
             }
-            response_kind = ZoneResponseKind::Configuration;
-        }
-        SprinklerZoneProtocol::SetWaterAmountAdjusterV1 { watering_percent } => {
-            if is_subscription || !valid_watering_percent(watering_percent) {
-                return LibertasEndpointHandlerResult::Status(
-                    LibertasEndpointStandardStatus::InvalidArgument,
+            if !valid_watering_percent(watering_percent) {
+                reject_configuration(
+                    endpoint,
+                    transaction_id,
+                    peer,
+                    SprinklerZoneConfigurationErrorV1::InvalidWateringPercent,
                 );
+                return LibertasEndpointHandlerResult::Handled;
             }
             let now_ticks = libertas_get_sys_ticks();
             let now_utc = utc_seconds();
@@ -9852,43 +9711,61 @@ fn handle_zone_endpoint(
                     zone.water_events.clone(),
                     core::mem::take(&mut zone.finalized_daily_reports),
                 ));
+                changed_configuration_zones.push(context.zone_index);
             }
-            response_kind = ZoneResponseKind::Configuration;
+            response_kind = ZoneResponseKind::Success;
         }
-        SprinklerZoneProtocol::ReplaceHoldOffPeriodsV1 { hold_off_periods } => {
+        SprinklerZoneProtocol::ReplaceNoWateringPeriodsV1 {
+            no_watering_periods,
+        } => {
             if is_subscription {
                 return LibertasEndpointHandlerResult::Status(
                     LibertasEndpointStandardStatus::InvalidArgument,
                 );
             }
-            let Ok(hold_off_periods) = normalize_hold_offs(hold_off_periods) else {
-                return LibertasEndpointHandlerResult::Status(
-                    LibertasEndpointStandardStatus::InvalidArgument,
+            let Ok(hold_off_periods) = normalize_hold_offs(no_watering_periods) else {
+                reject_configuration(
+                    endpoint,
+                    transaction_id,
+                    peer,
+                    SprinklerZoneConfigurationErrorV1::InvalidNoWateringPeriods,
                 );
+                return LibertasEndpointHandlerResult::Handled;
             };
             let mut state = context.shared.borrow_mut();
             let zone = &mut state.zones[context.zone_index];
-            zone.memory.hold_off_periods = hold_off_periods;
-            persist = Some((zone.configuration.valve, zone.memory.clone()));
-            response_kind = ZoneResponseKind::Configuration;
+            if zone.memory.hold_off_periods != hold_off_periods {
+                zone.memory.hold_off_periods = hold_off_periods;
+                persist = Some((zone.configuration.valve, zone.memory.clone()));
+                changed_configuration_zones.push(context.zone_index);
+            }
+            response_kind = ZoneResponseKind::Success;
         }
-        SprinklerZoneProtocol::SetWateringModeV1 { mode } => {
+        SprinklerZoneProtocol::SetActiveV1 { active } => {
             if is_subscription {
                 return LibertasEndpointHandlerResult::Status(
                     LibertasEndpointStandardStatus::InvalidArgument,
                 );
             }
             let mut state = context.shared.borrow_mut();
+            let mode = if active {
+                SprinklerWateringModeV1::Active
+            } else {
+                SprinklerWateringModeV1::Winterization
+            };
             if state.watering_mode != mode {
                 state.watering_mode = mode;
                 persist_mode = Some((state.weather_endpoint, mode));
                 force_all_reports = true;
+                changed_configuration_zones.extend(0..state.zones.len());
             }
-            response_kind = ZoneResponseKind::AdvancedState;
+            response_kind = ZoneResponseKind::Success;
         }
         SprinklerZoneProtocol::StateV1 { .. }
         | SprinklerZoneProtocol::AdvancedStateV1 { .. }
-        | SprinklerZoneProtocol::ConfigurationV1 { .. } => {
+        | SprinklerZoneProtocol::ConfigurationV1 { .. }
+        | SprinklerZoneProtocol::SuccessV1
+        | SprinklerZoneProtocol::FailureV1 { .. } => {
             return LibertasEndpointHandlerResult::InvalidMessage;
         }
     }
@@ -9920,6 +9797,11 @@ fn handle_zone_endpoint(
             }
         }
     }
+    for zone_index in changed_configuration_zones {
+        if !outcome.changed_configuration_zones.contains(&zone_index) {
+            outcome.changed_configuration_zones.push(zone_index);
+        }
+    }
     let response = {
         let controller = context.shared.borrow();
         let zone = &controller.zones[context.zone_index];
@@ -9928,16 +9810,21 @@ fn handle_zone_endpoint(
                 state: public_zone_state(zone, controller.watering_mode),
             },
             ZoneResponseKind::AdvancedState => SprinklerZoneProtocol::AdvancedStateV1 {
-                mode: controller.watering_mode,
                 state: public_zone_advanced_state(zone, controller.watering_mode),
             },
             ZoneResponseKind::Configuration => SprinklerZoneProtocol::ConfigurationV1 {
-                configuration: public_zone_configuration(zone),
+                configuration: public_zone_configuration(zone, controller.watering_mode),
             },
+            ZoneResponseKind::Success => SprinklerZoneProtocol::SuccessV1,
         }
     };
-    libertas_endpoint_response(endpoint, &response, transaction_id, peer);
-    dispatch_evaluation(&context.shared, outcome);
+    if matches!(response_kind, ZoneResponseKind::Success) {
+        dispatch_evaluation(&context.shared, outcome);
+        libertas_endpoint_response(endpoint, &response, transaction_id, peer);
+    } else {
+        libertas_endpoint_response(endpoint, &response, transaction_id, peer);
+        dispatch_evaluation(&context.shared, outcome);
+    }
     LibertasEndpointHandlerResult::Handled
 }
 
@@ -10038,9 +9925,7 @@ fn apply_weather_change(
         SprinklerWeatherChangeV1::ForecastReplaceV1 { forecast } => {
             snapshot.forecast = Some(forecast);
         }
-        SprinklerWeatherChangeV1::SiteReplaceV1 { .. }
-        | SprinklerWeatherChangeV1::HistoryPeriodsUpsertV1 { .. }
-        | SprinklerWeatherChangeV1::HistoryReplaceV1 { .. } => {}
+        SprinklerWeatherChangeV1::SiteReplaceV1 { .. } => {}
     }
 }
 
@@ -10303,32 +10188,6 @@ fn accept_weather_recovery(
 ) -> bool {
     match recovery {
         SprinklerWeatherRecoveryV1::ReplayedV1 { report } => accept_weather_report(shared, report),
-        // A legacy reset has no provider-site binding. Accepting even its
-        // current or forecast section could mix a previous physical site's
-        // weather into the controller after a Hub location change.
-        SprinklerWeatherRecoveryV1::ResetV1 { .. } => false,
-        SprinklerWeatherRecoveryV1::ResetAtSiteV1 {
-            reason,
-            cursor,
-            location,
-            snapshot,
-            ..
-        } => {
-            if !valid_weather_snapshot_v1(&snapshot) {
-                return false;
-            }
-            accept_site_bound_weather_reset(
-                shared,
-                reason,
-                cursor,
-                location,
-                SprinklerWeatherSnapshotV2 {
-                    history: None,
-                    current: snapshot.current,
-                    forecast: snapshot.forecast,
-                },
-            )
-        }
         SprinklerWeatherRecoveryV1::ResetAtSiteV2 {
             reason,
             cursor,
@@ -10703,6 +10562,10 @@ fn initial_active_state(
 /// estimate, valve state, and upcoming watering plan. The sprinkler provides
 /// water-balance, daily water-use, and recorded-and-forecast weather graphs,
 /// and sends selected people reminders before freezing weather.
+///
+/// Change log: updated protocol variants.
+/// [DefaultTaskName]
+/// Smart sprinkler
 #[libertas_data_schema(SprinklerData)]
 #[libertas_permissions(SPRINKLER_PERMISSIONS)]
 #[libertas_export]
@@ -10712,10 +10575,14 @@ pub fn libertas_sprinkler(
      * Choose the local weather service used for rain, temperature, wind, and
      * forecasts. Smart Sprinkler can use saved estimates during short outages.
      */
-    #[libertas_endpoint_schema(SprinklerWeatherProtocol)] weather_server: LibertasEndpoint,
+    #[libertas_endpoint_schema(SprinklerWeatherProtocol)]
+    #[libertas_default("libertas-weather_agent::libertas_weather_server")]
+    weather_server: LibertasEndpoint,
     /*
      * Sprinkler reports
      * Choose where water balance, water use, and weather charts will be available.
+     * [DefaultText]
+     * Sprinkler reports
      */
     #[libertas_endpoint_schema(SprinklerReportProtocol)]
     #[libertas_endpoint_server]
@@ -11260,6 +11127,56 @@ mod tests {
     }
 
     #[test]
+    fn public_configuration_contains_every_user_writable_value() {
+        let mut saved = memory();
+        saved.watering_percent = 80;
+        saved.hold_off_periods = vec![SprinklerTimeSlotV1 {
+            starts_at: NOW,
+            duration_seconds: 600,
+        }];
+        let zone = runtime(saved);
+
+        let active = public_zone_configuration(&zone, SprinklerWateringModeV1::Active);
+        assert_eq!(active.watering_percent, 80);
+        assert_eq!(active.no_watering_periods, zone.memory.hold_off_periods);
+        assert!(active.active);
+
+        let winterized = public_zone_configuration(&zone, SprinklerWateringModeV1::Winterization);
+        assert!(!winterized.active);
+        assert_eq!(winterized.watering_percent, active.watering_percent);
+        assert_eq!(winterized.no_watering_periods, active.no_watering_periods);
+    }
+
+    #[test]
+    fn configuration_failures_are_typed_and_localized() {
+        for (error, resource) in [
+            (
+                SprinklerZoneConfigurationErrorV1::InvalidWateringPercent,
+                INVALID_WATERING_PERCENT_RESOURCE,
+            ),
+            (
+                SprinklerZoneConfigurationErrorV1::InvalidNoWateringPeriods,
+                INVALID_NO_WATERING_PERIODS_RESOURCE,
+            ),
+        ] {
+            let failure = configuration_failure(error);
+            let SprinklerZoneProtocol::FailureV1 {
+                formatted_error,
+                error: actual_error,
+            } = &failure
+            else {
+                panic!("configuration failure helper returned a non-failure response");
+            };
+            assert_eq!(*actual_error, error);
+            assert_eq!(*formatted_error, libertas_formatted_text(resource, &[]));
+            assert_eq!(
+                SprinklerZoneProtocol::from_avro(&failure.to_avro()),
+                Ok(failure)
+            );
+        }
+    }
+
+    #[test]
     fn stale_valve_state_gets_a_refresh_grace_period() {
         let mut zone = runtime(memory());
         let stale_at = u64::from(VALVE_SUBSCRIPTION_STALE_SECONDS) * MICROSECONDS_PER_SECOND;
@@ -11367,10 +11284,11 @@ mod tests {
         }
         let configuration = SprinklerZoneConfigurationV1 {
             watering_percent: 80,
-            hold_off_periods: vec![SprinklerTimeSlotV1 {
+            no_watering_periods: vec![SprinklerTimeSlotV1 {
                 starts_at: NOW,
                 duration_seconds: 600,
             }],
+            active: true,
         };
         assert_eq!(
             SprinklerZoneConfigurationV1::from_avro(&configuration.to_avro()),
@@ -11381,21 +11299,23 @@ mod tests {
             SprinklerZoneProtocol::StateV1 { state: active },
             SprinklerZoneProtocol::GetAdvancedStateV1,
             SprinklerZoneProtocol::AdvancedStateV1 {
-                mode: SprinklerWateringModeV1::Active,
                 state: advanced_active,
             },
             SprinklerZoneProtocol::GetConfigurationV1,
             SprinklerZoneProtocol::ConfigurationV1 {
                 configuration: configuration.clone(),
             },
-            SprinklerZoneProtocol::SetWaterAmountAdjusterV1 {
+            SprinklerZoneProtocol::SetWateringPercentV1 {
                 watering_percent: 80,
             },
-            SprinklerZoneProtocol::ReplaceHoldOffPeriodsV1 {
-                hold_off_periods: configuration.hold_off_periods,
+            SprinklerZoneProtocol::ReplaceNoWateringPeriodsV1 {
+                no_watering_periods: configuration.no_watering_periods,
             },
-            SprinklerZoneProtocol::SetWateringModeV1 {
-                mode: SprinklerWateringModeV1::Winterization,
+            SprinklerZoneProtocol::SetActiveV1 { active: false },
+            SprinklerZoneProtocol::SuccessV1,
+            SprinklerZoneProtocol::FailureV1 {
+                formatted_error: libertas_formatted_text(INVALID_NO_WATERING_PERIODS_RESOURCE, &[]),
+                error: SprinklerZoneConfigurationErrorV1::InvalidNoWateringPeriods,
             },
         ];
         for value in values {
@@ -11491,7 +11411,7 @@ mod tests {
         };
         let full_history = report_weather_period(day + 1_800);
         let history = ReportWeatherPeriods {
-            balance: vec![full_history.into()],
+            balance: vec![full_history],
             full: vec![full_history],
         };
         let zones = [report_zone];
@@ -11569,25 +11489,25 @@ mod tests {
     fn report_range_is_age_unlimited_but_one_response_is_bounded() {
         let oldest_representable = SprinklerReportTimeRangeV1 {
             starts_at: 1,
-            ends_before: 1 + MAX_REPORT_RANGE_SECONDS,
+            ends_before: 1 + MAX_WATER_BALANCE_REPORT_RANGE_SECONDS,
         };
         assert!(valid_report_range(
             oldest_representable,
-            MAX_REPORT_RANGE_SECONDS
+            MAX_WATER_BALANCE_REPORT_RANGE_SECONDS
         ));
         assert!(!valid_report_range(
             SprinklerReportTimeRangeV1 {
                 ends_before: oldest_representable.ends_before + 1,
                 ..oldest_representable
             },
-            MAX_REPORT_RANGE_SECONDS,
+            MAX_WATER_BALANCE_REPORT_RANGE_SECONDS,
         ));
         assert!(!valid_report_range(
             SprinklerReportTimeRangeV1 {
                 starts_at: NOW,
                 ends_before: NOW,
             },
-            MAX_REPORT_RANGE_SECONDS,
+            MAX_WATER_BALANCE_REPORT_RANGE_SECONDS,
         ));
     }
 
@@ -11674,6 +11594,10 @@ mod tests {
             2 * 365 * SECONDS_PER_DAY
         );
         assert_eq!(
+            MAX_WATER_BALANCE_REPORT_RANGE_SECONDS,
+            365 * SECONDS_PER_DAY
+        );
+        assert_eq!(
             resolve_report_date_range(
                 SprinklerReportChartKind::WaterBalance,
                 None,
@@ -11739,26 +11663,48 @@ mod tests {
             .is_some()
         );
         assert!(
+            resolve_report_date_range(SprinklerReportChartKind::WaterBalance, None, None, None,)
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn oversized_report_date_ranges_keep_the_latest_supported_days() {
+        assert_eq!(
+            resolve_report_date_range(
+                SprinklerReportChartKind::WaterBalance,
+                Some(20250101),
+                Some(20261231),
+                None,
+            ),
+            Some(SprinklerReportTimeRangeV1 {
+                starts_at: date_only_to_utc_day_start(20260101).unwrap(),
+                ends_before: date_only_to_utc_day_start(20270101).unwrap(),
+            })
+        );
+        assert_eq!(
             resolve_report_date_range(
                 SprinklerReportChartKind::WaterUsage,
                 Some(20250101),
                 Some(20270101),
-                Some(NOW),
-            )
-            .is_none()
+                None,
+            ),
+            Some(SprinklerReportTimeRangeV1 {
+                starts_at: date_only_to_utc_day_start(20250102).unwrap(),
+                ends_before: date_only_to_utc_day_start(20270102).unwrap(),
+            })
         );
-        assert!(
+        assert_eq!(
             resolve_report_date_range(
-                SprinklerReportChartKind::WaterBalance,
+                SprinklerReportChartKind::WeatherEt,
                 Some(20270101),
                 Some(20270201),
-                Some(NOW),
-            )
-            .is_none()
-        );
-        assert!(
-            resolve_report_date_range(SprinklerReportChartKind::WaterBalance, None, None, None,)
-                .is_none()
+                None,
+            ),
+            Some(SprinklerReportTimeRangeV1 {
+                starts_at: date_only_to_utc_day_start(20270102).unwrap(),
+                ends_before: date_only_to_utc_day_start(20270202).unwrap(),
+            })
         );
     }
 
@@ -12164,7 +12110,7 @@ mod tests {
         };
 
         let chart = build_weather_et_chart(
-            &[history.into()],
+            &[history],
             &[history],
             &[observation],
             Some(&forecast),
@@ -12320,7 +12266,7 @@ mod tests {
             time_zone,
         )
         .unwrap();
-        let mut actual: SprinklerWeatherHistoryPeriodV1 = report_weather_period(actual_at).into();
+        let mut actual = report_weather_period(actual_at);
         actual.precipitation_millimeters = 0.4;
         let forecast_period =
             |starts_at, expected_precipitation_millimeters| SprinklerWeatherForecastPeriodV1 {
@@ -12396,7 +12342,7 @@ mod tests {
             starts_at: day,
             ends_before: day + 21 * SECONDS_PER_DAY,
         };
-        let mut history: SprinklerWeatherHistoryPeriodV1 = report_weather_period(day).into();
+        let mut history = report_weather_period(day);
         history.precipitation_millimeters = 2.0;
         let forecast = SprinklerWeatherForecastV1 {
             retrieved_at: day,
@@ -12616,7 +12562,7 @@ mod tests {
             starts_at: day + 900,
             ends_before: day + 1_800,
         };
-        let mut period: SprinklerWeatherHistoryPeriodV1 = report_weather_period(day).into();
+        let mut period = report_weather_period(day);
         period.precipitation_millimeters = 4.0;
         let mut activity = completed_report_activity(day);
         activity.scheduled_duration_seconds = Some(3_600);
@@ -13112,16 +13058,13 @@ mod tests {
         running.outcome = SprinklerWateringOutcomeV1::Running;
         running.updated_at = NOW;
         assert_eq!(
-            watering_activity_load_plan(Some(SavedWateringActivityState::Authoritative(
-                SprinklerWateringActivityStateV2 {
-                    latest_activity: Some(running.clone()),
-                    activity_is_current: true,
-                },
-            ))),
+            watering_activity_load_plan(Some(SprinklerWateringActivityStateV2 {
+                latest_activity: Some(running.clone()),
+                activity_is_current: true,
+            })),
             WateringActivityLoadPlan::RepairArchive {
                 activity: running,
                 return_current: true,
-                migrate_state: false,
             }
         );
     }
@@ -13130,44 +13073,13 @@ mod tests {
     fn authoritative_terminal_activity_repairs_a_missing_archive_row_without_resuming() {
         let completed = completed_report_activity(NOW - 900);
         assert_eq!(
-            watering_activity_load_plan(Some(SavedWateringActivityState::Authoritative(
-                SprinklerWateringActivityStateV2 {
-                    latest_activity: Some(completed.clone()),
-                    activity_is_current: false,
-                },
-            ))),
+            watering_activity_load_plan(Some(SprinklerWateringActivityStateV2 {
+                latest_activity: Some(completed.clone()),
+                activity_is_current: false,
+            })),
             WateringActivityLoadPlan::RepairArchive {
                 activity: completed,
                 return_current: false,
-                migrate_state: false,
-            }
-        );
-    }
-
-    #[test]
-    fn legacy_activity_state_migrates_without_changing_its_avro_layout() {
-        let mut running = completed_report_activity(NOW - 900);
-        running.outcome = SprinklerWateringOutcomeV1::Running;
-        assert_eq!(
-            watering_activity_load_plan(Some(SavedWateringActivityState::Legacy(
-                SprinklerWateringActivityStateV1 {
-                    current_activity: Some(running.clone()),
-                },
-            ))),
-            WateringActivityLoadPlan::RepairArchive {
-                activity: running,
-                return_current: true,
-                migrate_state: true,
-            }
-        );
-        assert_eq!(
-            watering_activity_load_plan(Some(SavedWateringActivityState::Legacy(
-                SprinklerWateringActivityStateV1 {
-                    current_activity: None,
-                },
-            ))),
-            WateringActivityLoadPlan::ReturnEmpty {
-                migrate_state: true,
             }
         );
     }
@@ -13175,20 +13087,14 @@ mod tests {
     #[test]
     fn authoritative_empty_or_inconsistent_activity_state_is_safe() {
         assert_eq!(
-            watering_activity_load_plan(Some(SavedWateringActivityState::Authoritative(
-                empty_watering_activity_state(),
-            ))),
-            WateringActivityLoadPlan::ReturnEmpty {
-                migrate_state: false,
-            }
+            watering_activity_load_plan(Some(empty_watering_activity_state())),
+            WateringActivityLoadPlan::ReturnEmpty
         );
         assert_eq!(
-            watering_activity_load_plan(Some(SavedWateringActivityState::Authoritative(
-                SprinklerWateringActivityStateV2 {
-                    latest_activity: Some(completed_report_activity(NOW - 900)),
-                    activity_is_current: true,
-                },
-            ))),
+            watering_activity_load_plan(Some(SprinklerWateringActivityStateV2 {
+                latest_activity: Some(completed_report_activity(NOW - 900)),
+                activity_is_current: true,
+            })),
             WateringActivityLoadPlan::ClearInvalidState
         );
         assert_eq!(
@@ -13263,13 +13169,6 @@ mod tests {
         assert_eq!(encoded.first(), Some(&8));
         assert_eq!(SprinklerData::from_avro(&encoded), Ok(value));
 
-        let value = SprinklerData::ReportWeatherPeriodV1 {
-            period: report_weather_period(NOW - 3_600).into(),
-        };
-        let encoded = value.to_avro();
-        assert_eq!(encoded.first(), Some(&10));
-        assert_eq!(SprinklerData::from_avro(&encoded), Ok(value));
-
         let value = SprinklerData::WateringActivityV1 {
             activity: completed_report_activity(NOW - 600),
         };
@@ -13284,31 +13183,11 @@ mod tests {
         assert_eq!(encoded.first(), Some(&14));
         assert_eq!(SprinklerData::from_avro(&encoded), Ok(value));
 
-        let value = SprinklerData::WateringActivityStateV1 {
-            state: SprinklerWateringActivityStateV1 {
-                current_activity: Some(completed_report_activity(NOW)),
-            },
-        };
-        let encoded = value.to_avro();
-        assert_eq!(encoded.first(), Some(&16));
-        assert_eq!(SprinklerData::from_avro(&encoded), Ok(value));
-
         let value = SprinklerData::ReportWeatherObservationV1 {
             observation: current(),
         };
         let encoded = value.to_avro();
         assert_eq!(encoded.first(), Some(&18));
-        assert_eq!(SprinklerData::from_avro(&encoded), Ok(value));
-
-        let value = SprinklerData::ReportWeatherArchiveStateV1 {
-            state: SprinklerReportWeatherArchiveStateV1 {
-                generation: 7,
-                location: Some(location()),
-                awaiting_history_clear: false,
-            },
-        };
-        let encoded = value.to_avro();
-        assert_eq!(encoded.first(), Some(&20));
         assert_eq!(SprinklerData::from_avro(&encoded), Ok(value));
 
         let value = SprinklerData::WateringActivityStateV2 {
@@ -13318,7 +13197,7 @@ mod tests {
             },
         };
         let encoded = value.to_avro();
-        assert_eq!(encoded.first(), Some(&22));
+        assert_eq!(encoded.first(), Some(&10));
         assert_eq!(SprinklerData::from_avro(&encoded), Ok(value));
 
         let value = SprinklerData::ModeledWeatherGapV1 {
@@ -13331,14 +13210,14 @@ mod tests {
             },
         };
         let encoded = value.to_avro();
-        assert_eq!(encoded.first(), Some(&24));
+        assert_eq!(encoded.first(), Some(&22));
         assert_eq!(SprinklerData::from_avro(&encoded), Ok(value));
 
         let value = SprinklerData::ReportWeatherPeriodV2 {
             period: report_weather_period(NOW - 3_600),
         };
         let encoded = value.to_avro();
-        assert_eq!(encoded.first(), Some(&26));
+        assert_eq!(encoded.first(), Some(&20));
         assert_eq!(SprinklerData::from_avro(&encoded), Ok(value));
 
         let value = SprinklerData::ReportWeatherArchiveStateV2 {
@@ -13348,7 +13227,7 @@ mod tests {
             },
         };
         let encoded = value.to_avro();
-        assert_eq!(encoded.first(), Some(&28));
+        assert_eq!(encoded.first(), Some(&16));
         assert_eq!(SprinklerData::from_avro(&encoded), Ok(value));
 
         let protocols = [
@@ -13364,7 +13243,6 @@ mod tests {
             },
             SprinklerZoneProtocol::GetAdvancedStateV1,
             SprinklerZoneProtocol::AdvancedStateV1 {
-                mode: SprinklerWateringModeV1::Active,
                 state: SprinklerZoneAdvancedStateV1::ActiveV1 {
                     current: initial_active_state(NOW, &memory(), &zone()),
                 },
@@ -13373,17 +13251,21 @@ mod tests {
             SprinklerZoneProtocol::ConfigurationV1 {
                 configuration: SprinklerZoneConfigurationV1 {
                     watering_percent: 100,
-                    hold_off_periods: Vec::new(),
+                    no_watering_periods: Vec::new(),
+                    active: true,
                 },
             },
-            SprinklerZoneProtocol::SetWaterAmountAdjusterV1 {
+            SprinklerZoneProtocol::SetWateringPercentV1 {
                 watering_percent: 100,
             },
-            SprinklerZoneProtocol::ReplaceHoldOffPeriodsV1 {
-                hold_off_periods: Vec::new(),
+            SprinklerZoneProtocol::ReplaceNoWateringPeriodsV1 {
+                no_watering_periods: Vec::new(),
             },
-            SprinklerZoneProtocol::SetWateringModeV1 {
-                mode: SprinklerWateringModeV1::Winterization,
+            SprinklerZoneProtocol::SetActiveV1 { active: false },
+            SprinklerZoneProtocol::SuccessV1,
+            SprinklerZoneProtocol::FailureV1 {
+                formatted_error: libertas_formatted_text(INVALID_WATERING_PERCENT_RESOURCE, &[]),
+                error: SprinklerZoneConfigurationErrorV1::InvalidWateringPercent,
             },
         ];
         for (index, protocol) in protocols.iter().enumerate() {
@@ -13396,6 +13278,14 @@ mod tests {
         ];
         for (index, mode) in modes.iter().enumerate() {
             assert_eq!(mode.to_avro().first(), Some(&((index as u8) * 2)));
+        }
+
+        let configuration_errors = [
+            SprinklerZoneConfigurationErrorV1::InvalidWateringPercent,
+            SprinklerZoneConfigurationErrorV1::InvalidNoWateringPeriods,
+        ];
+        for (index, error) in configuration_errors.iter().enumerate() {
+            assert_eq!(error.to_avro().first(), Some(&((index as u8) * 2)));
         }
 
         let heads = [
@@ -14311,12 +14201,9 @@ mod tests {
             daily_reports: vec![report],
         };
 
-        let chart = build_water_balance_chart(
-            core::slice::from_ref(&report_zone),
-            &[history.into()],
-            range,
-        )
-        .unwrap();
+        let chart =
+            build_water_balance_chart(core::slice::from_ref(&report_zone), &[history], range)
+                .unwrap();
         let start = chart
             .balance
             .iter()
@@ -14361,6 +14248,76 @@ mod tests {
                 - before_irrigation.available_water_percent)
                 .abs()
                 < 0.001
+        );
+    }
+
+    #[test]
+    fn water_balance_carries_the_closest_prior_day_across_empty_boundaries() {
+        let day = utc_day_start(NOW);
+        let range = SprinklerReportTimeRangeV1 {
+            starts_at: day + 2 * SECONDS_PER_DAY,
+            ends_before: day + 4 * SECONDS_PER_DAY,
+        };
+        let earlier_report = completed_daily_report(day);
+        let mut closest_report = completed_daily_report(day + SECONDS_PER_DAY);
+        closest_report.closing_deficit_millimeters = 4.0;
+        let report_zone = ReportZoneData {
+            valve: zone().valve,
+            plant_type: zone().plant_type,
+            capacity_millimeters: root_zone_capacity_millimeters(&zone()),
+            crop_coefficient: plant_profile(zone().plant_type).crop_coefficient,
+            active_state: runtime(memory()).active_state,
+            water_events: Vec::new(),
+            modeled_weather_gaps: Vec::new(),
+            current_activity: None,
+            activities: Vec::new(),
+            daily_reports: vec![earlier_report, closest_report],
+        };
+
+        let chart =
+            build_water_balance_chart(core::slice::from_ref(&report_zone), &[], range).unwrap();
+        let available: Vec<_> = chart
+            .balance
+            .iter()
+            .filter(|point| point.series == SprinklerWaterBalanceSeriesV1::AvailableWater)
+            .collect();
+        let expected = calculated_available_water_percent(
+            closest_report.capacity_millimeters,
+            closest_report.closing_deficit_millimeters,
+        );
+        assert_eq!(available.len(), 2);
+        assert_eq!(available[0].at, range.starts_at);
+        assert_eq!(available[1].at, range.ends_before);
+        assert!((available[0].available_water_percent - expected).abs() < 0.001);
+        assert!((available[1].available_water_percent - expected).abs() < 0.001);
+    }
+
+    #[test]
+    fn water_balance_without_a_prior_value_does_not_emit_zero() {
+        let range = SprinklerReportTimeRangeV1 {
+            starts_at: NOW.saturating_sub(4 * SECONDS_PER_DAY),
+            ends_before: NOW.saturating_sub(2 * SECONDS_PER_DAY),
+        };
+        let report_zone = ReportZoneData {
+            valve: zone().valve,
+            plant_type: zone().plant_type,
+            capacity_millimeters: root_zone_capacity_millimeters(&zone()),
+            crop_coefficient: plant_profile(zone().plant_type).crop_coefficient,
+            active_state: runtime(memory()).active_state,
+            water_events: Vec::new(),
+            modeled_weather_gaps: Vec::new(),
+            current_activity: None,
+            activities: Vec::new(),
+            daily_reports: Vec::new(),
+        };
+
+        let chart =
+            build_water_balance_chart(core::slice::from_ref(&report_zone), &[], range).unwrap();
+        assert!(
+            !chart
+                .balance
+                .iter()
+                .any(|point| point.series == SprinklerWaterBalanceSeriesV1::AvailableWater)
         );
     }
 
@@ -14702,24 +14659,6 @@ mod tests {
     }
 
     #[test]
-    fn pending_legacy_archive_state_migrates_to_reserved_but_unbound_generation() {
-        let provider_site = location();
-        let migrated = migrate_report_weather_archive_state(SprinklerReportWeatherArchiveStateV1 {
-            generation: 4,
-            location: Some(provider_site),
-            awaiting_history_clear: true,
-        });
-        assert_eq!(migrated.generation, 4);
-        assert_eq!(migrated.location, None);
-
-        let bound = transition_report_weather_site(migrated, provider_site).unwrap();
-        assert_eq!(bound.archive_state.generation, 4);
-        assert_eq!(bound.archive_state.location, Some(provider_site));
-        assert!(bound.binding_changed);
-        assert!(!bound.generation_changed);
-    }
-
-    #[test]
     fn authoritative_hub_site_rejects_unmarked_old_site_weather() {
         let provider_site = location();
         let hub_site = SprinklerWeatherLocationV1 {
@@ -14793,41 +14732,6 @@ mod tests {
         let state = shared.borrow();
         assert_eq!(state.weather_cursor, Some(cursor));
         assert_eq!(state.report_weather_archive_state.generation, 3);
-    }
-
-    #[test]
-    fn unbound_legacy_reset_cannot_mix_current_or_forecast_across_sites() {
-        use libertas_weather::{SprinklerWeatherResetReasonV1, SprinklerWeatherSnapshotV1};
-
-        let cursor = SprinklerWeatherCursorV1 {
-            epoch_timestamp: NOW,
-            sequence: 5,
-        };
-        let mut state = controller_state();
-        state.weather_cursor = Some(cursor);
-        state.weather.current = Some(current());
-        let original_weather = state.weather.clone();
-        let shared = Rc::new(RefCell::new(state));
-        let recovery = SprinklerWeatherRecoveryV1::ResetV1 {
-            reason: SprinklerWeatherResetReasonV1::ServerCursorReset,
-            cursor: SprinklerWeatherCursorV1 {
-                epoch_timestamp: NOW + 1,
-                sequence: 1,
-            },
-            snapshot: SprinklerWeatherSnapshotV1 {
-                history: None,
-                current: Some(SprinklerCurrentWeatherV1 {
-                    temperature_celsius: -20.0,
-                    ..current()
-                }),
-                forecast: None,
-            },
-        };
-
-        assert!(!accept_weather_recovery(&shared, recovery));
-        let state = shared.borrow();
-        assert_eq!(state.weather_cursor, Some(cursor));
-        assert_eq!(state.weather, original_weather);
     }
 
     #[test]

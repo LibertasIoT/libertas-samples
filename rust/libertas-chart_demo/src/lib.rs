@@ -1,6 +1,6 @@
 //! Libertas chart gallery.
 //! Explore every chart mark and composition with polished, interactive sample data.
-//! #[libertas_string_resources(DIRECT_ANNOTATION_STRINGS)]
+//! #[libertas_string_resources(CHART_DEMO_STRINGS)]
 #![no_std]
 #![forbid(unsafe_code)]
 
@@ -10,9 +10,9 @@ use alloc::{boxed::Box, format, string::String, vec, vec::Vec};
 use core::any::Any;
 
 use libertas::{
-    LibertasDateTime, LibertasEndpoint, LibertasEndpointStatus, LibertasTimeOnly, OP_ENDPOINT_REQ,
-    libertas_endpoint_response, libertas_formatted_text, libertas_get_utc_time,
-    libertas_register_endpoint_listener,
+    LibertasDateTime, LibertasEndpoint, LibertasEndpointStatus, LibertasMessageArgument,
+    LibertasTimeOnly, OP_ENDPOINT_REQ, libertas_endpoint_response, libertas_formatted_text,
+    libertas_get_utc_time, libertas_register_endpoint_listener,
 };
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_chart, libertas_export,
@@ -801,11 +801,16 @@ pub struct TrafficDonutSegmentV1 {
     #[libertas_chart_channel(radius2)]
     pub radius_end: f32,
     /// Traffic source
-    /// Segment fill, linked outside label, detail group, and tooltip category.
-    #[libertas_chart_channel(fill, detail, tooltip)]
+    /// Detail group and tooltip category.
+    #[libertas_chart_channel(detail, tooltip)]
+    pub source: TrafficSourceV1,
+    /// Arc label
+    /// Localized two-line category and percentage used for fill and linked labels.
+    #[libertas_formatted_text]
+    #[libertas_chart_channel(fill)]
     #[libertas_chart_scale(id = traffic_color, kind = ordinal)]
     #[libertas_chart_guide(target = fill, source = scale, position = auto)]
-    pub source: TrafficSourceV1,
+    pub label: Vec<u8>,
     /// Share
     /// Human-readable share in the tooltip.
     #[libertas_chart_channel(tooltip)]
@@ -828,7 +833,7 @@ pub struct TrafficDonutSegmentV1 {
 }
 
 /// Traffic sources
-/// A donut whose categorical fill guide lowers to linked outside labels.
+/// A donut whose categorical fill guide lowers to two-line linked outside labels.
 #[libertas_chart(arc)]
 pub type TrafficDonutChartV1 = Vec<TrafficDonutSegmentV1>;
 
@@ -921,10 +926,14 @@ pub struct TemperatureHlcChartV1 {
     pub closes: TemperatureCloseTicksV1,
 }
 
-pub const DIRECT_ANNOTATION_STRINGS: &[(&str, &str)] = &[
-    ("DIRECT_LABEL_FAST", "Fast"),
-    ("DIRECT_LABEL_CLEAR", "Clear"),
+pub const CHART_DEMO_STRINGS: &[(&str, &str)] = &[
     ("DIRECT_LABEL_ACT_NOW", "Act now"),
+    ("DIRECT_LABEL_CLEAR", "Clear"),
+    ("DIRECT_LABEL_FAST", "Fast"),
+    (
+        "TRAFFIC_SOURCE_LABEL",
+        "{0,LibertasEnum,TrafficSourceV1}\n{1,number,integer}",
+    ),
 ];
 
 /// Direct annotation
@@ -1116,7 +1125,7 @@ pub struct RegionalComparisonChartV1 {
     /// The same grouping pattern turned horizontally to demonstrate y-offsets.
     pub horizontal_sales: HorizontalGroupedSalesChartV1,
     /// Traffic sources
-    /// Donut segments with a legend below the chart.
+    /// Donut segments with localized two-line automatic labels.
     pub traffic: TrafficDonutChartV1,
 }
 
@@ -1980,242 +1989,286 @@ pub enum ChartDemoProtocol {
     /// View bubble portfolio
     /// Explore a faceted bubble chart with rich point encodings.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(BubblePortfolioV1)]
     GetBubblePortfolioV1,
     /// Bubble portfolio
     /// Product reach, growth, value, confidence, family, tier, and market.
     #[libertas_response]
+    #[libertas_next_request(GetBubblePortfolioV1)]
     #[libertas_chart(point)]
     BubblePortfolioV1(BubblePortfolioChartV1),
 
     /// View energy history
     /// Explore multi-series UTC lines and data-driven stroke styling.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(EnergyHistoryV1)]
     GetEnergyHistoryV1,
     /// Energy history
     /// Recorded, expected, and stretch energy demand.
     #[libertas_response]
+    #[libertas_next_request(GetEnergyHistoryV1)]
     #[libertas_chart(line)]
     EnergyHistoryV1(EnergyHistoryChartV1),
 
     /// View forecast range
     /// Explore ranged area marks as overlapping confidence bands.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(ForecastRangeV1)]
     GetForecastRangeV1,
     /// Forecast range
     /// Temperature uncertainty from two forecast models.
     #[libertas_response]
+    #[libertas_next_request(GetForecastRangeV1)]
     #[libertas_chart(area)]
     ForecastRangeV1(ForecastRangeChartV1),
 
     /// View grouped sales
     /// Explore categorical bars with nested offsets.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(GroupedSalesV1)]
     GetGroupedSalesV1,
     /// Grouped sales
     /// Quarterly portfolio revenue shown side by side.
     #[libertas_response]
+    #[libertas_next_request(GetGroupedSalesV1)]
     #[libertas_chart(bar)]
     GroupedSalesV1(GroupedSalesChartV1),
 
     /// View latency histogram
     /// Explore server-computed numeric bins as ranged bars.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(LatencyHistogramV1)]
     GetLatencyHistogramV1,
     /// Latency histogram
     /// Request counts within explicit latency intervals.
     #[libertas_response]
+    #[libertas_next_request(GetLatencyHistogramV1)]
     #[libertas_chart(bar)]
     LatencyHistogramV1(LatencyHistogramChartV1),
 
     /// View explicit stacking
     /// Compare server-computed stacked bars and stacked areas.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(StackedEnergyV1)]
     GetStackedEnergyV1,
     /// Explicit stacking
     /// Cumulative energy bounds shown as bars and areas.
     #[libertas_response]
+    #[libertas_next_request(GetStackedEnergyV1)]
     #[libertas_chart(hconcat)]
     StackedEnergyV1(StackedEnergyChartV1),
 
     /// View activity heatmap
     /// Explore ranged rectangles, time scales, quantitative color, and custom labels.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(ActivityHeatmapV1)]
     GetActivityHeatmapV1,
     /// Activity heatmap
     /// Weekday and time-of-day activity intensity.
     #[libertas_response]
+    #[libertas_next_request(GetActivityHeatmapV1)]
     #[libertas_chart(rect)]
     ActivityHeatmapV1(ActivityHeatmapChartV1),
 
     /// View measurement uncertainty
     /// Explore ranged rules as error bars.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(MeasurementUncertaintyV1)]
     GetMeasurementUncertaintyV1,
     /// Measurement uncertainty
     /// Low-to-high electrical measurement intervals.
     #[libertas_response]
+    #[libertas_next_request(GetMeasurementUncertaintyV1)]
     #[libertas_chart(rule)]
     MeasurementUncertaintyV1(MeasurementUncertaintyChartV1),
 
     /// View direct labels
     /// Explore localized LMF1 text content and data-driven styling.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(DirectLabelsV1)]
     GetDirectLabelsV1,
     /// Direct labels
     /// Positioned FormattedText annotations with semantic appearance.
     #[libertas_response]
+    #[libertas_next_request(GetDirectLabelsV1)]
     #[libertas_chart(text)]
     DirectLabelsV1(DirectLabelsChartV1),
 
     /// View capability radar
     /// Explore ordered polar polygons.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(CapabilityRadarV1)]
     GetCapabilityRadarV1,
     /// Capability radar
     /// Overlapping multidimensional portfolio profiles.
     #[libertas_response]
+    #[libertas_next_request(GetCapabilityRadarV1)]
     #[libertas_chart(polygon)]
     CapabilityRadarV1(CapabilityRadarChartV1),
 
     /// View traffic sources
     /// Explore explicit angular and radial spans in a donut chart.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(TrafficSourcesV1)]
     GetTrafficSourcesV1,
     /// Traffic sources
-    /// Traffic share by referral source with automatic linked outside labels.
+    /// Traffic share by referral source with category and percentage labels.
     #[libertas_response]
+    #[libertas_next_request(GetTrafficSourcesV1)]
     #[libertas_chart(arc)]
     TrafficSourcesV1(TrafficDonutChartV1),
 
     /// View arc-family comparison
     /// Explore a full-radius pie and quantitative radial bars.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(ArcFamilyV1)]
     GetArcFamilyV1,
     /// Arc-family comparison
     /// Pie slices and radial bars in independent polar plots.
     #[libertas_response]
+    #[libertas_next_request(GetArcFamilyV1)]
     #[libertas_chart(hconcat)]
     ArcFamilyV1(ArcFamilyChartV1),
 
     /// View projected map
     /// Explore server-projected Cartesian region polygons.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(ProjectedMapV1)]
     GetProjectedMapV1,
     /// Projected map
     /// Filled regions using server-computed coordinates.
     #[libertas_response]
+    #[libertas_next_request(GetProjectedMapV1)]
     #[libertas_chart(polygon)]
     ProjectedMapV1(ProjectedMapChartV1),
 
     /// View forecast confidence
     /// Explore estimate lines layered over confidence bands.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(ForecastConfidenceV1)]
     GetForecastConfidenceV1,
     /// Forecast confidence
     /// Central estimates and uncertainty bands on shared scales.
     #[libertas_response]
+    #[libertas_next_request(GetForecastConfidenceV1)]
     #[libertas_chart(layer)]
     ForecastConfidenceV1(ForecastConfidenceChartV1),
 
     /// View candlestick chart
     /// Explore market wicks and open-close bodies.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(CandlestickV1)]
     GetCandlestickV1,
     /// Candlestick chart
     /// Low-high wicks and rising or falling open-close bodies.
     #[libertas_response]
+    #[libertas_next_request(GetCandlestickV1)]
     #[libertas_chart(layer)]
     CandlestickV1(CandlestickChartV1),
 
     /// View five-minute temperature HLC
     /// Explore a seeded high-low-close temperature random walk over the past 72 hours.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(TemperatureHlcV1)]
     GetTemperatureHlcV1,
     /// Five-minute temperature HLC, past 72 hours
     /// Completed five-minute high, low, and close observations from a reproducible random walk.
     #[libertas_response]
+    #[libertas_next_request(GetTemperatureHlcV1)]
     #[libertas_chart(layer)]
     TemperatureHlcV1(TemperatureHlcChartV1),
 
     /// View box plot
     /// Explore quartiles, whiskers, medians, and outliers.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(BoxPlotV1)]
     GetBoxPlotV1,
     /// Box plot
     /// Server-computed distribution summaries composed from primitive marks.
     #[libertas_response]
+    #[libertas_next_request(GetBoxPlotV1)]
     #[libertas_chart(layer)]
     BoxPlotV1(BoxPlotChartV1),
 
     /// View network topology
     /// Explore arbitrary link rules and positioned nodes.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(NetworkTopologyV1)]
     GetNetworkTopologyV1,
     /// Network topology
     /// Server-positioned nodes connected by explicit endpoints.
     #[libertas_response]
+    #[libertas_next_request(GetNetworkTopologyV1)]
     #[libertas_chart(layer)]
     NetworkTopologyV1(NetworkTopologyChartV1),
 
     /// View Sankey flow
     /// Explore server-sampled ribbons and explicit stage nodes.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(SankeyFlowV1)]
     GetSankeyFlowV1,
     /// Sankey flow
     /// Sampled flow areas layered below rectangular nodes.
     #[libertas_response]
+    #[libertas_next_request(GetSankeyFlowV1)]
     #[libertas_chart(layer)]
     SankeyFlowV1(SankeyFlowChartV1),
 
     /// View performance story
     /// Explore a layered chart with observations, trend, and target.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(PerformanceStoryV1)]
     GetPerformanceStoryV1,
     /// Performance story
     /// Points, trend line, and target rule on shared scales.
     #[libertas_response]
+    #[libertas_next_request(GetPerformanceStoryV1)]
     #[libertas_chart(layer)]
     PerformanceStoryV1(PerformanceStoryChartV1),
 
     /// View regional comparison
     /// Explore independent charts placed side by side.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(RegionalComparisonV1)]
     GetRegionalComparisonV1,
     /// Regional comparison
     /// Quarterly sales and traffic sources in a horizontal composition.
     #[libertas_response]
+    #[libertas_next_request(GetRegionalComparisonV1)]
     #[libertas_chart(hconcat)]
     RegionalComparisonV1(RegionalComparisonChartV1),
 
     /// View operations dashboard
     /// Explore independently guided panels stacked into a dashboard.
     #[libertas_request]
+    #[libertas_access_privilege("Read")]
     #[libertas_next_response(OperationsDashboardV1)]
     GetOperationsDashboardV1,
     /// Operations dashboard
     /// Energy, forecast confidence, and activity panels in a vertical composition.
     #[libertas_response]
+    #[libertas_next_request(GetOperationsDashboardV1)]
     #[libertas_chart(vconcat)]
     OperationsDashboardV1(OperationsDashboardChartV1),
 }
@@ -2540,6 +2593,19 @@ fn measurement_uncertainty() -> MeasurementUncertaintyChartV1 {
     ]
 }
 
+fn traffic_source_label(source: TrafficSourceV1, share_percent: f32) -> Vec<u8> {
+    libertas_formatted_text(
+        "TRAFFIC_SOURCE_LABEL",
+        &[
+            LibertasMessageArgument::Unsigned(source as u64),
+            LibertasMessageArgument::UnitFloat {
+                unit_type: "percent",
+                value: share_percent,
+            },
+        ],
+    )
+}
+
 fn traffic_sources() -> TrafficDonutChartV1 {
     let segments = [
         (TrafficSourceV1::Direct, 0.0, 0.34, 34.0, "direct"),
@@ -2560,6 +2626,7 @@ fn traffic_sources() -> TrafficDonutChartV1 {
                     radius_start: 0.55,
                     radius_end: 1.0,
                     source,
+                    label: traffic_source_label(source, share_percent),
                     share_percent,
                     border_opacity: 0.9,
                     sequence: sequence as u8,
@@ -3339,11 +3406,15 @@ fn handle_gallery_request(
 /// shares, geographic regions, network relationships, flows, direct labels,
 /// and layered or polar comparisons. Each example demonstrates its applicable
 /// axes, legends, tooltips, shapes, colors, labels, and layout.
+/// [DefaultTaskName]
+/// Chart gallery
 #[libertas_export]
 pub fn chart_demo(
     /*
      * Gallery endpoint
      * Select this endpoint and choose a chart to view its demonstration data.
+     * [DefaultText]
+     * Chart gallery
      */
     #[libertas_endpoint_schema(ChartDemoProtocol)]
     #[libertas_endpoint_server]
@@ -3463,6 +3534,22 @@ mod tests {
     #[test]
     fn donut_segments_cover_one_turn_without_gaps() {
         let segments = traffic_sources();
+        let expected = [
+            (TrafficSourceV1::Direct, 0, 34.0),
+            (TrafficSourceV1::Search, 1, 31.0),
+            (TrafficSourceV1::Partner, 2, 19.0),
+            (TrafficSourceV1::Campaign, 3, 13.0),
+            (TrafficSourceV1::Social, 4, 2.0),
+            (TrafficSourceV1::Other, 5, 1.0),
+        ];
+        assert_eq!(
+            CHART_DEMO_STRINGS
+                .iter()
+                .find(|(key, _)| *key == "TRAFFIC_SOURCE_LABEL")
+                .unwrap()
+                .1,
+            "{0,LibertasEnum,TrafficSourceV1}\n{1,number,integer}"
+        );
         assert_eq!(segments.first().unwrap().theta_start, 0.0);
         assert_eq!(segments.last().unwrap().theta_end, 1.0);
         for pair in segments.windows(2) {
@@ -3478,6 +3565,21 @@ mod tests {
         assert_eq!(segments.len(), 6);
         assert_eq!(segments[4].share_percent, 2.0);
         assert_eq!(segments[5].share_percent, 1.0);
+        for (segment, (source, enum_value, share_percent)) in segments.iter().zip(expected) {
+            let arguments = [
+                LibertasMessageArgument::Unsigned(enum_value),
+                LibertasMessageArgument::UnitFloat {
+                    unit_type: "percent",
+                    value: share_percent,
+                },
+            ];
+            assert_eq!(segment.source, source);
+            assert_eq!(segment.share_percent, share_percent);
+            assert_eq!(
+                segment.label,
+                libertas_formatted_text("TRAFFIC_SOURCE_LABEL", &arguments)
+            );
+        }
         assert!(segments.iter().all(|segment| {
             segment.theta_start < segment.theta_end
                 && segment.radius_start == 0.55
