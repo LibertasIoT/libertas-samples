@@ -4,25 +4,26 @@
   "DisplayName": "Smart Sprinkler",
   "Description": "Waters each part of the yard only when it needs water.\nChoose what grows in each area, how it is watered, and any times when watering must be paused. Smart Sprinkler uses recent rain, current weather, and the forecast to choose a safe watering time and amount. It also counts manual watering, keeps working during short internet outages, and reminds you to prepare the system for freezing weather.",
   "StringResources": {
-    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "Freezing weather ({0}) may damage your sprinkler system. Winterize it, then turn Active off.",
     "SPRINKLER_WINTERIZATION_REMINDER_V1": "Saved winterization reminder history for {0}.",
     "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "Saved detailed weather history for sprinkler reports at {0}.",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "Cold season is approaching at this location. Winterize your sprinkler system, then turn Active off.",
+    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "Freezing weather ({0}) may damage your sprinkler system. Winterize it, then turn Active off.",
+    "SPRINKLER_INVALID_WATERING_PERCENT": "Water amount must be from 20% through 200% in steps of 10%.",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "Saved weather estimates used during service interruptions at {0}.",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "Saved watering history for {0}.",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "Use no more than 64 no-watering periods, each with a valid start and a duration greater than zero.",
     "libertas.permission.ACCESS_FINE_LOCATION": "Use this Hub's location to get local weather for automatic watering.",
-    "SPRINKLER_WATERING_MODE_V1": "Saved watering mode for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "Saved daily water balance for {0}.",
     "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "Current watering activity for {0}.",
+    "SPRINKLER_WATER_EVENTS_V1": "Saved recent rain and watering for {0}.",
+    "SPRINKLER_ZONE_MEMORY_V1": "Saved water balance and settings for {0}.",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "Saved location used by sprinkler weather reports at {0}.",
+    "SPRINKLER_SITE_LOCATION_V1": "Saved location used for sprinkler weather at {0}.",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "The first date cannot be later than the last date.",
     "SPRINKLER_WATER_USAGE_RAIN_LANE": "Rain",
     "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "Saved current-weather observations for sprinkler reports at {0}.",
-    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "Saved weather estimates used during service interruptions at {0}.",
-    "SPRINKLER_ZONE_MEMORY_V1": "Saved water balance and settings for {0}.",
-    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "Cold season is approaching at this location. Winterize your sprinkler system, then turn Active off.",
-    "SPRINKLER_INVALID_WATERING_PERCENT": "Water amount must be from 20% through 200% in steps of 10%.",
-    "SPRINKLER_WATER_EVENTS_V1": "Saved recent rain and watering for {0}.",
     "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
-    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "Saved location used by sprinkler weather reports at {0}.",
-    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "Use no more than 64 no-watering periods, each with a valid start and a duration greater than zero.",
-    "SPRINKLER_WATERING_ACTIVITIES_V1": "Saved watering history for {0}.",
-    "SPRINKLER_DAILY_REPORT_V1": "Saved daily water balance for {0}.",
-    "SPRINKLER_SITE_LOCATION_V1": "Saved location used for sprinkler weather at {0}."
+    "SPRINKLER_WATERING_MODE_V1": "Saved watering mode for {0}."
   },
   "List": [
     {
@@ -536,6 +537,28 @@
       ]
     },
     {
+      "Name": "SprinklerReportEffectiveRangeV1",
+      "DisplayName": "Effective report range",
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Effective report range",
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report."
+        },
+        {
+          "Type": 1,
+          "Name": "First date",
+          "Description": "First calendar date included in the generated report."
+        },
+        {
+          "Type": 2,
+          "Name": "Last date",
+          "Description": "Last calendar date included in the generated report."
+        }
+      ]
+    },
+    {
       "Name": "SprinklerReportEmptyStateV1",
       "DisplayName": "No report data",
       "Description": "Explains why a configured area has nothing to show for the selected dates.",
@@ -567,62 +590,84 @@
         {
           "Type": 1,
           "Name": "View water balance",
-          "Description": "Shows estimated plant-available water and watering events for every area."
+          "Description": "Shows estimated plant-available water and watering events for every area. A selected period can cover up to 365 days; a longer selection keeps its latest 365 days."
         },
         {
           "Type": 2,
-          "Name": "First date",
-          "Description": "Optional. Leave blank to use the recent period."
-        },
-        {
-          "Type": 3,
-          "Name": "Last date",
-          "Description": "Optional. Leave blank to use the recent period."
-        },
-        {
-          "Type": 4,
           "Name": "Water balance",
           "Description": "Estimated plant-available water, important levels, and watering events."
         },
         {
+          "Type": 3,
+          "Name": "Chart",
+          "Description": "Water-balance chart for the effective report range."
+        },
+        {
+          "Type": 4,
+          "Name": "Effective range",
+          "Description": "Inclusive dates actually used to generate this response."
+        },
+        {
           "Type": 5,
           "Name": "View water use",
-          "Description": "Shows daily rain and watering for every area. Leave the dates blank for the latest 31 days; a selected period can cover up to two years."
+          "Description": "Shows daily rain and watering for every area. Leave the dates blank for the latest 31 days; a selected period can cover up to two years. A longer selection keeps its latest two years."
         },
         {
           "Type": 6,
-          "Name": "First date",
-          "Description": "Optional. Leave blank to use the latest 31 days."
-        },
-        {
-          "Type": 7,
-          "Name": "Last date",
-          "Description": "Optional. Leave blank to use the latest 31 days."
-        },
-        {
-          "Type": 8,
           "Name": "Water use",
           "Description": "Daily rain and estimated watering by local date and area."
         },
         {
+          "Type": 7,
+          "Name": "Chart",
+          "Description": "Water-use chart for the effective report range."
+        },
+        {
+          "Type": 8,
+          "Name": "Effective range",
+          "Description": "Inclusive dates actually used to generate this response."
+        },
+        {
           "Type": 9,
           "Name": "View weather",
-          "Description": "Shows recorded and forecast temperature, humidity, wind, and water loss."
+          "Description": "Shows recorded and forecast temperature, humidity, wind, and water loss. A selected period can cover up to 31 days; a longer selection keeps its latest 31 days."
         },
         {
           "Type": 10,
-          "Name": "First date",
-          "Description": "Optional. Leave blank to use the recent period."
+          "Name": "Weather",
+          "Description": "Recorded and forecast temperature, humidity, wind, and estimated water loss."
         },
         {
           "Type": 11,
-          "Name": "Last date",
-          "Description": "Optional. Leave blank to use the recent period."
+          "Name": "Chart",
+          "Description": "Weather chart for the effective report range."
         },
         {
           "Type": 12,
-          "Name": "Weather",
-          "Description": "Recorded and forecast temperature, humidity, wind, and estimated water loss."
+          "Name": "Effective range",
+          "Description": "Inclusive dates actually used to generate this response."
+        }
+      ]
+    },
+    {
+      "Name": "SprinklerReportRequestRangeV1",
+      "DisplayName": "Report date range",
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Report date range",
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report."
+        },
+        {
+          "Type": 1,
+          "Name": "First date",
+          "Description": "Optional. Leave blank to let the report choose its initial first date."
+        },
+        {
+          "Type": 2,
+          "Name": "Last date",
+          "Description": "Optional. Leave blank to let the report choose its initial last date."
         }
       ]
     },

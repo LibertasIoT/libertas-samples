@@ -108,7 +108,13 @@ Every report request exposes nullable, timezone-free `starts_on` and `ends_on`
 calendar dates through native date pickers; both dates are inclusive. Water
 usage interprets those values as Hub-local dates, while balance and weather/ET
 retain UTC dates. A client can send both as null immediately instead of showing
-a query form. A supplied bound before or after the chart's retained data is
+a query form. The three requests share one validated request-range type. A
+request is valid when either date is blank or when the first date is not later
+than the last date. Each response retains its actual effective range as hidden
+transaction context, and `CopyFrom` initializes the next request from those
+dates. Initial requests have no prior response, skip `CopyFrom`, and keep both
+dates null so the default report can run immediately. A supplied bound before
+or after the chart's retained data is
 clamped to its first or last available database date; forecast dates remain
 available while the forecast is present. Balance defaults to the latest seven
 days, usage to the latest 31 Hub-local calendar days plus the provider forecast
