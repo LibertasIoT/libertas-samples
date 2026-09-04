@@ -1,0 +1,1762 @@
+{
+  "DocumentVersion": "0.0.2",
+  "Locale": "en",
+  "DisplayName": "Libertas 3D chart gallery.",
+  "Description": "Explore every supported 3D chart family with deterministic, typed sample data.",
+  "StringResources": {},
+  "List": [
+    {
+      "Name": "chart3d_demo",
+      "DisplayName": "3D chart gallery",
+      "Description": "Lets people explore every 3D family in the Libertas V1 chart contract.\nThe gallery serves thirteen complete, deterministic snapshots covering all\nsix primitive marks and all three composition forms. It includes all three\nbar geometries, rectangular and parameter-grid surfaces, server-computed\ncontours, homogeneous and heterogeneous series, typed labels and details,\nexplicit ordering and keys, shared scales, independent scenes, and several\ncamera configurations. Every mathematical transformation is evaluated by\nthis application; the client receives only typed rows and chart metadata.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Gallery endpoint",
+          "Description": "Select this endpoint and request any 3D chart family."
+        }
+      ]
+    }
+  ],
+  "Types": [
+    {
+      "Name": "BarFormsChartV1",
+      "DisplayName": "Bar forms",
+      "Description": "Places all three valid 3D bar geometry forms in independent scenes.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Bar forms",
+          "Description": "Places all three valid 3D bar geometry forms in independent scenes."
+        },
+        {
+          "Type": 1,
+          "Name": "Sparse columns",
+          "Description": "Normal x/y-base columns with categorical bases."
+        },
+        {
+          "Type": 2,
+          "Name": "Horizontal bars",
+          "Description": "Any-orientation legacy bars with x as their value axis."
+        },
+        {
+          "Type": 3,
+          "Name": "Explicit cuboids",
+          "Description": "Bars with all six endpoints authored."
+        }
+      ]
+    },
+    {
+      "Name": "BarScenarioV1",
+      "DisplayName": "Bar scenario",
+      "Description": "Scenario depth for horizontal legacy bars.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Bar scenario",
+          "Description": "Scenario depth for horizontal legacy bars.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Actual",
+              "Description": "Recorded value."
+            },
+            {
+              "Type": 2,
+              "Name": "Plan",
+              "Description": "Planned value."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BubbleChartV1",
+      "DisplayName": "Bubble 3D",
+      "Description": "Three-dimensional points with nonnegative quantitative size.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Bubble 3D",
+          "Description": "Three-dimensional points with nonnegative quantitative size."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "BubbleClassV1",
+      "DisplayName": "Bubble class",
+      "Description": "Product class encoded by a portable automatic point shape.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Bubble class",
+          "Description": "Product class encoded by a portable automatic point shape.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Consumer",
+              "Description": "Consumer-focused product."
+            },
+            {
+              "Type": 2,
+              "Name": "Industrial",
+              "Description": "Industrial product."
+            },
+            {
+              "Type": 3,
+              "Name": "Scientific",
+              "Description": "Scientific product."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BubblePointV1",
+      "DisplayName": "Bubble point",
+      "Description": "One point whose magnitude controls its rendered size.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Bubble point",
+          "Description": "One point whose magnitude controls its rendered size."
+        },
+        {
+          "Type": 1,
+          "Name": "Reach",
+          "Description": "Product reach position."
+        },
+        {
+          "Type": 2,
+          "Name": "Growth",
+          "Description": "Product growth position."
+        },
+        {
+          "Type": 3,
+          "Name": "Retention",
+          "Description": "Product retention position."
+        },
+        {
+          "Type": 4,
+          "Name": "Annual value",
+          "Description": "Nonnegative magnitude mapped to bubble size."
+        },
+        {
+          "Type": 5,
+          "Name": "Segment",
+          "Description": "Typed detail identity and bubble color."
+        },
+        {
+          "Type": 6,
+          "Name": "Product class",
+          "Description": "Typed category mapped to a portable automatic point shape."
+        },
+        {
+          "Type": 7,
+          "Name": "Bubble key",
+          "Description": "Stable product identity."
+        }
+      ]
+    },
+    {
+      "Name": "BubbleSegmentV1",
+      "DisplayName": "Bubble segment",
+      "Description": "Market segment encoded by bubble color and detail.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Bubble segment",
+          "Description": "Market segment encoded by bubble color and detail.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Core",
+              "Description": "Established core products."
+            },
+            {
+              "Type": 2,
+              "Name": "Growth",
+              "Description": "Rapidly expanding products."
+            },
+            {
+              "Type": 3,
+              "Name": "Research",
+              "Description": "Experimental products."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Chart3dDemoProtocol",
+      "DisplayName": "3D chart gallery protocol",
+      "Description": "Request one complete typed snapshot for any supported 3D chart family.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "3D chart gallery protocol",
+          "Description": "Request one complete typed snapshot for any supported 3D chart family."
+        },
+        {
+          "Type": 1,
+          "Name": "View 3D scatter",
+          "Description": "Request independently positioned samples grouped into typed clusters."
+        },
+        {
+          "Type": 2,
+          "Name": "3D scatter",
+          "Description": "Independently positioned samples grouped into typed clusters."
+        },
+        {
+          "Type": 3,
+          "Name": "View 3D trajectories",
+          "Description": "Request multiple typed and ordered paths."
+        },
+        {
+          "Type": 4,
+          "Name": "3D trajectories",
+          "Description": "Multiple typed and ordered paths through one scene."
+        },
+        {
+          "Type": 5,
+          "Name": "View all 3D bar forms",
+          "Description": "Request sparse columns, any-orientation bars, and explicit cuboids."
+        },
+        {
+          "Type": 6,
+          "Name": "3D bar forms",
+          "Description": "Three independent scenes covering every valid bar geometry form."
+        },
+        {
+          "Type": 7,
+          "Name": "View Bubble 3D",
+          "Description": "Request points whose nonnegative magnitude controls their size."
+        },
+        {
+          "Type": 8,
+          "Name": "Bubble 3D",
+          "Description": "Quantitatively sized points with typed color, detail, and shape."
+        },
+        {
+          "Type": 9,
+          "Name": "View surface height map",
+          "Description": "Request a complete rectangular application-sampled grid."
+        },
+        {
+          "Type": 10,
+          "Name": "Surface height map",
+          "Description": "Complete rectangular topology rendered with filled faces."
+        },
+        {
+          "Type": 11,
+          "Name": "View wireframe",
+          "Description": "Request a rectangular saddle grid rendered only as edges."
+        },
+        {
+          "Type": 12,
+          "Name": "Wireframe",
+          "Description": "Rectangular topology rendered without filled faces or internal diagonals."
+        },
+        {
+          "Type": 13,
+          "Name": "View contours on a surface",
+          "Description": "Request server-computed contour paths layered over a sampled surface."
+        },
+        {
+          "Type": 14,
+          "Name": "Contours on a surface",
+          "Description": "A physical layer with the surface first and stable contour lines second."
+        },
+        {
+          "Type": 15,
+          "Name": "View non-uniform surface",
+          "Description": "Request a non-uniform x/y grid with one explicit topology hole."
+        },
+        {
+          "Type": 16,
+          "Name": "Non-uniform surface",
+          "Description": "Uneven rectangular coordinates and a deliberate missing grid pair."
+        },
+        {
+          "Type": 17,
+          "Name": "View waterfall spectrum",
+          "Description": "Request multiple ordered spectrum traces separated in depth."
+        },
+        {
+          "Type": 18,
+          "Name": "Waterfall spectrum",
+          "Description": "Typed detail groups and explicit vertex order form the traces."
+        },
+        {
+          "Type": 19,
+          "Name": "View impulse stems",
+          "Description": "Request explicit stems layered with point markers at their tips."
+        },
+        {
+          "Type": 20,
+          "Name": "Impulse stems",
+          "Description": "Zero-plane segments followed by corresponding endpoint markers."
+        },
+        {
+          "Type": 21,
+          "Name": "View mathematical surface",
+          "Description": "Request an application-evaluated polynomial parametric surface."
+        },
+        {
+          "Type": 22,
+          "Name": "Mathematical surface",
+          "Description": "Explicit x/y/z samples connected by finite u/v topology coordinates."
+        },
+        {
+          "Type": 23,
+          "Name": "View 3D point cloud",
+          "Description": "Request a deterministic moderately dense cloud with stable keys."
+        },
+        {
+          "Type": 24,
+          "Name": "3D point cloud",
+          "Description": "Typed point regions with quantitative size and portable shape."
+        },
+        {
+          "Type": 25,
+          "Name": "View multiple 3D series",
+          "Description": "Request homogeneous traces and a heterogeneous layer in two rows."
+        },
+        {
+          "Type": 26,
+          "Name": "Multiple 3D series",
+          "Description": "A vertical composition of detail-grouped lines and layered mark kinds."
+        }
+      ]
+    },
+    {
+      "Name": "CloudRegionV1",
+      "DisplayName": "Cloud region",
+      "Description": "Spatial region used to group the point cloud.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Cloud region",
+          "Description": "Spatial region used to group the point cloud.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Upper east",
+              "Description": "Positive height and nonnegative x position."
+            },
+            {
+              "Type": 2,
+              "Name": "Upper west",
+              "Description": "Positive height and negative x position."
+            },
+            {
+              "Type": 3,
+              "Name": "Lower east",
+              "Description": "Nonpositive height and nonnegative x position."
+            },
+            {
+              "Type": 4,
+              "Name": "Lower west",
+              "Description": "Nonpositive height and negative x position."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "ContourLevelV1",
+      "DisplayName": "Contour level",
+      "Description": "Server-computed level of a contour path.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Contour level",
+          "Description": "Server-computed level of a contour path.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "One unit",
+              "Description": "Contour at one height unit."
+            },
+            {
+              "Type": 2,
+              "Name": "Two units",
+              "Description": "Contour at two height units."
+            },
+            {
+              "Type": 3,
+              "Name": "Three units",
+              "Description": "Contour at three height units."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "ContourLinePointV1",
+      "DisplayName": "Contour vertex",
+      "Description": "One ordered point in a server-computed contour path.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Contour vertex",
+          "Description": "One ordered point in a server-computed contour path."
+        },
+        {
+          "Type": 1,
+          "Name": "X coordinate",
+          "Description": "Shared surface and contour x position."
+        },
+        {
+          "Type": 2,
+          "Name": "Y coordinate",
+          "Description": "Shared surface and contour y position."
+        },
+        {
+          "Type": 3,
+          "Name": "Height",
+          "Description": "Constant height of this contour."
+        },
+        {
+          "Type": 4,
+          "Name": "Contour level",
+          "Description": "Typed path identity and contour color."
+        },
+        {
+          "Type": 5,
+          "Name": "Sequence",
+          "Description": "Vertex order within this closed contour."
+        },
+        {
+          "Type": 6,
+          "Name": "Vertex key",
+          "Description": "Stable contour vertex identity."
+        }
+      ]
+    },
+    {
+      "Name": "ContourLinesChartV1",
+      "DisplayName": "Contour paths",
+      "Description": "Server-computed, ordered lines drawn over a surface.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Contour paths",
+          "Description": "Server-computed, ordered lines drawn over a surface."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ContourSurfaceChartV1",
+      "DisplayName": "Contour surface",
+      "Description": "Server-sampled piecewise-affine surface beneath the contour paths.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Contour surface",
+          "Description": "Server-sampled piecewise-affine surface beneath the contour paths."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ContourSurfacePointV1",
+      "DisplayName": "Contour-surface sample",
+      "Description": "One vertex in the surface beneath the server-computed contours.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Contour-surface sample",
+          "Description": "One vertex in the surface beneath the server-computed contours."
+        },
+        {
+          "Type": 1,
+          "Name": "X coordinate",
+          "Description": "Shared surface and contour x position."
+        },
+        {
+          "Type": 2,
+          "Name": "Y coordinate",
+          "Description": "Shared surface and contour y position."
+        },
+        {
+          "Type": 3,
+          "Name": "Height",
+          "Description": "Piecewise-affine diamond height."
+        },
+        {
+          "Type": 4,
+          "Name": "Surface color",
+          "Description": "Duplicated height controlling the surface color."
+        }
+      ]
+    },
+    {
+      "Name": "ExplicitCuboidsChartV1",
+      "DisplayName": "Explicit cuboids",
+      "Description": "Fully authored axis-aligned cuboids with no inferred width or baseline.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Explicit cuboids",
+          "Description": "Fully authored axis-aligned cuboids with no inferred width or baseline."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ExplicitCuboidV1",
+      "DisplayName": "Explicit cuboid",
+      "Description": "One bar with all six continuous endpoints authored by the application.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Explicit cuboid",
+          "Description": "One bar with all six continuous endpoints authored by the application."
+        },
+        {
+          "Type": 1,
+          "Name": "X start",
+          "Description": "First x endpoint."
+        },
+        {
+          "Type": 2,
+          "Name": "X end",
+          "Description": "Second x endpoint."
+        },
+        {
+          "Type": 3,
+          "Name": "Y start",
+          "Description": "First y endpoint."
+        },
+        {
+          "Type": 4,
+          "Name": "Y end",
+          "Description": "Second y endpoint."
+        },
+        {
+          "Type": 5,
+          "Name": "Z top",
+          "Description": "First z endpoint."
+        },
+        {
+          "Type": 6,
+          "Name": "Z bottom",
+          "Description": "Second z endpoint."
+        },
+        {
+          "Type": 7,
+          "Name": "Cuboid key",
+          "Description": "Stable cuboid identity."
+        }
+      ]
+    },
+    {
+      "Name": "HeightMapChartV1",
+      "DisplayName": "Surface height map",
+      "Description": "A complete rectangular grid sampled from an application-owned function.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Surface height map",
+          "Description": "A complete rectangular grid sampled from an application-owned function."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "HeightMapPointV1",
+      "DisplayName": "Height-map sample",
+      "Description": "One vertex in a complete rectangular x/y grid.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Height-map sample",
+          "Description": "One vertex in a complete rectangular x/y grid."
+        },
+        {
+          "Type": 1,
+          "Name": "X coordinate",
+          "Description": "Rectangular-grid x position."
+        },
+        {
+          "Type": 2,
+          "Name": "Y coordinate",
+          "Description": "Rectangular-grid y position."
+        },
+        {
+          "Type": 3,
+          "Name": "Height",
+          "Description": "Sampled surface height."
+        },
+        {
+          "Type": 4,
+          "Name": "Height color",
+          "Description": "Duplicated numeric height used by an independently configured color scale."
+        }
+      ]
+    },
+    {
+      "Name": "HeterogeneousSeriesChartV1",
+      "DisplayName": "Heterogeneous multiple-series layer",
+      "Description": "Combines columns, an ordered line, and individual points in one scene.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Heterogeneous multiple-series layer",
+          "Description": "Combines columns, an ordered line, and individual points in one scene."
+        },
+        {
+          "Type": 1,
+          "Name": "Volume",
+          "Description": "Columns drawn first."
+        },
+        {
+          "Type": 2,
+          "Name": "Trend",
+          "Description": "Ordered line drawn after the columns."
+        },
+        {
+          "Type": 3,
+          "Name": "Observations",
+          "Description": "Points drawn after the trend."
+        }
+      ]
+    },
+    {
+      "Name": "HorizontalLegacyBarsChartV1",
+      "DisplayName": "Horizontal legacy bars",
+      "Description": "Any-orientation bars whose value axis is x and whose y/z axes are banded.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Horizontal legacy bars",
+          "Description": "Any-orientation bars whose value axis is x and whose y/z axes are banded."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "HorizontalLegacyBarV1",
+      "DisplayName": "Horizontal legacy bar",
+      "Description": "One any-orientation bar with two band bases and explicit value endpoints.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Horizontal legacy bar",
+          "Description": "One any-orientation bar with two band bases and explicit value endpoints."
+        },
+        {
+          "Type": 1,
+          "Name": "Value",
+          "Description": "Continuous endpoint along the x axis."
+        },
+        {
+          "Type": 2,
+          "Name": "Baseline",
+          "Description": "Authored continuous x-axis baseline."
+        },
+        {
+          "Type": 3,
+          "Name": "Product",
+          "Description": "First banded base axis."
+        },
+        {
+          "Type": 4,
+          "Name": "Scenario",
+          "Description": "Second banded base axis."
+        },
+        {
+          "Type": 5,
+          "Name": "Bar key",
+          "Description": "Stable bar identity."
+        }
+      ]
+    },
+    {
+      "Name": "ImpulseChartV1",
+      "DisplayName": "Impulse and stem chart",
+      "Description": "Layers explicit stems first and point tips second in one physical scene.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Impulse and stem chart",
+          "Description": "Layers explicit stems first and point tips second in one physical scene."
+        },
+        {
+          "Type": 1,
+          "Name": "Stems",
+          "Description": "Zero-plane segments drawn first."
+        },
+        {
+          "Type": 2,
+          "Name": "Tips",
+          "Description": "Point markers drawn at the sampled endpoints."
+        }
+      ]
+    },
+    {
+      "Name": "ImpulseSignV1",
+      "DisplayName": "Impulse sign",
+      "Description": "Distinguishes positive and negative impulses without relying on color alone.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Impulse sign",
+          "Description": "Distinguishes positive and negative impulses without relying on color alone.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Negative",
+              "Description": "An impulse below the zero plane."
+            },
+            {
+              "Type": 2,
+              "Name": "Nonnegative",
+              "Description": "An impulse on or above the zero plane."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "ImpulseStemsV1",
+      "DisplayName": "Impulse stems",
+      "Description": "Explicit zero-to-value segments without intrinsic tip markers.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Impulse stems",
+          "Description": "Explicit zero-to-value segments without intrinsic tip markers."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ImpulseStemV1",
+      "DisplayName": "Impulse stem",
+      "Description": "One segment from an explicit zero-plane base to a sampled tip.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Impulse stem",
+          "Description": "One segment from an explicit zero-plane base to a sampled tip."
+        },
+        {
+          "Type": 1,
+          "Name": "X coordinate",
+          "Description": "Impulse grid x position."
+        },
+        {
+          "Type": 2,
+          "Name": "Y coordinate",
+          "Description": "Impulse grid y position."
+        },
+        {
+          "Type": 3,
+          "Name": "Tip height",
+          "Description": "Sampled stem tip."
+        },
+        {
+          "Type": 4,
+          "Name": "Base height",
+          "Description": "Explicit stem base on the zero plane."
+        },
+        {
+          "Type": 5,
+          "Name": "Sign",
+          "Description": "Typed sign encoded by color and exposed in the tooltip."
+        },
+        {
+          "Type": 6,
+          "Name": "Stem key",
+          "Description": "Stable stem identity."
+        }
+      ]
+    },
+    {
+      "Name": "ImpulseTipsV1",
+      "DisplayName": "Impulse tips",
+      "Description": "Point markers layered exactly at the stem endpoints.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Impulse tips",
+          "Description": "Point markers layered exactly at the stem endpoints."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ImpulseTipV1",
+      "DisplayName": "Impulse tip",
+      "Description": "Point marker corresponding exactly to one stem tip.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Impulse tip",
+          "Description": "Point marker corresponding exactly to one stem tip."
+        },
+        {
+          "Type": 1,
+          "Name": "X coordinate",
+          "Description": "Impulse grid x position."
+        },
+        {
+          "Type": 2,
+          "Name": "Y coordinate",
+          "Description": "Impulse grid y position."
+        },
+        {
+          "Type": 3,
+          "Name": "Height",
+          "Description": "Sampled tip height."
+        },
+        {
+          "Type": 4,
+          "Name": "Marker size",
+          "Description": "Fixed relative size for the tip marker."
+        },
+        {
+          "Type": 5,
+          "Name": "Sign",
+          "Description": "Typed sign encoded by color and exposed in the tooltip."
+        },
+        {
+          "Type": 6,
+          "Name": "Tip key",
+          "Description": "Stable point identity matching the corresponding stem key."
+        }
+      ]
+    },
+    {
+      "Name": "MathematicalSurfaceChartV1",
+      "DisplayName": "Mathematical surface",
+      "Description": "An application-evaluated polynomial parametric surface with explicit u/v topology.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Mathematical surface",
+          "Description": "An application-evaluated polynomial parametric surface with explicit u/v topology."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "MathematicalSurfacePointV1",
+      "DisplayName": "Parametric surface sample",
+      "Description": "One vertex of a polynomial parameter grid evaluated by the application.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Parametric surface sample",
+          "Description": "One vertex of a polynomial parameter grid evaluated by the application."
+        },
+        {
+          "Type": 1,
+          "Name": "X coordinate",
+          "Description": "Evaluated x position of the parametric function."
+        },
+        {
+          "Type": 2,
+          "Name": "Y coordinate",
+          "Description": "Evaluated y position of the parametric function."
+        },
+        {
+          "Type": 3,
+          "Name": "Z coordinate",
+          "Description": "Evaluated z position of the parametric function."
+        },
+        {
+          "Type": 4,
+          "Name": "U parameter",
+          "Description": "First finite topology coordinate; it owns no visual scale."
+        },
+        {
+          "Type": 5,
+          "Name": "V parameter",
+          "Description": "Second finite topology coordinate; it owns no visual scale."
+        },
+        {
+          "Type": 6,
+          "Name": "Parameter color",
+          "Description": "Duplicated u parameter controlling the surface color."
+        }
+      ]
+    },
+    {
+      "Name": "MultipleSeriesBarsV1",
+      "DisplayName": "Multiple-series columns",
+      "Description": "Volume columns used by the heterogeneous layer.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Multiple-series columns",
+          "Description": "Volume columns used by the heterogeneous layer."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "MultipleSeriesBarV1",
+      "DisplayName": "Multiple-series column",
+      "Description": "One volume column in the heterogeneous layer.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Multiple-series column",
+          "Description": "One volume column in the heterogeneous layer."
+        },
+        {
+          "Type": 1,
+          "Name": "Period",
+          "Description": "Continuous base position shared by all layered marks."
+        },
+        {
+          "Type": 2,
+          "Name": "Lane",
+          "Description": "Shared categorical depth lane."
+        },
+        {
+          "Type": 3,
+          "Name": "Volume",
+          "Description": "Continuous column height."
+        },
+        {
+          "Type": 4,
+          "Name": "Series role",
+          "Description": "Categorical color shared across independently typed marks."
+        },
+        {
+          "Type": 5,
+          "Name": "Column key",
+          "Description": "Stable column identity."
+        }
+      ]
+    },
+    {
+      "Name": "MultipleSeriesChartV1",
+      "DisplayName": "Multiple 3D series",
+      "Description": "Vertically concatenates homogeneous detail-grouped traces and a heterogeneous layer.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Multiple 3D series",
+          "Description": "Vertically concatenates homogeneous detail-grouped traces and a heterogeneous layer."
+        },
+        {
+          "Type": 1,
+          "Name": "Homogeneous series",
+          "Description": "Multiple spectrum traces partitioned by detail."
+        },
+        {
+          "Type": 2,
+          "Name": "Heterogeneous series",
+          "Description": "Columns, a line, and points sharing one physical scene."
+        }
+      ]
+    },
+    {
+      "Name": "MultipleSeriesLaneV1",
+      "DisplayName": "Multiple-series lane",
+      "Description": "Shared categorical depth position for the layered series.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Multiple-series lane",
+          "Description": "Shared categorical depth position for the layered series.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Main lane",
+              "Description": "The common comparison lane."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "MultipleSeriesLinePointV1",
+      "DisplayName": "Multiple-series trend point",
+      "Description": "One ordered vertex of the trend line.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Multiple-series trend point",
+          "Description": "One ordered vertex of the trend line."
+        },
+        {
+          "Type": 1,
+          "Name": "Period",
+          "Description": "Continuous position shared with the columns and observations."
+        },
+        {
+          "Type": 2,
+          "Name": "Lane",
+          "Description": "Shared categorical depth lane."
+        },
+        {
+          "Type": 3,
+          "Name": "Trend",
+          "Description": "Continuous trend height."
+        },
+        {
+          "Type": 4,
+          "Name": "Series role",
+          "Description": "Categorical color shared across independently typed marks."
+        },
+        {
+          "Type": 5,
+          "Name": "Sequence",
+          "Description": "Vertex order along the trend."
+        },
+        {
+          "Type": 6,
+          "Name": "Vertex key",
+          "Description": "Stable trend identity."
+        }
+      ]
+    },
+    {
+      "Name": "MultipleSeriesLineV1",
+      "DisplayName": "Multiple-series trend",
+      "Description": "Ordered trend line used by the heterogeneous layer.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Multiple-series trend",
+          "Description": "Ordered trend line used by the heterogeneous layer."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "MultipleSeriesPointsV1",
+      "DisplayName": "Multiple-series observations",
+      "Description": "Point observations used by the heterogeneous layer.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Multiple-series observations",
+          "Description": "Point observations used by the heterogeneous layer."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "MultipleSeriesPointV1",
+      "DisplayName": "Multiple-series observation",
+      "Description": "One independently positioned observation.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Multiple-series observation",
+          "Description": "One independently positioned observation."
+        },
+        {
+          "Type": 1,
+          "Name": "Period",
+          "Description": "Continuous position shared with the columns and trend."
+        },
+        {
+          "Type": 2,
+          "Name": "Lane",
+          "Description": "Shared categorical depth lane."
+        },
+        {
+          "Type": 3,
+          "Name": "Observation",
+          "Description": "Continuous observed height."
+        },
+        {
+          "Type": 4,
+          "Name": "Marker size",
+          "Description": "Fixed relative size for the observation marker."
+        },
+        {
+          "Type": 5,
+          "Name": "Series role",
+          "Description": "Categorical color shared across independently typed marks."
+        },
+        {
+          "Type": 6,
+          "Name": "Point key",
+          "Description": "Stable observation identity."
+        }
+      ]
+    },
+    {
+      "Name": "MultipleSeriesRoleV1",
+      "DisplayName": "Multiple-series role",
+      "Description": "Identifies the meaning of one independently typed series.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Multiple-series role",
+          "Description": "Identifies the meaning of one independently typed series.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Volume",
+              "Description": "Column volume."
+            },
+            {
+              "Type": 2,
+              "Name": "Trend",
+              "Description": "Smoothed trend line."
+            },
+            {
+              "Type": 3,
+              "Name": "Observation",
+              "Description": "Individual observed point."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "NonuniformSurfaceChartV1",
+      "DisplayName": "Non-uniform surface grid",
+      "Description": "A sparse non-uniform x/y grid containing one intentional topology hole.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Non-uniform surface grid",
+          "Description": "A sparse non-uniform x/y grid containing one intentional topology hole."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "NonuniformSurfacePointV1",
+      "DisplayName": "Non-uniform surface sample",
+      "Description": "One vertex in a rectangular topology whose physical spacing is non-uniform.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Non-uniform surface sample",
+          "Description": "One vertex in a rectangular topology whose physical spacing is non-uniform."
+        },
+        {
+          "Type": 1,
+          "Name": "X coordinate",
+          "Description": "Non-uniform rectangular-grid x position."
+        },
+        {
+          "Type": 2,
+          "Name": "Y coordinate",
+          "Description": "Non-uniform rectangular-grid y position."
+        },
+        {
+          "Type": 3,
+          "Name": "Height",
+          "Description": "Sampled height at the non-uniform coordinate."
+        },
+        {
+          "Type": 4,
+          "Name": "Height color",
+          "Description": "Duplicated height controlling surface color."
+        }
+      ]
+    },
+    {
+      "Name": "PointCloudChartV1",
+      "DisplayName": "3D point cloud",
+      "Description": "Deterministically generated points with typed region, size, shape, and identity.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "3D point cloud",
+          "Description": "Deterministically generated points with typed region, size, shape, and identity."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "PointCloudPointV1",
+      "DisplayName": "Point-cloud sample",
+      "Description": "One deterministic sample in a moderately dense three-dimensional cloud.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Point-cloud sample",
+          "Description": "One deterministic sample in a moderately dense three-dimensional cloud."
+        },
+        {
+          "Type": 1,
+          "Name": "X coordinate",
+          "Description": "Horizontal cloud position."
+        },
+        {
+          "Type": 2,
+          "Name": "Y coordinate",
+          "Description": "Horizontal cloud position."
+        },
+        {
+          "Type": 3,
+          "Name": "Z coordinate",
+          "Description": "Vertical cloud position."
+        },
+        {
+          "Type": 4,
+          "Name": "Relative weight",
+          "Description": "Nonnegative point magnitude."
+        },
+        {
+          "Type": 5,
+          "Name": "Region",
+          "Description": "Typed detail identity and localized series legend."
+        },
+        {
+          "Type": 6,
+          "Name": "Region color",
+          "Description": "Repeats the region for categorical point color."
+        },
+        {
+          "Type": 7,
+          "Name": "Region shape",
+          "Description": "Repeats the region for a portable automatic point shape."
+        },
+        {
+          "Type": 8,
+          "Name": "Point key",
+          "Description": "Stable point identity."
+        }
+      ]
+    },
+    {
+      "Name": "ProductFamilyV1",
+      "DisplayName": "Product family",
+      "Description": "Categorical base position for horizontal legacy bars.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Product family",
+          "Description": "Categorical base position for horizontal legacy bars.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Home",
+              "Description": "Consumer products."
+            },
+            {
+              "Type": 2,
+              "Name": "Business",
+              "Description": "Products for professional teams."
+            },
+            {
+              "Type": 3,
+              "Name": "Platform",
+              "Description": "Shared platform services."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "QuarterV1",
+      "DisplayName": "Quarter",
+      "Description": "Categorical base position for sparse 3D columns.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Quarter",
+          "Description": "Categorical base position for sparse 3D columns.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "First quarter",
+              "Description": "January through March."
+            },
+            {
+              "Type": 2,
+              "Name": "Second quarter",
+              "Description": "April through June."
+            },
+            {
+              "Type": 3,
+              "Name": "Third quarter",
+              "Description": "July through September."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "SalesRegionV1",
+      "DisplayName": "Sales region",
+      "Description": "Geographic base position for sparse 3D columns.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sales region",
+          "Description": "Geographic base position for sparse 3D columns.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Americas",
+              "Description": "North and South American sales."
+            },
+            {
+              "Type": 2,
+              "Name": "Europe",
+              "Description": "European sales."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "ScatterChartV1",
+      "DisplayName": "3D scatter",
+      "Description": "Spatial samples grouped into three typed clusters.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "3D scatter",
+          "Description": "Spatial samples grouped into three typed clusters."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ScatterClusterV1",
+      "DisplayName": "Scatter cluster",
+      "Description": "Distinguishes spatial groups in the scatter example.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Scatter cluster",
+          "Description": "Distinguishes spatial groups in the scatter example.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "North ridge",
+              "Description": "Samples concentrated around the northern ridge."
+            },
+            {
+              "Type": 2,
+              "Name": "Central basin",
+              "Description": "Samples concentrated around the central basin."
+            },
+            {
+              "Type": 3,
+              "Name": "South shelf",
+              "Description": "Samples concentrated around the southern shelf."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "ScatterPointV1",
+      "DisplayName": "Scatter sample",
+      "Description": "One independently positioned sample with stable typed identity.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Scatter sample",
+          "Description": "One independently positioned sample with stable typed identity."
+        },
+        {
+          "Type": 1,
+          "Name": "Easting",
+          "Description": "Horizontal east-west position."
+        },
+        {
+          "Type": 2,
+          "Name": "Northing",
+          "Description": "Horizontal north-south position."
+        },
+        {
+          "Type": 3,
+          "Name": "Elevation",
+          "Description": "Vertical position."
+        },
+        {
+          "Type": 4,
+          "Name": "Cluster",
+          "Description": "Typed grouping and color for the sample."
+        },
+        {
+          "Type": 5,
+          "Name": "Sample key",
+          "Description": "Stable identity within the complete snapshot."
+        }
+      ]
+    },
+    {
+      "Name": "SparseColumnsChartV1",
+      "DisplayName": "Sparse columns",
+      "Description": "Normal x/y-base sparse columns with an inferred zero plane.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sparse columns",
+          "Description": "Normal x/y-base sparse columns with an inferred zero plane."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "SparseColumnV1",
+      "DisplayName": "Sparse column",
+      "Description": "One z-oriented column with two categorical base axes.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sparse column",
+          "Description": "One z-oriented column with two categorical base axes."
+        },
+        {
+          "Type": 1,
+          "Name": "Quarter",
+          "Description": "First categorical base axis."
+        },
+        {
+          "Type": 2,
+          "Name": "Region",
+          "Description": "Second categorical base axis."
+        },
+        {
+          "Type": 3,
+          "Name": "Revenue",
+          "Description": "Continuous column value on the z axis."
+        },
+        {
+          "Type": 4,
+          "Name": "Column key",
+          "Description": "Stable column identity."
+        }
+      ]
+    },
+    {
+      "Name": "SpectrumPointV1",
+      "DisplayName": "Spectrum sample",
+      "Description": "One ordered amplitude sample in a waterfall trace.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Spectrum sample",
+          "Description": "One ordered amplitude sample in a waterfall trace."
+        },
+        {
+          "Type": 1,
+          "Name": "Frequency",
+          "Description": "Ordered horizontal frequency coordinate."
+        },
+        {
+          "Type": 2,
+          "Name": "Trace offset",
+          "Description": "Continuous depth offset separating waterfall traces."
+        },
+        {
+          "Type": 3,
+          "Name": "Amplitude",
+          "Description": "Nonnegative spectrum amplitude."
+        },
+        {
+          "Type": 4,
+          "Name": "Trace",
+          "Description": "Typed detail identity and series legend."
+        },
+        {
+          "Type": 5,
+          "Name": "Trace color",
+          "Description": "Repeats the typed trace as a categorical line color."
+        },
+        {
+          "Type": 6,
+          "Name": "Sequence",
+          "Description": "Frequency order within the trace."
+        },
+        {
+          "Type": 7,
+          "Name": "Sample key",
+          "Description": "Stable sample identity."
+        }
+      ]
+    },
+    {
+      "Name": "SpectrumTraceV1",
+      "DisplayName": "Spectrum trace",
+      "Description": "One ordered trace in the waterfall spectrum.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Spectrum trace",
+          "Description": "One ordered trace in the waterfall spectrum.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Baseline",
+              "Description": "Baseline trace."
+            },
+            {
+              "Type": 2,
+              "Name": "Morning",
+              "Description": "Morning trace."
+            },
+            {
+              "Type": 3,
+              "Name": "Afternoon",
+              "Description": "Afternoon trace."
+            },
+            {
+              "Type": 4,
+              "Name": "Evening",
+              "Description": "Evening trace."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "SpectrumWaterfallChartV1",
+      "DisplayName": "Waterfall spectrum",
+      "Description": "Multiple typed and ordered line traces separated along the y axis.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Waterfall spectrum",
+          "Description": "Multiple typed and ordered line traces separated along the y axis."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "SurfaceContoursChartV1",
+      "DisplayName": "Contours on a surface",
+      "Description": "Layers server-computed contour paths after a sampled surface in one scene.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Contours on a surface",
+          "Description": "Layers server-computed contour paths after a sampled surface in one scene."
+        },
+        {
+          "Type": 1,
+          "Name": "Surface",
+          "Description": "Sampled piecewise-affine surface drawn first."
+        },
+        {
+          "Type": 2,
+          "Name": "Contours",
+          "Description": "Ordered constant-height paths drawn after the surface."
+        }
+      ]
+    },
+    {
+      "Name": "TrajectoryChartV1",
+      "DisplayName": "3D trajectories",
+      "Description": "Multiple ordered paths partitioned by typed detail identity.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "3D trajectories",
+          "Description": "Multiple ordered paths partitioned by typed detail identity."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "TrajectoryPointV1",
+      "DisplayName": "Trajectory point",
+      "Description": "One ordered vertex along a three-dimensional path.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Trajectory point",
+          "Description": "One ordered vertex along a three-dimensional path."
+        },
+        {
+          "Type": 1,
+          "Name": "Progress",
+          "Description": "Horizontal path progress."
+        },
+        {
+          "Type": 2,
+          "Name": "Lateral position",
+          "Description": "Side-to-side path position."
+        },
+        {
+          "Type": 3,
+          "Name": "Height",
+          "Description": "Vertical path position."
+        },
+        {
+          "Type": 4,
+          "Name": "Trajectory",
+          "Description": "Typed path identity and series legend."
+        },
+        {
+          "Type": 5,
+          "Name": "Trajectory color",
+          "Description": "Repeats the typed trajectory as a categorical line color."
+        },
+        {
+          "Type": 6,
+          "Name": "Sequence",
+          "Description": "Vertex order within this trajectory."
+        },
+        {
+          "Type": 7,
+          "Name": "Point key",
+          "Description": "Stable vertex identity."
+        }
+      ]
+    },
+    {
+      "Name": "TrajectoryV1",
+      "DisplayName": "Trajectory",
+      "Description": "Identifies one ordered path through three-dimensional space.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Trajectory",
+          "Description": "Identifies one ordered path through three-dimensional space.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Survey",
+              "Description": "The measured survey path."
+            },
+            {
+              "Type": 2,
+              "Name": "Forecast",
+              "Description": "The predicted path."
+            },
+            {
+              "Type": 3,
+              "Name": "Limit",
+              "Description": "The operating-limit path."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "WireframeChartV1",
+      "DisplayName": "Wireframe",
+      "Description": "Rectangular surface topology rendered as grid edges without face diagonals.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Wireframe",
+          "Description": "Rectangular surface topology rendered as grid edges without face diagonals."
+        },
+        {
+          "Type": 1,
+          "Name": "",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "WireframePointV1",
+      "DisplayName": "Wireframe sample",
+      "Description": "One vertex of a rectangular saddle grid.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Wireframe sample",
+          "Description": "One vertex of a rectangular saddle grid."
+        },
+        {
+          "Type": 1,
+          "Name": "X coordinate",
+          "Description": "Rectangular-grid x position."
+        },
+        {
+          "Type": 2,
+          "Name": "Y coordinate",
+          "Description": "Rectangular-grid y position."
+        },
+        {
+          "Type": 3,
+          "Name": "Height",
+          "Description": "Saddle height at this grid vertex."
+        },
+        {
+          "Type": 4,
+          "Name": "Height color",
+          "Description": "Numeric color encoding for wire edges."
+        }
+      ]
+    }
+  ]
+}

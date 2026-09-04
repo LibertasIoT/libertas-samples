@@ -1932,12 +1932,23 @@ fn handle_room_endpoint(
                 room.plan = None;
             }
             evaluate_and_publish(&context.shared);
-            let now = libertas_get_utc_time();
-            let response = room_report(&context.shared.borrow(), context.room_index, now);
-            libertas_endpoint_response(endpoint, &response, transaction_id, peer);
+            // Evaluation reports changed rooms when UTC is available. Repeat
+            // the idempotent fan-out so an accepted control is authoritative
+            // even while wall-clock time is unavailable, and always publish it
+            // before the state-preserving correlated acknowledgement.
+            report_changed_rooms(&context.shared);
+            libertas_endpoint_response(
+                endpoint,
+                &BuildingHvacRoomProtocol::RoomControlAcceptedV1 {
+                    control_revision: next_revision,
+                },
+                transaction_id,
+                peer,
+            );
         }
         BuildingHvacRoomProtocol::RoomDataV1 { .. }
-        | BuildingHvacRoomProtocol::RoomControlRejectedV1 { .. } => {
+        | BuildingHvacRoomProtocol::RoomControlRejectedV1 { .. }
+        | BuildingHvacRoomProtocol::RoomControlAcceptedV1 { .. } => {
             return LibertasEndpointHandlerResult::InvalidMessage;
         }
     }
