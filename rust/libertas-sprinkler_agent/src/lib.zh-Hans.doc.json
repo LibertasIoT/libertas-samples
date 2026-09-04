@@ -515,6 +515,28 @@
       ]
     },
     {
+      "Name": "SprinklerReportEffectiveRangeV1",
+      "DisplayName": "Effective report range",
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Effective report range",
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report."
+        },
+        {
+          "Type": 1,
+          "Name": "First date",
+          "Description": "First calendar date included in the generated report."
+        },
+        {
+          "Type": 2,
+          "Name": "Last date",
+          "Description": "Last calendar date included in the generated report."
+        }
+      ]
+    },
+    {
       "Name": "SprinklerReportEmptyStateV1",
       "DisplayName": "空报告状态",
       "Description": "当已配置分区在请求时间窗口内某个图表没有任何数据行时，提供真实且本地化的说明。",
@@ -550,18 +572,18 @@
         },
         {
           "Type": 2,
-          "Name": "First date",
-          "Description": "Optional. Leave blank to use the recent period."
+          "Name": "Water balance",
+          "Description": "Estimated plant-available water, important levels, and watering events."
         },
         {
           "Type": 3,
-          "Name": "Last date",
-          "Description": "Optional. Leave blank to use the recent period."
+          "Name": "Chart",
+          "Description": "Water-balance chart for the effective report range."
         },
         {
           "Type": 4,
-          "Name": "Water balance",
-          "Description": "Estimated plant-available water, important levels, and watering events."
+          "Name": "Effective range",
+          "Description": "Inclusive dates actually used to generate this response."
         },
         {
           "Type": 5,
@@ -570,18 +592,18 @@
         },
         {
           "Type": 6,
-          "Name": "First date",
-          "Description": "Optional. Leave blank to use the latest 31 days."
+          "Name": "Water use",
+          "Description": "Daily rain and estimated watering by local date and area."
         },
         {
           "Type": 7,
-          "Name": "Last date",
-          "Description": "Optional. Leave blank to use the latest 31 days."
+          "Name": "Chart",
+          "Description": "Water-use chart for the effective report range."
         },
         {
           "Type": 8,
-          "Name": "Water use",
-          "Description": "Daily rain and estimated watering by local date and area."
+          "Name": "Effective range",
+          "Description": "Inclusive dates actually used to generate this response."
         },
         {
           "Type": 9,
@@ -590,18 +612,40 @@
         },
         {
           "Type": 10,
-          "Name": "First date",
-          "Description": "Optional. Leave blank to use the recent period."
+          "Name": "Weather",
+          "Description": "Recorded and forecast temperature, humidity, wind, and estimated water loss."
         },
         {
           "Type": 11,
-          "Name": "Last date",
-          "Description": "Optional. Leave blank to use the recent period."
+          "Name": "Chart",
+          "Description": "Weather chart for the effective report range."
         },
         {
           "Type": 12,
-          "Name": "Weather",
-          "Description": "Recorded and forecast temperature, humidity, wind, and estimated water loss."
+          "Name": "Effective range",
+          "Description": "Inclusive dates actually used to generate this response."
+        }
+      ]
+    },
+    {
+      "Name": "SprinklerReportRequestRangeV1",
+      "DisplayName": "Report date range",
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Report date range",
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report."
+        },
+        {
+          "Type": 1,
+          "Name": "First date",
+          "Description": "Optional. Leave blank to let the report choose its initial first date."
+        },
+        {
+          "Type": 2,
+          "Name": "Last date",
+          "Description": "Optional. Leave blank to let the report choose its initial last date."
         }
       ]
     },
@@ -2229,6 +2273,7 @@
     "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "Current watering activity for {0}.",
     "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "Saved location used by sprinkler weather reports at {0}.",
     "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "Saved weather estimates used during service interruptions at {0}.",
-    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "Saved detailed weather history for sprinkler reports at {0}."
+    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "Saved detailed weather history for sprinkler reports at {0}.",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "The first date cannot be later than the last date."
   }
 }

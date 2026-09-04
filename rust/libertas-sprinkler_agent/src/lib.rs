@@ -169,7 +169,7 @@ const SOUTHERN_WINTERIZATION_SEASON_END_DAY: u16 = 273;
 
 /// Sprinkler text
 /// Names and descriptions for saved information, notifications, and chart labels.
-pub const APP_STRINGS: [(&str, &str); 19] = [
+pub const APP_STRINGS: [(&str, &str); 20] = [
     (
         "SPRINKLER_ZONE_MEMORY_V1",
         "Saved water balance and settings for {0}.",
@@ -236,6 +236,10 @@ pub const APP_STRINGS: [(&str, &str); 19] = [
     (
         "SPRINKLER_INVALID_NO_WATERING_PERIODS",
         "Use no more than 64 no-watering periods, each with a valid start and a duration greater than zero.",
+    ),
+    (
+        "SPRINKLER_REPORT_INVALID_DATE_RANGE",
+        "The first date cannot be later than the last date.",
     ),
 ];
 const ZONE_DATA_RESOURCE: &str = APP_STRINGS[0].0;
@@ -1615,6 +1619,46 @@ pub struct SprinklerWeatherEtChartV1 {
     pub wind: SprinklerWindChartV1,
 }
 
+/// Report date range
+/// Selects the inclusive calendar dates to include in a sprinkler report.
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
+)]
+#[libertas_validation_rules(
+    r#"[starts_on] == null ||
+       [ends_on] == null ||
+       [starts_on] <= [ends_on]
+       : "SPRINKLER_REPORT_INVALID_DATE_RANGE";"#
+)]
+pub struct SprinklerReportRequestRangeV1 {
+    /// First date
+    /// Optional. Leave blank to let the report choose its initial first date.
+    #[libertas_date_only]
+    #[libertas_copy_from("$.effective_range.starts_on")]
+    pub starts_on: Option<u32>,
+    /// Last date
+    /// Optional. Leave blank to let the report choose its initial last date.
+    #[libertas_date_only]
+    #[libertas_copy_from("$.effective_range.ends_on")]
+    pub ends_on: Option<u32>,
+}
+
+/// Effective report range
+/// The inclusive calendar dates actually used to generate a sprinkler report.
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
+)]
+pub struct SprinklerReportEffectiveRangeV1 {
+    /// First date
+    /// First calendar date included in the generated report.
+    #[libertas_date_only]
+    pub starts_on: u32,
+    /// Last date
+    /// Last calendar date included in the generated report.
+    #[libertas_date_only]
+    pub ends_on: u32,
+}
+
 /// Sprinkler reports
 /// View water balance, water use, or weather for every area. Leave the dates
 /// blank to see the recent period. Dates outside the available history are
@@ -1631,22 +1675,20 @@ pub enum SprinklerReportProtocol {
     #[libertas_request]
     #[libertas_access_privilege("Read")]
     #[libertas_next_response(WaterBalanceV1)]
-    GetWaterBalanceV1 {
-        /// First date
-        /// Optional. Leave blank to use the recent period.
-        #[libertas_date_only]
-        starts_on: Option<u32>,
-        /// Last date
-        /// Optional. Leave blank to use the recent period.
-        #[libertas_date_only]
-        ends_on: Option<u32>,
-    },
+    GetWaterBalanceV1(SprinklerReportRequestRangeV1),
     /// Water balance
     /// Estimated plant-available water, important levels, and watering events.
     #[libertas_response]
     #[libertas_next_request(GetWaterBalanceV1)]
-    #[libertas_chart(layer)]
-    WaterBalanceV1(SprinklerWaterBalanceChartV1),
+    WaterBalanceV1 {
+        /// Chart
+        /// Water-balance chart for the effective report range.
+        chart: SprinklerWaterBalanceChartV1,
+        /// Effective range
+        /// Inclusive dates actually used to generate this response.
+        #[libertas_hidden]
+        effective_range: SprinklerReportEffectiveRangeV1,
+    },
     /// View water use
     /// Shows daily rain and watering for every area. Leave the dates blank for
     /// the latest 31 days; a selected period can cover up to two years. A longer
@@ -1654,22 +1696,20 @@ pub enum SprinklerReportProtocol {
     #[libertas_request]
     #[libertas_access_privilege("Read")]
     #[libertas_next_response(WaterUsageV1)]
-    GetWaterUsageV1 {
-        /// First date
-        /// Optional. Leave blank to use the latest 31 days.
-        #[libertas_date_only]
-        starts_on: Option<u32>,
-        /// Last date
-        /// Optional. Leave blank to use the latest 31 days.
-        #[libertas_date_only]
-        ends_on: Option<u32>,
-    },
+    GetWaterUsageV1(SprinklerReportRequestRangeV1),
     /// Water use
     /// Daily rain and estimated watering by local date and area.
     #[libertas_response]
     #[libertas_next_request(GetWaterUsageV1)]
-    #[libertas_chart(vconcat)]
-    WaterUsageV1(SprinklerWaterUsageChartV1),
+    WaterUsageV1 {
+        /// Chart
+        /// Water-use chart for the effective report range.
+        chart: SprinklerWaterUsageChartV1,
+        /// Effective range
+        /// Inclusive dates actually used to generate this response.
+        #[libertas_hidden]
+        effective_range: SprinklerReportEffectiveRangeV1,
+    },
     /// View weather
     /// Shows recorded and forecast temperature, humidity, wind, and water loss.
     /// A selected period can cover up to 31 days; a longer selection keeps its
@@ -1677,22 +1717,20 @@ pub enum SprinklerReportProtocol {
     #[libertas_request]
     #[libertas_access_privilege("Read")]
     #[libertas_next_response(WeatherEtV1)]
-    GetWeatherEtV1 {
-        /// First date
-        /// Optional. Leave blank to use the recent period.
-        #[libertas_date_only]
-        starts_on: Option<u32>,
-        /// Last date
-        /// Optional. Leave blank to use the recent period.
-        #[libertas_date_only]
-        ends_on: Option<u32>,
-    },
+    GetWeatherEtV1(SprinklerReportRequestRangeV1),
     /// Weather
     /// Recorded and forecast temperature, humidity, wind, and estimated water loss.
     #[libertas_response]
     #[libertas_next_request(GetWeatherEtV1)]
-    #[libertas_chart(vconcat)]
-    WeatherEtV1(SprinklerWeatherEtChartV1),
+    WeatherEtV1 {
+        /// Chart
+        /// Weather chart for the effective report range.
+        chart: SprinklerWeatherEtChartV1,
+        /// Effective range
+        /// Inclusive dates actually used to generate this response.
+        #[libertas_hidden]
+        effective_range: SprinklerReportEffectiveRangeV1,
+    },
 }
 
 /// Sprinkler water event
@@ -8926,6 +8964,16 @@ fn report_data_date(
     }
 }
 
+fn report_effective_range(
+    kind: SprinklerReportChartKind,
+    range: SprinklerReportTimeRangeV1,
+    time_zone: ReportTimeZone,
+) -> Option<SprinklerReportEffectiveRangeV1> {
+    let starts_on = report_data_date(kind, range.starts_at, time_zone)?;
+    let ends_on = report_data_date(kind, range.ends_before.checked_sub(1)?, time_zone)?;
+    (starts_on <= ends_on).then_some(SprinklerReportEffectiveRangeV1 { starts_on, ends_on })
+}
+
 fn clamp_report_date_bounds_to_data(
     kind: SprinklerReportChartKind,
     starts_on: Option<u32>,
@@ -9113,7 +9161,7 @@ fn resolve_water_usage_report_date_range(
 
 fn report_response_within_chart_limits(response: &SprinklerReportProtocol) -> bool {
     match response {
-        SprinklerReportProtocol::WaterBalanceV1(chart) => {
+        SprinklerReportProtocol::WaterBalanceV1 { chart, .. } => {
             if chart
                 .balance
                 .len()
@@ -9139,13 +9187,13 @@ fn report_response_within_chart_limits(response: &SprinklerReportProtocol) -> bo
             }
             true
         }
-        SprinklerReportProtocol::WaterUsageV1(chart) => chart
+        SprinklerReportProtocol::WaterUsageV1 { chart, .. } => chart
             .summary
             .len()
             .checked_add(chart.daily.inputs.len())
             .and_then(|total| total.checked_add(chart.daily.empty_zones.len()))
             .is_some_and(|total| total <= MAX_REPORT_CHART_ROWS),
-        SprinklerReportProtocol::WeatherEtV1(chart) => {
+        SprinklerReportProtocol::WeatherEtV1 { chart, .. } => {
             let total_rows = [
                 chart.reference_evapotranspiration.len(),
                 chart.temperature_and_relative_humidity.temperature.len(),
@@ -9212,28 +9260,32 @@ fn build_sprinkler_report_response(
     range: SprinklerReportTimeRangeV1,
     report_generated_at: Option<LibertasDateTime>,
 ) -> Result<SprinklerReportProtocol, ()> {
+    let effective_range = report_effective_range(kind, range, report_time_zone()).ok_or(())?;
     let response = match kind {
-        SprinklerReportChartKind::WaterBalance => SprinklerReportProtocol::WaterBalanceV1(
-            build_water_balance_chart(zones, &history.balance, range)?,
-        ),
-        SprinklerReportChartKind::WaterUsage => {
-            SprinklerReportProtocol::WaterUsageV1(build_water_usage(
+        SprinklerReportChartKind::WaterBalance => SprinklerReportProtocol::WaterBalanceV1 {
+            chart: build_water_balance_chart(zones, &history.balance, range)?,
+            effective_range,
+        },
+        SprinklerReportChartKind::WaterUsage => SprinklerReportProtocol::WaterUsageV1 {
+            chart: build_water_usage(
                 zones,
                 &history.balance,
                 forecast,
                 range,
                 report_generated_at,
-            )?)
-        }
-        SprinklerReportChartKind::WeatherEt => {
-            SprinklerReportProtocol::WeatherEtV1(build_weather_et_chart(
+            )?,
+            effective_range,
+        },
+        SprinklerReportChartKind::WeatherEt => SprinklerReportProtocol::WeatherEtV1 {
+            chart: build_weather_et_chart(
                 &history.balance,
                 &history.full,
                 observations,
                 forecast,
                 range,
-            )?)
-        }
+            )?,
+            effective_range,
+        },
     };
     if !report_response_within_chart_limits(&response) {
         return Err(());
@@ -9264,18 +9316,15 @@ fn handle_report_endpoint(
     }
     let trusted_now = utc_seconds();
     let (kind, starts_on, ends_on) = match message {
-        LibertasEndpointMessage::Data(SprinklerReportProtocol::GetWaterBalanceV1 {
-            starts_on,
-            ends_on,
-        }) => (SprinklerReportChartKind::WaterBalance, starts_on, ends_on),
-        LibertasEndpointMessage::Data(SprinklerReportProtocol::GetWaterUsageV1 {
-            starts_on,
-            ends_on,
-        }) => (SprinklerReportChartKind::WaterUsage, starts_on, ends_on),
-        LibertasEndpointMessage::Data(SprinklerReportProtocol::GetWeatherEtV1 {
-            starts_on,
-            ends_on,
-        }) => (SprinklerReportChartKind::WeatherEt, starts_on, ends_on),
+        LibertasEndpointMessage::Data(SprinklerReportProtocol::GetWaterBalanceV1(
+            SprinklerReportRequestRangeV1 { starts_on, ends_on },
+        )) => (SprinklerReportChartKind::WaterBalance, starts_on, ends_on),
+        LibertasEndpointMessage::Data(SprinklerReportProtocol::GetWaterUsageV1(
+            SprinklerReportRequestRangeV1 { starts_on, ends_on },
+        )) => (SprinklerReportChartKind::WaterUsage, starts_on, ends_on),
+        LibertasEndpointMessage::Data(SprinklerReportProtocol::GetWeatherEtV1(
+            SprinklerReportRequestRangeV1 { starts_on, ends_on },
+        )) => (SprinklerReportChartKind::WeatherEt, starts_on, ends_on),
         _ => return LibertasEndpointHandlerResult::InvalidMessage,
     };
     let data_extent = if starts_on.is_some() || ends_on.is_some() {
@@ -11332,30 +11381,39 @@ mod tests {
             ends_before: day + SECONDS_PER_DAY,
         };
         let requests = [
-            SprinklerReportProtocol::GetWaterBalanceV1 {
+            SprinklerReportProtocol::GetWaterBalanceV1(SprinklerReportRequestRangeV1 {
                 starts_on: None,
                 ends_on: None,
-            },
-            SprinklerReportProtocol::GetWaterUsageV1 {
+            }),
+            SprinklerReportProtocol::GetWaterUsageV1(SprinklerReportRequestRangeV1 {
                 starts_on: None,
                 ends_on: None,
-            },
-            SprinklerReportProtocol::GetWeatherEtV1 {
+            }),
+            SprinklerReportProtocol::GetWeatherEtV1(SprinklerReportRequestRangeV1 {
                 starts_on: None,
                 ends_on: None,
-            },
+            }),
         ];
         for (index, request) in requests.into_iter().enumerate() {
             let encoded = request.to_avro();
             assert_eq!(encoded, vec![(index as u8) * 4, 0, 0]);
             assert_eq!(SprinklerReportProtocol::from_avro(&encoded), Ok(request));
         }
-        let starts_on = Some(utc_date_only(range.starts_at).unwrap());
-        let ends_on = Some(utc_date_only(range.ends_before - 1).unwrap());
+        let starts_on = utc_date_only(range.starts_at).unwrap();
+        let ends_on = utc_date_only(range.ends_before - 1).unwrap();
         let custom_requests = [
-            SprinklerReportProtocol::GetWaterBalanceV1 { starts_on, ends_on },
-            SprinklerReportProtocol::GetWaterUsageV1 { starts_on, ends_on },
-            SprinklerReportProtocol::GetWeatherEtV1 { starts_on, ends_on },
+            SprinklerReportProtocol::GetWaterBalanceV1(SprinklerReportRequestRangeV1 {
+                starts_on: Some(starts_on),
+                ends_on: Some(ends_on),
+            }),
+            SprinklerReportProtocol::GetWaterUsageV1(SprinklerReportRequestRangeV1 {
+                starts_on: Some(starts_on),
+                ends_on: Some(ends_on),
+            }),
+            SprinklerReportProtocol::GetWeatherEtV1(SprinklerReportRequestRangeV1 {
+                starts_on: Some(starts_on),
+                ends_on: Some(ends_on),
+            }),
         ];
         for custom_request in custom_requests {
             assert_eq!(
@@ -11364,30 +11422,30 @@ mod tests {
             );
         }
         let independently_optional_requests = [
-            SprinklerReportProtocol::GetWaterBalanceV1 {
-                starts_on,
+            SprinklerReportProtocol::GetWaterBalanceV1(SprinklerReportRequestRangeV1 {
+                starts_on: Some(starts_on),
                 ends_on: None,
-            },
-            SprinklerReportProtocol::GetWaterBalanceV1 {
+            }),
+            SprinklerReportProtocol::GetWaterBalanceV1(SprinklerReportRequestRangeV1 {
                 starts_on: None,
-                ends_on,
-            },
-            SprinklerReportProtocol::GetWaterUsageV1 {
-                starts_on,
+                ends_on: Some(ends_on),
+            }),
+            SprinklerReportProtocol::GetWaterUsageV1(SprinklerReportRequestRangeV1 {
+                starts_on: Some(starts_on),
                 ends_on: None,
-            },
-            SprinklerReportProtocol::GetWaterUsageV1 {
+            }),
+            SprinklerReportProtocol::GetWaterUsageV1(SprinklerReportRequestRangeV1 {
                 starts_on: None,
-                ends_on,
-            },
-            SprinklerReportProtocol::GetWeatherEtV1 {
-                starts_on,
+                ends_on: Some(ends_on),
+            }),
+            SprinklerReportProtocol::GetWeatherEtV1(SprinklerReportRequestRangeV1 {
+                starts_on: Some(starts_on),
                 ends_on: None,
-            },
-            SprinklerReportProtocol::GetWeatherEtV1 {
+            }),
+            SprinklerReportProtocol::GetWeatherEtV1(SprinklerReportRequestRangeV1 {
                 starts_on: None,
-                ends_on,
-            },
+                ends_on: Some(ends_on),
+            }),
         ];
         for request in independently_optional_requests {
             assert_eq!(
@@ -11445,22 +11503,42 @@ mod tests {
             ),
         ]
         .map(|response| response.unwrap());
-        let SprinklerReportProtocol::WaterBalanceV1(water_balance) = &responses[0] else {
+        let SprinklerReportProtocol::WaterBalanceV1 {
+            chart: water_balance,
+            effective_range,
+        } = &responses[0]
+        else {
             panic!("expected water-balance response");
         };
+        assert_eq!(
+            *effective_range,
+            SprinklerReportEffectiveRangeV1 { starts_on, ends_on }
+        );
         assert!(water_balance.balance.iter().any(|row| {
             row.series == SprinklerWaterBalanceSeriesV1::AvailableWater
                 && row.zone == zones[0].valve
         }));
         assert_eq!(water_balance.decisions.len(), 1);
-        let SprinklerReportProtocol::WaterUsageV1(water_usage) = &responses[1] else {
+        let SprinklerReportProtocol::WaterUsageV1 {
+            chart: water_usage,
+            effective_range,
+        } = &responses[1]
+        else {
             panic!("expected water-usage response");
         };
+        assert_eq!(effective_range.starts_on, starts_on);
+        assert_eq!(effective_range.ends_on, ends_on);
         assert_eq!(water_usage.daily.inputs.len(), 2);
         assert!(water_usage.daily.empty_zones.is_empty());
-        let SprinklerReportProtocol::WeatherEtV1(weather_et) = &responses[2] else {
+        let SprinklerReportProtocol::WeatherEtV1 {
+            chart: weather_et,
+            effective_range,
+        } = &responses[2]
+        else {
             panic!("expected weather/ET response");
         };
+        assert_eq!(effective_range.starts_on, starts_on);
+        assert_eq!(effective_range.ends_on, ends_on);
         assert_eq!(weather_et.reference_evapotranspiration.len(), 1);
         assert_eq!(
             weather_et
@@ -11949,10 +12027,16 @@ mod tests {
             series: SprinklerWaterBalanceSeriesV1::AvailableWater,
             zone: zone().valve,
         };
-        let response = SprinklerReportProtocol::WaterBalanceV1(SprinklerWaterBalanceChartV1 {
-            balance: vec![row; MAX_REPORT_POINTS_PER_PATH + 1],
-            decisions: Vec::new(),
-        });
+        let response = SprinklerReportProtocol::WaterBalanceV1 {
+            chart: SprinklerWaterBalanceChartV1 {
+                balance: vec![row; MAX_REPORT_POINTS_PER_PATH + 1],
+                decisions: Vec::new(),
+            },
+            effective_range: SprinklerReportEffectiveRangeV1 {
+                starts_on: 20260101,
+                ends_on: 20260101,
+            },
+        };
         assert!(!report_response_within_chart_limits(&response));
     }
 
