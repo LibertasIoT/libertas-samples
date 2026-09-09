@@ -606,9 +606,10 @@ operation as another protocol field. Keep each future application-specific
 schema and its persistence, refresh, recovery, and endpoint behavior separate
 rather than widening the sprinkler V1 contract into a general weather model.
 
-- Treat the server's V1 schema and database layout as unpublished design-time
-  contracts. Reshape V1 directly when needed; do not keep superseded
-  configuration fields, union ordering, or migration code for compatibility.
+- Treat the service schema and persistence as published contracts. Keep retained
+  schema bytes and exact dependency pins immutable. Evolve incompatible protocol
+  or persistence changes through new App versions and data migrations that
+  preserve existing Task data.
 - Obtain the sprinkler site from `HubProtocol::LocationRsp` on the built-in
   `LIBERTAS_HUB_ENDPOINT`; do not expose latitude or longitude as application
   configuration. Keep `libertas-hub`, `libertas`, and `libertas_macros` on the
