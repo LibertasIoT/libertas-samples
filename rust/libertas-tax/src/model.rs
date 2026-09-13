@@ -1,3 +1,4 @@
+use crate::DraftV2;
 use alloc::string::String;
 use libertas_macros::{LibertasAvroDecode, LibertasAvroEncode, LibertasExport};
 
@@ -49,5 +50,12 @@ pub enum TaxAppData {
         setup: Option<ReturnSetupV1>,
         /// Completed income overview
         income: Option<IncomeOverviewV1>,
+    },
+    /// Accepted bounded prototype return
+    /// Complete submitted pages for the 2026 interview.
+    DraftV2 {
+        /// Accepted answers
+        /// The durable return, without unsubmitted editor state.
+        draft: DraftV2,
     },
 }
