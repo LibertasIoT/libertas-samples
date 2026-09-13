@@ -135,10 +135,15 @@ initial task name with `[DefaultTaskName]` in its source documentation.
 
 Functions that require platform permissions must declare them with a const
 string array and `#[libertas_permissions(...)]`. Every permission must also be
-a key in that function's `#[libertas_string_resources(...)]` constant, with a
-non-empty default-locale explanation of why access is needed:
+a key in the package's string-resource catalog, with a non-empty default-locale
+explanation of why access is needed. Declare that catalog in the leading
+`lib.rs` documentation; function, type, variant, and field placement is invalid.
+The [Rust string-resource contract](../../../libertas/vscode/doc/public/reference/languages/rust.md#string-resources)
+owns the syntax and scope.
 
 ```rust
+//! #[libertas_string_resources(APP_STRINGS)]
+
 const WEATHER_PERMISSIONS: &[&str] = &["libertas.permission.ACCESS_FINE_LOCATION"];
 const APP_STRINGS: &[(&str, &str)] = &[
     (
@@ -148,7 +153,6 @@ const APP_STRINGS: &[(&str, &str)] = &[
 ];
 
 #[libertas_permissions(WEATHER_PERMISSIONS)]
-#[libertas_string_resources(APP_STRINGS)]
 pub fn weather_service() {}
 ```
 
@@ -244,9 +248,9 @@ libertas_data_write_single("APP_SETTINGS", &key, &value);
 let saved: Option<AppData> = libertas_data_read_single("APP_SETTINGS", &key);
 ```
 
-Attach `#[libertas_string_resources(APP_STRINGS)]` to the application function.
-Resource identifiers are stable database-name IDs; templates are user-facing
-and may be translated.
+Declare these data-name keys in the same package string-resource catalog
+shown above. Resource identifiers are stable database-name IDs; templates are
+user-facing and may be translated.
 
 Persistence rules:
 
