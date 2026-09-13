@@ -5,9 +5,9 @@ edition = "2024"
 description = "Libertas application-tailored weather agent"
 
 [dependencies]
-libertas = { git = "https://github.com/LibertasIoT/libertas-rs.git", branch = "main", package = "libertas" }
-libertas-hub = { git = "https://github.com/LibertasIoT/libertas-rs.git", branch = "main", package = "libertas-hub" }
-libertas_macros = { git = "https://github.com/LibertasIoT/libertas-rs.git", branch = "main", package = "libertas_macros" }
+libertas = { path = "../../../rust/libertas-rs/crates/libertas", package = "libertas" }
+libertas-hub = { path = "../../../rust/libertas-rs/crates/libertas-hub", package = "libertas-hub" }
+libertas_macros = { path = "../../../rust/libertas-rs/crates/libertas_macros", package = "libertas_macros" }
 libertas-weather = { path = "../libertas-weather", package = "libertas-weather" }
 reqwest = { version = "0.13", default-features = false, features = ["blocking", "gzip", "query", "rustls"] }
 serde = { version = "1.0", features = ["derive"] }
