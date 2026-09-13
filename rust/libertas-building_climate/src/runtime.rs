@@ -1195,7 +1195,7 @@ fn handle_device_event(
             ]
             .into_iter()
             .flatten()
-            .any(|status| status.status != 0);
+            .any(|status| status != 0);
             if failed {
                 let rejected = {
                     let mut state = context.shared.borrow_mut();

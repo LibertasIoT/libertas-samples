@@ -41,15 +41,18 @@ definitions.
 
 ## Crate baseline
 
-Use Rust 2024 and align Libertas SDK dependencies to the same source revision.
+Use Rust 2024 and the local SDK checkouts under the sibling `rust/` workspace.
+Keep current development private: do not add GitHub remotes or restore GitHub
+URLs for Libertas dependencies. Existing hosted repositories remain unchanged.
+The relative paths below are for an application directly under this directory.
 
 ```toml
 [package]
 edition = "2024"
 
 [dependencies]
-libertas = { git = "https://github.com/LibertasIoT/libertas-rs.git", branch = "main", package = "libertas" }
-libertas_macros = { git = "https://github.com/LibertasIoT/libertas-rs.git", branch = "main", package = "libertas_macros" }
+libertas = { path = "../../../rust/libertas-rs/crates/libertas", package = "libertas" }
+libertas_macros = { path = "../../../rust/libertas-rs/crates/libertas_macros", package = "libertas_macros" }
 
 [lib]
 crate-type = ["rlib"]
@@ -58,7 +61,7 @@ crate-type = ["rlib"]
 Matter applications additionally use:
 
 ```toml
-libertas-matter = { git = "https://github.com/LibertasIoT/libertas-matter", package = "libertas-matter", default-features = false, features = ["alloc"] }
+libertas-matter = { path = "../../../rust/libertas-matter/libertas-matter", package = "libertas-matter", default-features = false, features = ["alloc"] }
 ```
 
 Keep the direct `libertas` dependency on the same revision expected by
