@@ -108,7 +108,7 @@ pub enum TaxInterviewProtocol {
         progress: Vec<u8>,
         /// About this return
         value: FederalSetup,
-        /// Confirm retained amounts use the changed full-year basis
+        /// Confirm that changing the full-year basis erases saved later sections
         #[libertas_default(false)]
         confirm_basis_change: bool,
     },
@@ -116,6 +116,9 @@ pub enum TaxInterviewProtocol {
     #[libertas_response]
     #[libertas_workflow_request("SavePeople")]
     BeginPeople {
+        /// Allowed spouse branches
+        #[libertas_hidden]
+        allowed_spouse: Vec<i32>,
         /// Return identity
         #[libertas_hidden]
         #[libertas_read_only]
@@ -149,6 +152,10 @@ pub enum TaxInterviewProtocol {
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
     )]
     SavePeople {
+        /// Allowed spouse branches
+        #[libertas_hidden]
+        #[libertas_copy_from("$.allowed_spouse")]
+        allowed_spouse: Vec<i32>,
         /// Return identity
         #[libertas_hidden]
         #[libertas_read_only]

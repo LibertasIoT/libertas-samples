@@ -76,6 +76,13 @@ impl Interview {
             },
             1 => match &d.people {
                 Some(value) => Reply::Edit(P::SavePeople {
+                    allowed_spouse: alloc::vec![if d.setup.as_ref().unwrap().filing_status()
+                        == FederalStatus::Joint
+                    {
+                        1
+                    } else {
+                        0
+                    }],
                     cookie,
                     revision,
                     page,
@@ -85,6 +92,13 @@ impl Interview {
                     value: value.clone(),
                 }),
                 None => Reply::Response(P::BeginPeople {
+                    allowed_spouse: alloc::vec![if d.setup.as_ref().unwrap().filing_status()
+                        == FederalStatus::Joint
+                    {
+                        1
+                    } else {
+                        0
+                    }],
                     cookie,
                     revision,
                     page,
@@ -211,11 +225,20 @@ impl Interview {
         }
     }
     fn accept(&mut self, mut draft: FederalDraft, page: i32, review: bool) -> Reply {
+        // A review-only Next is navigation: compare answers before touching saved
+        // history, completion, or revision. Cookie/navigation metadata is not in draft.
+        if draft == self.draft {
+            return if review {
+                self.review()
+            } else {
+                self.page((page + 1).min(self.draft.first_incomplete()), false)
+            };
+        }
+        // Replace the accepted page and remove its downstream answers in the same
+        // persisted record. Never reuse identities from erased dependent/document rows.
+        draft.erase_after(page);
         if !draft.valid_stored() {
             return problem("Review the accepted page values before saving.");
-        }
-        if page < 9 && draft.review_from == page {
-            draft.review_from += 1;
         }
         let Some(revision) = draft.revision.checked_add(1).filter(|r| *r < i64::MAX) else {
             return problem("This return has reached the supported revision limit.");
@@ -340,15 +363,13 @@ impl Interview {
                     return Some(problem("This section is not available yet."));
                 }
                 let mut draft = d.clone();
-                if let Some(old) = &d.setup {
-                    if old.basis != value.basis && !confirm_basis_change {
-                        return Some(problem(
-                            "Confirm that retained amounts use the new full-year basis before saving.",
-                        ));
-                    }
-                    if old.basis != value.basis || old.filing_status() != value.filing_status() {
-                        draft.review_from = 1;
-                    }
+                if let Some(old) = &d.setup
+                    && old.basis != value.basis
+                    && !confirm_basis_change
+                {
+                    return Some(problem(
+                        "Confirm the basis change; saved later sections will be erased.",
+                    ));
                 }
                 draft.setup = Some(value);
                 self.accept(draft, page, review)
@@ -503,7 +524,7 @@ impl Interview {
                 if remove {
                     let mut draft = d.clone();
                     draft.dependents.remove(selection as usize);
-                    let reply = self.accept(draft, 9, true);
+                    let reply = self.accept(draft, 2, true);
                     if matches!(reply, Reply::Response(P::Problem { .. })) {
                         reply
                     } else {
@@ -548,7 +569,7 @@ impl Interview {
                     };
                     *existing = value;
                 }
-                let reply = self.accept(draft, 9, true);
+                let reply = self.accept(draft, 2, true);
                 if matches!(reply, Reply::Response(P::Problem { .. })) || review {
                     reply
                 } else {
@@ -597,7 +618,7 @@ impl Interview {
                 if remove {
                     let mut draft = d.clone();
                     draft.income.remove(selection as usize);
-                    let reply = self.accept(draft, 9, true);
+                    let reply = self.accept(draft, 3, true);
                     if matches!(reply, Reply::Response(P::Problem { .. })) {
                         reply
                     } else {
@@ -642,7 +663,7 @@ impl Interview {
                     };
                     *existing = value;
                 }
-                let reply = self.accept(draft, 9, true);
+                let reply = self.accept(draft, 3, true);
                 if matches!(reply, Reply::Response(P::Problem { .. })) || review {
                     reply
                 } else {

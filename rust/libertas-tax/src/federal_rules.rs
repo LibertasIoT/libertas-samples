@@ -281,7 +281,6 @@ impl FederalDraft {
             next_id: 1,
             cookie,
             revision: 0,
-            review_from: 9,
             setup: None,
             people: None,
             dependents: Vec::new(),
@@ -297,9 +296,6 @@ impl FederalDraft {
         }
     }
     pub(crate) fn first_incomplete(&self) -> i32 {
-        self.review_from.min(self.first_missing())
-    }
-    fn first_missing(&self) -> i32 {
         if self.setup.is_none() {
             0
         } else if self.people.is_none() {
@@ -322,9 +318,37 @@ impl FederalDraft {
             9
         }
     }
+    pub(crate) fn erase_after(&mut self, page: i32) {
+        if page < 1 {
+            self.people = None;
+        }
+        if page < 2 {
+            self.dependents.clear();
+            self.dependents_complete = false;
+        }
+        if page < 3 {
+            self.income.clear();
+            self.income_complete = false;
+        }
+        if page < 4 {
+            self.adjustments = None;
+        }
+        if page < 5 {
+            self.deductions = None;
+        }
+        if page < 6 {
+            self.credits = None;
+        }
+        if page < 7 {
+            self.screening = None;
+        }
+        if page < 8 {
+            self.payments = None;
+        }
+        self.finished = false;
+    }
     pub(crate) fn valid_stored(&self) -> bool {
-        if !(0..=9).contains(&self.review_from)
-            || self.tax_year != 2026
+        if self.tax_year != 2026
             || self.cookie.is_empty()
             || self.cookie.len() > 128
             || self.revision < 0
@@ -358,7 +382,12 @@ impl FederalDraft {
             return false;
         }
         if self.people.as_ref().is_some_and(|v| {
-            !valid_birth(v.taxpayer.birth_date)
+            v.taxpayer.name.trim().is_empty()
+                || v.taxpayer.name.len() > 160
+                || v.spouse
+                    .as_ref()
+                    .is_some_and(|p| p.name.trim().is_empty() || p.name.len() > 160)
+                || !valid_birth(v.taxpayer.birth_date)
                 || v.spouse
                     .as_ref()
                     .is_some_and(|p| !valid_birth(p.birth_date))

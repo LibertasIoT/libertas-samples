@@ -156,6 +156,10 @@ pub enum HsaCoverage {
 /// Filer eligibility
 #[derive(Clone, Debug, PartialEq, Eq, LibertasAvroEncode, LibertasAvroDecode, LibertasExport)]
 pub struct FederalPerson {
+    /// Fictional full name
+    /// Use synthetic names in this prototype.
+    #[libertas_size(min = 1, max = 160)]
+    pub name: String,
     /// Fictional date of birth
     #[libertas_date_only]
     pub birth_date: u32,
@@ -260,6 +264,7 @@ pub struct FederalPeople {
     /// You
     pub taxpayer: FederalPerson,
     /// Spouse — required only for a joint return
+    #[libertas_constrained_by("$.allowed_spouse")]
     pub spouse: SpouseFiler,
 }
 
@@ -846,8 +851,6 @@ pub struct FederalDraft {
     pub next_id: i64,
     /// Return identity
     pub cookie: String,
-    /// First retained page requiring confirmation after a status or basis change
-    pub review_from: i32,
     /// Accepted revision
     pub revision: i64,
     /// Return setup

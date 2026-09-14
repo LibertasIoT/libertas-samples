@@ -7,6 +7,7 @@ use TaxInterviewProtocol as P;
 use alloc::vec;
 fn person() -> FederalPerson {
     FederalPerson {
+        name: "Synthetic Filer".into(),
         birth_date: 19800615,
         blind: false,
         full_year_resident: Answer::Yes,
@@ -847,7 +848,7 @@ fn list_selection_is_revision_checked_and_uses_server_records() {
     assert_eq!(s.draft.income.len(), 1);
 }
 #[test]
-fn basis_change_preserves_documents_and_requires_review() {
+fn basis_change_erases_later_pages() {
     let d = complete(FederalStatus::Single);
     let mut s = Interview::new(d.clone());
     let mut setup = d.setup.clone().unwrap();
@@ -877,13 +878,13 @@ fn basis_change_preserves_documents_and_requires_review() {
             confirm_basis_change: true,
         },
     );
-    assert_eq!(s.draft.income, d.income);
+    assert!(s.draft.income.is_empty());
     assert_eq!(s.draft.first_incomplete(), 1);
     assert_eq!(estimate(&s.draft).state, ResultState::Incomplete);
     let mut restarted = restart(s.draft);
     assert!(matches!(
         send(&mut restarted, P::OpenInterview),
-        Reply::Edit(P::SavePeople { .. })
+        Reply::Response(P::BeginPeople { .. })
     ));
 }
 #[test]
@@ -952,6 +953,7 @@ fn new_workflow_restarts_after_each_accepted_section() {
                 confirm_basis_change: false,
             },
             Reply::Response(P::BeginPeople {
+                allowed_spouse,
                 cookie,
                 revision,
                 page,
@@ -959,6 +961,7 @@ fn new_workflow_restarts_after_each_accepted_section() {
                 review,
                 progress,
             }) => P::SavePeople {
+                allowed_spouse,
                 cookie,
                 revision,
                 page,
@@ -1188,7 +1191,7 @@ fn failed_deletion_at_revision_limit_is_not_reported_as_success() {
     assert!(!s.dirty);
 }
 #[test]
-fn joint_status_change_retains_answers_and_resumes_reconfirmation() {
+fn joint_status_change_erases_later_pages() {
     let d = complete(FederalStatus::Single);
     let mut s = Interview::new(d.clone());
     let mut setup = d.setup.clone().unwrap();
@@ -1209,12 +1212,13 @@ fn joint_status_change_retains_answers_and_resumes_reconfirmation() {
             confirm_basis_change: false,
         },
     );
-    assert_eq!(s.draft.income, d.income);
+    assert!(s.draft.income.is_empty());
     assert_eq!(s.draft.first_incomplete(), 1);
     let old = s.draft.clone();
     error(send(
         &mut s,
         P::SavePeople {
+            allowed_spouse: vec![1],
             cookie: old.cookie,
             revision: old.revision,
             page: 1,
@@ -2311,4 +2315,119 @@ fn ira_spouse_branch_must_match_the_return_context() {
         )
         .is_ok()
     );
+}
+
+#[test]
+fn unchanged_history_next_preserves_every_saved_page_and_completion() {
+    let mut original = complete(FederalStatus::Single);
+    original.finished = true;
+    let mut session = Interview::new(original.clone());
+    let reply = send(
+        &mut session,
+        P::SavePeople {
+            cookie: original.cookie.clone(),
+            revision: original.revision,
+            allowed_spouse: vec![0],
+            page: 1,
+            previous: 0,
+            review: false,
+            progress: vec![],
+            value: original.people.clone().unwrap(),
+        },
+    );
+    assert!(matches!(reply, Reply::Response(P::Children { .. })));
+    assert_eq!(session.draft, original);
+    assert!(!session.dirty);
+    assert_eq!(restart(session.draft).draft, original);
+}
+
+#[test]
+fn changed_history_replaces_page_and_erases_downstream_atomically() {
+    let original = complete(FederalStatus::Single);
+    let mut session = Interview::new(original.clone());
+    let mut people = original.people.clone().unwrap();
+    people.taxpayer.name = "Another Synthetic Filer".into();
+    send(
+        &mut session,
+        P::SavePeople {
+            cookie: original.cookie.clone(),
+            revision: original.revision,
+            allowed_spouse: vec![0],
+            page: 1,
+            previous: 0,
+            review: false,
+            progress: vec![],
+            value: people.clone(),
+        },
+    );
+    let saved = &session.draft;
+    assert_eq!(saved.setup, original.setup);
+    assert_eq!(saved.people, Some(people));
+    assert!(saved.dependents.is_empty() && !saved.dependents_complete);
+    assert!(saved.income.is_empty() && !saved.income_complete);
+    assert!(saved.adjustments.is_none() && saved.deductions.is_none());
+    assert!(saved.credits.is_none() && saved.screening.is_none() && saved.payments.is_none());
+    assert!(!saved.finished);
+    assert_eq!(saved.next_id, original.next_id);
+    assert_eq!(saved.revision, original.revision + 1);
+    assert!(session.dirty);
+    let mut restored = restart(session.draft.clone());
+    assert!(matches!(
+        send(&mut restored, P::OpenInterview),
+        Reply::Response(P::Children { .. })
+    ));
+    error(send(
+        &mut session,
+        P::SavePeople {
+            cookie: original.cookie,
+            revision: original.revision,
+            allowed_spouse: vec![0],
+            page: 1,
+            previous: 0,
+            review: false,
+            progress: vec![],
+            value: original.people.unwrap(),
+        },
+    ));
+    assert_eq!(session.draft, restored.draft);
+}
+
+#[test]
+fn rejected_history_edit_preserves_downstream_answers() {
+    let original = complete(FederalStatus::Single);
+    let mut session = Interview::new(original.clone());
+    let mut people = original.people.clone().unwrap();
+    people.taxpayer.name.clear();
+    error(send(
+        &mut session,
+        P::SavePeople {
+            cookie: original.cookie.clone(),
+            revision: original.revision,
+            allowed_spouse: vec![0],
+            page: 1,
+            previous: 0,
+            review: false,
+            progress: vec![],
+            value: people,
+        },
+    ));
+    assert_eq!(session.draft, original);
+    assert!(!session.dirty);
+}
+
+#[test]
+fn erasure_boundaries_cover_all_nine_sections() {
+    for page in 0..9 {
+        let mut draft = complete(FederalStatus::Single);
+        draft.erase_after(page);
+        assert_eq!(draft.people.is_none(), page < 1);
+        assert_eq!(!draft.dependents_complete, page < 2);
+        assert_eq!(!draft.income_complete, page < 3);
+        assert_eq!(draft.adjustments.is_none(), page < 4);
+        assert_eq!(draft.deductions.is_none(), page < 5);
+        assert_eq!(draft.credits.is_none(), page < 6);
+        assert_eq!(draft.screening.is_none(), page < 7);
+        assert_eq!(draft.payments.is_none(), page < 8);
+        assert!(draft.valid_stored());
+    }
 }
