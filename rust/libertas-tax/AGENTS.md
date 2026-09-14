@@ -60,3 +60,11 @@ the public documentation export.
 - An unfinished form is not an encodable non-nullable Request. Any preview
   protocol must explicitly model partial answers and unknown computed results.
   Report gaps before adding an automatic-calculation macro or changing encoding.
+
+## Prototype contract naming
+
+Use one current data model and protocol, with unsuffixed type and variant names.
+The user has waived backward compatibility for this unreleased App; do not retain
+retired payloads, migration branches, or historical ABI tests. This overrides the
+parent's versioned-payload guidance for this App. Keep tax-year and accepted-edit
+revision tracking, which serve tax rules and concurrency rather than compatibility.

@@ -1,0 +1,3877 @@
+{
+  "DocumentVersion": "0.0.2",
+  "Locale": "en",
+  "DisplayName": "Libertas tax interview prototype",
+  "Description": "Interview, saved accepted answers, and a U.S. federal tax year 2026 estimate. Use synthetic data only. This prototype does not file a return.",
+  "StringResources": {
+    "RETURN_DATA": "Saved 2026 federal prototype return",
+    "TEXT": "{0}"
+  },
+  "List": [
+    {
+      "Name": "tax_interview",
+      "DisplayName": "Tax interview prototype",
+      "Description": "Create one saved synthetic return per task. Resume accepted pages after reopening; unfinished edits are discarded. No return is filed.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Tax interview",
+          "Description": "Open the synthetic U.S. federal tax year 2026 interview.",
+          "DefaultText": "Tax interview prototype"
+        }
+      ],
+      "DefaultTaskName": "Tax interview prototype"
+    }
+  ],
+  "Types": [
+    {
+      "Name": "AmountBasis",
+      "DisplayName": "AmountBasis",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "AmountBasis",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Full-year 2026 actual amounts",
+              "Description": "Use only after you have the complete year, not year-to-date amounts."
+            },
+            {
+              "Type": 2,
+              "Name": "Full-year 2026 estimates",
+              "Description": "Enter your own full-year estimates; this App does not annualize partial-year amounts."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Answer",
+      "DisplayName": "Answer",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Answer",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Yes",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "No",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "Not sure",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "CalculationLine",
+      "DisplayName": "CalculationLine",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "CalculationLine",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Stable calculation identifier",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Result",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Inputs",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Accepted input or earlier calculation identifier",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Rule identifier",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Authoritative source",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "Explanation",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "CareClaim",
+      "DisplayName": "Work-related dependent-care credit to evaluate",
+      "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Work-related dependent-care credit to evaluate",
+          "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Work-related care expenses for a disabled spouse, net of reimbursements; child expenses belong on each dependent",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "residency, earned-income and eligible-provider requirements are met; choose Not sure when unresolved",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Employer-provided dependent-care benefits excluded from income",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "CharityClaim",
+      "DisplayName": "Cash charitable gifts to evaluate",
+      "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Cash charitable gifts to evaluate",
+          "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Current-year cash gifts to eligible public charities, excluding goods/services received",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "eligible organizations and substantiation, no donor-advised fund or supporting organization; choose Not sure when unresolved",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "DeductionSelection",
+      "DisplayName": "Deduction to evaluate",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Deduction to evaluate",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Choose the larger allowed deduction",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Have itemized expenses to compare",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Standard deduction",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Itemized deduction",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Itemized expenses",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "DependentCare",
+      "DisplayName": "Work-related care expenses for this dependent",
+      "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Work-related care expenses for this dependent",
+          "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Eligible work-related care costs for this person, after reimbursements",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Care costs include only periods before age 13, or while incapable of self-care",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "DependentResidency",
+      "DisplayName": "Dependent residence period",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Dependent residence period",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Count days in the home",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Days in your home in 2026, including qualifying temporary absences",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Qualifying whole-year residency exception",
+          "Description": "Newborn, death or temporary-absence rule treats residency as the whole year."
+        }
+      ]
+    },
+    {
+      "Name": "EducationChoice",
+      "DisplayName": "Education credit to evaluate",
+      "Description": "Credit-specific questions belong only to the selected credit.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Education credit to evaluate",
+          "Description": "Credit-specific questions belong only to the selected credit."
+        },
+        {
+          "Type": 1,
+          "Name": "American opportunity credit",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "First four years, fewer than four prior claims, at least half-time degree study, and no disqualifying drug conviction",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Lifetime learning credit",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "EducatorClaim",
+      "DisplayName": "Educator expenses to evaluate",
+      "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Educator expenses to evaluate",
+          "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Your unreimbursed eligible educator expenses",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Spouse’s unreimbursed eligible educator expenses",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "each claimant meets the classroom educator requirements; choose Not sure when unresolved",
+          "Description": "K–12 teacher, instructor, counselor, principal or aide working at least 900 hours. Expenses are eligible professional development or classroom supplies, net of reimbursements and other tax benefits. Exclude nonathletic health/physical-education supplies and coaching-only expenses. The backend allocates the above-line limit and the remainder to itemized deductions."
+        }
+      ]
+    },
+    {
+      "Name": "FederalAdjustments",
+      "DisplayName": "Adjustments to income",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Adjustments to income",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Student-loan interest to evaluate",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Educator expenses to evaluate",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Health savings accounts",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Hsa entry",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Traditional and Roth IRA contributions",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Self-employed health insurance/retirement contributions, alimony, moving expenses or another adjustment applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalAmount",
+      "DisplayName": "Calculation amount",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Calculation amount",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Calculation",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Amount",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "How this amount was calculated",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalBusiness",
+      "DisplayName": "Sole-proprietor business",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sole-proprietor business",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Cash-basis gross receipts including reported 1099 income once",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Ordinary deductible business expenses, excluding personal and separately claimed deductions",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Actively and materially participated in this business",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Inventory, depreciation, home office, employees, farming, partnership/S-corporation, foreign activity, prior losses or a special tax election applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalCredits",
+      "DisplayName": "Other common credits",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Other common credits",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Students on this return",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Student",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Education students",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Education entry",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Work-related dependent-care credit to evaluate",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Saver’s Credit for workplace retirement contributions",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "ABLE Saver’s Credit, adoption, foreign tax, Marketplace premium tax credit, business credits, prior credit disallowance/recapture or another credit applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalDeductions",
+      "DisplayName": "Deductions",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Deductions",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Standard or itemized deduction",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Cash charitable gifts to evaluate",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Noncash gifts, carryovers, casualty losses, investment interest, gambling losses, coaching-only or other expanded educator expenses not entered in Adjustments, or another deduction applies",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Personal vehicle loan interest",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Vehicle loan",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Self-employed tips, overtime outside W-2 income, unreported tips or special vehicle-interest treatment applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalDependent",
+      "DisplayName": "Children and people you support",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Children and people you support",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Accepted record identity",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Fictional dependent label",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Fictional birth date",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Relationship",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Time in your home during 2026",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Main home with you was in the United States for more than half the year",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "Full-time student for at least five months",
+          "Description": ""
+        },
+        {
+          "Type": 8,
+          "Name": "Permanently and totally disabled",
+          "Description": ""
+        },
+        {
+          "Type": 9,
+          "Name": "Physically or mentally incapable of self-care",
+          "Description": ""
+        },
+        {
+          "Type": 10,
+          "Name": "Provided more than half their own support",
+          "Description": ""
+        },
+        {
+          "Type": 11,
+          "Name": "You provided more than half their total support",
+          "Description": ""
+        },
+        {
+          "Type": 12,
+          "Name": "Work-related care expenses for this dependent",
+          "Description": ""
+        },
+        {
+          "Type": 13,
+          "Name": "Person’s gross income for the qualifying-relative test",
+          "Description": ""
+        },
+        {
+          "Type": 14,
+          "Name": "U.S. citizen, U.S. national or U.S. resident alien",
+          "Description": ""
+        },
+        {
+          "Type": 15,
+          "Name": "Valid employment-authorized SSN issued by the due date; do not enter it",
+          "Description": ""
+        },
+        {
+          "Type": 16,
+          "Name": "Valid SSN, ITIN or ATIN issued by the due date; do not enter it",
+          "Description": ""
+        },
+        {
+          "Type": 17,
+          "Name": "Filed a joint return other than only to obtain a refund",
+          "Description": ""
+        },
+        {
+          "Type": 18,
+          "Name": "Another person may claim this child or a custody/tiebreaker agreement applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalDividend",
+      "DisplayName": "Dividends",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Dividends",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Ordinary dividends, including qualified dividends",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Qualified dividends meeting the holding-period rules",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Ordinary long-term capital gain distributions",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Federal income tax withheld",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Collectibles, unrecaptured section 1250 gains, foreign tax, REIT/PTP distributions or another special treatment applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalDraft",
+      "DisplayName": "Accepted federal return",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Accepted federal return",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Tax year",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Next document or person identity",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "First retained page requiring confirmation after a status or basis change",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Return setup",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "Filer facts",
+          "Description": ""
+        },
+        {
+          "Type": 8,
+          "Name": "Accepted children and dependents",
+          "Description": ""
+        },
+        {
+          "Type": 9,
+          "Name": "",
+          "Description": ""
+        },
+        {
+          "Type": 10,
+          "Name": "Children and dependents reviewed",
+          "Description": ""
+        },
+        {
+          "Type": 11,
+          "Name": "Accepted income documents",
+          "Description": ""
+        },
+        {
+          "Type": 12,
+          "Name": "",
+          "Description": ""
+        },
+        {
+          "Type": 13,
+          "Name": "Income documents reviewed",
+          "Description": ""
+        },
+        {
+          "Type": 14,
+          "Name": "Accepted adjustments",
+          "Description": ""
+        },
+        {
+          "Type": 15,
+          "Name": "Accepted deductions",
+          "Description": ""
+        },
+        {
+          "Type": 16,
+          "Name": "Accepted common credits",
+          "Description": ""
+        },
+        {
+          "Type": 17,
+          "Name": "Accepted coverage review",
+          "Description": ""
+        },
+        {
+          "Type": 18,
+          "Name": "Accepted payments",
+          "Description": ""
+        },
+        {
+          "Type": 19,
+          "Name": "Review completed",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalEducation",
+      "DisplayName": "Education credit facts",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Education credit facts",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Student",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Credit to evaluate for this student",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Eligible expenses after scholarships, grants, refunds and amounts used for any other tax benefit",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Eligible institution, student and taxpayer; no double benefit or competing claim",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalHsa",
+      "DisplayName": "HSA contribution",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "HSA contribution",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Account owner",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Eligible coverage for the entire year",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Personal contributions not excluded from wages",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Employer and payroll-excluded contributions",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Distributions used entirely for qualified medical expenses",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Eligible all year with no disqualifying coverage, Medicare, excess contributions, last-month testing or nonmedical distributions",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalIncome",
+      "DisplayName": "Income document",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Income document",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "W-2",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Document amounts and facts",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Interest",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Document amounts and facts",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Dividends",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Document amounts and facts",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "Investment sale",
+          "Description": ""
+        },
+        {
+          "Type": 8,
+          "Name": "Document amounts and facts",
+          "Description": ""
+        },
+        {
+          "Type": 9,
+          "Name": "Pension or IRA",
+          "Description": ""
+        },
+        {
+          "Type": 10,
+          "Name": "Document amounts and facts",
+          "Description": ""
+        },
+        {
+          "Type": 11,
+          "Name": "Social Security",
+          "Description": ""
+        },
+        {
+          "Type": 12,
+          "Name": "Document amounts and facts",
+          "Description": ""
+        },
+        {
+          "Type": 13,
+          "Name": "Unemployment",
+          "Description": ""
+        },
+        {
+          "Type": 14,
+          "Name": "Document amounts and facts",
+          "Description": ""
+        },
+        {
+          "Type": 15,
+          "Name": "Self-employment",
+          "Description": ""
+        },
+        {
+          "Type": 16,
+          "Name": "Document amounts and facts",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalIncomeEntry",
+      "DisplayName": "Income source",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Income source",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Accepted record identity",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Fictional employer, payer or business label",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Income owner",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Document type and facts",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalInterest",
+      "DisplayName": "Interest",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Interest",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Ordinary taxable bank interest",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Tax-exempt interest, excluding private-activity bond interest",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Federal income tax withheld",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Bond discounts, premium amortization, private-activity bonds, foreign interest or savings-bond exclusions apply",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalIraContribution",
+      "DisplayName": "Annual IRA contributions for one filer",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Annual IRA contributions for one filer",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Regular traditional IRA contributions designated for 2026",
+          "Description": "Aggregate all accounts. Include planned contributions made by the filing deadline without extensions."
+        },
+        {
+          "Type": 2,
+          "Name": "Regular Roth IRA contributions designated for 2026",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Covered by a retirement plan at work during 2026",
+          "Description": "Check all employers and self-employment plans, even if no IRA contribution was made."
+        }
+      ]
+    },
+    {
+      "Name": "FederalIras",
+      "DisplayName": "IRA contributions",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "IRA contributions",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Your contributions and workplace coverage",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Spouse situation for the IRA worksheet",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Regular timely contributions only; no rollovers, conversions, recharacterizations, excess carryovers, repayments or special compensation",
+          "Description": "Compensation comes from the wages and supported business earnings entered in Income. No traditional IRA basis or distributions requiring basis allocation, and no 501(c)(18) plan deductions. The estimate takes the maximum allowed traditional deduction; choosing a smaller deduction is not supported."
+        }
+      ]
+    },
+    {
+      "Name": "FederalIssue",
+      "DisplayName": "Item needing review",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Item needing review",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Section",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Explanation",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalPayments",
+      "DisplayName": "Federal payments",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Federal payments",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Estimated federal payments",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Extension payment",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalPeople",
+      "DisplayName": "About the filers",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "About the filers",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "You",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Spouse — required only for a joint return",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalPerson",
+      "DisplayName": "Filer eligibility",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Filer eligibility",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Fictional date of birth",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Legally blind at year end",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "U.S. citizen or resident for all of 2026",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Alive at the end of 2026",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "This filer may be another taxpayer’s qualifying child for EITC, even if not their dependent",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Someone else can claim this filer as a dependent",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "Has a valid employment-authorized SSN issued by the return due date; do not enter the number",
+          "Description": ""
+        },
+        {
+          "Type": 8,
+          "Name": "Has a valid SSN or ITIN issued by the return due date; do not enter it",
+          "Description": ""
+        },
+        {
+          "Type": 9,
+          "Name": "Main home was in the United States for more than half of 2026",
+          "Description": ""
+        },
+        {
+          "Type": 10,
+          "Name": "Full-time student during part of at least five calendar months",
+          "Description": "Include qualifying full-time on-farm training; exclude on-the-job, correspondence and internet-only schools."
+        },
+        {
+          "Type": 11,
+          "Name": "Permanently and totally disabled",
+          "Description": ""
+        },
+        {
+          "Type": 12,
+          "Name": "Physically or mentally incapable of self-care",
+          "Description": ""
+        },
+        {
+          "Type": 13,
+          "Name": "Earned income compared with this filer’s total support",
+          "Description": ""
+        },
+        {
+          "Type": 14,
+          "Name": "At least one parent was alive at year end",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalResult",
+      "DisplayName": "2026 federal estimate",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "2026 federal estimate",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Coverage status",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Items needing review",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Issues entry",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Estimate method and limitations",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Calculation provenance",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "Calculation line",
+          "Description": ""
+        },
+        {
+          "Type": 8,
+          "Name": "Calculation breakdown",
+          "Description": ""
+        },
+        {
+          "Type": 9,
+          "Name": "Lines entry",
+          "Description": ""
+        },
+        {
+          "Type": 10,
+          "Name": "Total estimated federal tax",
+          "Description": ""
+        },
+        {
+          "Type": 11,
+          "Name": "Refundable credits",
+          "Description": ""
+        },
+        {
+          "Type": 12,
+          "Name": "Withholding and payments",
+          "Description": ""
+        },
+        {
+          "Type": 13,
+          "Name": "Estimated refund before penalties, interest and offsets",
+          "Description": ""
+        },
+        {
+          "Type": 14,
+          "Name": "Estimated balance before penalties and interest",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalRetirement",
+      "DisplayName": "Retirement distribution",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Retirement distribution",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Gross distribution",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Taxable amount known from the statement and applicable rules",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Federal income tax withheld",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Normal pension or IRA distribution with known taxable amount and no early-distribution tax, rollover, QCD, inherited-account or basis calculation",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalSale",
+      "DisplayName": "Investment sale",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Investment sale",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Holding period",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Sale proceeds",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Adjusted tax basis, including known commissions",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Disallowed wash-sale loss to add to gain or loss",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Unknown basis, stock compensation, options, collectibles, business property, home sale or another special treatment applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalSaver",
+      "DisplayName": "Saver’s Credit for retirement contributions",
+      "Description": "Optional: complete this if either filer made qualifying workplace or IRA contributions. This page calculates a credit only; do not subtract contributions from W-2 box 1 wages again. IRA contributions are included automatically from Adjustments. ABLE claims remain outside this worksheet.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Saver’s Credit for retirement contributions",
+          "Description": "Optional: complete this if either filer made qualifying workplace or IRA contributions. This page calculates a credit only; do not subtract contributions from W-2 box 1 wages again. IRA contributions are included automatically from Adjustments. ABLE claims remain outside this worksheet."
+        },
+        {
+          "Type": 1,
+          "Name": "Your qualifying 2026 workplace retirement contributions",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Spouse’s qualifying workplace retirement contributions",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "These are eligible employee contributions within the plan limits, after returned excess amounts",
+          "Description": "Include elective deferrals (including designated Roth) to 401(k), 403(b), governmental 457(b), salary-reduction SEP/SIMPLE or TSP plans, or voluntary after-tax employee plan contributions. Exclude employer matches, mandatory employer-treated contributions, rollovers and IRA/ABLE contributions. Special 501(c)(18)(D) deduction cases remain outside this worksheet."
+        },
+        {
+          "Type": 4,
+          "Name": "Distributions in the lookback period",
+          "Description": "List each recipient and year separately, including a spouse with no eligible contribution."
+        },
+        {
+          "Type": 5,
+          "Name": "Distribution",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "All counting distributions from January 1, 2024 through the 2026 return due date, including extensions, are included",
+          "Description": "For an estimate, include expected distributions through that date. Revisit this page if they change. Choose Not sure if eligibility, exclusions or the distribution history still need review."
+        }
+      ]
+    },
+    {
+      "Name": "FederalSaverDistribution",
+      "DisplayName": "Retirement distribution for the Saver’s Credit",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Retirement distribution for the Saver’s Credit",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Recipient",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "When received",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Distribution amount that counts against the credit",
+          "Description": "Include retirement-plan, traditional/Roth IRA and ABLE distributions. Exclude rollovers, conversions, deemed plan loans, timely returned or excess contributions and associated earnings, ESOP dividends, military pensions other than TSP, and nonspousal inherited-IRA distributions. Enter 2026 taxable income separately in Income; this entry only affects the credit."
+        }
+      ]
+    },
+    {
+      "Name": "FederalScreening",
+      "DisplayName": "Additional coverage checks",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Additional coverage checks",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Foreign income/accounts, tax treaties, nonresident periods or territories apply",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Rentals, royalties, trusts, estates, K-1s, farming, carried interests or other income not entered applies",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Capital losses from earlier years, NOLs, AMT credits or other carryovers apply",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "AMT adjustments/preferences, disability retirement, retirement penalties, household employment, unreported tips or another special tax applies",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Any other federal income, deduction, credit, tax or uncertain tax treatment applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalSetup",
+      "DisplayName": "About this return",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "About this return",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Fictional return label",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Full-year actual amounts or your own full-year estimates",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Filing status to evaluate",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Marital situation",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Paid more than half the cost of maintaining the qualifying home",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Community-property allocation or income splitting applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalSocial",
+      "DisplayName": "Social Security",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Social Security",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "SSA-1099 box 5 net benefits",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Federal income tax withheld",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Prior-year lump sums, benefit repayments exceeding receipts, railroad benefits or treaty treatment applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalStudent",
+      "DisplayName": "Student choice",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Student choice",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Person identity",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Student",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalUnemployment",
+      "DisplayName": "Unemployment compensation",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Unemployment compensation",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Taxable unemployment compensation",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Federal income tax withheld",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Benefits were repaid or another special treatment applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalVehicleInterest",
+      "DisplayName": "Personal vehicle loan interest",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Personal vehicle loan interest",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Fictional vehicle label",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Qualified 2026 personal-use interest paid on this loan",
+          "Description": "Exclude principal, fees and interest deducted for business use or elsewhere."
+        },
+        {
+          "Type": 3,
+          "Name": "Eligible new personal vehicle and purchase loan originated after 2024, secured by a first lien",
+          "Description": "Original use began with you; eligible vehicle under 14,000 pounds assembled in the United States. No related-party loan or lease. Refinancing is limited to qualifying outstanding purchase debt. Retain VIN and lender records for eventual filing; enter no real identifiers in this prototype."
+        }
+      ]
+    },
+    {
+      "Name": "FederalWage",
+      "DisplayName": "W-2 wages",
+      "Description": "Enter annual totals once per employer. Combine multiple W-2s from that employer; use corrected amounts instead of duplicating the original.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "W-2 wages",
+          "Description": "Enter annual totals once per employer. Combine multiple W-2s from that employer; use corrected amounts instead of duplicating the original."
+        },
+        {
+          "Type": 1,
+          "Name": "Box 1 wages",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Box 2 federal income tax withheld",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Box 3 Social Security wages",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Box 7 Social Security tips — do not add these to box 1 again",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Qualified tips and overtime deductions",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Box 4 Social Security tax withheld",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "Box 5 Medicare wages",
+          "Description": ""
+        },
+        {
+          "Type": 8,
+          "Name": "Box 6 Medicare tax withheld",
+          "Description": ""
+        },
+        {
+          "Type": 9,
+          "Name": "Unreported/allocated tips, railroad wages, stock compensation, dependent-care benefits or another special W-2 treatment applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalWorkDeductions",
+      "DisplayName": "Qualified tips and overtime on this W-2",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Qualified tips and overtime on this W-2",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Qualified tips to evaluate",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Qualified overtime to evaluate",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FilingChoice",
+      "DisplayName": "Filing status to evaluate",
+      "Description": "Select a status; the backend checks eligibility from the household facts.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Filing status to evaluate",
+          "Description": "Select a status; the backend checks eligibility from the household facts."
+        },
+        {
+          "Type": 1,
+          "Name": "Single",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Married filing jointly",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Married filing separately",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Your spouse will itemize deductions",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Head of household",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Qualifying surviving spouse",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "GainTerm",
+      "DisplayName": "Holding period",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Holding period",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Held one year or less",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Held more than one year",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "HsaCoverage",
+      "DisplayName": "HSA coverage",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "HSA coverage",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Self-only eligible coverage all year",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Family eligible coverage all year",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "IraChoice",
+      "DisplayName": "Traditional or Roth IRA contributions",
+      "Description": "Select Yes to provide the applicable facts; No carries no additional data.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Traditional or Roth IRA contributions",
+          "Description": "Select Yes to provide the applicable facts; No carries no additional data."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Applicable facts",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "IraSpouse",
+      "DisplayName": "Spouse situation for IRA contributions and workplace coverage",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Spouse situation for IRA contributions and workplace coverage",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Not filing jointly or separately while living together",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Joint return",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Spouse’s contributions and workplace coverage, including when contributions are zero",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Separate return; lived together during the year",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Spouse covered by a workplace retirement plan",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ItemizedChoice",
+      "DisplayName": "Itemized expenses to compare with the standard deduction",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Itemized expenses to compare with the standard deduction",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Itemized expenses",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ItemizedExpenses",
+      "DisplayName": "Expenses for an itemized deduction",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Expenses for an itemized deduction",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Unreimbursed eligible medical and dental expenses, excluding HSA/FSA reimbursements",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Eligible state/local income OR sales tax, plus real-estate and personal-property taxes; never both income and sales tax",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Home mortgage interest to evaluate",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "MaritalState",
+      "DisplayName": "Marital situation at the end of 2026",
+      "Description": "Only the selected situation asks its applicable spouse questions.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Marital situation at the end of 2026",
+          "Description": "Only the selected situation asks its applicable spouse questions."
+        },
+        {
+          "Type": 1,
+          "Name": "Unmarried, divorced, or legally separated",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Married",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Living arrangements with your spouse",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Spouse died in 2026; not remarried",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Spouse died in 2025; not remarried",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Could file jointly for your spouse’s year of death",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "Spouse died in 2024; not remarried",
+          "Description": ""
+        },
+        {
+          "Type": 8,
+          "Name": "Could file jointly for your spouse’s year of death",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "MortgageClaim",
+      "DisplayName": "Home mortgage interest to evaluate",
+      "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Home mortgage interest to evaluate",
+          "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Qualified acquisition mortgage interest",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "qualified home acquisition debt is within the applicable $750,000/$1,000,000 limits (half for separate returns), with no mixed-use debt; choose Not sure when unresolved",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "OvertimeClaim",
+      "DisplayName": "Qualified overtime to evaluate",
+      "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Qualified overtime to evaluate",
+          "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Qualified FLSA overtime premium reported by this employer for 2026",
+          "Description": "Enter only the qualifying premium above the regular rate, not total overtime wages. The amount must already be included in this W-2's wages."
+        },
+        {
+          "Type": 4,
+          "Name": "Employee and premium qualify under federal FLSA rules and the 2026 reporting requirements; choose Not sure when unresolved",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "Owner",
+      "DisplayName": "Owner",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Owner",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "You",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Your spouse",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Relationship",
+      "DisplayName": "Relationship to you",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Relationship to you",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Child, adopted child or stepchild",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Eligible foster child placed by an authorized agency or court",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "Grandchild or other descendant",
+              "Description": ""
+            },
+            {
+              "Type": 4,
+              "Name": "Sibling or stepsibling",
+              "Description": ""
+            },
+            {
+              "Type": 5,
+              "Name": "Niece or nephew",
+              "Description": ""
+            },
+            {
+              "Type": 6,
+              "Name": "Biological or adoptive parent",
+              "Description": ""
+            },
+            {
+              "Type": 7,
+              "Name": "Grandparent, stepparent, aunt, uncle, or qualifying in-law (not a cousin)",
+              "Description": ""
+            },
+            {
+              "Type": 8,
+              "Name": "Unrelated household member",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "ResultState",
+      "DisplayName": "ResultState",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "ResultState",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "More answers needed",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Outside this prototype’s coverage",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "Estimated for the supported scope",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "SaverChoice",
+      "DisplayName": "Workplace retirement contributions for Saver’s Credit",
+      "Description": "Select Yes to provide the applicable facts; No carries no additional data.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Workplace retirement contributions for Saver’s Credit",
+          "Description": "Select Yes to provide the applicable facts; No carries no additional data."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Applicable facts",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "SaverDistributionPeriod",
+      "DisplayName": "When the retirement distribution was received",
+      "Description": "For 2026 the backend uses this return's filing status; other years ask about joint filing.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "When the retirement distribution was received",
+          "Description": "For 2026 the backend uses this return's filing status; other years ask about joint filing."
+        },
+        {
+          "Type": 1,
+          "Name": "2024",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Filed jointly with the current spouse for this year",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "2025",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Filed jointly with the current spouse for this year",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "2026",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "2027, before the 2026 return due date including extensions",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "Filed or expect to file jointly with the current spouse for this year",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "SpouseAmount",
+      "DisplayName": "Applicable spouse amount",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Applicable spouse amount",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Amount for the spouse",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "SpouseFiler",
+      "DisplayName": "Spouse on a joint return",
+      "Description": "Select Yes to provide the applicable facts; No carries no additional data.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Spouse on a joint return",
+          "Description": "Select Yes to provide the applicable facts; No carries no additional data."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Applicable facts",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "SpouseLiving",
+      "DisplayName": "Living arrangements with your spouse during 2026",
+      "Description": "Select the period that describes when your spouse lived apart from you.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Living arrangements with your spouse during 2026",
+          "Description": "Select the period that describes when your spouse lived apart from you.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Lived together during some of the last six months",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Apart for the last six months, but not all year",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "Apart for the entire year",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "StudentLoanClaim",
+      "DisplayName": "Student-loan interest to evaluate",
+      "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Student-loan interest to evaluate",
+          "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Qualified student-loan interest paid, excluding reimbursed amounts",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "legally liable on an eligible education loan and not claimable as a dependent; choose Not sure when unresolved",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "SupportShare",
+      "DisplayName": "Earned income share of support",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Earned income share of support",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Less than half",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Exactly half",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "More than half",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "TaxAppData",
+      "DisplayName": "Saved tax return",
+      "Description": "Complete accepted pages; unfinished editor values are never stored.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Saved tax return",
+          "Description": "Complete accepted pages; unfinished editor values are never stored."
+        },
+        {
+          "Type": 1,
+          "Name": "Accepted 2026 return",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Accepted answers",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "TaxInterviewProtocol",
+      "DisplayName": "Tax interview",
+      "Description": "Accepted pages are saved. Unsubmitted edits are discarded when you leave. Synthetic data only; no return is filed.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Tax interview",
+          "Description": "Accepted pages are saved. Unsubmitted edits are discarded when you leave. Synthetic data only; no return is filed."
+        },
+        {
+          "Type": 1,
+          "Name": "Start or resume",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "About this return",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 8,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 9,
+          "Name": "About this return",
+          "Description": ""
+        },
+        {
+          "Type": 10,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 11,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 12,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 13,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 14,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 15,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 16,
+          "Name": "About this return",
+          "Description": ""
+        },
+        {
+          "Type": 17,
+          "Name": "Confirm retained amounts use the changed full-year basis",
+          "Description": ""
+        },
+        {
+          "Type": 18,
+          "Name": "About the filers",
+          "Description": ""
+        },
+        {
+          "Type": 19,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 20,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 21,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 22,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 23,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 24,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 25,
+          "Name": "About the filers",
+          "Description": ""
+        },
+        {
+          "Type": 26,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 27,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 28,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 29,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 30,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 31,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 32,
+          "Name": "About the filers",
+          "Description": ""
+        },
+        {
+          "Type": 33,
+          "Name": "Adjustments to income",
+          "Description": ""
+        },
+        {
+          "Type": 34,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 35,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 36,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 37,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 38,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 39,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 40,
+          "Name": "Adjustments to income",
+          "Description": ""
+        },
+        {
+          "Type": 41,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 42,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 43,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 44,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 45,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 46,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 47,
+          "Name": "Adjustments to income",
+          "Description": ""
+        },
+        {
+          "Type": 48,
+          "Name": "Deductions",
+          "Description": ""
+        },
+        {
+          "Type": 49,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 50,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 51,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 52,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 53,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 54,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 55,
+          "Name": "Deductions",
+          "Description": ""
+        },
+        {
+          "Type": 56,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 57,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 58,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 59,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 60,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 61,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 62,
+          "Name": "Deductions",
+          "Description": ""
+        },
+        {
+          "Type": 63,
+          "Name": "Education, care and retirement savings credits",
+          "Description": ""
+        },
+        {
+          "Type": 64,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 65,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 66,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 67,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 68,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 69,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 70,
+          "Name": "Students on this return",
+          "Description": ""
+        },
+        {
+          "Type": 71,
+          "Name": "Student",
+          "Description": ""
+        },
+        {
+          "Type": 72,
+          "Name": "Education, care and retirement savings credits",
+          "Description": ""
+        },
+        {
+          "Type": 73,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 74,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 75,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 76,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 77,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 78,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 79,
+          "Name": "Education, care and retirement savings credits",
+          "Description": ""
+        },
+        {
+          "Type": 80,
+          "Name": "Check remaining situations",
+          "Description": ""
+        },
+        {
+          "Type": 81,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 82,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 83,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 84,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 85,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 86,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 87,
+          "Name": "Check remaining situations",
+          "Description": ""
+        },
+        {
+          "Type": 88,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 89,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 90,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 91,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 92,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 93,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 94,
+          "Name": "Check remaining situations",
+          "Description": ""
+        },
+        {
+          "Type": 95,
+          "Name": "Federal payments",
+          "Description": ""
+        },
+        {
+          "Type": 96,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 97,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 98,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 99,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 100,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 101,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 102,
+          "Name": "Federal payments",
+          "Description": ""
+        },
+        {
+          "Type": 103,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 104,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 105,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 106,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 107,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 108,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 109,
+          "Name": "Federal payments",
+          "Description": ""
+        },
+        {
+          "Type": 110,
+          "Name": "Child or person you support",
+          "Description": ""
+        },
+        {
+          "Type": 111,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 112,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 113,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 114,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 115,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 116,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 117,
+          "Name": "Child or person you support",
+          "Description": ""
+        },
+        {
+          "Type": 118,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 119,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 120,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 121,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 122,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 123,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 124,
+          "Name": "Child or person you support",
+          "Description": ""
+        },
+        {
+          "Type": 125,
+          "Name": "Income document",
+          "Description": ""
+        },
+        {
+          "Type": 126,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 127,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 128,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 129,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 130,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 131,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 132,
+          "Name": "Income document",
+          "Description": ""
+        },
+        {
+          "Type": 133,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 134,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 135,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 136,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 137,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 138,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 139,
+          "Name": "Income document",
+          "Description": ""
+        },
+        {
+          "Type": 140,
+          "Name": "Document amount before return-level tax calculations",
+          "Description": "Social Security is gross benefits; investment sales are net gain/loss. This does not determine taxable income or final tax."
+        },
+        {
+          "Type": 141,
+          "Name": "Child or person you supports",
+          "Description": ""
+        },
+        {
+          "Type": 142,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 143,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 144,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 145,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 146,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 147,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 148,
+          "Name": "Accepted records",
+          "Description": ""
+        },
+        {
+          "Type": 149,
+          "Name": "Record",
+          "Description": ""
+        },
+        {
+          "Type": 150,
+          "Name": "Add Child or person you support",
+          "Description": ""
+        },
+        {
+          "Type": 151,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 152,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 153,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 154,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 155,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 156,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 157,
+          "Name": "Choose Child or person you support",
+          "Description": ""
+        },
+        {
+          "Type": 158,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 159,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 160,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 161,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 162,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 163,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 164,
+          "Name": "Accepted records",
+          "Description": ""
+        },
+        {
+          "Type": 165,
+          "Name": "Record",
+          "Description": ""
+        },
+        {
+          "Type": 166,
+          "Name": "Edit or remove Child or person you support",
+          "Description": ""
+        },
+        {
+          "Type": 167,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 168,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 169,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 170,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 171,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 172,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 173,
+          "Name": "Choose Child or person you support",
+          "Description": ""
+        },
+        {
+          "Type": 174,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 175,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 176,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 177,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 178,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 179,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 180,
+          "Name": "Accepted records",
+          "Description": ""
+        },
+        {
+          "Type": 181,
+          "Name": "Record",
+          "Description": ""
+        },
+        {
+          "Type": 182,
+          "Name": "Record",
+          "Description": ""
+        },
+        {
+          "Type": 183,
+          "Name": "Remove this record",
+          "Description": ""
+        },
+        {
+          "Type": 184,
+          "Name": "Income documents",
+          "Description": ""
+        },
+        {
+          "Type": 185,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 186,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 187,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 188,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 189,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 190,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 191,
+          "Name": "Accepted records",
+          "Description": ""
+        },
+        {
+          "Type": 192,
+          "Name": "Record",
+          "Description": ""
+        },
+        {
+          "Type": 193,
+          "Name": "Add Income document",
+          "Description": ""
+        },
+        {
+          "Type": 194,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 195,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 196,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 197,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 198,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 199,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 200,
+          "Name": "Choose Income document",
+          "Description": ""
+        },
+        {
+          "Type": 201,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 202,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 203,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 204,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 205,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 206,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 207,
+          "Name": "Accepted records",
+          "Description": ""
+        },
+        {
+          "Type": 208,
+          "Name": "Record",
+          "Description": ""
+        },
+        {
+          "Type": 209,
+          "Name": "Edit or remove Income document",
+          "Description": ""
+        },
+        {
+          "Type": 210,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 211,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 212,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 213,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 214,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 215,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 216,
+          "Name": "Choose Income document",
+          "Description": ""
+        },
+        {
+          "Type": 217,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 218,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 219,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 220,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 221,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 222,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 223,
+          "Name": "Accepted records",
+          "Description": ""
+        },
+        {
+          "Type": 224,
+          "Name": "Record",
+          "Description": ""
+        },
+        {
+          "Type": 225,
+          "Name": "Record",
+          "Description": ""
+        },
+        {
+          "Type": 226,
+          "Name": "Remove this record",
+          "Description": ""
+        },
+        {
+          "Type": 227,
+          "Name": "All records entered",
+          "Description": ""
+        },
+        {
+          "Type": 228,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 229,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 230,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 231,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 232,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 233,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 234,
+          "Name": "Back",
+          "Description": ""
+        },
+        {
+          "Type": 235,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 236,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 237,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 238,
+          "Name": "Review a section",
+          "Description": ""
+        },
+        {
+          "Type": 239,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 240,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 241,
+          "Name": "Section",
+          "Description": ""
+        },
+        {
+          "Type": 242,
+          "Name": "Review your federal estimate",
+          "Description": ""
+        },
+        {
+          "Type": 243,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 244,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 245,
+          "Name": "Federal estimate and coverage",
+          "Description": ""
+        },
+        {
+          "Type": 246,
+          "Name": "Finish review",
+          "Description": ""
+        },
+        {
+          "Type": 247,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 248,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 249,
+          "Name": "Finish prototype review",
+          "Description": ""
+        },
+        {
+          "Type": 250,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 251,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 252,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 253,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 254,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 255,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 256,
+          "Name": "Finish prototype review",
+          "Description": ""
+        },
+        {
+          "Type": 257,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 258,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 259,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 260,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 261,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 262,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 263,
+          "Name": "Prototype review completed",
+          "Description": ""
+        },
+        {
+          "Type": 264,
+          "Name": "Completion status",
+          "Description": ""
+        },
+        {
+          "Type": 265,
+          "Name": "Federal estimate",
+          "Description": ""
+        },
+        {
+          "Type": 266,
+          "Name": "Please review your answer",
+          "Description": ""
+        },
+        {
+          "Type": 267,
+          "Name": "What needs attention",
+          "Description": ""
+        },
+        {
+          "Type": 268,
+          "Name": "Calculate document preview",
+          "Description": ""
+        },
+        {
+          "Type": 269,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 270,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 271,
+          "Name": "Complete income document",
+          "Description": ""
+        },
+        {
+          "Type": 272,
+          "Name": "Document preview",
+          "Description": ""
+        },
+        {
+          "Type": 273,
+          "Name": "Document amount before return-level calculations",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "TaxSection",
+      "DisplayName": "Tax interview section",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Tax interview section",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "About this return",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Filers",
+              "Description": ""
+            },
+            {
+              "Type": 3,
+              "Name": "Children and people you support",
+              "Description": ""
+            },
+            {
+              "Type": 4,
+              "Name": "Income documents",
+              "Description": ""
+            },
+            {
+              "Type": 5,
+              "Name": "Adjustments",
+              "Description": ""
+            },
+            {
+              "Type": 6,
+              "Name": "Deductions",
+              "Description": ""
+            },
+            {
+              "Type": 7,
+              "Name": "Education, care and retirement savings credits",
+              "Description": ""
+            },
+            {
+              "Type": 8,
+              "Name": "Remaining situations",
+              "Description": ""
+            },
+            {
+              "Type": 9,
+              "Name": "Federal payments",
+              "Description": ""
+            },
+            {
+              "Type": 10,
+              "Name": "Review",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "TipsClaim",
+      "DisplayName": "Qualified tips to evaluate",
+      "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Qualified tips to evaluate",
+          "Description": "Choose Yes to enter the amounts and eligibility facts; No has no additional fields."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Qualified tips reported by this employer for 2026",
+          "Description": "Include only voluntary cash/charged or shared tips in an IRS-listed tipped occupation. Use the separately reported 2026 qualified amount; do not duplicate it as another income document."
+        },
+        {
+          "Type": 4,
+          "Name": "occupation, reporting and applicable 2026 specified-service-business requirements are satisfied; choose Not sure when unresolved",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "WorkDeductionChoice",
+      "DisplayName": "Qualified tips or overtime",
+      "Description": "Select Yes to provide the applicable facts; No carries no additional data.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Qualified tips or overtime",
+          "Description": "Select Yes to provide the applicable facts; No carries no additional data."
+        },
+        {
+          "Type": 1,
+          "Name": "No",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Yes",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Applicable facts",
+          "Description": ""
+        }
+      ]
+    }
+  ]
+}

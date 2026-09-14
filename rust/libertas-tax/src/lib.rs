@@ -1,27 +1,38 @@
 //! Libertas tax interview prototype
 //! #[libertas_string_resources(APP_STRINGS)]
-//! Interview, saved accepted answers, and a bounded U.S. federal tax year 2026 estimate.
+//! Interview, saved accepted answers, and a U.S. federal tax year 2026 estimate.
 //! Use synthetic data only. This prototype does not file a return.
 #![no_std]
 #![forbid(unsafe_code)]
 
 extern crate alloc;
 
-mod bounded_model;
-pub use bounded_model::CalculationLineV2;
-pub use bounded_model::{
-    AgeV2, AmountBasisV2, AnswerV2, CoverageAnswerV2, CoverageIssueV2, CoverageTopicV2, DraftV2,
-    EditPurposeV2, EstimateV2, FilingStatusV2, IncomeKindV2, IncomeRecordV2, OwnerV2, PaymentsV2,
-    PersonV2, ResultStateV2, SectionV2, SetupV2,
+mod federal_model;
+mod federal_rules;
+mod ira;
+pub use federal_model::{
+    CareClaim, CharityClaim, DeductionChoice, DeductionSelection, DependentCare,
+    DependentResidency, EducationChoice, EducationMethod, EducatorClaim, FederalAdjustments,
+    FederalAmount, FederalBusiness, FederalCredits, FederalDeductions, FederalDependent,
+    FederalDividend, FederalDraft, FederalEducation, FederalHsa, FederalIncome, FederalIncomeEntry,
+    FederalInterest, FederalIraContribution, FederalIras, FederalIssue, FederalPayments,
+    FederalPeople, FederalPerson, FederalResult, FederalRetirement, FederalSale, FederalSaver,
+    FederalSaverDistribution, FederalScreening, FederalSetup, FederalSocial, FederalStatus,
+    FederalStudent, FederalUnemployment, FederalVehicleInterest, FederalWage,
+    FederalWorkDeductions, FilingChoice, GainTerm, HsaCoverage, IraChoice, IraSpouse,
+    ItemizedChoice, ItemizedExpenses, MaritalState, MortgageClaim, OvertimeClaim, Relationship,
+    SaverChoice, SaverDistributionPeriod, SaverDistributionYear, SpouseAmount, SpouseFiler,
+    SpouseLiving, StudentLoanClaim, SupportShare, TipsClaim, WorkDeductionChoice,
 };
+mod common;
+pub use common::{AmountBasis, Answer, CalculationLine, Owner, ResultState};
 mod interview;
 mod model;
 mod protocol;
-mod rules;
 #[cfg(test)]
 mod tests;
-pub use model::{FilingStatusV1, IncomeOverviewV1, ReturnSetupV1, TaxAppData};
-pub use protocol::TaxInterviewProtocol;
+pub use model::TaxAppData;
+pub use protocol::{TaxInterviewProtocol, TaxSection};
 
 use alloc::boxed::Box;
 use core::any::Any;
@@ -34,7 +45,7 @@ use libertas_macros::{libertas_data_schema, libertas_export};
 
 pub const APP_STRINGS: &[(&str, &str)] = &[
     ("RETURN_DATA", "Saved 2026 federal prototype return"),
-    ("TEXT", "%1$s"),
+    ("TEXT", "{0}"),
 ];
 
 fn handle_request(
@@ -60,7 +71,7 @@ fn handle_request(
         libertas::libertas_data_write_single(
             "RETURN_DATA",
             &[],
-            &TaxAppData::DraftV2 {
+            &TaxAppData::Draft {
                 draft: state.draft.clone(),
             },
         );
@@ -95,19 +106,18 @@ pub fn tax_interview(
     interview: LibertasEndpoint,
 ) {
     let state = match libertas::libertas_data_read_single::<TaxAppData>("RETURN_DATA", &[]) {
-        Some(TaxAppData::DraftV2 { draft }) => Interview::new(draft),
-        Some(TaxAppData::DraftV1 { .. }) => Interview::blocked(),
+        Some(TaxAppData::Draft { draft }) => Interview::new(draft),
         None => {
             let cookie = alloc::format!(
                 "{:016x}{:016x}",
                 libertas::libertas_get_random(8),
                 libertas::libertas_get_random(8)
             );
-            let draft = DraftV2::empty(cookie);
+            let draft = FederalDraft::empty(cookie);
             libertas::libertas_data_write_single(
                 "RETURN_DATA",
                 &[],
-                &TaxAppData::DraftV2 {
+                &TaxAppData::Draft {
                     draft: draft.clone(),
                 },
             );

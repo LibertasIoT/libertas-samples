@@ -1,1214 +1,1290 @@
-use crate::{
-    AnswerV2, CoverageTopicV2, EditPurposeV2, EstimateV2, IncomeOverviewV1, IncomeRecordV2,
-    OwnerV2, PaymentsV2, PersonV2, ReturnSetupV1, SectionV2, SetupV2,
-};
+use crate::*;
 use alloc::{string::String, vec::Vec};
 use libertas_macros::{LibertasAvroDecode, LibertasAvroEncode, LibertasExport};
 
+/// Tax interview section
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
+)]
+pub enum TaxSection {
+    /// About this return
+    Setup,
+    /// Filers
+    People,
+    /// Children and people you support
+    Children,
+    /// Income documents
+    Income,
+    /// Adjustments
+    Adjustments,
+    /// Deductions
+    Deductions,
+    /// Education, care and retirement savings credits
+    Credits,
+    /// Remaining situations
+    Screening,
+    /// Federal payments
+    Payments,
+    /// Review
+    Review,
+}
+
 /// Tax interview
-/// A saved, bounded 2026 federal interview and estimate using synthetic answers.
-#[derive(Clone, Debug, PartialEq, Eq, LibertasAvroEncode, LibertasAvroDecode, LibertasExport)]
+/// Accepted pages are saved. Unsubmitted edits are discarded when you leave. Synthetic data only; no return is filed.
+#[derive(Clone, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub enum TaxInterviewProtocol {
-    /// Open interview
-    /// Start or resume this task's saved synthetic return.
+    /// Start or resume
     #[libertas_request]
     #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
     )]
-    OpenInterviewV1,
-
-    /// About-you entry
+    OpenInterview,
+    /// About this return
     #[libertas_response]
-    #[libertas_workflow_request("SaveAboutV1")]
-    BeginAboutV1 {
+    #[libertas_workflow_request("SaveSetup")]
+    BeginSetup {
+        /// Return identity
         #[libertas_hidden]
+        #[libertas_read_only]
         cookie: String,
+        /// Accepted revision
         #[libertas_hidden]
+        #[libertas_read_only]
         revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
         #[libertas_formatted_text]
+        #[libertas_read_only]
         progress: Vec<u8>,
     },
-    /// About you
-    /// Use a fictional return label. No personal identifiers are needed.
+    /// About this return
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_next_response("BeginIncomeV1,SaveIncomeV1,ProblemV1")]
-    SaveAboutV1 {
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    SaveSetup {
+        /// Return identity
         #[libertas_hidden]
+        #[libertas_read_only]
         #[libertas_copy_from("$.cookie")]
         cookie: String,
+        /// Accepted revision
         #[libertas_hidden]
+        #[libertas_read_only]
         #[libertas_copy_from("$.revision")]
         revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
         /// Interview progress
         #[libertas_formatted_text]
         #[libertas_read_only]
         #[libertas_copy_from("$.progress")]
         progress: Vec<u8>,
-        /// Your return
-        setup: ReturnSetupV1,
+        /// About this return
+        value: FederalSetup,
+        /// Confirm retained amounts use the changed full-year basis
+        #[libertas_default(false)]
+        confirm_basis_change: bool,
     },
-    /// Income entry
+    /// About the filers
     #[libertas_response]
-    #[libertas_workflow_request("SaveIncomeV1")]
-    BeginIncomeV1 {
+    #[libertas_workflow_request("SavePeople")]
+    BeginPeople {
+        /// Return identity
         #[libertas_hidden]
+        #[libertas_read_only]
         cookie: String,
+        /// Accepted revision
         #[libertas_hidden]
+        #[libertas_read_only]
         revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
         #[libertas_formatted_text]
+        #[libertas_read_only]
         progress: Vec<u8>,
     },
-    /// Income
-    /// Use synthetic amounts only. Back discards unsent changes and reopens the accepted About-you page.
+    /// About the filers
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("BackToAboutV1")]
-    #[libertas_next_response("SummaryV1,ProblemV1")]
-    SaveIncomeV1 {
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    SavePeople {
+        /// Return identity
         #[libertas_hidden]
+        #[libertas_read_only]
         #[libertas_copy_from("$.cookie")]
         cookie: String,
+        /// Accepted revision
         #[libertas_hidden]
+        #[libertas_read_only]
         #[libertas_copy_from("$.revision")]
         revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
         /// Interview progress
         #[libertas_formatted_text]
         #[libertas_read_only]
         #[libertas_copy_from("$.progress")]
         progress: Vec<u8>,
-        /// Income answers
-        income: IncomeOverviewV1,
+        /// About the filers
+        value: FederalPeople,
     },
-    /// Edit About you
-    #[libertas_request]
-    #[libertas_next_response("SaveAboutV1,ProblemV1")]
-    BackToAboutV1 {
-        #[libertas_hidden]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-    },
-    /// Edit income
-    #[libertas_request]
-    #[libertas_next_response("SaveIncomeV1,ProblemV1")]
-    BackToIncomeV1 {
-        #[libertas_hidden]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-    },
-    /// Your synthetic answers
-    /// This is an interview demonstration, not a tax estimate or filed return. Answers are temporary.
+    /// Adjustments to income
     #[libertas_response]
-    #[libertas_next_request("BackToAboutV1,BackToIncomeV1")]
-    SummaryV1 {
+    #[libertas_workflow_request("SaveAdjustments")]
+    BeginAdjustments {
+        /// Return identity
         #[libertas_hidden]
+        #[libertas_read_only]
         cookie: String,
-        /// Prototype status
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
         #[libertas_formatted_text]
-        status: Vec<u8>,
-        /// About you
-        setup: ReturnSetupV1,
-        /// Income
-        income: IncomeOverviewV1,
+        #[libertas_read_only]
+        progress: Vec<u8>,
+    },
+    /// Adjustments to income
+    #[libertas_request]
+    #[libertas_access_privilege("Write")]
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    SaveAdjustments {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+        /// Adjustments to income
+        value: FederalAdjustments,
+    },
+    /// Deductions
+    #[libertas_response]
+    #[libertas_workflow_request("SaveDeductions")]
+    BeginDeductions {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        progress: Vec<u8>,
+    },
+    /// Deductions
+    #[libertas_request]
+    #[libertas_access_privilege("Write")]
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    SaveDeductions {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+        /// Deductions
+        value: FederalDeductions,
+    },
+    /// Education, care and retirement savings credits
+    #[libertas_response]
+    #[libertas_workflow_request("SaveCredits")]
+    BeginCredits {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        progress: Vec<u8>,
+        /// Students on this return
+        /// ----
+        /// Student
+        students: Vec<FederalStudent>,
+    },
+    /// Education, care and retirement savings credits
+    #[libertas_request]
+    #[libertas_access_privilege("Write")]
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    SaveCredits {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+        /// Education, care and retirement savings credits
+        value: FederalCredits,
+    },
+    /// Check remaining situations
+    #[libertas_response]
+    #[libertas_workflow_request("SaveScreening")]
+    BeginScreening {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        progress: Vec<u8>,
+    },
+    /// Check remaining situations
+    #[libertas_request]
+    #[libertas_access_privilege("Write")]
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    SaveScreening {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+        /// Check remaining situations
+        value: FederalScreening,
+    },
+    /// Federal payments
+    #[libertas_response]
+    #[libertas_workflow_request("SavePayments")]
+    BeginPayments {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        progress: Vec<u8>,
+    },
+    /// Federal payments
+    #[libertas_request]
+    #[libertas_access_privilege("Write")]
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    SavePayments {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+        /// Federal payments
+        value: FederalPayments,
+    },
+    /// Child or person you support
+    #[libertas_response]
+    #[libertas_workflow_request("SaveDependent")]
+    BeginDependent {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        progress: Vec<u8>,
+    },
+    /// Child or person you support
+    #[libertas_request]
+    #[libertas_access_privilege("Write")]
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    SaveDependent {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+        /// Child or person you support
+        value: FederalDependent,
+    },
+    /// Income document
+    #[libertas_response]
+    #[libertas_workflow_request("SaveIncome")]
+    BeginIncome {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        progress: Vec<u8>,
+    },
+    /// Income document
+    #[libertas_request]
+    #[libertas_access_privilege("Write")]
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    SaveIncome {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        #[libertas_calculation_request("PreviewIncome")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        #[libertas_calculation_request("PreviewIncome")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+        /// Income document
+        #[libertas_calculation_request("PreviewIncome")]
+        value: FederalIncomeEntry,
+        /// Document amount before return-level tax calculations
+        /// Social Security is gross benefits; investment sales are net gain/loss. This does not determine taxable income or final tax.
+        #[libertas_money("USD", 2)]
+        #[libertas_read_only]
+        preview: Option<i64>,
+    },
+    /// Child or person you supports
+    #[libertas_response]
+    #[libertas_next_request("AddDependent,SelectDependent,ContinueSection,Navigate,OpenInterview")]
+    Children {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        progress: Vec<u8>,
+        /// Accepted records
+        /// ----
+        /// Record
+        records: Vec<FederalDependent>,
+    },
+    /// Add Child or person you support
+    #[libertas_request]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    AddDependent {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+    },
+    /// Choose Child or person you support
+    #[libertas_response]
+    #[libertas_workflow_request("ChooseDependent")]
+    BeginChooseDependent {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        progress: Vec<u8>,
+        /// Accepted records
+        /// ----
+        /// Record
+        records: Vec<FederalDependent>,
+    },
+    /// Edit or remove Child or person you support
+    #[libertas_request]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    SelectDependent {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+    },
+    /// Choose Child or person you support
+    #[libertas_request]
+    #[libertas_access_privilege("Write")]
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    ChooseDependent {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+        /// Accepted records
+        /// ----
+        /// Record
+        #[libertas_read_only]
+        #[libertas_copy_from("$.records")]
+        records: Vec<FederalDependent>,
+        /// Record
+        #[libertas_enum_source("^.records")]
+        selection: u32,
+        /// Remove this record
+        #[libertas_default(false)]
+        remove: bool,
+    },
+    /// Income documents
+    #[libertas_response]
+    #[libertas_next_request("AddIncome,SelectIncome,ContinueSection,Navigate,OpenInterview")]
+    IncomeDocuments {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        progress: Vec<u8>,
+        /// Accepted records
+        /// ----
+        /// Record
+        records: Vec<FederalIncomeEntry>,
+    },
+    /// Add Income document
+    #[libertas_request]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    AddIncome {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+    },
+    /// Choose Income document
+    #[libertas_response]
+    #[libertas_workflow_request("ChooseIncome")]
+    BeginChooseIncome {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        progress: Vec<u8>,
+        /// Accepted records
+        /// ----
+        /// Record
+        records: Vec<FederalIncomeEntry>,
+    },
+    /// Edit or remove Income document
+    #[libertas_request]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    SelectIncome {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+    },
+    /// Choose Income document
+    #[libertas_request]
+    #[libertas_access_privilege("Write")]
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    ChooseIncome {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+        /// Accepted records
+        /// ----
+        /// Record
+        #[libertas_read_only]
+        #[libertas_copy_from("$.records")]
+        records: Vec<FederalIncomeEntry>,
+        /// Record
+        #[libertas_enum_source("^.records")]
+        selection: u32,
+        /// Remove this record
+        #[libertas_default(false)]
+        remove: bool,
+    },
+    /// All records entered
+    #[libertas_request]
+    #[libertas_access_privilege("Write")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    ContinueSection {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+    },
+    /// Back
+    #[libertas_request]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    Back {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+    },
+    /// Review a section
+    #[libertas_request]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    Navigate {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Section
+        section: TaxSection,
+    },
+    /// Review your federal estimate
+    #[libertas_response]
+    #[libertas_next_request("Navigate,StartFinish,OpenInterview")]
+    Review {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Federal estimate and coverage
+        result: FederalResult,
+    },
+    /// Finish review
+    #[libertas_request]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    StartFinish {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+    },
+    /// Finish prototype review
+    #[libertas_response]
+    #[libertas_workflow_request("Finish")]
+    BeginFinish {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        progress: Vec<u8>,
+    },
+    /// Finish prototype review
+    #[libertas_request]
+    #[libertas_access_privilege("Write")]
+    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_next_response(
+        "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,BeginDependent,SaveDependent,BeginIncome,SaveIncome,Children,IncomeDocuments,BeginChooseDependent,ChooseDependent,BeginChooseIncome,ChooseIncome,Review,BeginFinish,Finish,Finished,Problem"
+    )]
+    Finish {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Current section
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.page")]
+        page: i32,
+        /// Previous page
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.previous")]
+        previous: i32,
+        /// Return to review after saving
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.review")]
+        review: bool,
+        /// Interview progress
+        #[libertas_formatted_text]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.progress")]
+        progress: Vec<u8>,
+    },
+    /// Prototype review completed
+    #[libertas_response]
+    Finished {
+        /// Completion status
+        #[libertas_formatted_text]
+        message: Vec<u8>,
+        /// Federal estimate
+        result: FederalResult,
     },
     /// Please review your answer
     #[libertas_response]
     #[libertas_error]
-    ProblemV1 {
+    Problem {
         /// What needs attention
         #[libertas_formatted_text]
         message: Vec<u8>,
     },
-    /// Continue your 2026 interview
-    /// Use synthetic data. Only complete submitted pages are saved.
+    /// Calculate document preview
+    #[libertas_request]
+    #[libertas_next_response("IncomePreview,Problem")]
+    PreviewIncome {
+        /// Return identity
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.cookie")]
+        cookie: String,
+        /// Accepted revision
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.revision")]
+        revision: i64,
+        /// Complete income document
+        #[libertas_copy_from("$.value")]
+        value: FederalIncomeEntry,
+    },
+    /// Document preview
     #[libertas_response]
-    #[libertas_workflow_request("SaveSetupV2")]
-    BeginSetupV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        progress: Vec<u8>,
-    },
-    /// Your 2026 return
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("BackV2,ReloadV2")]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    SaveSetupV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.progress")]
-        progress: Vec<u8>,
-        /// Return setup
-        setup: SetupV2,
-        /// If changing the amount basis, I confirm the retained amounts use the new basis
-        /// Needed only when switching between full-year estimates and actuals. Income must be reviewed again; donation amount and payment pages must be resubmitted.
-        #[libertas_default(false)]
-        confirm_basis_change: bool,
-    },
-    /// Continue your 2026 interview
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_response]
-    #[libertas_workflow_request("SavePersonV2")]
-    BeginPersonV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        progress: Vec<u8>,
-    },
-    /// Eligibility
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("BackV2,ReloadV2")]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    SavePersonV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.progress")]
-        progress: Vec<u8>,
-        /// About this person
-        person: PersonV2,
-    },
-    /// Continue your 2026 interview
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_response]
-    #[libertas_workflow_request("SaveQuestionV2")]
-    BeginQuestionV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        progress: Vec<u8>,
-        /// Question
-        #[libertas_formatted_text]
-        question: Vec<u8>,
-        /// Situation
-        #[libertas_hidden]
-        topic: CoverageTopicV2,
-    },
-    /// Your tax situation
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("BackV2,ReloadV2")]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    SaveQuestionV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.progress")]
-        progress: Vec<u8>,
-        /// Question
-        #[libertas_formatted_text]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.question")]
-        question: Vec<u8>,
-        /// Situation
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.topic")]
-        topic: CoverageTopicV2,
-        /// Your answer
-        answer: AnswerV2,
-    },
-    /// Your income documents
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_response]
-    #[libertas_next_request(
-        "AddWageV2,AddInterestV2,ChooseDocumentV2,ContinueIncomeV2,NavigateV2,ReloadV2"
-    )]
-    IncomeOverviewV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        previous: i32,
-        /// Add each W-2 and taxable bank-interest record, then continue
-        #[libertas_formatted_text]
-        progress: Vec<u8>,
-        /// Accepted documents
-        /// ----
-        /// Document
-        records: Vec<IncomeRecordV2>,
-    },
-    /// Add a W-2
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    AddWageV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-    },
-    /// Add bank interest
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    AddInterestV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-    },
-    /// Edit or remove a document
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    ChooseDocumentV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-    },
-    /// Income is complete
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_access_privilege("Write")]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    ContinueIncomeV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-    },
-    /// Choose an income document
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("BackV2,ReloadV2")]
-    SelectDocumentV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-        /// Accepted documents
-        /// ----
-        /// Document
-        #[libertas_copy_from("$.records")]
-        #[libertas_read_only]
-        records: Vec<IncomeRecordV2>,
-        /// Document
-        #[libertas_enum_source("^.records")]
-        selection: u32,
-        /// Remove this document instead of editing
-        #[libertas_default(false)]
-        remove: bool,
-    },
-    /// Continue your 2026 interview
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_response]
-    #[libertas_workflow_request("SaveWageV2")]
-    BeginWageV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        progress: Vec<u8>,
-        /// Document identity
-        #[libertas_hidden]
-        id: i64,
-    },
-    /// W-2 document
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("BackV2,ReloadV2")]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    SaveWageV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        #[libertas_calculation_request("PreviewWageV2")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        #[libertas_calculation_request("PreviewWageV2")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.progress")]
-        progress: Vec<u8>,
-        /// Document identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.id")]
-        #[libertas_calculation_request("PreviewWageV2")]
-        id: i64,
-        /// Document owner
-        owner: OwnerV2,
-        /// Fictional employer or bank
-        #[libertas_size(min = 1, max = 80)]
-        payer: String,
-        /// W-2 box 1 wages
+    IncomePreview {
+        /// Document amount before return-level calculations
         #[libertas_money("USD", 2)]
-        #[libertas_number(min = 0, max = 100000000000)]
-        #[libertas_calculation_request("PreviewWageV2")]
-        amount: i64,
-        /// Federal income tax withheld
-        #[libertas_money("USD", 2)]
-        #[libertas_number(min = 0, max = 100000000000)]
-        #[libertas_calculation_request("PreviewWageV2")]
-        withholding: i64,
-        /// W-2 box 5 Medicare wages
-        #[libertas_money("USD", 2)]
-        #[libertas_number(min = 0, max = 100000000000)]
-        medicare_wages: i64,
-        /// W-2 box 4 Social Security tax withheld
-        #[libertas_money("USD", 2)]
-        #[libertas_number(min = 0, max = 100000000000)]
-        social_security_withheld: i64,
-        /// Income total including this edit
-        #[libertas_money("USD", 2)]
-        #[libertas_read_only]
-        preview_income: Option<i64>,
-        /// Withholding total including this edit
-        #[libertas_money("USD", 2)]
-        #[libertas_read_only]
-        preview_withholding: Option<i64>,
-    },
-    /// Preview income totals
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_exclude_ui]
-    #[libertas_next_response("IncomePreviewV2,ProblemV2")]
-    PreviewWageV2 {
-        /// Cookie
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Revision
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Id
-        #[libertas_copy_from("$.id")]
-        id: i64,
-        /// Amount
-        #[libertas_copy_from("$.amount")]
-        #[libertas_money("USD", 2)]
-        #[libertas_number(min = 0, max = 100000000000)]
-        amount: i64,
-        /// Withholding
-        #[libertas_copy_from("$.withholding")]
-        #[libertas_money("USD", 2)]
-        #[libertas_number(min = 0, max = 100000000000)]
-        withholding: i64,
-    },
-    /// Continue your 2026 interview
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_response]
-    #[libertas_workflow_request("SaveInterestV2")]
-    BeginInterestV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        progress: Vec<u8>,
-        /// Document identity
-        #[libertas_hidden]
-        id: i64,
-    },
-    /// Bank interest document
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("BackV2,ReloadV2")]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    SaveInterestV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        #[libertas_calculation_request("PreviewInterestV2")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        #[libertas_calculation_request("PreviewInterestV2")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.progress")]
-        progress: Vec<u8>,
-        /// Document identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.id")]
-        #[libertas_calculation_request("PreviewInterestV2")]
-        id: i64,
-        /// Document owner
-        owner: OwnerV2,
-        /// Fictional employer or bank
-        #[libertas_size(min = 1, max = 80)]
-        payer: String,
-        /// Ordinary taxable bank interest
-        #[libertas_money("USD", 2)]
-        #[libertas_number(min = 0, max = 100000000000)]
-        #[libertas_calculation_request("PreviewInterestV2")]
-        amount: i64,
-        /// Federal income tax withheld
-        #[libertas_money("USD", 2)]
-        #[libertas_number(min = 0, max = 100000000000)]
-        #[libertas_calculation_request("PreviewInterestV2")]
-        withholding: i64,
-        /// Income total including this edit
-        #[libertas_money("USD", 2)]
-        #[libertas_read_only]
-        preview_income: Option<i64>,
-        /// Withholding total including this edit
-        #[libertas_money("USD", 2)]
-        #[libertas_read_only]
-        preview_withholding: Option<i64>,
-    },
-    /// Preview income totals
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_exclude_ui]
-    #[libertas_next_response("IncomePreviewV2,ProblemV2")]
-    PreviewInterestV2 {
-        /// Cookie
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Revision
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Id
-        #[libertas_copy_from("$.id")]
-        id: i64,
-        /// Amount
-        #[libertas_copy_from("$.amount")]
-        #[libertas_money("USD", 2)]
-        #[libertas_number(min = 0, max = 100000000000)]
-        amount: i64,
-        /// Withholding
-        #[libertas_copy_from("$.withholding")]
-        #[libertas_money("USD", 2)]
-        #[libertas_number(min = 0, max = 100000000000)]
-        withholding: i64,
-    },
-    /// Updated income totals
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_response]
-    IncomePreviewV2 {
-        /// Income total
-        #[libertas_money("USD", 2)]
-        #[libertas_copy_to("$.preview_income")]
-        income: Option<i64>,
-        /// Withholding total
-        #[libertas_money("USD", 2)]
-        #[libertas_copy_to("$.preview_withholding")]
-        withholding: Option<i64>,
-    },
-    /// Continue your 2026 interview
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_response]
-    #[libertas_workflow_request("SaveCharityAmountV2")]
-    BeginCharityAmountV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        progress: Vec<u8>,
-    },
-    /// Qualifying cash donations
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("BackV2,ReloadV2")]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    SaveCharityAmountV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.progress")]
-        progress: Vec<u8>,
-        /// Total qualifying cash donated during 2026
-        #[libertas_money("USD", 2)]
-        #[libertas_number(min = 0, max = 100000000000)]
-        amount: i64,
-    },
-    /// Continue your 2026 interview
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_response]
-    #[libertas_workflow_request("SavePaymentsV2")]
-    BeginPaymentsV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        progress: Vec<u8>,
-    },
-    /// Federal tax payments
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("BackV2,ReloadV2")]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    SavePaymentsV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-        /// Interview progress
-        #[libertas_formatted_text]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.progress")]
-        progress: Vec<u8>,
-        /// Payments excluding income-document withholding
-        payments: PaymentsV2,
-    },
-    /// Federal review — 2026 estimate
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_response]
-    #[libertas_next_request("StartFinishV2,NavigateV2,ChooseDocumentV2,ReloadV2")]
-    ReviewV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        previous: i32,
-        /// Estimate method and limits
-        #[libertas_formatted_text]
-        notice: Vec<u8>,
-        /// Calculation breakdown
-        estimate: EstimateV2,
-        /// Income source documents
-        /// ----
-        /// Document
-        records: Vec<IncomeRecordV2>,
-    },
-    /// Finish prototype review
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_access_privilege("Write")]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    #[libertas_prev_request("BackV2,ReloadV2")]
-    FinishV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-        /// I reviewed these synthetic answers; this does not file a return
-        confirmed: bool,
-    },
-    /// Prototype review complete
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_response]
-    FinishedV2 {
-        /// Accepted answers are saved; no return has been filed
-        #[libertas_formatted_text]
-        notice: Vec<u8>,
-        /// Accepted estimate
-        estimate: EstimateV2,
-    },
-    /// Edit an interview section
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    NavigateV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-        /// Section to edit
-        section: SectionV2,
-        /// Tax situation to edit
-        /// Optional: select the specific question when editing Tax situation. Ignored for other sections.
-        topic: Option<CoverageTopicV2>,
-    },
-    /// Back — discard this unsubmitted edit
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_request]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    BackV2 {
-        /// Return identity
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        /// Accepted revision
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
-        /// Return destination
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.purpose")]
-        purpose: EditPurposeV2,
-        /// Current interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.page")]
-        page: i32,
-        /// Previous interview page
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.previous")]
-        previous: i32,
-    },
-    /// Reload accepted answers
-    /// Discard unsent edits and resume from the accepted return.
-    #[libertas_request]
-    #[libertas_next_response(
-        "BeginSetupV2,SaveSetupV2,BeginPersonV2,SavePersonV2,BeginQuestionV2,SaveQuestionV2,IncomeOverviewV2,BeginWageV2,SaveWageV2,BeginInterestV2,SaveInterestV2,BeginCharityAmountV2,SaveCharityAmountV2,BeginPaymentsV2,SavePaymentsV2,ReviewV2,FinishedV2,ProblemV2,SelectDocumentV2,BeginSelectV2"
-    )]
-    ReloadV2,
-    /// Please review
-    /// Use synthetic data. Only complete submitted pages are saved.
-    #[libertas_response]
-    #[libertas_error]
-    ProblemV2 {
-        /// What needs attention
-        #[libertas_formatted_text]
-        message: Vec<u8>,
-    },
-    /// Choose a document
-    /// Select an accepted record before editing or removing it.
-    #[libertas_response]
-    #[libertas_workflow_request("SelectDocumentV2")]
-    BeginSelectV2 {
-        #[libertas_hidden]
-        cookie: String,
-        #[libertas_hidden]
-        revision: i64,
-        #[libertas_hidden]
-        purpose: EditPurposeV2,
-        #[libertas_hidden]
-        page: i32,
-        #[libertas_hidden]
-        previous: i32,
-        /// Accepted documents
-        /// Choose a document by its employer or bank label.
-        /// ----
-        /// Income document
-        /// One accepted source document.
-        records: Vec<IncomeRecordV2>,
-    },
-    /// Complete your review
-    /// Open the final prototype confirmation.
-    #[libertas_response]
-    #[libertas_workflow_request("FinishV2")]
-    BeginFinishV2 {
-        #[libertas_hidden]
-        cookie: String,
-        #[libertas_hidden]
-        revision: i64,
-        #[libertas_hidden]
-        purpose: EditPurposeV2,
-        #[libertas_hidden]
-        page: i32,
-        #[libertas_hidden]
-        previous: i32,
-    },
-    /// Finish review
-    /// Open confirmation; no tax return is filed.
-    #[libertas_request]
-    #[libertas_next_response("BeginFinishV2,ProblemV2")]
-    StartFinishV2 {
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.cookie")]
-        cookie: String,
-        #[libertas_hidden]
-        #[libertas_read_only]
-        #[libertas_copy_from("$.revision")]
-        revision: i64,
+        #[libertas_copy_to("$.preview")]
+        preview: Option<i64>,
     },
 }
