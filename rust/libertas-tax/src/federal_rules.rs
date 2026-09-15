@@ -433,9 +433,9 @@ impl FederalDraft {
                         || v.students[..i].iter().any(|prior| prior.id == p.id)
                 })
                 || v.education.len() > 30
-                || v.education
-                    .iter()
-                    .any(|e| !amounts(&[e.expenses]) || e.student as usize >= v.students.len())
+                || v.education.iter().any(|e| {
+                    !amounts(&e.expenses.components()) || e.student as usize >= v.students.len()
+                })
         }) || self
             .payments
             .as_ref()
@@ -520,7 +520,15 @@ pub(crate) fn validate_income_amount(income: &FederalIncome) -> Result<(), &'sta
         }
         FederalIncome::SocialSecurity { data: v } => amounts(&[v.benefits, v.withholding]),
         FederalIncome::Unemployment { data: v } => amounts(&[v.amount, v.withholding]),
-        FederalIncome::Business { data: v } => amounts(&[v.receipts, v.expenses]),
+        FederalIncome::Business { data: v } => {
+            amounts(&[v.receipts])
+                && v.expenses.len() <= 100
+                && v.expenses.iter().all(|e| {
+                    !e.label.trim().is_empty()
+                        && e.label.chars().count() <= 80
+                        && amounts(&[e.amount])
+                })
+        }
     };
     if valid {
         Ok(())
@@ -546,6 +554,8 @@ struct Totals {
     short: i64,
     long: i64,
     retirement: i64,
+    retirement_gross: [i64; 2],
+    retirement_taxable: [i64; 2],
     social: i64,
     unemployment: i64,
     withholding: i64,
@@ -645,6 +655,9 @@ fn collect(d: &FederalDraft, r: &mut FederalResult) -> Totals {
             }
             FederalIncome::Retirement { data: v } => {
                 t.retirement += v.taxable;
+                let category = usize::from(v.kind == RetirementKind::Pension);
+                t.retirement_gross[category] += v.gross;
+                t.retirement_taxable[category] += v.taxable;
                 t.withholding += v.withholding;
                 require(
                     r,
@@ -674,12 +687,12 @@ fn collect(d: &FederalDraft, r: &mut FederalResult) -> Totals {
                 );
             }
             FederalIncome::Business { data: v } => {
-                t.business[owner] += v.receipts - v.expenses;
+                t.business[owner] += v.receipts - v.expense_total();
                 require(
                     r,
                     yes(v.material_participation)
                         && v.special_treatment == Answer::No
-                        && v.receipts >= v.expenses,
+                        && v.receipts >= v.expense_total(),
                     &source,
                     "Only profitable, actively operated, simple cash-basis sole proprietorships are supported; losses and special business treatments need additional worksheets.",
                 );
@@ -891,7 +904,7 @@ pub(crate) fn eic_amount(earned: i64, agi: i64, children: usize, joint: bool) ->
 }
 
 pub(crate) fn estimate(d: &FederalDraft) -> FederalResult {
-    let mut r = FederalResult {state:ResultState::Incomplete,revision:d.revision,issues:vec![],lines:vec![],breakdown:vec![],tax:None,refundable_credits:None,payments:None,refund:None,balance:None,
+    let mut r = FederalResult {state:ResultState::Incomplete,revision:d.revision,issues:vec![],review_notes:vec![],lines:vec![],breakdown:vec![],return_lines:vec![],tax:None,refundable_credits:None,payments:None,refund:None,balance:None,
         method:"2026 federal rate-schedule estimate using whole-dollar tax lines. Final filing tax/EIC tables, penalties, interest, offsets, forms and e-filing are excluded. Synthetic data only.".into()};
     if !d.valid_stored() {
         issue(
@@ -1040,16 +1053,15 @@ pub(crate) fn estimate(d: &FederalDraft) -> FederalResult {
         "HSA",
         "Contributions exceed the supported annual/shared family limit.",
     );
-    let before_social = wages
-        + interest
-        + dividends
-        + capital
-        + dollars(t.retirement)
-        + dollars(t.unemployment)
-        + business
-        - half_se
-        - educator
-        - dollars(hsa);
+    // IRA and pension distributions occupy separate return lines. Round each
+    // category once so the displayed return reconciles with the tax engine.
+    let retirement_taxable = t.retirement_taxable.map(dollars);
+    let retirement = retirement_taxable.iter().sum::<i64>();
+    let before_social =
+        wages + interest + dividends + capital + retirement + dollars(t.unemployment) + business
+            - half_se
+            - educator
+            - dollars(hsa);
     // Pub. 590-A Appendix B computes IRA MAGI before the IRA deduction, then
     // recomputes taxable Social Security after that deduction. No fixed-point iteration.
     let ira_magi = before_social
@@ -1092,9 +1104,8 @@ pub(crate) fn estimate(d: &FederalDraft) -> FederalResult {
     }
     // Form 8615 can apply even when the filer is not another person's dependent.
     // Its "more than half" test differs from the AOTC refund's "less than half" test.
-    let unearned = positive(
-        interest + dividends + capital + dollars(t.retirement) + social + dollars(t.unemployment),
-    );
+    let unearned =
+        positive(interest + dividends + capital + retirement + social + dollars(t.unemployment));
     let taxpayer_age = age(p.taxpayer.birth_date);
     let kiddie_age = taxpayer_age < 18
         || ((taxpayer_age == 18 || (taxpayer_age < 24 && p.taxpayer.full_time_student))
@@ -1487,7 +1498,7 @@ pub(crate) fn estimate(d: &FederalDraft) -> FederalResult {
             "Education",
             "The selected student must be a filer or an eligible dependent on this return.",
         );
-        let expense = dollars(e.expenses);
+        let expense = dollars(e.expenses.qualified(e.method()));
         if e.method() == EducationMethod::AmericanOpportunity {
             aotc += min(expense, 2000) + fraction(min(positive(expense - 2000), 2000), 1, 4);
         } else {
@@ -1794,6 +1805,255 @@ pub(crate) fn estimate(d: &FederalDraft) -> FederalResult {
         r.payments = Some(payments * 100);
         r.refund = Some(positive(payments + refundable - total) * 100);
         r.balance = Some(positive(total - payments - refundable) * 100);
+        let adjustments = half_se + educator + dollars(hsa) + ira.deduction + loan;
+        let additional_deductions = senior_ded + additional.iter().sum::<i64>();
+        let other_credits = min(income_tax, education_nonrefund)
+            + min(positive(income_tax - education_nonrefund), care)
+            + saver;
+        let credits = child_nonrefund + other_credits;
+        let additional_taxes = se_tax + additional_medicare + niit;
+        // Presentation only: every figure comes from this calculation's inputs
+        // and intermediate results, never a separate return-calculation engine.
+        // Line references follow the IRS 2026 ATS draft dated September 1, 2026.
+        for (reference, label, amount, explanation) in [
+            ("1a / 1z", "Wages", wages, "Total W-2 box 1 amounts."),
+            (
+                "2a",
+                "Tax-exempt interest",
+                exempt,
+                "Tax-exempt interest documents; excluded from total income but used by applicable worksheets.",
+            ),
+            (
+                "2b",
+                "Taxable interest",
+                interest,
+                "Taxable interest documents.",
+            ),
+            (
+                "3a",
+                "Qualified dividends",
+                qualified,
+                "Included in ordinary dividends; used for preferential tax rates.",
+            ),
+            (
+                "3b",
+                "Ordinary dividends",
+                dividends,
+                "Total ordinary dividends, including qualified dividends once.",
+            ),
+            (
+                "4a",
+                "IRA gross distributions",
+                dollars(t.retirement_gross[0]),
+                "IRA-category 1099-R box 1 amounts.",
+            ),
+            (
+                "4b",
+                "IRA taxable distributions",
+                retirement_taxable[0],
+                "IRA-category supported 1099-R box 2a amounts.",
+            ),
+            (
+                "5a",
+                "Pension and annuity gross distributions",
+                dollars(t.retirement_gross[1]),
+                "Pension-category 1099-R box 1 amounts.",
+            ),
+            (
+                "5b",
+                "Pension and annuity taxable distributions",
+                retirement_taxable[1],
+                "Pension-category supported 1099-R box 2a amounts.",
+            ),
+            (
+                "6a",
+                "Social Security benefits",
+                dollars(t.social),
+                "SSA-1099 net benefits.",
+            ),
+            (
+                "6b",
+                "Taxable Social Security",
+                social,
+                "Calculated using the Social Security worksheet and other return income.",
+            ),
+            (
+                "7a",
+                "Capital gain or loss",
+                capital,
+                "Net investment sales and capital-gain distributions after the supported annual loss limit.",
+            ),
+            (
+                "8",
+                "Additional income",
+                business + dollars(t.unemployment),
+                "Supported Schedule 1 business profits and unemployment compensation.",
+            ),
+            (
+                "9",
+                "Total income",
+                agi + adjustments,
+                "Taxable income categories before adjustments.",
+            ),
+            (
+                "10",
+                "Adjustments to income",
+                adjustments,
+                "Calculated supported Schedule 1 adjustments.",
+            ),
+            (
+                "11a / 11b",
+                "Adjusted gross income",
+                agi,
+                "Total income less adjustments.",
+            ),
+            (
+                "12e",
+                "Standard or itemized deduction",
+                if use_itemized { itemized } else { standard },
+                "The selected supported deduction route.",
+            ),
+            (
+                "12f",
+                "Non-itemizer charitable deduction",
+                if use_itemized { 0 } else { cash_standard },
+                "Eligible cash contributions when using the standard deduction.",
+            ),
+            (
+                "13a",
+                "Additional deductions",
+                additional_deductions,
+                "Supported Schedule 1-A senior, tips, overtime and vehicle-interest deductions.",
+            ),
+            (
+                "13b",
+                "Qualified business income deduction",
+                qbi_ded,
+                "Calculated supported QBI deduction.",
+            ),
+            (
+                "14",
+                "Total deductions",
+                deduction + additional_deductions + qbi_ded,
+                "Sum of supported deductions.",
+            ),
+            (
+                "15",
+                "Taxable income",
+                taxable,
+                "Adjusted gross income less deductions, floored at zero.",
+            ),
+            (
+                "16 / 18",
+                "Income tax before credits",
+                income_tax,
+                "Rate-schedule estimate including preferential capital-gain rates; filing-table reconciliation remains required.",
+            ),
+            (
+                "19",
+                "Child and other-dependent credits",
+                child_nonrefund,
+                "Nonrefundable portion after eligibility, phaseouts and credit ordering.",
+            ),
+            (
+                "20",
+                "Other nonrefundable credits",
+                other_credits,
+                "Supported education, care and Saver's Credits.",
+            ),
+            (
+                "21",
+                "Total nonrefundable credits",
+                credits,
+                "Child credit plus supported Schedule 3 credits.",
+            ),
+            (
+                "22",
+                "Income tax after credits",
+                positive(income_tax - credits),
+                "Income tax remaining after nonrefundable credits.",
+            ),
+            (
+                "23",
+                "Additional taxes",
+                additional_taxes,
+                "Self-employment, Additional Medicare and net investment income taxes.",
+            ),
+            (
+                "24a / 24c",
+                "Total tax",
+                total,
+                "Income tax after credits plus supported additional taxes.",
+            ),
+            (
+                "25d",
+                "Income tax withholding",
+                dollars(t.withholding) + medicare_withheld,
+                "Document income-tax withholding plus eligible Additional Medicare withholding.",
+            ),
+            (
+                "26",
+                "Estimated payments",
+                dollars(pay.estimated),
+                "Entered federal estimated payments.",
+            ),
+            (
+                "27a",
+                "Earned income credit",
+                eic,
+                "Continuous-formula estimate; final EIC table reconciliation is required.",
+            ),
+            (
+                "28",
+                "Additional child tax credit",
+                actc,
+                "Calculated refundable child credit.",
+            ),
+            (
+                "29",
+                "Refundable education credit",
+                education_refund,
+                "Calculated refundable American Opportunity credit.",
+            ),
+            (
+                "31",
+                "Other payments",
+                dollars(pay.extension) + excess_social,
+                "Extension payment and eligible excess Social Security withholding.",
+            ),
+            (
+                "33",
+                "Total payments and refundable credits",
+                payments + refundable,
+                "Current-rule total; proposed Schedule 3-A reduction is not applied. Read Refund review notes.",
+            ),
+            (
+                "34",
+                "Overpayment",
+                positive(payments + refundable - total),
+                "Before penalties, offsets, interest or an election to apply the overpayment to next year.",
+            ),
+            (
+                "37",
+                "Balance due",
+                positive(total - payments - refundable),
+                "Before penalties and interest.",
+            ),
+        ] {
+            r.return_lines.push(FederalAmount {
+                label: alloc::format!("1040 {} — {}", reference, label),
+                amount: amount * 100,
+                explanation: explanation.into(),
+            });
+        }
+
+        // Draft Schedule 3-A tests affected credits against tax, not against
+        // withholding. The proposal is not applied as finalized law. Advisory
+        // notes must not enter `issues`, which suppresses supported calculations.
+        // Source: https://www.irs.gov/pub/irs-dft/f1040s3a--dft.pdf
+        if refundable > total {
+            r.review_notes.push("Review required before filing: this refund includes refundable credits exceeding your calculated tax. Proposed 2026 Schedule 3-A rules may reduce that portion depending on eligibility. This prototype has not applied the proposed reduction or verified that eligibility. Check the final IRS rules before relying on this refund.".into());
+        }
     } else {
         r.state = ResultState::Unsupported;
         r.lines.clear();

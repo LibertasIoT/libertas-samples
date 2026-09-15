@@ -59,7 +59,7 @@ impl Interview {
     }
     fn progress(&self, page: i32) -> Vec<u8> {
         text(&alloc::format!(
-            "2026 federal · section {} of 9 · accepted pages are saved; unsent edits are discarded. Synthetic full-year amounts only.",
+            "2026 federal · section {} of 9 · accepted pages are saved; larger forms can restore saved edits on this device. Synthetic full-year amounts only.",
             page + 1
         ))
     }
@@ -143,6 +143,7 @@ impl Interview {
             },
             4 => match &d.adjustments {
                 Some(value) => Reply::Edit(P::SaveAdjustments {
+                    allowed_ira_spouse: alloc::vec![d.setup.as_ref().unwrap().ira_spouse_index()],
                     cookie,
                     revision,
                     page,
@@ -152,6 +153,7 @@ impl Interview {
                     value: value.clone(),
                 }),
                 None => Reply::Response(P::BeginAdjustments {
+                    allowed_ira_spouse: alloc::vec![d.setup.as_ref().unwrap().ira_spouse_index()],
                     cookie,
                     revision,
                     page,
@@ -270,7 +272,7 @@ impl Interview {
         // A review-only Next is navigation: compare answers before touching saved
         // history, completion, or revision. Cookie/navigation metadata is not in draft.
         if draft == self.draft {
-            return if review {
+            return if review && self.draft.first_incomplete() == 9 {
                 self.review()
             } else {
                 self.page((page + 1).min(self.draft.first_incomplete()), false)
@@ -289,7 +291,9 @@ impl Interview {
         draft.finished = false;
         self.draft = draft;
         self.dirty = true;
-        if review {
+        // Review-origin edits can invalidate later pages. Complete those pages
+        // before honoring the return-to-review hint.
+        if review && self.draft.first_incomplete() == 9 {
             self.review()
         } else {
             self.page(self.draft.first_incomplete(), false)
@@ -634,6 +638,6 @@ pub(crate) fn document_amount(value: &FederalIncome) -> i64 {
         FederalIncome::Retirement { data: v } => v.taxable,
         FederalIncome::SocialSecurity { data: v } => v.benefits,
         FederalIncome::Unemployment { data: v } => v.amount,
-        FederalIncome::Business { data: v } => v.receipts - v.expenses,
+        FederalIncome::Business { data: v } => v.receipts - v.expense_total(),
     }
 }
