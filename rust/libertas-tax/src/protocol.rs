@@ -42,6 +42,8 @@ pub enum TaxSection {
     libertas_macros::VariantIndex,
 )]
 pub enum TaxInterviewProtocol {
+    // Landing action only: native client Back already returns to landing.
+    // Workflow PrevRequest exposes earlier-section navigation through Back.
     /// Start or resume
     #[libertas_request]
     #[libertas_next_response(
@@ -80,7 +82,7 @@ pub enum TaxInterviewProtocol {
     /// About this return
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_prev_request("Back")]
     #[libertas_next_response(
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,SaveDependents,SaveIncomes,Review,BeginFinish,Finish,Finished,Problem"
     )]
@@ -156,7 +158,7 @@ pub enum TaxInterviewProtocol {
     /// About the filers
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_prev_request("Back")]
     #[libertas_next_response(
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,SaveDependents,SaveIncomes,Review,BeginFinish,Finish,Finished,Problem"
     )]
@@ -230,7 +232,7 @@ pub enum TaxInterviewProtocol {
     /// Adjustments to income
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_prev_request("Back")]
     #[libertas_next_response(
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,SaveDependents,SaveIncomes,Review,BeginFinish,Finish,Finished,Problem"
     )]
@@ -300,7 +302,7 @@ pub enum TaxInterviewProtocol {
     /// Deductions
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_prev_request("Back")]
     #[libertas_next_response(
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,SaveDependents,SaveIncomes,Review,BeginFinish,Finish,Finished,Problem"
     )]
@@ -374,7 +376,7 @@ pub enum TaxInterviewProtocol {
     /// Education, care and retirement savings credits
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_prev_request("Back")]
     #[libertas_next_response(
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,SaveDependents,SaveIncomes,Review,BeginFinish,Finish,Finished,Problem"
     )]
@@ -444,7 +446,7 @@ pub enum TaxInterviewProtocol {
     /// Check remaining situations
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_prev_request("Back")]
     #[libertas_next_response(
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,SaveDependents,SaveIncomes,Review,BeginFinish,Finish,Finished,Problem"
     )]
@@ -514,7 +516,7 @@ pub enum TaxInterviewProtocol {
     /// Federal payments
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_prev_request("Back")]
     #[libertas_next_response(
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,SaveDependents,SaveIncomes,Review,BeginFinish,Finish,Finished,Problem"
     )]
@@ -555,7 +557,7 @@ pub enum TaxInterviewProtocol {
     /// Children and people you support
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_prev_request("Back")]
     #[libertas_next_response(
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,SaveDependents,SaveIncomes,Review,BeginFinish,Finish,Finished,Problem"
     )]
@@ -599,7 +601,7 @@ pub enum TaxInterviewProtocol {
     /// Income documents
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_prev_request("Back")]
     #[libertas_next_response(
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,SaveDependents,SaveIncomes,Review,BeginFinish,Finish,Finished,Problem"
     )]
@@ -752,7 +754,7 @@ pub enum TaxInterviewProtocol {
     /// Finish prototype review
     #[libertas_request]
     #[libertas_access_privilege("Write")]
-    #[libertas_prev_request("Back,OpenInterview")]
+    #[libertas_prev_request("Back")]
     #[libertas_next_response(
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,SaveDependents,SaveIncomes,Review,BeginFinish,Finish,Finished,Problem"
     )]
