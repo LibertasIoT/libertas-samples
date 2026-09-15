@@ -32,7 +32,7 @@ mod protocol;
 #[cfg(test)]
 mod tests;
 pub use model::TaxAppData;
-pub use protocol::{TaxInterviewProtocol, TaxSection};
+pub use protocol::{IncomeAmountInput, IncomeEditorItem, TaxInterviewProtocol, TaxSection};
 
 use alloc::boxed::Box;
 use core::any::Any;

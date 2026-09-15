@@ -751,6 +751,8 @@ pub struct FederalCredits {
     /// Students on this return
     /// ----
     /// Student
+    // Picker catalog derived from accepted people; editing belongs in People/Dependents.
+    #[libertas_hidden]
     #[libertas_read_only]
     #[libertas_copy_from("$.students")]
     pub students: Vec<FederalStudent>,

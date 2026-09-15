@@ -1,4 +1,6 @@
-use crate::federal_rules::{estimate, valid_birth, validate_dependent, validate_income};
+use crate::federal_rules::{
+    estimate, valid_birth, validate_dependent, validate_income, validate_income_amount,
+};
 use crate::*;
 use TaxInterviewProtocol as P;
 use alloc::vec::Vec;
@@ -22,6 +24,30 @@ fn problem(value: &str) -> Reply {
         message: text(value),
     })
 }
+// Assign identities only in the candidate draft. A rejected section cannot consume IDs.
+fn assign_record_ids<'a>(
+    records: impl Iterator<Item = &'a mut i64>,
+    accepted: impl Iterator<Item = i64>,
+    next_id: &mut i64,
+) -> Result<(), &'static str> {
+    let accepted: alloc::collections::BTreeSet<_> = accepted.collect();
+    let mut seen = alloc::collections::BTreeSet::new();
+    for id in records {
+        if *id == 0 {
+            *id = *next_id;
+            *next_id = next_id
+                .checked_add(1)
+                .ok_or("The record identity limit has been reached.")?;
+        } else if !accepted.contains(id) {
+            return Err("A record no longer belongs to this section. Reopen the section.");
+        }
+        if !seen.insert(*id) {
+            return Err("A record identity is repeated in this section.");
+        }
+    }
+    Ok(())
+}
+
 impl Interview {
     pub(crate) fn new(draft: FederalDraft) -> Self {
         let blocked = !draft.valid_stored();
@@ -37,8 +63,16 @@ impl Interview {
             page + 1
         ))
     }
+    fn allowed_sections(&self) -> Vec<i32> {
+        // Match page admission: saved sections, the first unfinished section,
+        // and the estimate review remain reachable. Never trust an echoed list.
+        (0..=self.draft.first_incomplete().min(8))
+            .chain(core::iter::once(TaxSection::Review as i32))
+            .collect()
+    }
     fn review(&self) -> Reply {
         Reply::Response(P::Review {
+            allowed_sections: self.allowed_sections(),
             cookie: self.draft.cookie.clone(),
             revision: self.draft.revision,
             result: estimate(&self.draft),
@@ -203,7 +237,7 @@ impl Interview {
                     progress,
                 }),
             },
-            2 => Reply::Response(P::Children {
+            2 => Reply::Edit(P::SaveDependents {
                 cookie,
                 revision,
                 page,
@@ -212,14 +246,22 @@ impl Interview {
                 progress,
                 records: d.dependents.clone(),
             }),
-            3 => Reply::Response(P::IncomeDocuments {
+            3 => Reply::Edit(P::SaveIncomes {
                 cookie,
                 revision,
                 page,
                 previous,
                 review,
                 progress,
-                records: d.income.clone(),
+                records: d
+                    .income
+                    .iter()
+                    .cloned()
+                    .map(|value| IncomeEditorItem {
+                        preview: Some(document_amount(&value.income)),
+                        value,
+                    })
+                    .collect(),
             }),
             _ => self.review(),
         }
@@ -255,7 +297,7 @@ impl Interview {
     }
     pub(crate) fn handle(&mut self, request: P) -> Option<Reply> {
         let identity = match &request {
-            P::OpenInterview => None,
+            P::OpenInterview | P::Enter | P::ReviewAccepted | P::PreviewIncome { .. } => None,
             P::SaveSetup {
                 cookie, revision, ..
             }
@@ -277,31 +319,10 @@ impl Interview {
             | P::SavePayments {
                 cookie, revision, ..
             }
-            | P::SaveDependent {
+            | P::SaveDependents {
                 cookie, revision, ..
             }
-            | P::SaveIncome {
-                cookie, revision, ..
-            }
-            | P::AddDependent {
-                cookie, revision, ..
-            }
-            | P::AddIncome {
-                cookie, revision, ..
-            }
-            | P::SelectDependent {
-                cookie, revision, ..
-            }
-            | P::SelectIncome {
-                cookie, revision, ..
-            }
-            | P::ChooseDependent {
-                cookie, revision, ..
-            }
-            | P::ChooseIncome {
-                cookie, revision, ..
-            }
-            | P::ContinueSection {
+            | P::SaveIncomes {
                 cookie, revision, ..
             }
             | P::Back {
@@ -314,9 +335,6 @@ impl Interview {
                 cookie, revision, ..
             }
             | P::Finish {
-                cookie, revision, ..
-            }
-            | P::PreviewIncome {
                 cookie, revision, ..
             } => Some((cookie, *revision)),
             _ => return None,
@@ -343,6 +361,21 @@ impl Interview {
         }
         let d = &self.draft;
         Some(match request {
+            P::Enter => {
+                let mut allowed_actions =
+                    alloc::vec![libertas_macros::variant_index!(P::OpenInterview) as i32];
+                if d.setup.is_some() {
+                    allowed_actions.push(libertas_macros::variant_index!(P::ReviewAccepted) as i32);
+                }
+                Reply::Response(P::Actions { allowed_actions })
+            }
+            P::ReviewAccepted => {
+                if d.setup.is_none() {
+                    problem("Start the interview before reviewing accepted answers.")
+                } else {
+                    self.review()
+                }
+            }
             P::OpenInterview => {
                 if d.finished {
                     self.review()
@@ -482,68 +515,8 @@ impl Interview {
                 draft.payments = Some(value);
                 self.accept(draft, page, review)
             }
-            P::AddDependent { .. } => {
-                if d.first_incomplete() < 2 {
-                    return Some(problem("Complete the earlier section first."));
-                }
-                if d.dependents.len() >= 30 {
-                    return Some(problem("The prototype record limit has been reached."));
-                }
-                Reply::Response(P::BeginDependent {
-                    cookie: d.cookie.clone(),
-                    revision: d.revision,
-                    page: 2,
-                    previous: 2,
-                    review: false,
-                    progress: self.progress(2),
-                })
-            }
-            P::SelectDependent { review, .. } => {
-                if d.dependents.is_empty() {
-                    return Some(problem("There are no accepted records to edit."));
-                }
-                Reply::Response(P::BeginChooseDependent {
-                    cookie: d.cookie.clone(),
-                    revision: d.revision,
-                    page: 2,
-                    previous: 2,
-                    review,
-                    progress: self.progress(2),
-                    records: d.dependents.clone(),
-                })
-            }
-            P::ChooseDependent {
-                selection,
-                remove,
-                review,
-                ..
-            } => {
-                let Some(value) = d.dependents.get(selection as usize) else {
-                    return Some(problem("The selected record is no longer available."));
-                };
-                if remove {
-                    let mut draft = d.clone();
-                    draft.dependents.remove(selection as usize);
-                    let reply = self.accept(draft, 2, true);
-                    if matches!(reply, Reply::Response(P::Problem { .. })) {
-                        reply
-                    } else {
-                        self.page(2, review)
-                    }
-                } else {
-                    Reply::Edit(P::SaveDependent {
-                        cookie: d.cookie.clone(),
-                        revision: d.revision,
-                        page: 2,
-                        previous: 2,
-                        review,
-                        progress: self.progress(2),
-                        value: value.clone(),
-                    })
-                }
-            }
-            P::SaveDependent {
-                mut value,
+            P::SaveDependents {
+                mut records,
                 page,
                 review,
                 ..
@@ -551,94 +524,28 @@ impl Interview {
                 if page != 2 || page > d.first_incomplete() {
                     return Some(problem("This section is not available yet."));
                 }
-                if let Err(message) = validate_dependent(&value) {
-                    return Some(problem(message));
-                }
-                let mut draft = d.clone();
-                if value.id == 0 {
-                    if draft.dependents.len() >= 30 {
-                        return Some(problem("The prototype record limit has been reached."));
-                    }
-                    value.id = draft.next_id;
-                    draft.next_id += 1;
-                    draft.dependents.push(value);
-                } else {
-                    let Some(existing) = draft.dependents.iter_mut().find(|v| v.id == value.id)
-                    else {
-                        return Some(problem("This accepted record is no longer available."));
-                    };
-                    *existing = value;
-                }
-                let reply = self.accept(draft, 2, true);
-                if matches!(reply, Reply::Response(P::Problem { .. })) || review {
-                    reply
-                } else {
-                    self.page(2, false)
-                }
-            }
-            P::AddIncome { .. } => {
-                if d.first_incomplete() < 3 {
-                    return Some(problem("Complete the earlier section first."));
-                }
-                if d.income.len() >= 100 {
+                if records.len() > 30 {
                     return Some(problem("The prototype record limit has been reached."));
                 }
-                Reply::Response(P::BeginIncome {
-                    cookie: d.cookie.clone(),
-                    revision: d.revision,
-                    page: 3,
-                    previous: 3,
-                    review: false,
-                    progress: self.progress(3),
-                })
-            }
-            P::SelectIncome { review, .. } => {
-                if d.income.is_empty() {
-                    return Some(problem("There are no accepted records to edit."));
-                }
-                Reply::Response(P::BeginChooseIncome {
-                    cookie: d.cookie.clone(),
-                    revision: d.revision,
-                    page: 3,
-                    previous: 3,
-                    review,
-                    progress: self.progress(3),
-                    records: d.income.clone(),
-                })
-            }
-            P::ChooseIncome {
-                selection,
-                remove,
-                review,
-                ..
-            } => {
-                let Some(value) = d.income.get(selection as usize) else {
-                    return Some(problem("The selected record is no longer available."));
-                };
-                if remove {
-                    let mut draft = d.clone();
-                    draft.income.remove(selection as usize);
-                    let reply = self.accept(draft, 3, true);
-                    if matches!(reply, Reply::Response(P::Problem { .. })) {
-                        reply
-                    } else {
-                        self.page(3, review)
+                for record in &records {
+                    if let Err(message) = validate_dependent(record) {
+                        return Some(problem(message));
                     }
-                } else {
-                    Reply::Edit(P::SaveIncome {
-                        cookie: d.cookie.clone(),
-                        revision: d.revision,
-                        page: 3,
-                        previous: 3,
-                        review,
-                        progress: self.progress(3),
-                        value: value.clone(),
-                        preview: None,
-                    })
                 }
+                let mut draft = d.clone();
+                if let Err(message) = assign_record_ids(
+                    records.iter_mut().map(|r| &mut r.id),
+                    d.dependents.iter().map(|r| r.id),
+                    &mut draft.next_id,
+                ) {
+                    return Some(problem(message));
+                }
+                draft.dependents = records;
+                draft.dependents_complete = true;
+                self.accept(draft, page, review)
             }
-            P::SaveIncome {
-                mut value,
+            P::SaveIncomes {
+                records,
                 page,
                 review,
                 ..
@@ -646,40 +553,26 @@ impl Interview {
                 if page != 3 || page > d.first_incomplete() {
                     return Some(problem("This section is not available yet."));
                 }
-                if let Err(message) = validate_income(&value) {
+                if records.len() > 100 {
+                    return Some(problem("The prototype record limit has been reached."));
+                }
+                // Preview values belong to the editor, never accepted storage or comparison.
+                let mut income: Vec<_> = records.into_iter().map(|item| item.value).collect();
+                for record in &income {
+                    if let Err(message) = validate_income(record) {
+                        return Some(problem(message));
+                    }
+                }
+                let mut draft = d.clone();
+                if let Err(message) = assign_record_ids(
+                    income.iter_mut().map(|r| &mut r.id),
+                    d.income.iter().map(|r| r.id),
+                    &mut draft.next_id,
+                ) {
                     return Some(problem(message));
                 }
-                let mut draft = d.clone();
-                if value.id == 0 {
-                    if draft.income.len() >= 100 {
-                        return Some(problem("The prototype record limit has been reached."));
-                    }
-                    value.id = draft.next_id;
-                    draft.next_id += 1;
-                    draft.income.push(value);
-                } else {
-                    let Some(existing) = draft.income.iter_mut().find(|v| v.id == value.id) else {
-                        return Some(problem("This accepted record is no longer available."));
-                    };
-                    *existing = value;
-                }
-                let reply = self.accept(draft, 3, true);
-                if matches!(reply, Reply::Response(P::Problem { .. })) || review {
-                    reply
-                } else {
-                    self.page(3, false)
-                }
-            }
-            P::ContinueSection { page, review, .. } => {
-                if !matches!(page, 2 | 3) || page > d.first_incomplete() {
-                    return Some(problem("This list is not ready to continue."));
-                }
-                let mut draft = d.clone();
-                if page == 2 {
-                    draft.dependents_complete = true;
-                } else {
-                    draft.income_complete = true;
-                }
+                draft.income = income;
+                draft.income_complete = true;
                 self.accept(draft, page, review)
             }
             P::StartFinish { .. } => {
@@ -718,12 +611,11 @@ impl Interview {
                     result: estimate(&self.draft),
                 })
             }
-            P::PreviewIncome { value, .. } => {
-                if let Err(message) = validate_income(&value) {
+            P::PreviewIncome { value } => {
+                // Pure calculation: no saved-record identity or revision is an input.
+                // Client transaction ownership rejects stale replies after edits.
+                if let Err(message) = validate_income_amount(&value.income) {
                     return Some(problem(message));
-                }
-                if value.id != 0 && !d.income.iter().any(|v| v.id == value.id) {
-                    return Some(problem("The preview's accepted document no longer exists."));
                 }
                 Reply::Response(P::IncomePreview {
                     preview: Some(document_amount(&value.income)),

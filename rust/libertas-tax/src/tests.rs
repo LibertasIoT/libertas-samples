@@ -754,98 +754,72 @@ fn accepted_storage_round_trip_and_invalid_identity_block() {
     assert!(!s.dirty);
 }
 #[test]
-fn preview_never_saves_and_stale_preview_is_rejected() {
-    let mut s = Interview::new(complete(FederalStatus::Single));
-    let before = s.draft.clone();
+fn preview_is_pure_and_excludes_unrelated_income_fields() {
+    let mut session = Interview::new(complete(FederalStatus::Single));
+    let before = session.draft.clone();
     let mut entry = before.income[0].clone();
     if let FederalIncome::Wage { data } = &mut entry.income {
         data.wages = 6_200_000;
     }
-    assert!(matches!(
-        send(
-            &mut s,
-            P::PreviewIncome {
-                cookie: before.cookie.clone(),
-                revision: before.revision,
-                value: entry.clone()
-            }
-        ),
-        Reply::Response(P::IncomePreview {
-            preview: Some(6_200_000)
-        })
-    ));
-    error(send(
-        &mut s,
-        P::PreviewIncome {
-            cookie: before.cookie.clone(),
-            revision: before.revision + 1,
-            value: entry,
+    let request = P::PreviewIncome {
+        value: IncomeAmountInput {
+            income: entry.income,
         },
-    ));
-    assert_eq!(s.draft, before);
-    assert!(!s.dirty);
+    };
+    for _ in 0..2 {
+        assert!(matches!(
+            send(&mut session, request.clone()),
+            Reply::Response(P::IncomePreview {
+                preview: Some(6_200_000)
+            })
+        ));
+    }
+    assert_eq!(session.draft, before);
+    assert!(!session.dirty);
 }
 #[test]
-fn document_replacement_ignores_client_preview_and_preserves_id() {
-    let d = complete(FederalStatus::Single);
-    let mut s = Interview::new(d.clone());
-    let mut entry = d.income[0].clone();
-    if let FederalIncome::Wage { data } = &mut entry.income {
-        data.wages = 6_100_000;
-    }
-    let request = P::SaveIncome {
+fn income_array_saves_atomically_and_ignores_preview() {
+    let original = complete(FederalStatus::Single);
+    let mut session = Interview::new(original.clone());
+    let request = |d: &FederalDraft, records| P::SaveIncomes {
         cookie: d.cookie.clone(),
         revision: d.revision,
         page: 3,
-        previous: 3,
+        previous: 2,
         review: true,
         progress: vec![],
-        value: entry,
-        preview: Some(-123),
+        records,
     };
-    assert!(matches!(
-        send(&mut s, request.clone()),
-        Reply::Response(P::Review { .. })
-    ));
-    assert_eq!(s.draft.income.len(), 1);
-    assert_eq!(s.draft.income[0].id, 1);
-    assert_eq!(s.draft.revision, 1);
-    error(send(&mut s, request));
-}
-#[test]
-fn list_selection_is_revision_checked_and_uses_server_records() {
-    let d = complete(FederalStatus::Single);
-    let mut s = Interview::new(d.clone());
-    let r = send(
-        &mut s,
-        P::ChooseIncome {
-            cookie: d.cookie.clone(),
-            revision: 0,
-            page: 3,
-            previous: 3,
-            review: true,
-            progress: vec![],
-            records: vec![],
-            selection: 0,
-            remove: false,
-        },
-    );
-    assert!(matches!(r,Reply::Edit(P::SaveIncome{value,..}) if value.id==1));
-    error(send(
-        &mut s,
-        P::ChooseIncome {
-            cookie: d.cookie,
-            revision: 1,
-            page: 3,
-            previous: 3,
-            review: true,
-            progress: vec![],
-            records: vec![],
-            selection: 0,
-            remove: true,
-        },
-    ));
-    assert_eq!(s.draft.income.len(), 1);
+    let records: alloc::vec::Vec<_> = original
+        .income
+        .iter()
+        .cloned()
+        .map(|value| IncomeEditorItem {
+            value,
+            preview: Some(-123),
+        })
+        .collect();
+    send(&mut session, request(&original, records.clone()));
+    assert_eq!(session.draft, original);
+    assert!(!session.dirty);
+    let mut invalid = records.clone();
+    invalid.push(records[0].clone());
+    error(send(&mut session, request(&original, invalid)));
+    assert_eq!(session.draft, original);
+    let mut changed = records;
+    if let FederalIncome::Wage { data } = &mut changed[0].value.income {
+        data.wages = 6_100_000;
+    }
+    let save = request(&original, changed);
+    send(&mut session, save.clone());
+    assert_eq!(session.draft.income.len(), 1);
+    assert_eq!(session.draft.income[0].id, 1);
+    assert_eq!(session.draft.revision, original.revision + 1);
+    error(send(&mut session, save));
+    let accepted = session.draft.clone();
+    send(&mut session, request(&accepted, vec![]));
+    assert!(session.draft.income.is_empty());
+    assert!(session.draft.income_complete);
 }
 #[test]
 fn basis_change_erases_later_pages() {
@@ -970,31 +944,8 @@ fn new_workflow_restarts_after_each_accepted_section() {
                 progress,
                 value: fixture.people.clone().unwrap(),
             },
-            Reply::Response(P::Children {
-                cookie,
-                revision,
-                page,
-                previous,
-                review,
-                progress,
-                ..
-            })
-            | Reply::Response(P::IncomeDocuments {
-                cookie,
-                revision,
-                page,
-                previous,
-                review,
-                progress,
-                ..
-            }) => P::ContinueSection {
-                cookie,
-                revision,
-                page,
-                previous,
-                review,
-                progress,
-            },
+            Reply::Edit(request @ P::SaveDependents { .. }) => request,
+            Reply::Edit(request @ P::SaveIncomes { .. }) => request,
             Reply::Response(P::BeginAdjustments {
                 cookie,
                 revision,
@@ -1175,7 +1126,7 @@ fn failed_deletion_at_revision_limit_is_not_reported_as_success() {
     let mut s = Interview::new(d.clone());
     error(send(
         &mut s,
-        P::ChooseIncome {
+        P::SaveIncomes {
             cookie: d.cookie.clone(),
             revision: d.revision,
             page: 3,
@@ -1183,8 +1134,6 @@ fn failed_deletion_at_revision_limit_is_not_reported_as_success() {
             review: true,
             progress: vec![],
             records: vec![],
-            selection: 0,
-            remove: true,
         },
     ));
     assert_eq!(s.draft, d);
@@ -1509,6 +1458,7 @@ fn saver_accepted_credit_page_persists_reopens_and_rejects_stale_edit() {
             cookie: accepted.cookie.clone(),
             revision: accepted.revision,
             section: TaxSection::Credits,
+            allowed_sections: (0..=9).collect(),
         },
     );
     assert!(
@@ -2335,7 +2285,7 @@ fn unchanged_history_next_preserves_every_saved_page_and_completion() {
             value: original.people.clone().unwrap(),
         },
     );
-    assert!(matches!(reply, Reply::Response(P::Children { .. })));
+    assert!(matches!(reply, Reply::Edit(P::SaveDependents { .. })));
     assert_eq!(session.draft, original);
     assert!(!session.dirty);
     assert_eq!(restart(session.draft).draft, original);
@@ -2374,7 +2324,7 @@ fn changed_history_replaces_page_and_erases_downstream_atomically() {
     let mut restored = restart(session.draft.clone());
     assert!(matches!(
         send(&mut restored, P::OpenInterview),
-        Reply::Response(P::Children { .. })
+        Reply::Edit(P::SaveDependents { .. })
     ));
     error(send(
         &mut session,
@@ -2430,4 +2380,138 @@ fn erasure_boundaries_cover_all_nine_sections() {
         assert_eq!(draft.payments.is_none(), page < 8);
         assert!(draft.valid_stored());
     }
+}
+
+#[test]
+fn landing_actions_follow_accepted_state_without_mutation() {
+    let mut interview =
+        crate::interview::Interview::new(crate::FederalDraft::empty("landing".into()));
+    let Some(crate::interview::Reply::Response(P::Actions { allowed_actions })) =
+        interview.handle(P::Enter)
+    else {
+        panic!("actions expected")
+    };
+    assert_eq!(
+        allowed_actions,
+        alloc::vec![libertas_macros::variant_index!(P::OpenInterview) as i32]
+    );
+    assert!(!interview.dirty);
+    assert!(matches!(
+        interview.handle(P::ReviewAccepted),
+        Some(crate::interview::Reply::Response(P::Problem { .. }))
+    ));
+}
+
+#[test]
+fn saved_landing_offers_review_and_keeps_revision() {
+    let draft = complete(FederalStatus::Single);
+    let revision = draft.revision;
+    let mut interview = Interview::new(draft);
+    let Some(Reply::Response(P::Actions { allowed_actions })) = interview.handle(P::Enter) else {
+        panic!("actions expected")
+    };
+    assert_eq!(
+        allowed_actions,
+        vec![
+            libertas_macros::variant_index!(P::OpenInterview) as i32,
+            libertas_macros::variant_index!(P::ReviewAccepted) as i32
+        ]
+    );
+    assert!(matches!(
+        interview.handle(P::ReviewAccepted),
+        Some(Reply::Response(P::Review { .. }))
+    ));
+    assert_eq!(interview.draft.revision, revision);
+    assert!(!interview.dirty);
+}
+
+#[test]
+fn section_choices_match_backend_admission_at_every_saved_stage() {
+    let sections = [
+        TaxSection::Setup,
+        TaxSection::People,
+        TaxSection::Children,
+        TaxSection::Income,
+        TaxSection::Adjustments,
+        TaxSection::Deductions,
+        TaxSection::Credits,
+        TaxSection::Screening,
+        TaxSection::Payments,
+        TaxSection::Review,
+    ];
+    for saved_page in 0..=8 {
+        let mut draft = complete(FederalStatus::Single);
+        draft.erase_after(saved_page);
+        let mut interview = Interview::new(draft.clone());
+        let Reply::Response(P::Review {
+            allowed_sections, ..
+        }) = send(&mut interview, P::ReviewAccepted)
+        else {
+            panic!("review expected")
+        };
+        let expected: alloc::vec::Vec<i32> = (0..=(saved_page + 1).min(8))
+            .chain(core::iter::once(9))
+            .collect();
+        assert_eq!(allowed_sections, expected);
+        for section in sections {
+            let response = send(
+                &mut interview,
+                P::Navigate {
+                    cookie: draft.cookie.clone(),
+                    revision: draft.revision,
+                    section,
+                    // A fabricated client list cannot unlock a future section.
+                    allowed_sections: (0..=9).collect(),
+                },
+            );
+            assert_eq!(
+                !matches!(response, Reply::Response(P::Problem { .. })),
+                allowed_sections.contains(&(section as i32))
+            );
+        }
+        assert_eq!(interview.draft, draft);
+        assert!(!interview.dirty);
+    }
+}
+
+#[test]
+fn dependent_array_saves_atomically_and_unchanged_review_preserves_history() {
+    let original = complete(FederalStatus::Single);
+    let mut session = Interview::new(original.clone());
+    let request = |d: &FederalDraft, records| P::SaveDependents {
+        cookie: d.cookie.clone(),
+        revision: d.revision,
+        page: 2,
+        previous: 1,
+        review: true,
+        progress: vec![],
+        records,
+    };
+    send(
+        &mut session,
+        request(&original, original.dependents.clone()),
+    );
+    assert_eq!(session.draft, original);
+    assert!(!session.dirty);
+    let mut rows = original.dependents.clone();
+    rows.push(child(0));
+    send(&mut session, request(&original, rows));
+    assert!(session.dirty);
+    assert!(session.draft.dependents_complete);
+    assert_eq!(
+        session.draft.dependents.last().unwrap().id,
+        original.next_id
+    );
+    assert!(session.draft.income.is_empty());
+    assert!(!session.draft.income_complete);
+    let accepted = session.draft.clone();
+    let mut session = restart(accepted.clone());
+    let mut invalid = accepted.dependents.clone();
+    invalid.push(invalid[0].clone());
+    error(send(&mut session, request(&accepted, invalid)));
+    assert_eq!(session.draft, accepted);
+    assert!(!session.dirty);
+    send(&mut session, request(&accepted, vec![]));
+    assert!(session.draft.dependents.is_empty());
+    assert!(session.draft.dependents_complete);
 }

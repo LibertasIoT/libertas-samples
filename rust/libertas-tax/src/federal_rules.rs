@@ -471,7 +471,11 @@ pub(crate) fn validate_income(e: &FederalIncomeEntry) -> Result<(), &'static str
     if e.label.is_empty() || e.label.len() > 320 {
         return Err("Enter a payer or document label.");
     }
-    let valid = match &e.income {
+    validate_income_amount(&e.income)
+}
+
+pub(crate) fn validate_income_amount(income: &FederalIncome) -> Result<(), &'static str> {
+    let valid = match income {
         FederalIncome::Wage { data: w } => {
             amounts(&[
                 w.wages,
