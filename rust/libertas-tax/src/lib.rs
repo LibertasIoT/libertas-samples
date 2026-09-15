@@ -89,7 +89,7 @@ fn handle_request(
 }
 
 /// Tax interview prototype
-/// Create one saved synthetic return per task. Resume accepted pages after reopening; unfinished edits are discarded. No return is filed.
+/// Create one saved synthetic return per task. Resume accepted pages after reopening; larger forms can restore completed field edits saved on this device. Unfinished typing is discarded. No return is filed.
 /// [DefaultTaskName]
 /// Tax interview prototype
 #[libertas_export]

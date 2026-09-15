@@ -30,7 +30,7 @@ pub enum TaxSection {
 }
 
 /// Tax interview
-/// Accepted pages are saved. Unsubmitted edits are discarded when you leave. Synthetic data only; no return is filed.
+/// Accepted pages are saved. Larger forms offer recovery of completed field edits on this device; small-page edits and unfinished typing are discarded on exit. Synthetic data only; no return is filed.
 #[derive(
     Clone,
     Debug,
@@ -79,6 +79,9 @@ pub enum TaxInterviewProtocol {
         #[libertas_read_only]
         progress: Vec<u8>,
     },
+    // Cache large forms by return identity, accepted-data revision, and navigation
+    // context. A changed accepted page invalidates drafts; review-only Next does not.
+    // Keeping review in the tuple prevents restoring an obsolete Submit destination.
     /// About this return
     #[libertas_request]
     #[libertas_access_privilege("Write")]
@@ -90,11 +93,13 @@ pub enum TaxInterviewProtocol {
         /// Return identity
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.cookie")]
         cookie: String,
         /// Accepted revision
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.revision")]
         revision: i64,
         /// Current section
@@ -110,6 +115,7 @@ pub enum TaxInterviewProtocol {
         /// Return to review after saving
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.review")]
         review: bool,
         /// Interview progress
@@ -170,11 +176,13 @@ pub enum TaxInterviewProtocol {
         /// Return identity
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.cookie")]
         cookie: String,
         /// Accepted revision
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.revision")]
         revision: i64,
         /// Current section
@@ -190,6 +198,7 @@ pub enum TaxInterviewProtocol {
         /// Return to review after saving
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.review")]
         review: bool,
         /// Interview progress
@@ -240,11 +249,13 @@ pub enum TaxInterviewProtocol {
         /// Return identity
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.cookie")]
         cookie: String,
         /// Accepted revision
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.revision")]
         revision: i64,
         /// Current section
@@ -260,6 +271,7 @@ pub enum TaxInterviewProtocol {
         /// Return to review after saving
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.review")]
         review: bool,
         /// Interview progress
@@ -310,11 +322,13 @@ pub enum TaxInterviewProtocol {
         /// Return identity
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.cookie")]
         cookie: String,
         /// Accepted revision
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.revision")]
         revision: i64,
         /// Current section
@@ -330,6 +344,7 @@ pub enum TaxInterviewProtocol {
         /// Return to review after saving
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.review")]
         review: bool,
         /// Interview progress
@@ -384,11 +399,13 @@ pub enum TaxInterviewProtocol {
         /// Return identity
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.cookie")]
         cookie: String,
         /// Accepted revision
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.revision")]
         revision: i64,
         /// Current section
@@ -404,6 +421,7 @@ pub enum TaxInterviewProtocol {
         /// Return to review after saving
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.review")]
         review: bool,
         /// Interview progress
@@ -565,11 +583,13 @@ pub enum TaxInterviewProtocol {
         /// Return identity
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.cookie")]
         cookie: String,
         /// Accepted revision
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.revision")]
         revision: i64,
         /// Current section
@@ -585,6 +605,7 @@ pub enum TaxInterviewProtocol {
         /// Return to review after saving
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.review")]
         review: bool,
         /// Interview progress
@@ -609,11 +630,13 @@ pub enum TaxInterviewProtocol {
         /// Return identity
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.cookie")]
         cookie: String,
         /// Accepted revision
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.revision")]
         revision: i64,
         /// Current section
@@ -629,6 +652,7 @@ pub enum TaxInterviewProtocol {
         /// Return to review after saving
         #[libertas_hidden]
         #[libertas_read_only]
+        #[libertas_cache_identity]
         #[libertas_copy_from("$.review")]
         review: bool,
         /// Interview progress
