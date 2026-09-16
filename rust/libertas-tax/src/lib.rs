@@ -1,4 +1,4 @@
-//! Libertas tax interview prototype
+//! Tax return prototype
 //! #[libertas_string_resources(APP_STRINGS)]
 //! Interview, saved accepted answers, and a U.S. federal tax year 2026 estimate.
 //! Use synthetic data only. This prototype does not file a return.
@@ -13,16 +13,17 @@ mod ira;
 pub use federal_model::{
     CareClaim, CharityClaim, DeductionChoice, DeductionSelection, DependentCare,
     DependentResidency, EducationChoice, EducationMethod, EducatorClaim, FederalAdjustments,
-    FederalAmount, FederalBusiness, FederalCredits, FederalDeductions, FederalDependent,
-    FederalDividend, FederalDraft, FederalEducation, FederalHsa, FederalIncome, FederalIncomeEntry,
-    FederalInterest, FederalIraContribution, FederalIras, FederalIssue, FederalPayments,
-    FederalPeople, FederalPerson, FederalResult, FederalRetirement, FederalSale, FederalSaver,
-    FederalSaverDistribution, FederalScreening, FederalSetup, FederalSocial, FederalStatus,
-    FederalStudent, FederalUnemployment, FederalVehicleInterest, FederalWage,
-    FederalWorkDeductions, FilingChoice, GainTerm, HsaCoverage, IraChoice, IraSpouse,
-    ItemizedChoice, ItemizedExpenses, MaritalState, MortgageClaim, OvertimeClaim, Relationship,
-    SaverChoice, SaverDistributionPeriod, SaverDistributionYear, SpouseAmount, SpouseFiler,
-    SpouseLiving, StudentLoanClaim, SupportShare, TipsClaim, WorkDeductionChoice,
+    FederalAmount, FederalBusiness, FederalBusinessExpense, FederalCredits, FederalDeductions,
+    FederalDependent, FederalDividend, FederalDraft, FederalEducation, FederalEducationExpenses,
+    FederalHsa, FederalIncome, FederalIncomeEntry, FederalInterest, FederalIraContribution,
+    FederalIras, FederalIssue, FederalPayments, FederalPeople, FederalPerson, FederalResult,
+    FederalRetirement, FederalSale, FederalSaver, FederalSaverDistribution, FederalScreening,
+    FederalSetup, FederalSocial, FederalStatus, FederalStudent, FederalUnemployment,
+    FederalVehicleInterest, FederalWage, FederalWorkDeductions, FilingChoice, GainTerm,
+    HsaCoverage, IraChoice, IraSpouse, ItemizedChoice, ItemizedExpenses, MaritalState,
+    MortgageClaim, OvertimeClaim, Relationship, RetirementKind, SaverChoice,
+    SaverDistributionPeriod, SaverDistributionYear, SpouseAmount, SpouseFiler, SpouseLiving,
+    StudentLoanClaim, SupportShare, TipsClaim, WorkDeductionChoice,
 };
 mod common;
 pub use common::{AmountBasis, Answer, CalculationLine, Owner, ResultState};
@@ -88,18 +89,18 @@ fn handle_request(
     LibertasEndpointStatus::Success
 }
 
-/// Tax interview prototype
+/// Tax return prototype
 /// Create one saved synthetic return per task. Resume accepted pages after reopening; larger forms can restore completed field edits saved on this device. Unfinished typing is discarded. No return is filed.
 /// [DefaultTaskName]
-/// Tax interview prototype
+/// Tax return prototype
 #[libertas_export]
 #[libertas_data_schema(TaxAppData)]
 pub fn tax_interview(
     /*
-     * Tax interview
+     * Tax return
      * Open the synthetic U.S. federal tax year 2026 interview.
      * [DefaultText]
-     * Tax interview prototype
+     * Tax return prototype
      */
     #[libertas_endpoint_schema(TaxInterviewProtocol)]
     #[libertas_endpoint_server]

@@ -402,6 +402,7 @@ fn retirement_senior_and_social_flow() {
         &mut d,
         income(FederalIncome::Retirement {
             data: FederalRetirement {
+                kind: RetirementKind::Pension,
                 gross: 1_860_000,
                 taxable: 1_860_000,
                 withholding: 0,
@@ -445,7 +446,10 @@ fn self_employment_and_qbi_independent_fixture() {
         income(FederalIncome::Business {
             data: FederalBusiness {
                 receipts: 6_000_000,
-                expenses: 1_000_000,
+                expenses: vec![FederalBusinessExpense {
+                    label: "Supplies".into(),
+                    amount: 1_000_000,
+                }],
                 material_participation: Answer::Yes,
                 special_treatment: Answer::No,
             },
@@ -466,7 +470,7 @@ fn active_qbi_minimum_applies_after_taxable_income_cap() {
         income(FederalIncome::Business {
             data: FederalBusiness {
                 receipts: 108_000,
-                expenses: 0,
+                expenses: vec![],
                 material_participation: Answer::Yes,
                 special_treatment: Answer::No,
             },
@@ -567,7 +571,7 @@ fn education_credits_and_claimant_refund_restriction() {
         .education
         .push(FederalEducation {
             student: 0,
-            expenses: 400_000,
+            expenses: education_expenses(400_000),
             eligible_student: Answer::Yes,
             method: education_choice(EducationMethod::AmericanOpportunity, Answer::Yes),
         });
@@ -591,7 +595,7 @@ fn lifetime_learning_is_capped_per_return() {
             .education
             .push(FederalEducation {
                 student,
-                expenses: 1_000_000,
+                expenses: education_expenses(1_000_000),
                 eligible_student: Answer::Yes,
                 method: education_choice(EducationMethod::LifetimeLearning, Answer::No),
             });
@@ -663,6 +667,7 @@ fn unsupported_sources_and_unknowns_never_publish_totals() {
         &mut d,
         income(FederalIncome::Retirement {
             data: FederalRetirement {
+                kind: RetirementKind::Pension,
                 gross: 10_000,
                 taxable: 10_000,
                 withholding: 0,
@@ -947,6 +952,7 @@ fn new_workflow_restarts_after_each_accepted_section() {
             Reply::Edit(request @ P::SaveDependents { .. }) => request,
             Reply::Edit(request @ P::SaveIncomes { .. }) => request,
             Reply::Response(P::BeginAdjustments {
+                allowed_ira_spouse,
                 cookie,
                 revision,
                 page,
@@ -954,6 +960,7 @@ fn new_workflow_restarts_after_each_accepted_section() {
                 review,
                 progress,
             }) => P::SaveAdjustments {
+                allowed_ira_spouse,
                 cookie,
                 revision,
                 page,
@@ -1054,7 +1061,7 @@ fn student_identity_survives_roster_reordering_and_removed_people_are_repairable
         .education
         .push(FederalEducation {
             student: 3,
-            expenses: 100_000,
+            expenses: education_expenses(100_000),
             eligible_student: Answer::Yes,
             method: education_choice(EducationMethod::LifetimeLearning, Answer::No),
         });
@@ -1103,7 +1110,7 @@ fn student_identity_survives_roster_reordering_and_removed_people_are_repairable
                 value: repaired
             }
         ),
-        Reply::Response(P::Review { .. })
+        Reply::Response(P::BeginScreening { review: false, .. })
     ));
 }
 #[test]
@@ -1354,7 +1361,7 @@ fn saver_follows_education_care_and_precedes_child_credit() {
         .education
         .push(FederalEducation {
             student: 0,
-            expenses: 500_000,
+            expenses: education_expenses(500_000),
             eligible_student: Answer::Yes,
             method: education_choice(EducationMethod::LifetimeLearning, Answer::No),
         });
@@ -1445,7 +1452,7 @@ fn saver_accepted_credit_page_persists_reopens_and_rejects_stale_edit() {
     };
     assert!(matches!(
         send(&mut s, request.clone()),
-        Reply::Response(P::Review { .. })
+        Reply::Response(P::BeginScreening { review: false, .. })
     ));
     assert!(s.dirty);
     assert_eq!(s.draft.revision, d.revision + 1);
@@ -1666,6 +1673,7 @@ fn ira_accepted_page_round_trip_and_special_basis_guard() {
         &mut d,
         income(FederalIncome::Retirement {
             data: FederalRetirement {
+                kind: RetirementKind::Pension,
                 gross: 100_000,
                 taxable: 100_000,
                 withholding: 0,
@@ -1899,7 +1907,7 @@ fn ira_overtime_vehicle_and_education_cross_topic_fixture() {
     }];
     d.credits.as_mut().unwrap().education = vec![FederalEducation {
         student: 0,
-        expenses: 400_000,
+        expenses: education_expenses(400_000),
         eligible_student: Answer::Yes,
         method: education_choice(EducationMethod::AmericanOpportunity, Answer::Yes),
     }];
@@ -2514,4 +2522,271 @@ fn dependent_array_saves_atomically_and_unchanged_review_preserves_history() {
     send(&mut session, request(&accepted, vec![]));
     assert!(session.draft.dependents.is_empty());
     assert!(session.draft.dependents_complete);
+}
+
+fn education_expenses(tuition: i64) -> FederalEducationExpenses {
+    FederalEducationExpenses {
+        tuition,
+        school_materials: 0,
+        other_materials: 0,
+        assistance: 0,
+        refunds: 0,
+        other_benefits: 0,
+    }
+}
+
+#[test]
+fn business_expenses_are_totaled_once_and_preview_matches_return() {
+    let business = FederalBusiness {
+        receipts: 6_000_000,
+        expenses: vec![
+            FederalBusinessExpense {
+                label: "Supplies".into(),
+                amount: 600_000,
+            },
+            FederalBusinessExpense {
+                label: "Advertising".into(),
+                amount: 400_000,
+            },
+        ],
+        material_participation: Answer::Yes,
+        special_treatment: Answer::No,
+    };
+    assert_eq!(business.expense_total(), 1_000_000);
+    let mut draft = complete(FederalStatus::Single);
+    draft.income.clear();
+    add(
+        &mut draft,
+        income(FederalIncome::Business {
+            data: business.clone(),
+        }),
+    );
+    let result = supported(&draft);
+    assert_eq!(value(&result, "agi"), 46_467);
+    let mut invalid = business;
+    invalid.expenses[0].label.clear();
+    assert!(
+        crate::federal_rules::validate_income_amount(&FederalIncome::Business { data: invalid })
+            .is_err()
+    );
+}
+
+#[test]
+fn education_expenses_derive_the_selected_credit_base() {
+    let mut expenses = education_expenses(300_000);
+    expenses.school_materials = 50_000;
+    expenses.other_materials = 100_000;
+    expenses.assistance = 40_000;
+    expenses.refunds = 20_000;
+    expenses.other_benefits = 30_000;
+    assert_eq!(
+        expenses.qualified(EducationMethod::AmericanOpportunity),
+        360_000
+    );
+    assert_eq!(
+        expenses.qualified(EducationMethod::LifetimeLearning),
+        260_000
+    );
+    let mut draft = complete(FederalStatus::Single);
+    draft
+        .credits
+        .as_mut()
+        .unwrap()
+        .education
+        .push(FederalEducation {
+            student: 0,
+            expenses: expenses.clone(),
+            eligible_student: Answer::Yes,
+            method: education_choice(EducationMethod::AmericanOpportunity, Answer::Yes),
+        });
+    let result = supported(&draft);
+    assert_eq!(
+        value(&result, "education_credit") + value(&result, "refundable_education_credit"),
+        2400
+    );
+    expenses.assistance = 1_000_000;
+    assert_eq!(expenses.qualified(EducationMethod::AmericanOpportunity), 0);
+}
+
+#[test]
+fn proposed_refund_rules_are_advisory_and_do_not_reduce_the_refund() {
+    let mut d = complete(FederalStatus::Single);
+    d.income.clear();
+    // No earnings and no refundable credits: no proposed-credit review flag.
+    let ordinary = supported(&d);
+    assert!(ordinary.review_notes.is_empty());
+    // Low earnings produce a childless EIC exceeding the calculated tax.
+    d.income.push(wage(1, Owner::Taxpayer, 1_000_000, 0));
+    let r = supported(&d);
+    assert_eq!(
+        r.refund,
+        Some((r.payments.unwrap() + r.refundable_credits.unwrap() - r.tax.unwrap()).max(0))
+    );
+    assert!(r.refundable_credits.unwrap() > r.tax.unwrap());
+    assert_eq!(r.review_notes.len(), 1);
+    assert!(r.issues.is_empty());
+}
+
+fn return_line(result: &FederalResult, reference: &str) -> i64 {
+    let prefix = alloc::format!("1040 {reference} — ");
+    result
+        .return_lines
+        .iter()
+        .find(|line| line.label.starts_with(&prefix))
+        .unwrap()
+        .amount
+}
+
+#[test]
+fn calculated_return_lines_reconcile_to_the_same_refund() {
+    for status in [FederalStatus::Single, FederalStatus::Joint] {
+        let result = supported(&complete(status));
+        let l = |reference| return_line(&result, reference);
+        assert_eq!(
+            l("9"),
+            ["1a / 1z", "2b", "3b", "4b", "5b", "6b", "7a", "8"]
+                .into_iter()
+                .map(l)
+                .sum::<i64>()
+        );
+        assert_eq!(l("11a / 11b"), l("9") - l("10"));
+        assert_eq!(
+            l("14"),
+            ["12e", "12f", "13a", "13b"].into_iter().map(l).sum::<i64>()
+        );
+        assert_eq!(l("15"), (l("11a / 11b") - l("14")).max(0));
+        assert_eq!(l("24a / 24c"), l("22") + l("23"));
+        assert_eq!(l("24a / 24c"), result.tax.unwrap());
+        assert_eq!(
+            l("33"),
+            l("25d") + l("26") + l("27a") + l("28") + l("29") + l("31")
+        );
+        assert_eq!(l("34"), result.refund.unwrap());
+        assert_eq!(l("37"), result.balance.unwrap());
+    }
+}
+
+#[test]
+fn ira_and_pension_round_at_their_own_return_lines() {
+    let mut draft = complete(FederalStatus::Single);
+    let initial_agi = value(&supported(&draft), "agi");
+    for kind in [RetirementKind::Ira, RetirementKind::Pension] {
+        add(
+            &mut draft,
+            income(FederalIncome::Retirement {
+                data: FederalRetirement {
+                    kind,
+                    gross: 100_050,
+                    taxable: 100_050,
+                    withholding: 0,
+                    ordinary_distribution: Answer::Yes,
+                },
+            }),
+        );
+    }
+    let result = supported(&draft);
+    assert_eq!(return_line(&result, "4b"), 100_100);
+    assert_eq!(return_line(&result, "5b"), 100_100);
+    assert_eq!(value(&result, "agi"), initial_agi + 2002);
+}
+
+#[test]
+fn incomplete_and_unsupported_returns_never_show_completed_return_lines() {
+    let incomplete = crate::federal_rules::estimate(&FederalDraft::empty("draft".into()));
+    assert!(incomplete.return_lines.is_empty() && incomplete.review_notes.is_empty());
+    let mut draft = complete(FederalStatus::Single);
+    draft.screening.as_mut().unwrap().uncertain = Answer::Yes;
+    let unsupported = crate::federal_rules::estimate(&draft);
+    assert!(unsupported.return_lines.is_empty() && unsupported.refund.is_none());
+}
+
+#[test]
+fn ira_spouse_choices_follow_accepted_setup_for_new_and_saved_adjustments() {
+    for (status, apart, expected) in [
+        (FederalStatus::Single, false, 0),
+        (FederalStatus::Head, false, 0),
+        (FederalStatus::Surviving, false, 0),
+        (FederalStatus::Joint, false, 1),
+        (FederalStatus::Separate, false, 2),
+        (FederalStatus::Separate, true, 0),
+    ] {
+        for saved in [false, true] {
+            let mut draft = complete(status);
+            if apart {
+                draft.setup.as_mut().unwrap().marital_state = MaritalState::Married {
+                    living: SpouseLiving::AllYear,
+                };
+            }
+            if !saved {
+                draft.erase_after(3);
+            }
+            let mut interview = Interview::new(draft.clone());
+            let reply = send(
+                &mut interview,
+                P::Navigate {
+                    cookie: draft.cookie.clone(),
+                    revision: draft.revision,
+                    section: TaxSection::Adjustments,
+                    allowed_sections: alloc::vec![4],
+                },
+            );
+            let allowed = match reply {
+                Reply::Response(P::BeginAdjustments {
+                    allowed_ira_spouse, ..
+                }) if !saved => allowed_ira_spouse,
+                Reply::Edit(P::SaveAdjustments {
+                    allowed_ira_spouse, ..
+                }) if saved => allowed_ira_spouse,
+                _ => panic!("expected adjustments editor"),
+            };
+            assert_eq!(allowed, alloc::vec![expected]);
+            assert_eq!(interview.draft, draft);
+        }
+    }
+}
+
+#[test]
+fn deductions_review_edit_resumes_invalidated_pages_instead_of_review() {
+    for changed in [false, true] {
+        let original = complete(FederalStatus::Single);
+        let mut session = Interview::new(original.clone());
+        let mut value = original.deductions.clone().unwrap();
+        if changed {
+            value.set_cash_charity(10_000);
+            value.set_cash_charity_eligible(Answer::Yes);
+        }
+        let reply = send(
+            &mut session,
+            P::SaveDeductions {
+                cookie: original.cookie.clone(),
+                revision: original.revision,
+                page: 5,
+                previous: 4,
+                review: true,
+                progress: vec![],
+                value: value.clone(),
+            },
+        );
+        if changed {
+            assert!(matches!(
+                reply,
+                Reply::Response(P::BeginCredits { review: false, .. })
+            ));
+            assert_eq!(session.draft.deductions, Some(value));
+            assert!(session.draft.credits.is_none());
+            assert!(session.draft.screening.is_none());
+            assert!(session.draft.payments.is_none());
+            assert_eq!(session.draft.first_incomplete(), 6);
+            assert_eq!(session.draft.revision, original.revision + 1);
+            let mut restored = restart(session.draft.clone());
+            assert!(matches!(
+                send(&mut restored, P::OpenInterview),
+                Reply::Response(P::BeginCredits { .. })
+            ));
+        } else {
+            assert!(matches!(reply, Reply::Response(P::Review { .. })));
+            assert_eq!(session.draft, original);
+            assert!(!session.dirty);
+        }
+    }
 }

@@ -222,6 +222,17 @@ impl FederalSetup {
         }
     }
 
+    // Use the same accepted setup for both editor choices and IRA validation.
+    pub(crate) fn ira_spouse_index(&self) -> i32 {
+        if self.filing_status() == FederalStatus::Joint {
+            libertas_macros::variant_index!(IraSpouse::Joint) as i32
+        } else if self.filing_status() == FederalStatus::Separate && !self.lived_apart_all_year() {
+            libertas_macros::variant_index!(IraSpouse::SeparateTogether) as i32
+        } else {
+            libertas_macros::variant_index!(IraSpouse::NotApplicable) as i32
+        }
+    }
+
     pub(crate) fn spouse_itemizes(&self) -> bool {
         matches!(
             self.status,
@@ -447,22 +458,36 @@ pub struct FederalVehicleInterest {
     pub eligible: Answer,
 }
 
+/// Retirement statement category
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasAvroEncode, LibertasAvroDecode, LibertasExport,
+)]
+pub enum RetirementKind {
+    /// IRA distribution (IRA/SEP/SIMPLE box checked)
+    Ira,
+    /// Pension or annuity
+    Pension,
+}
+
 /// Retirement distribution
 #[derive(Clone, Debug, PartialEq, Eq, LibertasAvroEncode, LibertasAvroDecode, LibertasExport)]
 pub struct FederalRetirement {
-    /// Gross distribution
+    /// Form 1099-R category
+    pub kind: RetirementKind,
+    /// Form 1099-R box 1 gross distribution
     #[libertas_money("USD", 2)]
     #[libertas_number(min = 0, max = 100000000000)]
     pub gross: i64,
-    /// Taxable amount known from the statement and applicable rules
+    /// Form 1099-R box 2a taxable amount
+    /// Use the payer-reported amount. If box 2b says taxable amount not determined, choose No or Not sure for the supported-treatment question below.
     #[libertas_money("USD", 2)]
     #[libertas_number(min = 0, max = 100000000000)]
     pub taxable: i64,
-    /// Federal income tax withheld
+    /// Form 1099-R box 4 federal income tax withheld
     #[libertas_money("USD", 2)]
     #[libertas_number(min = 0, max = 100000000000)]
     pub withholding: i64,
-    /// Normal pension or IRA distribution with known taxable amount and no early-distribution tax, rollover, QCD, inherited-account or basis calculation
+    /// Payer determined box 2a; no early-distribution tax, rollover, QCD, inherited-account or basis calculation applies
     pub ordinary_distribution: Answer,
 }
 
@@ -496,6 +521,20 @@ pub struct FederalUnemployment {
     pub repaid: Answer,
 }
 
+/// Business expense
+/// Enter each expense or bookkeeping category once. Exclude personal expenses and expenses claimed elsewhere.
+#[derive(Clone, Debug, PartialEq, Eq, LibertasAvroEncode, LibertasAvroDecode, LibertasExport)]
+pub struct FederalBusinessExpense {
+    /// Expense or category
+    #[libertas_ui_header]
+    #[libertas_size(min = 1, max = 80)]
+    pub label: String,
+    /// Business amount paid
+    #[libertas_money("USD", 2)]
+    #[libertas_number(min = 0, max = 100000000000)]
+    pub amount: i64,
+}
+
 /// Sole-proprietor business
 #[derive(Clone, Debug, PartialEq, Eq, LibertasAvroEncode, LibertasAvroDecode, LibertasExport)]
 pub struct FederalBusiness {
@@ -503,14 +542,22 @@ pub struct FederalBusiness {
     #[libertas_money("USD", 2)]
     #[libertas_number(min = 0, max = 100000000000)]
     pub receipts: i64,
-    /// Ordinary deductible business expenses, excluding personal and separately claimed deductions
-    #[libertas_money("USD", 2)]
-    #[libertas_number(min = 0, max = 100000000000)]
-    pub expenses: i64,
+    /// Business expenses
+    /// The app totals these expenses and subtracts them from receipts.
+    /// ----
+    /// Business expense
+    #[libertas_size(max = 100)]
+    pub expenses: Vec<FederalBusinessExpense>,
     /// Actively and materially participated in this business
     pub material_participation: Answer,
     /// Inventory, depreciation, home office, employees, farming, partnership/S-corporation, foreign activity, prior losses or a special tax election applies
     pub special_treatment: Answer,
+}
+
+impl FederalBusiness {
+    pub(crate) fn expense_total(&self) -> i64 {
+        self.expenses.iter().map(|expense| expense.amount).sum()
+    }
 }
 
 /// Income document
@@ -622,6 +669,7 @@ pub struct FederalIras {
     /// Your contributions and workplace coverage
     pub taxpayer: FederalIraContribution,
     /// Spouse situation for the IRA worksheet
+    #[libertas_constrained_by("$.allowed_ira_spouse")]
     pub spouse: IraSpouse,
     /// Regular timely contributions only; no rollovers, conversions, recharacterizations, excess carryovers, repayments or special compensation
     /// Compensation comes from the wages and supported business earnings entered in Income.
@@ -665,6 +713,63 @@ pub struct FederalDeductions {
     pub special_work_deductions: Answer,
 }
 
+/// Education expense worksheet
+/// Enter payments and reductions for this student's selected credit once. Do not use room, board, insurance or transportation. Scholarship income elections and cross-benefit optimization require a separate worksheet.
+#[derive(Clone, Debug, PartialEq, Eq, LibertasAvroEncode, LibertasAvroDecode, LibertasExport)]
+pub struct FederalEducationExpenses {
+    /// Tuition and required enrollment fees paid for eligible academic periods
+    #[libertas_money("USD", 2)]
+    #[libertas_number(min = 0, max = 100000000000)]
+    pub tuition: i64,
+    /// Required books, supplies and equipment paid to the institution as a condition of enrollment
+    #[libertas_money("USD", 2)]
+    #[libertas_number(min = 0, max = 100000000000)]
+    pub school_materials: i64,
+    /// Other required course books, supplies and equipment
+    /// Counted for American Opportunity only; not counted for Lifetime Learning.
+    #[libertas_money("USD", 2)]
+    #[libertas_number(min = 0, max = 100000000000)]
+    pub other_materials: i64,
+    /// Tax-free scholarships, grants and employer assistance allocated to the expenses counted for this credit
+    #[libertas_money("USD", 2)]
+    #[libertas_number(min = 0, max = 100000000000)]
+    pub assistance: i64,
+    /// Refunds of those expenses for this return
+    #[libertas_money("USD", 2)]
+    #[libertas_number(min = 0, max = 100000000000)]
+    pub refunds: i64,
+    /// Those expenses allocated to tax-free 529/ESA distributions or another tax benefit
+    /// Do not enter an amount already included in assistance or refunds.
+    #[libertas_money("USD", 2)]
+    #[libertas_number(min = 0, max = 100000000000)]
+    pub other_benefits: i64,
+}
+impl FederalEducationExpenses {
+    pub(crate) fn qualified(&self, method: EducationMethod) -> i64 {
+        (self.tuition
+            + self.school_materials
+            + if method == EducationMethod::AmericanOpportunity {
+                self.other_materials
+            } else {
+                0
+            }
+            - self.assistance
+            - self.refunds
+            - self.other_benefits)
+            .max(0)
+    }
+    pub(crate) fn components(&self) -> [i64; 6] {
+        [
+            self.tuition,
+            self.school_materials,
+            self.other_materials,
+            self.assistance,
+            self.refunds,
+            self.other_benefits,
+        ]
+    }
+}
+
 /// Education credit facts
 #[derive(Clone, Debug, PartialEq, Eq, LibertasAvroEncode, LibertasAvroDecode, LibertasExport)]
 pub struct FederalEducation {
@@ -674,10 +779,9 @@ pub struct FederalEducation {
     pub student: u32,
     /// Credit to evaluate for this student
     pub method: EducationChoice,
-    /// Eligible expenses after scholarships, grants, refunds and amounts used for any other tax benefit
-    #[libertas_money("USD", 2)]
-    #[libertas_number(min = 0, max = 100000000000)]
-    pub expenses: i64,
+    /// Payments and expense reductions
+    /// The app calculates the expense amount available for the selected credit.
+    pub expenses: FederalEducationExpenses,
     /// Eligible institution, student and taxpayer; no double benefit or competing claim
     pub eligible_student: Answer,
 }
@@ -786,11 +890,15 @@ pub struct FederalScreening {
 /// Federal payments
 #[derive(Clone, Debug, PartialEq, Eq, LibertasAvroEncode, LibertasAvroDecode, LibertasExport)]
 pub struct FederalPayments {
-    /// Estimated federal payments
+    /// Federal tax payments already made for 2026
+    /// Include quarterly estimated payments actually paid to the IRS for 2026.
+    /// Exclude paycheck withholding, payments made with a filing extension, and payments you only plan to make. Enter 0 if none.
     #[libertas_money("USD", 2)]
     #[libertas_number(min = 0, max = 100000000000)]
     pub estimated: i64,
-    /// Extension payment
+    /// Payment already made with your filing extension
+    /// Enter the amount actually paid to the IRS with an extension for your 2026 federal return.
+    /// Enter 0 if none. This is not the amount you expect to owe or a recommended payment.
     #[libertas_money("USD", 2)]
     #[libertas_number(min = 0, max = 100000000000)]
     pub extension: i64,
@@ -816,6 +924,11 @@ pub struct FederalResult {
     /// ----
     /// Issues entry
     pub issues: Vec<FederalIssue>,
+    /// Refund review notes
+    /// These notes do not remove the calculated refund. The prototype uses its current finalized-rule calculation and does not apply the proposed 2026 Schedule 3-A reduction. If a note appears, review the final IRS eligibility rules before relying on the refund for filing.
+    /// ----
+    /// Review note
+    pub review_notes: Vec<String>,
     /// Estimate method and limitations
     pub method: String,
     /// Calculation provenance
@@ -823,6 +936,11 @@ pub struct FederalResult {
     /// Calculation line
     #[libertas_hidden]
     pub lines: Vec<CalculationLine>,
+    /// Calculated draft return
+    /// Provisional 2026 Form 1040 line references, using the same calculation as the refund below. This is a review view, not a completed IRS form. The proposed Schedule 3-A reduction is not applied; read Refund review notes.
+    /// ----
+    /// Return line
+    pub return_lines: Vec<FederalAmount>,
     /// Calculation breakdown
     /// ----
     /// Lines entry
@@ -837,6 +955,7 @@ pub struct FederalResult {
     #[libertas_money("USD", 2)]
     pub payments: Option<i64>,
     /// Estimated refund before penalties, interest and offsets
+    /// Calculated without the proposed Schedule 3-A reduction. Check Refund review notes; this is not a filing-ready refund.
     #[libertas_money("USD", 2)]
     pub refund: Option<i64>,
     /// Estimated balance before penalties and interest
@@ -1689,6 +1808,7 @@ impl From<Option<FederalSaver>> for SaverChoice {
 /// Spouse situation for IRA contributions and workplace coverage
 #[derive(Clone, Debug, PartialEq, Eq, LibertasAvroEncode, LibertasAvroDecode, LibertasExport)]
 #[libertas_ui_header]
+#[derive(libertas_macros::VariantIndex)]
 pub enum IraSpouse {
     /// Not filing jointly or separately while living together
     NotApplicable,

@@ -2,7 +2,7 @@ use crate::*;
 use alloc::{string::String, vec::Vec};
 use libertas_macros::{LibertasAvroDecode, LibertasAvroEncode, LibertasExport};
 
-/// Tax interview section
+/// Tax return section
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport,
 )]
@@ -29,7 +29,7 @@ pub enum TaxSection {
     Review,
 }
 
-/// Tax interview
+/// Tax return
 /// Accepted pages are saved. Larger forms offer recovery of completed field edits on this device; small-page edits and unfinished typing are discarded on exit. Synthetic data only; no return is filed.
 #[derive(
     Clone,
@@ -213,6 +213,10 @@ pub enum TaxInterviewProtocol {
     #[libertas_response]
     #[libertas_workflow_request("SaveAdjustments")]
     BeginAdjustments {
+        /// Applicable IRA spouse situation
+        #[libertas_hidden]
+        #[libertas_read_only]
+        allowed_ira_spouse: Vec<i32>,
         /// Return identity
         #[libertas_hidden]
         #[libertas_read_only]
@@ -246,6 +250,11 @@ pub enum TaxInterviewProtocol {
         "BeginSetup,SaveSetup,BeginPeople,SavePeople,BeginAdjustments,SaveAdjustments,BeginDeductions,SaveDeductions,BeginCredits,SaveCredits,BeginScreening,SaveScreening,BeginPayments,SavePayments,SaveDependents,SaveIncomes,Review,BeginFinish,Finish,Finished,Problem"
     )]
     SaveAdjustments {
+        /// Applicable IRA spouse situation
+        #[libertas_hidden]
+        #[libertas_read_only]
+        #[libertas_copy_from("$.allowed_ira_spouse")]
+        allowed_ira_spouse: Vec<i32>,
         /// Return identity
         #[libertas_hidden]
         #[libertas_read_only]
@@ -847,7 +856,7 @@ pub enum TaxInterviewProtocol {
         #[libertas_copy_to("^<IncomeEditorItem>.preview")]
         preview: Option<i64>,
     },
-    /// Open tax interview
+    /// Open tax return
     #[libertas_request]
     #[libertas_default_request]
     #[libertas_next_response("Actions,Problem")]

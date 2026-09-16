@@ -1,26 +1,26 @@
 {
   "DocumentVersion": "0.0.2",
   "Locale": "en",
-  "DisplayName": "Libertas tax interview prototype",
+  "DisplayName": "Tax return prototype",
   "Description": "Interview, saved accepted answers, and a U.S. federal tax year 2026 estimate. Use synthetic data only. This prototype does not file a return.",
   "StringResources": {
-    "RETURN_DATA": "Saved 2026 federal prototype return",
-    "TEXT": "{0}"
+    "TEXT": "{0}",
+    "RETURN_DATA": "Saved 2026 federal prototype return"
   },
   "List": [
     {
       "Name": "tax_interview",
-      "DisplayName": "Tax interview prototype",
+      "DisplayName": "Tax return prototype",
       "Description": "Create one saved synthetic return per task. Resume accepted pages after reopening; larger forms can restore completed field edits saved on this device. Unfinished typing is discarded. No return is filed.",
       "List": [
         {
           "Type": 0,
-          "Name": "Tax interview",
+          "Name": "Tax return",
           "Description": "Open the synthetic U.S. federal tax year 2026 interview.",
-          "DefaultText": "Tax interview prototype"
+          "DefaultText": "Tax return prototype"
         }
       ],
-      "DefaultTaskName": "Tax interview prototype"
+      "DefaultTaskName": "Tax return prototype"
     }
   ],
   "Types": [
@@ -439,17 +439,44 @@
         },
         {
           "Type": 2,
-          "Name": "Ordinary deductible business expenses, excluding personal and separately claimed deductions",
-          "Description": ""
+          "Name": "Business expenses",
+          "Description": "The app totals these expenses and subtracts them from receipts."
         },
         {
           "Type": 3,
-          "Name": "Actively and materially participated in this business",
+          "Name": "Business expense",
           "Description": ""
         },
         {
           "Type": 4,
+          "Name": "Actively and materially participated in this business",
+          "Description": ""
+        },
+        {
+          "Type": 5,
           "Name": "Inventory, depreciation, home office, employees, farming, partnership/S-corporation, foreign activity, prior losses or a special tax election applies",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalBusinessExpense",
+      "DisplayName": "Business expense",
+      "Description": "Enter each expense or bookkeeping category once. Exclude personal expenses and expenses claimed elsewhere.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Business expense",
+          "Description": "Enter each expense or bookkeeping category once. Exclude personal expenses and expenses claimed elsewhere."
+        },
+        {
+          "Type": 1,
+          "Name": "Expense or category",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Business amount paid",
           "Description": ""
         }
       ]
@@ -806,13 +833,55 @@
         },
         {
           "Type": 3,
-          "Name": "Eligible expenses after scholarships, grants, refunds and amounts used for any other tax benefit",
-          "Description": ""
+          "Name": "Payments and expense reductions",
+          "Description": "The app calculates the expense amount available for the selected credit."
         },
         {
           "Type": 4,
           "Name": "Eligible institution, student and taxpayer; no double benefit or competing claim",
           "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "FederalEducationExpenses",
+      "DisplayName": "Education expense worksheet",
+      "Description": "Enter payments and reductions for this student's selected credit once. Do not use room, board, insurance or transportation. Scholarship income elections and cross-benefit optimization require a separate worksheet.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Education expense worksheet",
+          "Description": "Enter payments and reductions for this student's selected credit once. Do not use room, board, insurance or transportation. Scholarship income elections and cross-benefit optimization require a separate worksheet."
+        },
+        {
+          "Type": 1,
+          "Name": "Tuition and required enrollment fees paid for eligible academic periods",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Required books, supplies and equipment paid to the institution as a condition of enrollment",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Other required course books, supplies and equipment",
+          "Description": "Counted for American Opportunity only; not counted for Lifetime Learning."
+        },
+        {
+          "Type": 4,
+          "Name": "Tax-free scholarships, grants and employer assistance allocated to the expenses counted for this credit",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Refunds of those expenses for this return",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Those expenses allocated to tax-free 529/ESA distributions or another tax benefit",
+          "Description": "Do not enter an amount already included in assistance or refunds."
         }
       ]
     },
@@ -1102,13 +1171,13 @@
         },
         {
           "Type": 1,
-          "Name": "Estimated federal payments",
-          "Description": ""
+          "Name": "Federal tax payments already made for 2026",
+          "Description": "Include quarterly estimated payments actually paid to the IRS for 2026. Exclude paycheck withholding, payments made with a filing extension, and payments you only plan to make. Enter 0 if none."
         },
         {
           "Type": 2,
-          "Name": "Extension payment",
-          "Description": ""
+          "Name": "Payment already made with your filing extension",
+          "Description": "Enter the amount actually paid to the IRS with an extension for your 2026 federal return. Enter 0 if none. This is not the amount you expect to owe or a recommended payment."
         }
       ]
     },
@@ -1253,51 +1322,71 @@
         },
         {
           "Type": 5,
-          "Name": "Estimate method and limitations",
-          "Description": ""
+          "Name": "Refund review notes",
+          "Description": "These notes do not remove the calculated refund. The prototype uses its current finalized-rule calculation and does not apply the proposed 2026 Schedule 3-A reduction. If a note appears, review the final IRS eligibility rules before relying on the refund for filing."
         },
         {
           "Type": 6,
-          "Name": "Calculation provenance",
+          "Name": "Review note",
           "Description": ""
         },
         {
           "Type": 7,
-          "Name": "Calculation line",
+          "Name": "Estimate method and limitations",
           "Description": ""
         },
         {
           "Type": 8,
-          "Name": "Calculation breakdown",
+          "Name": "Calculation provenance",
           "Description": ""
         },
         {
           "Type": 9,
-          "Name": "Lines entry",
+          "Name": "Calculation line",
           "Description": ""
         },
         {
           "Type": 10,
-          "Name": "Total estimated federal tax",
-          "Description": ""
+          "Name": "Calculated draft return",
+          "Description": "Provisional 2026 Form 1040 line references, using the same calculation as the refund below. This is a review view, not a completed IRS form. The proposed Schedule 3-A reduction is not applied; read Refund review notes."
         },
         {
           "Type": 11,
-          "Name": "Refundable credits",
+          "Name": "Return line",
           "Description": ""
         },
         {
           "Type": 12,
-          "Name": "Withholding and payments",
+          "Name": "Calculation breakdown",
           "Description": ""
         },
         {
           "Type": 13,
-          "Name": "Estimated refund before penalties, interest and offsets",
+          "Name": "Lines entry",
           "Description": ""
         },
         {
           "Type": 14,
+          "Name": "Total estimated federal tax",
+          "Description": ""
+        },
+        {
+          "Type": 15,
+          "Name": "Refundable credits",
+          "Description": ""
+        },
+        {
+          "Type": 16,
+          "Name": "Withholding and payments",
+          "Description": ""
+        },
+        {
+          "Type": 17,
+          "Name": "Estimated refund before penalties, interest and offsets",
+          "Description": "Calculated without the proposed Schedule 3-A reduction. Check Refund review notes; this is not a filing-ready refund."
+        },
+        {
+          "Type": 18,
           "Name": "Estimated balance before penalties and interest",
           "Description": ""
         }
@@ -1315,22 +1404,27 @@
         },
         {
           "Type": 1,
-          "Name": "Gross distribution",
+          "Name": "Form 1099-R category",
           "Description": ""
         },
         {
           "Type": 2,
-          "Name": "Taxable amount known from the statement and applicable rules",
+          "Name": "Form 1099-R box 1 gross distribution",
           "Description": ""
         },
         {
           "Type": 3,
-          "Name": "Federal income tax withheld",
-          "Description": ""
+          "Name": "Form 1099-R box 2a taxable amount",
+          "Description": "Use the payer-reported amount. If box 2b says taxable amount not determined, choose No or Not sure for the supported-treatment question below."
         },
         {
           "Type": 4,
-          "Name": "Normal pension or IRA distribution with known taxable amount and no early-distribution tax, rollover, QCD, inherited-account or basis calculation",
+          "Name": "Form 1099-R box 4 federal income tax withheld",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Payer determined box 2a; no early-distribution tax, rollover, QCD, inherited-account or basis calculation applies",
           "Description": ""
         }
       ]
@@ -2173,6 +2267,30 @@
       ]
     },
     {
+      "Name": "RetirementKind",
+      "DisplayName": "Retirement statement category",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Retirement statement category",
+          "Description": "",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "IRA distribution (IRA/SEP/SIMPLE box checked)",
+              "Description": ""
+            },
+            {
+              "Type": 2,
+              "Name": "Pension or annuity",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
       "Name": "SaverChoice",
       "DisplayName": "Workplace retirement contributions for Saver’s Credit",
       "Description": "Select Yes to provide the applicable facts; No carries no additional data.",
@@ -2414,12 +2532,12 @@
     },
     {
       "Name": "TaxInterviewProtocol",
-      "DisplayName": "Tax interview",
+      "DisplayName": "Tax return",
       "Description": "Accepted pages are saved. Larger forms offer recovery of completed field edits on this device; small-page edits and unfinished typing are discarded on exit. Synthetic data only; no return is filed.",
       "List": [
         {
           "Type": 0,
-          "Name": "Tax interview",
+          "Name": "Tax return",
           "Description": "Accepted pages are saved. Larger forms offer recovery of completed field edits on this device; small-page edits and unfinished typing are discarded on exit. Synthetic data only; no return is filed."
         },
         {
@@ -2609,497 +2727,497 @@
         },
         {
           "Type": 38,
-          "Name": "Return identity",
+          "Name": "Applicable IRA spouse situation",
           "Description": ""
         },
         {
           "Type": 39,
-          "Name": "Accepted revision",
+          "Name": "",
           "Description": ""
         },
         {
           "Type": 40,
-          "Name": "Current section",
+          "Name": "Return identity",
           "Description": ""
         },
         {
           "Type": 41,
-          "Name": "Previous page",
+          "Name": "Accepted revision",
           "Description": ""
         },
         {
           "Type": 42,
-          "Name": "Return to review after saving",
+          "Name": "Current section",
           "Description": ""
         },
         {
           "Type": 43,
-          "Name": "Interview progress",
+          "Name": "Previous page",
           "Description": ""
         },
         {
           "Type": 44,
-          "Name": "Adjustments to income",
+          "Name": "Return to review after saving",
           "Description": ""
         },
         {
           "Type": 45,
-          "Name": "Return identity",
+          "Name": "Interview progress",
           "Description": ""
         },
         {
           "Type": 46,
-          "Name": "Accepted revision",
-          "Description": ""
-        },
-        {
-          "Type": 47,
-          "Name": "Current section",
-          "Description": ""
-        },
-        {
-          "Type": 48,
-          "Name": "Previous page",
-          "Description": ""
-        },
-        {
-          "Type": 49,
-          "Name": "Return to review after saving",
-          "Description": ""
-        },
-        {
-          "Type": 50,
-          "Name": "Interview progress",
-          "Description": ""
-        },
-        {
-          "Type": 51,
           "Name": "Adjustments to income",
           "Description": ""
         },
         {
+          "Type": 47,
+          "Name": "Applicable IRA spouse situation",
+          "Description": ""
+        },
+        {
+          "Type": 48,
+          "Name": "",
+          "Description": ""
+        },
+        {
+          "Type": 49,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 50,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 51,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
           "Type": 52,
-          "Name": "Deductions",
+          "Name": "Previous page",
           "Description": ""
         },
         {
           "Type": 53,
-          "Name": "Return identity",
+          "Name": "Return to review after saving",
           "Description": ""
         },
         {
           "Type": 54,
-          "Name": "Accepted revision",
+          "Name": "Interview progress",
           "Description": ""
         },
         {
           "Type": 55,
-          "Name": "Current section",
+          "Name": "Adjustments to income",
           "Description": ""
         },
         {
           "Type": 56,
-          "Name": "Previous page",
+          "Name": "Deductions",
           "Description": ""
         },
         {
           "Type": 57,
-          "Name": "Return to review after saving",
+          "Name": "Return identity",
           "Description": ""
         },
         {
           "Type": 58,
-          "Name": "Interview progress",
+          "Name": "Accepted revision",
           "Description": ""
         },
         {
           "Type": 59,
-          "Name": "Deductions",
+          "Name": "Current section",
           "Description": ""
         },
         {
           "Type": 60,
-          "Name": "Return identity",
+          "Name": "Previous page",
           "Description": ""
         },
         {
           "Type": 61,
-          "Name": "Accepted revision",
+          "Name": "Return to review after saving",
           "Description": ""
         },
         {
           "Type": 62,
-          "Name": "Current section",
+          "Name": "Interview progress",
           "Description": ""
         },
         {
           "Type": 63,
-          "Name": "Previous page",
-          "Description": ""
-        },
-        {
-          "Type": 64,
-          "Name": "Return to review after saving",
-          "Description": ""
-        },
-        {
-          "Type": 65,
-          "Name": "Interview progress",
-          "Description": ""
-        },
-        {
-          "Type": 66,
           "Name": "Deductions",
           "Description": ""
         },
         {
+          "Type": 64,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 65,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 66,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
           "Type": 67,
-          "Name": "Education, care and retirement savings credits",
+          "Name": "Previous page",
           "Description": ""
         },
         {
           "Type": 68,
-          "Name": "Return identity",
+          "Name": "Return to review after saving",
           "Description": ""
         },
         {
           "Type": 69,
-          "Name": "Accepted revision",
+          "Name": "Interview progress",
           "Description": ""
         },
         {
           "Type": 70,
-          "Name": "Current section",
+          "Name": "Deductions",
           "Description": ""
         },
         {
           "Type": 71,
-          "Name": "Previous page",
+          "Name": "Education, care and retirement savings credits",
           "Description": ""
         },
         {
           "Type": 72,
-          "Name": "Return to review after saving",
+          "Name": "Return identity",
           "Description": ""
         },
         {
           "Type": 73,
-          "Name": "Interview progress",
+          "Name": "Accepted revision",
           "Description": ""
         },
         {
           "Type": 74,
-          "Name": "Students on this return",
+          "Name": "Current section",
           "Description": ""
         },
         {
           "Type": 75,
-          "Name": "Student",
+          "Name": "Previous page",
           "Description": ""
         },
         {
           "Type": 76,
-          "Name": "Education, care and retirement savings credits",
+          "Name": "Return to review after saving",
           "Description": ""
         },
         {
           "Type": 77,
-          "Name": "Return identity",
+          "Name": "Interview progress",
           "Description": ""
         },
         {
           "Type": 78,
-          "Name": "Accepted revision",
+          "Name": "Students on this return",
           "Description": ""
         },
         {
           "Type": 79,
-          "Name": "Current section",
+          "Name": "Student",
           "Description": ""
         },
         {
           "Type": 80,
-          "Name": "Previous page",
-          "Description": ""
-        },
-        {
-          "Type": 81,
-          "Name": "Return to review after saving",
-          "Description": ""
-        },
-        {
-          "Type": 82,
-          "Name": "Interview progress",
-          "Description": ""
-        },
-        {
-          "Type": 83,
           "Name": "Education, care and retirement savings credits",
           "Description": ""
         },
         {
+          "Type": 81,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 82,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 83,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
           "Type": 84,
-          "Name": "Check remaining situations",
+          "Name": "Previous page",
           "Description": ""
         },
         {
           "Type": 85,
-          "Name": "Return identity",
+          "Name": "Return to review after saving",
           "Description": ""
         },
         {
           "Type": 86,
-          "Name": "Accepted revision",
+          "Name": "Interview progress",
           "Description": ""
         },
         {
           "Type": 87,
-          "Name": "Current section",
+          "Name": "Education, care and retirement savings credits",
           "Description": ""
         },
         {
           "Type": 88,
-          "Name": "Previous page",
+          "Name": "Check remaining situations",
           "Description": ""
         },
         {
           "Type": 89,
-          "Name": "Return to review after saving",
+          "Name": "Return identity",
           "Description": ""
         },
         {
           "Type": 90,
-          "Name": "Interview progress",
+          "Name": "Accepted revision",
           "Description": ""
         },
         {
           "Type": 91,
-          "Name": "Check remaining situations",
+          "Name": "Current section",
           "Description": ""
         },
         {
           "Type": 92,
-          "Name": "Return identity",
+          "Name": "Previous page",
           "Description": ""
         },
         {
           "Type": 93,
-          "Name": "Accepted revision",
+          "Name": "Return to review after saving",
           "Description": ""
         },
         {
           "Type": 94,
-          "Name": "Current section",
+          "Name": "Interview progress",
           "Description": ""
         },
         {
           "Type": 95,
-          "Name": "Previous page",
-          "Description": ""
-        },
-        {
-          "Type": 96,
-          "Name": "Return to review after saving",
-          "Description": ""
-        },
-        {
-          "Type": 97,
-          "Name": "Interview progress",
-          "Description": ""
-        },
-        {
-          "Type": 98,
           "Name": "Check remaining situations",
           "Description": ""
         },
         {
+          "Type": 96,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 97,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 98,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
           "Type": 99,
-          "Name": "Federal payments",
+          "Name": "Previous page",
           "Description": ""
         },
         {
           "Type": 100,
-          "Name": "Return identity",
+          "Name": "Return to review after saving",
           "Description": ""
         },
         {
           "Type": 101,
-          "Name": "Accepted revision",
+          "Name": "Interview progress",
           "Description": ""
         },
         {
           "Type": 102,
-          "Name": "Current section",
+          "Name": "Check remaining situations",
           "Description": ""
         },
         {
           "Type": 103,
-          "Name": "Previous page",
+          "Name": "Federal payments",
           "Description": ""
         },
         {
           "Type": 104,
-          "Name": "Return to review after saving",
+          "Name": "Return identity",
           "Description": ""
         },
         {
           "Type": 105,
-          "Name": "Interview progress",
+          "Name": "Accepted revision",
           "Description": ""
         },
         {
           "Type": 106,
-          "Name": "Federal payments",
+          "Name": "Current section",
           "Description": ""
         },
         {
           "Type": 107,
-          "Name": "Return identity",
+          "Name": "Previous page",
           "Description": ""
         },
         {
           "Type": 108,
-          "Name": "Accepted revision",
+          "Name": "Return to review after saving",
           "Description": ""
         },
         {
           "Type": 109,
-          "Name": "Current section",
+          "Name": "Interview progress",
           "Description": ""
         },
         {
           "Type": 110,
-          "Name": "Previous page",
-          "Description": ""
-        },
-        {
-          "Type": 111,
-          "Name": "Return to review after saving",
-          "Description": ""
-        },
-        {
-          "Type": 112,
-          "Name": "Interview progress",
-          "Description": ""
-        },
-        {
-          "Type": 113,
           "Name": "Federal payments",
           "Description": ""
         },
         {
+          "Type": 111,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 112,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 113,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
           "Type": 114,
-          "Name": "Children and people you support",
+          "Name": "Previous page",
           "Description": ""
         },
         {
           "Type": 115,
-          "Name": "Return identity",
+          "Name": "Return to review after saving",
           "Description": ""
         },
         {
           "Type": 116,
-          "Name": "Accepted revision",
+          "Name": "Interview progress",
           "Description": ""
         },
         {
           "Type": 117,
-          "Name": "Current section",
+          "Name": "Federal payments",
           "Description": ""
         },
         {
           "Type": 118,
-          "Name": "Previous page",
-          "Description": ""
-        },
-        {
-          "Type": 119,
-          "Name": "Return to review after saving",
-          "Description": ""
-        },
-        {
-          "Type": 120,
-          "Name": "Interview progress",
-          "Description": ""
-        },
-        {
-          "Type": 121,
           "Name": "Children and people you support",
           "Description": ""
         },
         {
-          "Type": 122,
-          "Name": "Child or person you support",
-          "Description": ""
-        },
-        {
-          "Type": 123,
-          "Name": "Income documents",
-          "Description": ""
-        },
-        {
-          "Type": 124,
+          "Type": 119,
           "Name": "Return identity",
           "Description": ""
         },
         {
-          "Type": 125,
+          "Type": 120,
           "Name": "Accepted revision",
           "Description": ""
         },
         {
-          "Type": 126,
+          "Type": 121,
           "Name": "Current section",
           "Description": ""
         },
         {
-          "Type": 127,
+          "Type": 122,
           "Name": "Previous page",
           "Description": ""
         },
         {
-          "Type": 128,
+          "Type": 123,
           "Name": "Return to review after saving",
           "Description": ""
         },
         {
-          "Type": 129,
+          "Type": 124,
           "Name": "Interview progress",
           "Description": ""
         },
         {
-          "Type": 130,
+          "Type": 125,
+          "Name": "Children and people you support",
+          "Description": ""
+        },
+        {
+          "Type": 126,
+          "Name": "Child or person you support",
+          "Description": ""
+        },
+        {
+          "Type": 127,
           "Name": "Income documents",
           "Description": ""
         },
         {
-          "Type": 131,
-          "Name": "Income document",
-          "Description": ""
-        },
-        {
-          "Type": 132,
-          "Name": "Back",
-          "Description": ""
-        },
-        {
-          "Type": 133,
+          "Type": 128,
           "Name": "Return identity",
           "Description": ""
         },
         {
-          "Type": 134,
+          "Type": 129,
           "Name": "Accepted revision",
           "Description": ""
         },
         {
-          "Type": 135,
+          "Type": 130,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 131,
           "Name": "Previous page",
           "Description": ""
         },
         {
+          "Type": 132,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 133,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 134,
+          "Name": "Income documents",
+          "Description": ""
+        },
+        {
+          "Type": 135,
+          "Name": "Income document",
+          "Description": ""
+        },
+        {
           "Type": 136,
-          "Name": "Review a section",
+          "Name": "Back",
           "Description": ""
         },
         {
@@ -3114,201 +3232,221 @@
         },
         {
           "Type": 139,
-          "Name": "Section",
+          "Name": "Previous page",
           "Description": ""
         },
         {
           "Type": 140,
-          "Name": "Available sections",
+          "Name": "Review a section",
           "Description": ""
         },
         {
           "Type": 141,
-          "Name": "",
+          "Name": "Return identity",
           "Description": ""
         },
         {
           "Type": 142,
-          "Name": "Review your federal estimate",
+          "Name": "Accepted revision",
           "Description": ""
         },
         {
           "Type": 143,
-          "Name": "Return identity",
+          "Name": "Section",
           "Description": ""
         },
         {
           "Type": 144,
-          "Name": "Accepted revision",
-          "Description": ""
-        },
-        {
-          "Type": 145,
-          "Name": "Federal estimate and coverage",
-          "Description": ""
-        },
-        {
-          "Type": 146,
           "Name": "Available sections",
           "Description": ""
         },
         {
-          "Type": 147,
+          "Type": 145,
           "Name": "",
+          "Description": ""
+        },
+        {
+          "Type": 146,
+          "Name": "Review your federal estimate",
+          "Description": ""
+        },
+        {
+          "Type": 147,
+          "Name": "Return identity",
           "Description": ""
         },
         {
           "Type": 148,
-          "Name": "Finish review",
+          "Name": "Accepted revision",
           "Description": ""
         },
         {
           "Type": 149,
-          "Name": "Return identity",
+          "Name": "Federal estimate and coverage",
           "Description": ""
         },
         {
           "Type": 150,
-          "Name": "Accepted revision",
+          "Name": "Available sections",
           "Description": ""
         },
         {
           "Type": 151,
-          "Name": "Finish prototype review",
-          "Description": ""
-        },
-        {
-          "Type": 152,
-          "Name": "Return identity",
-          "Description": ""
-        },
-        {
-          "Type": 153,
-          "Name": "Accepted revision",
-          "Description": ""
-        },
-        {
-          "Type": 154,
-          "Name": "Current section",
-          "Description": ""
-        },
-        {
-          "Type": 155,
-          "Name": "Previous page",
-          "Description": ""
-        },
-        {
-          "Type": 156,
-          "Name": "Return to review after saving",
-          "Description": ""
-        },
-        {
-          "Type": 157,
-          "Name": "Interview progress",
-          "Description": ""
-        },
-        {
-          "Type": 158,
-          "Name": "Finish prototype review",
-          "Description": ""
-        },
-        {
-          "Type": 159,
-          "Name": "Return identity",
-          "Description": ""
-        },
-        {
-          "Type": 160,
-          "Name": "Accepted revision",
-          "Description": ""
-        },
-        {
-          "Type": 161,
-          "Name": "Current section",
-          "Description": ""
-        },
-        {
-          "Type": 162,
-          "Name": "Previous page",
-          "Description": ""
-        },
-        {
-          "Type": 163,
-          "Name": "Return to review after saving",
-          "Description": ""
-        },
-        {
-          "Type": 164,
-          "Name": "Interview progress",
-          "Description": ""
-        },
-        {
-          "Type": 165,
-          "Name": "Prototype review completed",
-          "Description": ""
-        },
-        {
-          "Type": 166,
-          "Name": "Completion status",
-          "Description": ""
-        },
-        {
-          "Type": 167,
-          "Name": "Federal estimate",
-          "Description": ""
-        },
-        {
-          "Type": 168,
-          "Name": "Please review your answer",
-          "Description": ""
-        },
-        {
-          "Type": 169,
-          "Name": "What needs attention",
-          "Description": ""
-        },
-        {
-          "Type": 170,
-          "Name": "Calculate document preview",
-          "Description": ""
-        },
-        {
-          "Type": 171,
-          "Name": "Income facts required to calculate this document's amount",
-          "Description": ""
-        },
-        {
-          "Type": 172,
-          "Name": "Document preview",
-          "Description": ""
-        },
-        {
-          "Type": 173,
-          "Name": "Document amount before return-level calculations",
-          "Description": ""
-        },
-        {
-          "Type": 174,
-          "Name": "Open tax interview",
-          "Description": ""
-        },
-        {
-          "Type": 175,
-          "Name": "Tax interview actions",
-          "Description": ""
-        },
-        {
-          "Type": 176,
-          "Name": "Available actions",
-          "Description": ""
-        },
-        {
-          "Type": 177,
           "Name": "",
           "Description": ""
         },
         {
+          "Type": 152,
+          "Name": "Finish review",
+          "Description": ""
+        },
+        {
+          "Type": 153,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 154,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 155,
+          "Name": "Finish prototype review",
+          "Description": ""
+        },
+        {
+          "Type": 156,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 157,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 158,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 159,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 160,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 161,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 162,
+          "Name": "Finish prototype review",
+          "Description": ""
+        },
+        {
+          "Type": 163,
+          "Name": "Return identity",
+          "Description": ""
+        },
+        {
+          "Type": 164,
+          "Name": "Accepted revision",
+          "Description": ""
+        },
+        {
+          "Type": 165,
+          "Name": "Current section",
+          "Description": ""
+        },
+        {
+          "Type": 166,
+          "Name": "Previous page",
+          "Description": ""
+        },
+        {
+          "Type": 167,
+          "Name": "Return to review after saving",
+          "Description": ""
+        },
+        {
+          "Type": 168,
+          "Name": "Interview progress",
+          "Description": ""
+        },
+        {
+          "Type": 169,
+          "Name": "Prototype review completed",
+          "Description": ""
+        },
+        {
+          "Type": 170,
+          "Name": "Completion status",
+          "Description": ""
+        },
+        {
+          "Type": 171,
+          "Name": "Federal estimate",
+          "Description": ""
+        },
+        {
+          "Type": 172,
+          "Name": "Please review your answer",
+          "Description": ""
+        },
+        {
+          "Type": 173,
+          "Name": "What needs attention",
+          "Description": ""
+        },
+        {
+          "Type": 174,
+          "Name": "Calculate document preview",
+          "Description": ""
+        },
+        {
+          "Type": 175,
+          "Name": "Income facts required to calculate this document's amount",
+          "Description": ""
+        },
+        {
+          "Type": 176,
+          "Name": "Document preview",
+          "Description": ""
+        },
+        {
+          "Type": 177,
+          "Name": "Document amount before return-level calculations",
+          "Description": ""
+        },
+        {
           "Type": 178,
+          "Name": "Open tax return",
+          "Description": ""
+        },
+        {
+          "Type": 179,
+          "Name": "Tax interview actions",
+          "Description": ""
+        },
+        {
+          "Type": 180,
+          "Name": "Available actions",
+          "Description": ""
+        },
+        {
+          "Type": 181,
+          "Name": "",
+          "Description": ""
+        },
+        {
+          "Type": 182,
           "Name": "Review accepted answers and estimate",
           "Description": ""
         }
@@ -3316,12 +3454,12 @@
     },
     {
       "Name": "TaxSection",
-      "DisplayName": "Tax interview section",
+      "DisplayName": "Tax return section",
       "Description": "",
       "List": [
         {
           "Type": 0,
-          "Name": "Tax interview section",
+          "Name": "Tax return section",
           "Description": "",
           "Enum": [
             {
