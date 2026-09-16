@@ -110,18 +110,18 @@ usage interprets those values as Hub-local dates, while balance and weather/ET
 retain UTC dates. A client can send both as null immediately instead of showing
 a query form. The three requests share one validated request-range type. A
 request is valid when either date is blank or when the first date is not later
-than the last date. Each response retains its actual effective range as hidden
-transaction context, and `CopyFrom` initializes the next request from those
-dates. Initial requests have no prior response, skip `CopyFrom`, and keep both
-dates null so the default report can run immediately. A supplied bound before
-or after the chart's retained data is
-clamped to its first or last available database date; forecast dates remain
-available while the forecast is present. Balance defaults to the latest seven
-days, usage to the latest 31 Hub-local calendar days plus the provider forecast
-horizon, and weather/ET to two prior days plus the provider forecast horizon.
-Supplying one bound uses the same fixed span from that bound, while supplying
-both selects an exact custom range. Water usage always uses Hub-local calendar-
-day buckets, including across UTC offset changes.
+than the last date. Each response retains its actual effective range and its
+current selectable range as hidden transaction context. `RangeMin` and
+`RangeMax` constrain both native date pickers to that selectable range, while
+`CopyFrom` initializes the next request to its earliest and latest dates.
+Initial requests have no prior response, skip `CopyFrom`, and keep both dates
+null so the default report can run immediately. The server applies the same
+bounds before generating the response. Balance can expose up to 365 dates and
+ends on the current UTC date. Usage can expose up to 730 Hub-local dates, and
+weather/ET up to 31 UTC dates; both forecast-capable charts end on the last date
+of the seven-day forecast horizon. The first date is the earliest retained date
+within that chart-specific maximum window. Water usage always uses Hub-local
+calendar-day buckets, including across UTC offset changes.
 Forecast rain and scheduled water are clipped at the report-generation time,
 so a past date can never label a projected input. Available water is a
 calculated root-zone balance, not a soil-moisture sensor reading. Water is
@@ -139,9 +139,25 @@ request converts its inclusive first and last calendar dates to an internal
 half-open UTC timestamp range, preserving exact chart samples while keeping
 calendar selection simple. This bounds one response without limiting how old
 the requested data may be. Explicit provider corrections can replace or remove
-their matching weather records. The
-underlying controller still reconstructs a separate bounded seven-day ledger
-at startup, so it does not load the indefinite report archive into memory.
+their matching weather records. The controller reconstructs a separate recent
+water ledger at startup, without loading the indefinite report archives.
+
+Startup recovery seeks the water-event index at the persisted balance date and
+reads successive 64-record pages through the end of the ledger. It also scans
+backward for intervals that began before that date but still overlap it; a long
+manual run can precede many shorter weather periods. Each timer callback reads
+one page and yields using fresh monotonic ticks. There is no fixed 1,024-record
+cutoff. All valid unaccounted weather and irrigation events are recovered before
+the controller starts. An invalid or incomplete recovery leaves automatic
+watering stopped and does not delete unaccounted input. Already-folded records
+are removed only after the complete read has been verified.
+
+The 512-event threshold triggers folding of completed UTC days into the saved
+balance and daily reports. It is not a hard storage cap: records from a busy
+current day remain intact even above that threshold. Daily reports and advanced
+balance checkpoints are read back after writing, before covered ledger inputs
+are deleted. Startup also rejects an incomplete modeled-weather-gap recovery
+instead of substituting an empty history.
 
 Historical weather now includes temperature, relative humidity, sustained wind,
 and gusts in addition to precipitation and reference ET. The weather agent
@@ -158,16 +174,57 @@ samples. Daily checkpoints label provider coverage and persist any recent-
 weather, location/season, or conservative ET used to model a gap.
 
 Before issuing a timed Matter `Open` command, the controller durably records a
-`CommandPending` activity with the planned start, duration, and water depth.
-That reservation is not counted as delivered irrigation. Only observed valve-
-open time creates irrigation ledger entries and actual activity checkpoints, so
-a restart before the valve opens cannot manufacture delivered water. Planned
-and actual duration remain separate. Scheduled, skipped, superseded, failed,
-automatic, manual, and legacy-unknown activity facts are retained for the
-timeline. A manually opened valve is never commandeered or closed by the
+`CommandPending` activity in its single current-state record, with the planned
+start, duration, and water depth.
+That reservation is not counted as delivered irrigation. The first observed
+open creates a durable restart checkpoint; unobserved failed commands cannot
+manufacture delivered water. Planned and accounted duration remain separate.
+Each observed run has one indexed activity
+record updated throughout its lifecycle. Future plans, pending command attempts,
+and superseded calculations use the current-state record without creating new
+archive rows. No-water failures and skips retain one representative per zone,
+UTC planned day, outcome, and reason, regardless of origin: the earliest attempt's
+identity and planned fields remain, while `updated_at` advances to the latest identical
+failure. Any observed watering fields prevent this filtering, so a failed run
+that actually opened the valve remains a distinct record. Failed valve commands
+wait at least 60 seconds before another attempt, using the existing periodic
+evaluation. A manually opened valve is never commandeered or closed by the
 controller: it blocks other automatic watering, is checkpointed while open, and
 is finalized when observed closed. Every newly observed close starts a
 10-second controller-wide delay before another automatic open decision.
+
+The SDK's asynchronous shutdown handler blocks new controller work, checkpoints
+one zone per timer callback, verifies its database writes, and then calls
+`libertas_shutdown_complete`. An accepted explicit-duration `Open` continues
+on the valve. Shutdown saves the expected full timed interval in the ledger,
+with an authoritative single-record checkpoint under
+`SPRINKLER_WATERING_RESTART_V1` that distinguishes its confirmed prefix from its
+expected finish. This checkpoint is also saved on the first open observation
+and during normal accounting, so a sudden power loss needs no shutdown callback.
+
+On restart, the controller restores the confirmed prefix and waits for a fresh
+valve state before allowing another automatic action. Open confirms continuity
+of the same run: the restart gap is included once, and accounting resumes from
+that callback without sending another `Open` or resetting the valve's timer.
+Closed shortens the run to the earlier of the callback time and expected timed
+finish, preserving previously confirmed water. Early closure is recorded as
+`StoppedEarly`. The corrected activity and ledger segment are verified before
+clearing the restart checkpoint. An interrupted reconciliation replays the saved
+correction, preserving the same activity and ledger index.
+
+These rules cover task upgrades and brief outages that restart both the Hub and
+valve. A state callback has no historical stop timestamp or run identifier:
+watering during downtime is inferred, with uncertainty up to the gap between
+the last checkpoint and first callback. If the valve loses power and closes,
+this can count a few outage minutes as watering. Manual runs remain externally
+owned and have no assumed timed finish.
+
+The temporary V1/V2 activity archive repair has been removed. Startup now begins
+directly with the permanent ledger recovery before enabling the controller.
+Permanent archive filtering and the command retry delay remain in effect.
+The historical `SprinklerData::ActivityArchiveCleanupV1` variant and its database
+resource labels remain for stored-data compatibility; startup no longer reads or
+writes cleanup markers.
 
 Internet weather is an enhancement rather than a watering dependency. The
 controller always projects demand from the best available source: at least one

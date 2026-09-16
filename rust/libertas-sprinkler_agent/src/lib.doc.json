@@ -4,26 +4,29 @@
   "DisplayName": "Smart Sprinkler",
   "Description": "Waters each part of the yard only when it needs water.\nChoose what grows in each area, how it is watered, and any times when watering must be paused. Smart Sprinkler uses recent rain, current weather, and the forecast to choose a safe watering time and amount. It also counts manual watering, keeps working during short internet outages, and reminds you to prepare the system for freezing weather.",
   "StringResources": {
-    "SPRINKLER_WINTERIZATION_REMINDER_V1": "Saved winterization reminder history for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "Saved daily water balance for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
     "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "Saved detailed weather history for sprinkler reports at {0}.",
-    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "Cold season is approaching at this location. Winterize your sprinkler system, then turn Active off.",
     "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "Freezing weather ({0}) may damage your sprinkler system. Winterize it, then turn Active off.",
     "SPRINKLER_INVALID_WATERING_PERCENT": "Water amount must be from 20% through 200% in steps of 10%.",
-    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "Saved weather estimates used during service interruptions at {0}.",
-    "SPRINKLER_WATERING_ACTIVITIES_V1": "Saved watering history for {0}.",
-    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "Use no more than 64 no-watering periods, each with a valid start and a duration greater than zero.",
-    "libertas.permission.ACCESS_FINE_LOCATION": "Use this Hub's location to get local weather for automatic watering.",
-    "SPRINKLER_DAILY_REPORT_V1": "Saved daily water balance for {0}.",
-    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "Current watering activity for {0}.",
-    "SPRINKLER_WATER_EVENTS_V1": "Saved recent rain and watering for {0}.",
-    "SPRINKLER_ZONE_MEMORY_V1": "Saved water balance and settings for {0}.",
-    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "Saved location used by sprinkler weather reports at {0}.",
-    "SPRINKLER_SITE_LOCATION_V1": "Saved location used for sprinkler weather at {0}.",
-    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "The first date cannot be later than the last date.",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "Cold season is approaching at this location. Winterize your sprinkler system, then turn Active off.",
     "SPRINKLER_WATER_USAGE_RAIN_LANE": "Rain",
-    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "Saved current-weather observations for sprinkler reports at {0}.",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "Saved location used by sprinkler weather reports at {0}.",
+    "SPRINKLER_WATERING_MODE_V1": "Saved watering mode for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "Use no more than 64 no-watering periods, each with a valid start and a duration greater than zero.",
+    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
     "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
-    "SPRINKLER_WATERING_MODE_V1": "Saved watering mode for {0}."
+    "SPRINKLER_WATER_EVENTS_V1": "Saved recent rain and watering for {0}.",
+    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "Current watering activity for {0}.",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "The first date cannot be later than the last date.",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "Saved weather estimates used during service interruptions at {0}.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Use this Hub's location to get local weather for automatic watering.",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "Saved watering history for {0}.",
+    "SPRINKLER_SITE_LOCATION_V1": "Saved location used for sprinkler weather at {0}.",
+    "SPRINKLER_ZONE_MEMORY_V1": "Saved water balance and settings for {0}.",
+    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "Saved current-weather observations for sprinkler reports at {0}.",
+    "SPRINKLER_WINTERIZATION_REMINDER_V1": "Saved winterization reminder history for {0}."
   },
   "List": [
     {
@@ -249,7 +252,7 @@
         {
           "Type": 13,
           "Name": "Watering activity",
-          "Description": "Archives one scheduled, running, completed, skipped, failed, superseded, manual, or legacy watering activity indefinitely."
+          "Description": "Archives an observed watering run or one representative no-water failure or skip per UTC planned day, outcome, and reason, regardless of origin."
         },
         {
           "Type": 14,
@@ -305,6 +308,26 @@
           "Type": 24,
           "Name": "Modeled gap",
           "Description": "Exact interval with immutable source and rate provenance."
+        },
+        {
+          "Type": 25,
+          "Name": "Watering history cleanup",
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve."
+        },
+        {
+          "Type": 26,
+          "Name": "Completed",
+          "Description": "True after the archive has been scanned and duplicate removals verified."
+        },
+        {
+          "Type": 27,
+          "Name": "Watering restart accounting",
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified."
+        },
+        {
+          "Type": 28,
+          "Name": "Checkpoint",
+          "Description": "Present while shutdown or restart accounting needs reconciliation."
         }
       ]
     },
@@ -537,6 +560,28 @@
       ]
     },
     {
+      "Name": "SprinklerReportAvailableRangeV1",
+      "DisplayName": "Available report range",
+      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Available report range",
+          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response."
+        },
+        {
+          "Type": 1,
+          "Name": "Earliest date",
+          "Description": "Earliest currently selectable date after applying this chart's maximum range length."
+        },
+        {
+          "Type": 2,
+          "Name": "Latest date",
+          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts."
+        }
+      ]
+    },
+    {
       "Name": "SprinklerReportEffectiveRangeV1",
       "DisplayName": "Effective report range",
       "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
@@ -609,43 +654,58 @@
         },
         {
           "Type": 5,
-          "Name": "View water use",
-          "Description": "Shows daily rain and watering for every area. Leave the dates blank for the latest 31 days; a selected period can cover up to two years. A longer selection keeps its latest two years."
+          "Name": "Available range",
+          "Description": "Current date-picker limits and defaults for the next request."
         },
         {
           "Type": 6,
+          "Name": "View water use",
+          "Description": "Shows daily rain and watering for every area. Leave the dates blank for the full current range of up to two years, ending with the supported forecast horizon. A longer selection keeps its latest two years."
+        },
+        {
+          "Type": 7,
           "Name": "Water use",
           "Description": "Daily rain and estimated watering by local date and area."
         },
         {
-          "Type": 7,
+          "Type": 8,
           "Name": "Chart",
           "Description": "Water-use chart for the effective report range."
         },
         {
-          "Type": 8,
+          "Type": 9,
           "Name": "Effective range",
           "Description": "Inclusive dates actually used to generate this response."
         },
         {
-          "Type": 9,
+          "Type": 10,
+          "Name": "Available range",
+          "Description": "Current date-picker limits and defaults for the next request."
+        },
+        {
+          "Type": 11,
           "Name": "View weather",
           "Description": "Shows recorded and forecast temperature, humidity, wind, and water loss. A selected period can cover up to 31 days; a longer selection keeps its latest 31 days."
         },
         {
-          "Type": 10,
+          "Type": 12,
           "Name": "Weather",
           "Description": "Recorded and forecast temperature, humidity, wind, and estimated water loss."
         },
         {
-          "Type": 11,
+          "Type": 13,
           "Name": "Chart",
           "Description": "Weather chart for the effective report range."
         },
         {
-          "Type": 12,
+          "Type": 14,
           "Name": "Effective range",
           "Description": "Inclusive dates actually used to generate this response."
+        },
+        {
+          "Type": 15,
+          "Name": "Available range",
+          "Description": "Current date-picker limits and defaults for the next request."
         }
       ]
     },
@@ -662,12 +722,12 @@
         {
           "Type": 1,
           "Name": "First date",
-          "Description": "Optional. Leave blank to let the report choose its initial first date."
+          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range."
         },
         {
           "Type": 2,
           "Name": "Last date",
-          "Description": "Optional. Leave blank to let the report choose its initial last date."
+          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable."
         }
       ]
     },
@@ -690,6 +750,43 @@
           "Type": 2,
           "Name": "Site location",
           "Description": "Provider location explicitly bound to this generation, when known."
+        }
+      ]
+    },
+    {
+      "Name": "SprinklerRestartAccountingV1",
+      "DisplayName": "Restart accounting checkpoint",
+      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Restart accounting checkpoint",
+          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart."
+        },
+        {
+          "Type": 1,
+          "Name": "Activity",
+          "Description": "Authoritative lifecycle snapshot at the checkpoint."
+        },
+        {
+          "Type": 2,
+          "Name": "Accounted through",
+          "Description": "Exclusive end of the already accounted valve-open interval."
+        },
+        {
+          "Type": 3,
+          "Name": "Ledger segment",
+          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted."
+        },
+        {
+          "Type": 4,
+          "Name": "Expected finish",
+          "Description": "Expected end of an automatic timed run; manual runs have no known end."
+        },
+        {
+          "Type": 5,
+          "Name": "Delivery rate",
+          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour."
         }
       ]
     },
@@ -1065,12 +1162,12 @@
     {
       "Name": "SprinklerWaterEventV1",
       "DisplayName": "Sprinkler water event",
-      "Description": "Stores one independently indexed weather period or observed irrigation interval in the seven-day water history.",
+      "Description": "Stores one independently indexed weather period or accounted irrigation interval, including a recoverable timed-run projection during shutdown.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler water event",
-          "Description": "Stores one independently indexed weather period or observed irrigation interval in the seven-day water history."
+          "Description": "Stores one independently indexed weather period or accounted irrigation interval, including a recoverable timed-run projection during shutdown."
         },
         {
           "Type": 1,
@@ -1110,7 +1207,7 @@
         {
           "Type": 8,
           "Name": "Duration",
-          "Description": "The observed valve-open interval length in seconds."
+          "Description": "The accounted valve-open interval length in seconds. During shutdown it can include the remaining timed run, reconciled after restart."
         },
         {
           "Type": 9,
@@ -1127,12 +1224,12 @@
     {
       "Name": "SprinklerWateringActivityStateV2",
       "DisplayName": "Authoritative watering activity state",
-      "Description": "Stores the latest complete lifecycle snapshot before its matching audit-row write. The explicit current flag distinguishes a restart-reconcilable nonterminal activity from a terminal snapshot that only needs audit repair.",
+      "Description": "Stores the latest complete lifecycle snapshot before any filtered archive update. Plans and pending attempts stay here; observed runs and representative terminal decisions also enter the archive. The current flag controls restart reconciliation.",
       "List": [
         {
           "Type": 0,
           "Name": "Authoritative watering activity state",
-          "Description": "Stores the latest complete lifecycle snapshot before its matching audit-row write. The explicit current flag distinguishes a restart-reconcilable nonterminal activity from a terminal snapshot that only needs audit repair."
+          "Description": "Stores the latest complete lifecycle snapshot before any filtered archive update. Plans and pending attempts stay here; observed runs and representative terminal decisions also enter the archive. The current flag controls restart reconciliation."
         },
         {
           "Type": 1,
@@ -1204,7 +1301,7 @@
         {
           "Type": 10,
           "Name": "Actual duration",
-          "Description": "Accounted observed valve-open duration in seconds."
+          "Description": "Accounted valve-open duration in seconds, including reconciled brief restart gaps."
         },
         {
           "Type": 11,
@@ -1488,6 +1585,11 @@
               "Type": 16,
               "Name": "Unknown",
               "Description": "Older saved data does not contain a more specific reason."
+            },
+            {
+              "Type": 17,
+              "Name": "Stopped early",
+              "Description": "The valve was observed closed before its timed run was due to finish."
             }
           ]
         }
