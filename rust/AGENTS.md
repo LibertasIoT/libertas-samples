@@ -176,7 +176,7 @@ Endpoint protocol schemas must be payload unions derived with
 with the appropriate roles: `#[libertas_request]`, `#[libertas_response]`,
 `#[libertas_subscription_request]`, or `#[libertas_subscription_data]`. Use
 `#[libertas_next_request(...)]`, `#[libertas_next_response(...)]`,
-`#[libertas_cacheable]`, and `#[libertas_copy_from("path")]` only when their
+and `#[libertas_copy_from("path")]` only when their
 transaction semantics are actually implemented. A mutating request must declare
 `#[libertas_access_privilege("Write")]`; omission permits either Read or Write
 access and Libertas cannot infer that an application operation mutates state.
