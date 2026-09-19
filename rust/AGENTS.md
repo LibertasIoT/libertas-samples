@@ -254,6 +254,12 @@ user-facing and may be translated.
 
 Persistence rules:
 
+- All sample Apps use the default Data API failure behavior. Do not opt into
+  `libertas_data_error_status` or use `libertas_data_try_*`. Call ordinary
+  writes/removals as statements and discard status-only returns; retain read
+  values, indexed handles/statistics, and populated range results. The Hub stops
+  the task on failure, so Apps do not catch, retry, or acknowledge failed writes.
+  Follow the [Data API failure contract](../../../libertas/vscode/doc/public/reference/protocols.md#persistence-failure-and-the-no-status-api).
 - Name the persistent-data union without a version suffix. It is the stable
   container for all stored payload generations; version payload types and
   variants when needed without renaming the union.
