@@ -1964,7 +1964,7 @@ fn handle_gallery_request(
     message: Option<Chart3dDemoProtocol>,
     _context: &mut Box<dyn Any>,
     transaction_id: u32,
-    peer: u32,
+    peer: libertas::LibertasPeer,
 ) -> LibertasEndpointStatus {
     if opcode != OP_ENDPOINT_REQ {
         return LibertasEndpointStatus::InvalidMessage;

@@ -1182,7 +1182,7 @@ fn handle_device_event(
     data: &[u8],
     context: &mut Box<dyn Any>,
     transaction_id: LibertasTransId,
-    _peer: u32,
+    _peer: libertas::LibertasPeer,
 ) {
     let context = context
         .downcast_mut::<DeviceContext>()
@@ -1804,7 +1804,7 @@ fn formatted_rejection(error: BuildingHvacRoomControlErrorV1) -> Vec<u8> {
 fn reject_control(
     endpoint: LibertasEndpoint,
     transaction_id: LibertasTransId,
-    peer: u32,
+    peer: libertas::LibertasPeer,
     current_control_revision: u64,
     current_control: BuildingHvacRoomControlV1,
     error: BuildingHvacRoomControlErrorV1,
@@ -1828,7 +1828,7 @@ fn handle_room_endpoint(
     message: LibertasEndpointMessage<BuildingHvacRoomProtocol>,
     context: &mut Box<dyn Any>,
     transaction_id: LibertasTransId,
-    peer: u32,
+    peer: libertas::LibertasPeer,
 ) -> LibertasEndpointHandlerResult {
     let context = context
         .downcast_mut::<RoomContext>()
@@ -2234,7 +2234,7 @@ fn handle_weather_endpoint(
     message: LibertasEndpointMessage<BuildingHvacWeatherProtocol>,
     context: &mut Box<dyn Any>,
     _transaction_id: LibertasTransId,
-    _peer: u32,
+    _peer: libertas::LibertasPeer,
 ) -> LibertasEndpointHandlerResult {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
@@ -2545,7 +2545,7 @@ fn handle_external_feature_endpoint(
     message: LibertasEndpointMessage<BuildingHvacExternalFeatureProtocol>,
     context: &mut Box<dyn Any>,
     _transaction_id: LibertasTransId,
-    _peer: u32,
+    _peer: libertas::LibertasPeer,
 ) -> LibertasEndpointHandlerResult {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()

@@ -7575,7 +7575,7 @@ fn handle_valve_event(
     data: &[u8],
     context: &mut Box<dyn Any>,
     transaction_id: u32,
-    _peer: u32,
+    _peer: libertas::LibertasPeer,
 ) {
     let context = context.downcast_mut::<ZoneContext>().unwrap();
     if context.shared.borrow().shutting_down {
@@ -7784,7 +7784,7 @@ fn handle_site_location_event(
     message: LibertasEndpointMessage<HubProtocol>,
     context: &mut Box<dyn Any>,
     _transaction_id: u32,
-    _peer: u32,
+    _peer: libertas::LibertasPeer,
 ) -> LibertasEndpointHandlerResult {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
@@ -9575,7 +9575,7 @@ fn handle_report_endpoint(
     message: LibertasEndpointMessage<SprinklerReportProtocol>,
     context: &mut Box<dyn Any>,
     transaction_id: u32,
-    peer: u32,
+    peer: libertas::LibertasPeer,
 ) -> LibertasEndpointHandlerResult {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()
@@ -9962,7 +9962,7 @@ fn configuration_failure(error: SprinklerZoneConfigurationErrorV1) -> SprinklerZ
 fn reject_configuration(
     endpoint: LibertasEndpoint,
     transaction_id: u32,
-    peer: u32,
+    peer: libertas::LibertasPeer,
     error: SprinklerZoneConfigurationErrorV1,
 ) {
     libertas_endpoint_response(
@@ -9979,7 +9979,7 @@ fn handle_zone_endpoint(
     message: LibertasEndpointMessage<SprinklerZoneProtocol>,
     context: &mut Box<dyn Any>,
     transaction_id: u32,
-    peer: u32,
+    peer: libertas::LibertasPeer,
 ) -> LibertasEndpointHandlerResult {
     let context = context.downcast_mut::<ZoneContext>().unwrap();
     if context.shared.borrow().shutting_down {
@@ -10619,7 +10619,7 @@ fn handle_weather_event(
     message: LibertasEndpointMessage<SprinklerWeatherProtocol>,
     context: &mut Box<dyn Any>,
     _transaction_id: u32,
-    _peer: u32,
+    _peer: libertas::LibertasPeer,
 ) -> LibertasEndpointHandlerResult {
     let shared = context
         .downcast_mut::<Rc<RefCell<ControllerState>>>()

@@ -4937,7 +4937,7 @@ mod tests {
 
         let mut too_many = building();
         too_many.urgent_notification_recipients =
-            (0..=BUILDING_HVAC_MAX_URGENT_NOTIFICATION_RECIPIENTS as u32).collect();
+            (0..=BUILDING_HVAC_MAX_URGENT_NOTIFICATION_RECIPIENTS as LibertasUser).collect();
         assert_eq!(
             validate_building_configuration(&too_many),
             Err(BuildingHvacConfigurationError::TooManyUrgentNotificationRecipients)

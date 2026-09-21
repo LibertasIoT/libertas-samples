@@ -1911,7 +1911,7 @@ fn handle_hub_location_event(
     message: LibertasEndpointMessage<HubProtocol>,
     context: &mut Box<dyn core::any::Any>,
     _transaction_id: u32,
-    _peer: u32,
+    _peer: libertas::LibertasPeer,
 ) -> LibertasEndpointHandlerResult {
     let state = context
         .downcast_mut::<Rc<RefCell<LocationSubscriptionState>>>()
@@ -2026,7 +2026,7 @@ fn handle_endpoint_event(
     request: Option<SprinklerWeatherProtocol>,
     context: &mut Box<dyn core::any::Any>,
     transaction_id: u32,
-    peer: u32,
+    peer: libertas::LibertasPeer,
 ) -> LibertasEndpointStatus {
     let shared = context
         .downcast_mut::<Rc<RefCell<WeatherServerState>>>()
