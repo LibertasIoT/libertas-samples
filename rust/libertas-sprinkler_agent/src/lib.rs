@@ -464,6 +464,7 @@ pub struct SprinklerZoneConfigurationV1 {
     #[libertas_number(min = 20, max = 200, step = 10)]
     #[libertas_physical_unit("percent")]
     #[libertas_ui_include_description]
+    #[libertas_link("SetWateringPercentV1")]
     pub watering_percent: u16,
     /// No-watering periods
     /// Times when watering must be paused.
@@ -472,10 +473,12 @@ pub struct SprinklerZoneConfigurationV1 {
     /// One period when this area must not be watered.
     #[libertas_size(max = 64)]
     #[libertas_ui_include_description]
+    #[libertas_link("ReplaceNoWateringPeriodsV1")]
     pub no_watering_periods: Vec<SprinklerTimeSlotV1>,
     /// Active
     /// Turn automatic watering on. Turn it off after winterizing the system.
     #[libertas_ui_include_description]
+    #[libertas_link("SetActiveV1")]
     pub active: bool,
 }
 
@@ -747,6 +750,7 @@ pub enum SprinklerZoneProtocol {
         /// Error message
         /// A localized explanation of the invalid setting.
         #[libertas_formatted_text]
+        #[libertas_read_only]
         #[libertas_size(max = 2048)]
         formatted_error: Vec<u8>,
         /// Error
@@ -1351,6 +1355,7 @@ pub struct SprinklerWaterUsageSummaryRowV1 {
     /// Rain or area
     /// Shows Rain or the configured area's name on the summary axis.
     #[libertas_formatted_text]
+    #[libertas_read_only]
     #[libertas_chart_channel(tooltip)]
     #[libertas_chart_guide(
         target = y,
