@@ -128,7 +128,6 @@ pub struct SprinklerWeatherEndpointServerV1 {
     #[libertas_endpoint_schema(SprinklerWeatherProtocol)]
     #[libertas_endpoint_server]
     #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
-    #[libertas_ui_header]
     #[libertas_exclude_ui]
     pub endpoint: LibertasEndpoint,
 }

@@ -288,7 +288,6 @@ const LEGACY_WATERING_ACTIVITY_DAYS_RESOURCE: &str = "SPRINKLER_WATERING_ACTIVIT
 pub struct SprinklerTimeSlotV1 {
     /// Starts at
     /// When this period begins.
-    #[libertas_ui_header]
     pub starts_at: LibertasDateTime,
     /// Duration
     /// How long this period lasts.
@@ -605,7 +604,6 @@ pub struct SprinklerWinterizationReminderMemoryV1 {
 pub enum SprinklerZoneStateV1 {
     /// Active
     /// Automatic watering is enabled.
-    #[libertas_ui_header]
     ActiveV1 {
         /// Status
         /// The current watering decision or reason for a delay.
@@ -690,7 +688,6 @@ pub enum SprinklerZoneProtocol {
     ConfigurationV1 {
         /// Settings
         /// The current settings for this area.
-        #[libertas_ui_header]
         configuration: SprinklerZoneConfigurationV1,
     },
     /// Change water amount
@@ -2057,7 +2054,6 @@ pub struct SprinklerZoneV1 {
     /// Water valve
     /// Choose the valve that controls this area.
     #[libertas_device_type("BQEBAUABgQED")]
-    #[libertas_ui_header]
     #[libertas_unique]
     pub valve: LibertasDevice,
     /// Plant type

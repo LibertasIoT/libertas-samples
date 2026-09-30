@@ -1731,7 +1731,6 @@ pub struct BuildingHvacRoomV1 {
     /// Room name
     /// Enter a unique, recognizable name such as Living Room or Main Bedroom.
     #[libertas_size(min = 1, max = 64)]
-    #[libertas_ui_header]
     #[libertas_unique]
     pub name: String,
     /// Room controls
@@ -1755,7 +1754,6 @@ pub struct BuildingHvacIndoorSensorV1 {
     /// Temperature sensor
     /// Choose the temperature sensor at this place in the room.
     #[libertas_device_type("BQEBAYIGAA==")]
-    #[libertas_ui_header]
     #[libertas_unique(3)]
     pub temperature_sensor: LibertasDevice,
     /// Humidity sensor
@@ -1818,7 +1816,6 @@ pub struct BuildingHvacThermostatV1 {
     /// Thermostat
     /// Choose the thermostat to control.
     #[libertas_device_type("BQEBAYEGAA==")]
-    #[libertas_ui_header]
     #[libertas_unique]
     pub thermostat: LibertasDevice,
     /// Rooms served

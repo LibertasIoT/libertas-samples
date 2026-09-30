@@ -115,13 +115,16 @@ Common schema attributes:
 - `#[libertas_default(...)]`, `#[libertas_number(min=..., max=..., step=...)]`
 - `#[libertas_size(min=..., max=...)]`, `#[libertas_time_interval]`
 - `#[libertas_formatted_text]` on a runtime `String` or `Vec<u8>`
-- `#[libertas_ui_header]`, `#[libertas_read_only]`, `#[libertas_hidden]`
+- `#[libertas_read_only]`, `#[libertas_hidden]`
 - `#[libertas_unordered]`, `#[libertas_unique]`
 - `#[libertas_device_type("...")]`,
   `#[libertas_virtual_device_type("...")]`
 - `#[libertas_endpoint_schema(ProtocolUnion)]`,
   `#[libertas_endpoint_server]`,
   `#[libertas_endpoint_base_objects("path")]`
+
+Author promotion, flattening, labels and titles as `display.json` rules under
+the [Display Template contract](../../../libertas/vscode/doc/public/reference/presentation.md#display-template).
 
 Every Endpoint server field must define a truthful, one-line localized default
 name with `[DefaultText]` in its source documentation. This is document metadata,
