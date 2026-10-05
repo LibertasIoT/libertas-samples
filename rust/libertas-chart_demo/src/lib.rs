@@ -807,6 +807,7 @@ pub struct TrafficDonutSegmentV1 {
     /// Arc label
     /// Localized two-line category and percentage used for fill and linked labels.
     #[libertas_formatted_text]
+    #[libertas_read_only]
     #[libertas_chart_channel(fill)]
     #[libertas_chart_scale(id = traffic_color, kind = ordinal)]
     #[libertas_chart_guide(target = fill, source = scale, position = auto)]
@@ -955,6 +956,7 @@ pub struct DirectAnnotationV1 {
     /// Label
     /// Canonical localized text tuple drawn at this position.
     #[libertas_formatted_text]
+    #[libertas_read_only]
     #[libertas_chart_channel(text, tooltip)]
     pub label: Vec<u8>,
     /// Mood
