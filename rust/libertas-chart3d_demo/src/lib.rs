@@ -1985,8 +1985,6 @@ fn handle_gallery_request(
 /// explicit ordering and keys, shared scales, independent scenes, and several
 /// camera configurations. Every mathematical transformation is evaluated by
 /// this application; the client receives only typed rows and chart metadata.
-/// [DefaultTaskName]
-/// 3D chart gallery
 #[libertas_export]
 pub fn chart3d_demo(
     /*

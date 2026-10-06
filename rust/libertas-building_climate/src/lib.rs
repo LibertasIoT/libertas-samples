@@ -1736,8 +1736,6 @@ pub struct BuildingHvacRoomV1 {
     /// Room controls
     /// Choose where this room's comfort settings, conditions, and schedule will
     /// be available.
-    /// [DefaultText]
-    /// Room controls
     #[libertas_endpoint_schema(BuildingHvacRoomProtocol)]
     #[libertas_endpoint_server]
     #[libertas_unique]
@@ -4304,7 +4302,7 @@ fn restore_machine_learning_models(
 /// sends selected people warnings, reminders, and recovery messages for freeze
 /// risk, excessive heat, unavailable control, or ineffective heating and
 /// cooling; these are not life-safety alarms.
-/// [DefaultTaskName]
+/// [DefaultText]
 /// Smart building climate
 #[libertas_data_schema(BuildingHvacPersistentData)]
 #[libertas_permissions(BUILDING_CLIMATE_PERMISSIONS)]

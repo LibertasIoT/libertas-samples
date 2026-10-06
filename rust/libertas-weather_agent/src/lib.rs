@@ -2073,7 +2073,7 @@ fn handle_endpoint_event(
 /// for a new location when the installation moves. Location access and an
 /// internet connection are required for fresh information. Only one Local
 /// Weather service can run at a time.
-/// [DefaultTaskName]
+/// [DefaultText]
 /// Local weather
 #[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentData")]
 #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]

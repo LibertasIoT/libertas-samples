@@ -3408,8 +3408,6 @@ fn handle_gallery_request(
 /// shares, geographic regions, network relationships, flows, direct labels,
 /// and layered or polar comparisons. Each example demonstrates its applicable
 /// axes, legends, tooltips, shapes, colors, labels, and layout.
-/// [DefaultTaskName]
-/// Chart gallery
 #[libertas_export]
 pub fn chart_demo(
     /*

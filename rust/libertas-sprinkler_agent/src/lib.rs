@@ -2066,8 +2066,6 @@ pub struct SprinklerZoneV1 {
     pub sprinkler_head_type: SprinklerHeadTypeV1,
     /// Area controls
     /// Choose where this area's status, settings, and controls will be available.
-    /// [DefaultText]
-    /// Area controls
     #[libertas_endpoint_schema(SprinklerZoneProtocol)]
     #[libertas_endpoint_server]
     #[libertas_endpoint_base_objects("^.valve")]
@@ -10940,7 +10938,7 @@ fn initial_active_state(
 /// and sends selected people reminders before freezing weather.
 ///
 /// Change log: updated protocol variants.
-/// [DefaultTaskName]
+/// [DefaultText]
 /// Smart sprinkler
 #[libertas_data_schema(SprinklerData)]
 #[libertas_permissions(SPRINKLER_PERMISSIONS)]
@@ -10957,8 +10955,6 @@ pub fn libertas_sprinkler(
     /*
      * Sprinkler reports
      * Choose where water balance, water use, and weather charts will be available.
-     * [DefaultText]
-     * Sprinkler reports
      */
     #[libertas_endpoint_schema(SprinklerReportProtocol)]
     #[libertas_endpoint_server]

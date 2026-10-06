@@ -126,15 +126,15 @@ Common schema attributes:
 Author promotion, flattening, labels and titles as `display.json` rules under
 the [Display Template contract](../../../libertas/vscode/doc/public/reference/presentation.md#display-template).
 
-Every Endpoint server field must define a truthful, one-line localized default
-name with `[DefaultText]` in its source documentation. This is document metadata,
-not `#[libertas_default(...)]`: on an Endpoint client, `libertas_default` names a
-recommended `developer-package::function` task process instead.
-
-Every application function must likewise define a truthful, one-line localized
-initial task name with `[DefaultTaskName]` in its source documentation.
-`[DefaultText]` is invalid on a function; it remains specific to effective
-`String` fields and Endpoint server fields.
+Use `[DefaultText]` in source documentation for a localized initial task name
+on a function, or localized initial text on an effective String or Endpoint
+server field. Omit it when the intended text exactly matches the ordinary
+localized fallback. It is document metadata, not `#[libertas_default(...)]`:
+on an Endpoint client, `libertas_default` names a recommended
+`developer-package::function` task process. `[NullText]` optionally captions
+explicit null on a nullable field; omission uses localized None. The
+[standard-property contract](../../../libertas/vscode/doc/public/reference/documentation.md#standard-properties)
+owns placement, initialization priority and persisted-value preservation.
 
 Functions that require platform permissions must declare them with a const
 string array and `#[libertas_permissions(...)]`. Every permission must also be
