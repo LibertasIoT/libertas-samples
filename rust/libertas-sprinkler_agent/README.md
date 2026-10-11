@@ -155,8 +155,10 @@ are removed only after the complete read has been verified.
 The 512-event threshold triggers folding of completed UTC days into the saved
 balance and daily reports. It is not a hard storage cap: records from a busy
 current day remain intact even above that threshold. Daily reports and advanced
-balance checkpoints are read back after writing, before covered ledger inputs
-are deleted. Startup also rejects an incomplete modeled-weather-gap recovery
+balance checkpoints commit before covered ledger inputs are deleted. The
+balance update and changes to unaccounted events share one transaction;
+already-folded inputs are then removed in bounded transactions. An interrupted
+cleanup leaves redundant inputs that the saved baseline excludes on restart. Startup also rejects an incomplete modeled-weather-gap recovery
 instead of substituting an empty history.
 
 Historical weather now includes temperature, relative humidity, sustained wind,
@@ -194,12 +196,11 @@ is finalized when observed closed. Every newly observed close starts a
 10-second controller-wide delay before another automatic open decision.
 
 The SDK's asynchronous shutdown handler blocks new controller work, checkpoints
-one zone per timer callback, verifies its database writes, and then calls
+one zone per timer callback, commits its storage transaction, and then calls
 `libertas_shutdown_complete`. An accepted explicit-duration `Open` continues
 on the valve. Shutdown saves the expected full timed interval in the ledger,
-with an authoritative single-record checkpoint under
-`SPRINKLER_WATERING_RESTART_V1` that distinguishes its confirmed prefix from its
-expected finish. This checkpoint is also saved on the first open observation
+with an authoritative per-valve restart checkpoint that distinguishes its
+confirmed prefix from its expected finish. This checkpoint is also saved on the first open observation
 and during normal accounting, so a sudden power loss needs no shutdown callback.
 
 On restart, the controller restores the confirmed prefix and waits for a fresh
@@ -208,9 +209,10 @@ of the same run: the restart gap is included once, and accounting resumes from
 that callback without sending another `Open` or resetting the valve's timer.
 Closed shortens the run to the earlier of the callback time and expected timed
 finish, preserving previously confirmed water. Early closure is recorded as
-`StoppedEarly`. The corrected activity and ledger segment are verified before
-clearing the restart checkpoint. An interrupted reconciliation replays the saved
-correction, preserving the same activity and ledger index.
+`StoppedEarly`. The corrected activity, ledger segment, and cleared restart
+checkpoint commit in one transaction. An interrupted reconciliation leaves the
+previous complete checkpoint available, preserving the same activity and ledger
+key.
 
 These rules cover task upgrades and brief outages that restart both the Hub and
 valve. A state callback has no historical stop timestamp or run identifier:
@@ -223,8 +225,10 @@ The temporary V1/V2 activity archive repair has been removed. Startup now begins
 directly with the permanent ledger recovery before enabling the controller.
 Permanent archive filtering and the command retry delay remain in effect.
 The historical `SprinklerData::ActivityArchiveCleanupV1` variant and its database
-resource labels remain for stored-data compatibility; startup no longer reads or
-writes cleanup markers.
+resource labels remain for retained schema compatibility; startup no longer reads
+or writes cleanup markers. Current storage uses typed KV keys; a live upgrade
+from the legacy storage layout requires host-side data conversion before running
+this version.
 
 Internet weather is an enhancement rather than a watering dependency. The
 controller always projects demand from the best available source: at least one

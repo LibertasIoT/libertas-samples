@@ -9,14 +9,15 @@ extern crate alloc;
 use alloc::{boxed::Box, rc::Rc, vec::Vec};
 use core::cell::RefCell;
 
+use libertas::data::{Data, Mode, Target};
 use libertas::{
-    InlineByteBuffer, LIBERTAS_BROADCAST_DEST, LibertasDevice, LibertasMessageArgument,
-    LibertasVirtualDevice, libertas_data_read_single, libertas_data_write_single,
+    InlineByteBuffer, LIBERTAS_BROADCAST_DEST, LibertasDevice, LibertasVirtualDevice,
     libertas_device_send_response, libertas_get_sys_ticks, libertas_register_device_listener,
     libertas_timer_cancel, libertas_timer_new_interval, libertas_timer_update_interval,
 };
 use libertas_macros::{
-    LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
+    LibertasAvroDecode, LibertasAvroEncode, LibertasExport, LibertasKeyCodec, LibertasKeyDecode,
+    libertas_data_schema,
 };
 use libertas_matter::{
     IMStatusCode, MatterAttribute, MatterDevice, MatterReadCluster, MatterRequestContext,
@@ -43,7 +44,15 @@ const MICROSECONDS_PER_SECOND: u64 = 1_000_000;
 
 pub const APP_STRINGS: [(&str, &str); 1] =
     [("DEFAULT_OPEN_DURATION", "Saved watering duration for {0}.")];
-const DEFAULT_OPEN_DURATION_RESOURCE: &str = APP_STRINGS[0].0;
+
+/// Saved valve settings
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasExport, LibertasKeyCodec, LibertasKeyDecode,
+)]
+pub enum ValveKey {
+    /// Default watering duration for one valve
+    DefaultOpenDuration { valve: LibertasVirtualDevice },
+}
 
 /// Persistent valve data.
 ///
@@ -122,30 +131,30 @@ fn remaining_duration_seconds(expiration_ticks: Option<u64>, now: u64) -> Option
     })
 }
 
-fn read_default_open_duration(device: LibertasDevice) -> Option<ValveData> {
-    libertas_data_read_single(
-        DEFAULT_OPEN_DURATION_RESOURCE,
-        &[LibertasMessageArgument::Object(device)],
-    )
-}
-
 fn persist_default_open_duration(device: LibertasDevice, value: u32) {
-    libertas_data_write_single(
-        DEFAULT_OPEN_DURATION_RESOURCE,
-        &[LibertasMessageArgument::Object(device)],
+    let key = ValveKey::DefaultOpenDuration { valve: device };
+    let target = Target::keys(&[(&key).into()]).expect("one valve key");
+    Data::<ValveKey, ValveData>::current().put(
+        &target,
+        (&key).into(),
         &ValveData::DefaultOpenDuration { value },
     );
 }
 
 fn load_default_open_duration(device: LibertasDevice) -> u32 {
-    match read_default_open_duration(device) {
+    let key = ValveKey::DefaultOpenDuration { valve: device };
+    let target = Target::keys(&[(&key).into()]).expect("one valve key");
+    let mut tx = Data::<ValveKey, ValveData>::current().begin(&target, Mode::ReadWrite);
+    let value = match tx.get((&key).into()) {
         Some(ValveData::DefaultOpenDuration { value }) if value != 0 => value,
         _ => {
             let value = DEFAULT_OPEN_DURATION_SECONDS;
-            persist_default_open_duration(device, value);
+            tx.put((&key).into(), &ValveData::DefaultOpenDuration { value });
             value
         }
-    }
+    };
+    tx.commit();
+    value
 }
 
 fn report_dynamic_attributes(device: LibertasDevice) {
@@ -579,7 +588,7 @@ fn status_for_handler_error(error: Error) -> IMStatusCode {
 /// default duration across restarts.
 /// [DefaultText]
 /// Virtual sprinkler valves
-#[libertas_data_schema(ValveData)]
+#[libertas_data_schema(key = ValveKey, value = ValveData)]
 pub fn virtual_irrigation_controller(
     /*
      * Sprinkler valves
@@ -650,6 +659,17 @@ pub fn virtual_irrigation_controller(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn valve_key_preserves_full_signed_id_width() {
+        use libertas::data::EncodedKey;
+        let key = ValveKey::DefaultOpenDuration {
+            valve: 0x0102_0304_0506_0708,
+        };
+        let encoded = EncodedKey::new(&key).unwrap();
+        assert_eq!(encoded.as_bytes(), &[0, 0, 0x81, 2, 3, 4, 5, 6, 7, 8]);
+        assert_eq!(encoded.decode().unwrap(), key);
+    }
 
     #[test]
     fn valve_data_round_trips_through_avro() {

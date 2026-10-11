@@ -15,12 +15,17 @@ use alloc::{boxed::Box, string::String, vec::Vec};
 
 use libertas::{
     LibertasDateTime, LibertasDevice, LibertasEndpoint, LibertasMessageArgument, LibertasUser,
-    LogLevel, NotificationImportance, libertas_data_read_single, libertas_data_write_single,
-    libertas_log, libertas_notification_send, libertas_shutdown_complete, libertas_wake_up,
+    LogLevel, NotificationImportance, libertas_log, libertas_notification_send,
+    libertas_shutdown_complete, libertas_wake_up,
 };
 use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
     libertas_permissions,
+};
+
+mod storage;
+pub use storage::{
+    BuildingRecord, ClimateKey, ModelRecord, ModelReference, RoomRecord, StoredModelSlot,
 };
 
 mod machine_learning;
@@ -2625,6 +2630,16 @@ pub enum BuildingHvacPersistentData {
         /// become available for this observation.
         sample: BuildingHvacMachineLearningSampleV1,
     },
+    /// Atomic active and rollback model references
+    ModelManifestV2 {
+        #[libertas_size(max = 3)]
+        slots: Vec<StoredModelSlot>,
+    },
+    /// Immutable portion of one encoded model artifact
+    ModelPartV2 {
+        #[libertas_size(min = 1, max = 1048576)]
+        bytes: Vec<u8>,
+    },
 }
 
 const BUILDING_HVAC_URGENT_CONDITIONS: [BuildingHvacUrgentConditionV1;
@@ -2892,8 +2907,8 @@ impl BuildingHvacUrgentNotificationEngine {
     /// Persist and submit urgent notifications
     /// Writes the complete room tracker union before submitting any activation,
     /// reminder, or recovery notification. It returns the number submitted.
-    /// Libertas currently provides no persistence-completion or notification
-    /// delivery acknowledgement.
+    /// Storage commits before notification submission. Notification delivery
+    /// remains unacknowledged.
     pub fn persist_and_submit(
         &self,
         room_endpoint: LibertasEndpoint,
@@ -2905,11 +2920,10 @@ impl BuildingHvacUrgentNotificationEngine {
             return 0;
         }
 
-        let key = [LibertasMessageArgument::Object(room_endpoint)];
         let value = BuildingHvacPersistentData::RoomUrgentNotificationStateV1 {
             conditions: self.conditions.clone(),
         };
-        libertas_data_write_single("HVAC_ROOM_URGENT_NOTIFICATION_STATE", &key, &value);
+        storage::put(storage::room(room_endpoint, RoomRecord::Urgent), &value);
         evaluation
             .actions
             .iter()
@@ -4256,8 +4270,6 @@ fn validate_building_configuration(
     Ok(())
 }
 
-const BUILDING_HVAC_ML_MODELS_RESOURCE: &str = "HVAC_ML_MODELS";
-
 fn restore_machine_learning_models(
     building: &BuildingHvacBuildingV1,
 ) -> Vec<BuildingHvacMachineLearningModelSetV1> {
@@ -4265,20 +4277,13 @@ fn restore_machine_learning_models(
         .rooms
         .iter()
         .map(|room| {
-            let key = [LibertasMessageArgument::Object(room.control_endpoint)];
-            if let Some(BuildingHvacPersistentData::MachineLearningModelsV1 { models }) =
-                libertas_data_read_single(BUILDING_HVAC_ML_MODELS_RESOURCE, &key)
-                && models.room_endpoint == room.control_endpoint
+            if let Some(models) = storage::load_models(room.control_endpoint)
                 && models.is_well_formed()
             {
                 return models;
             }
-
             let models = BuildingHvacMachineLearningModelSetV1::empty(room.control_endpoint);
-            let value = BuildingHvacPersistentData::MachineLearningModelsV1 {
-                models: models.clone(),
-            };
-            libertas_data_write_single(BUILDING_HVAC_ML_MODELS_RESOURCE, &key, &value);
+            storage::save_models(&models);
             models
         })
         .collect()
@@ -4304,7 +4309,7 @@ fn restore_machine_learning_models(
 /// cooling; these are not life-safety alarms.
 /// [DefaultText]
 /// Smart building climate
-#[libertas_data_schema(BuildingHvacPersistentData)]
+#[libertas_data_schema(key = ClimateKey, value = BuildingHvacPersistentData)]
 #[libertas_permissions(BUILDING_CLIMATE_PERMISSIONS)]
 pub fn libertas_building_climate(
     /*

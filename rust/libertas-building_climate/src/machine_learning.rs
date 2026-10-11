@@ -14,11 +14,8 @@ use std::{
     thread,
 };
 
-use libertas::{
-    IndexDirection, LibertasDateTime, LibertasEndpoint, LibertasMessageArgument,
-    libertas_data_open_indexed, libertas_data_read_indexed, libertas_data_read_indexed_range,
-    libertas_data_remove_indexed_records, libertas_data_write_indexed,
-};
+use crate::{RoomRecord, storage};
+use libertas::{LibertasDateTime, LibertasEndpoint};
 use libertas_macros::{LibertasAvroDecode, LibertasAvroEncode, LibertasExport};
 use sha2::{Digest, Sha256};
 #[cfg(target_os = "linux")]
@@ -130,8 +127,6 @@ pub const BUILDING_HVAC_ML_RESULT_CAPACITY: usize = 16;
 /// Bundled XGBoost version
 /// The CPU-only XGBoost source revision compiled into the application.
 pub const BUILDING_HVAC_XGBOOST_VERSION: &str = "3.0.0";
-
-pub(crate) const BUILDING_HVAC_ML_SAMPLE_RESOURCE: &str = "HVAC_ML_SAMPLE";
 
 /// Thermal prediction horizon
 /// Selects one independently trained room-temperature-change model. Separate
@@ -409,7 +404,7 @@ fn feature_manifest_is_well_formed(names: &[String]) -> bool {
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
 pub struct BuildingHvacMachineLearningSampleV1 {
     /// Observed at
-    /// UTC timestamp of the feature observation and indexed database key.
+    /// UTC timestamp of the feature observation and ordered sample key.
     pub observed_at: LibertasDateTime,
     /// Room endpoint
     /// Stable room identity used to reject a sample read from the wrong indexed
@@ -853,8 +848,8 @@ pub struct BuildingHvacMachineLearningHistory;
 impl BuildingHvacMachineLearningHistory {
     /// Persist sample
     /// Merges newly available horizon labels without erasing labels already
-    /// stored at the same timestamp. The call submits the indexed database
-    /// write but the current Libertas API does not confirm completed durability.
+    /// stored at the same timestamp. Label merging commits atomically, then
+    /// expired samples are removed in bounded transactions before returning.
     pub fn persist_sample(
         now_utc: LibertasDateTime,
         sample: BuildingHvacMachineLearningSampleV1,
@@ -868,13 +863,11 @@ impl BuildingHvacMachineLearningHistory {
         }
         let index = i64::try_from(sample.observed_at)
             .map_err(|_| BuildingHvacMachineLearningHistoryError::InvalidSample)?;
-        let key = [LibertasMessageArgument::Object(sample.room_endpoint)];
-        let database = libertas_data_open_indexed(BUILDING_HVAC_ML_SAMPLE_RESOURCE, &key);
-        let merged = if let Some(existing) =
-            libertas_data_read_indexed::<crate::BuildingHvacPersistentData>(database.handle, index)
-            && existing.index == index
-        {
-            match existing.data {
+        let endpoint = sample.room_endpoint;
+        let key = storage::room(endpoint, RoomRecord::Sample { index });
+        let mut tx = storage::begin_room(endpoint);
+        let merged = if let Some(existing) = tx.get((&key).into()) {
+            match existing {
                 crate::BuildingHvacPersistentData::MachineLearningSampleV1 { sample: existing }
                     if existing.observed_at == sample.observed_at
                         && existing.room_endpoint == sample.room_endpoint
@@ -890,17 +883,11 @@ impl BuildingHvacMachineLearningHistory {
             sample
         };
         let value = crate::BuildingHvacPersistentData::MachineLearningSampleV1 { sample: merged };
-        libertas_data_write_indexed(database.handle, index, &value);
-
+        tx.put((&key).into(), &value);
+        tx.commit();
         let oldest_retained = now_utc.saturating_sub(BUILDING_HVAC_ML_HISTORY_RETENTION_SECONDS);
-        if let Ok(oldest_retained) = i64::try_from(oldest_retained)
-            && oldest_retained > i64::MIN
-        {
-            libertas_data_remove_indexed_records(
-                database.handle,
-                i64::MIN,
-                oldest_retained.saturating_sub(1),
-            );
+        if let Ok(before) = i64::try_from(oldest_retained) {
+            storage::prune_samples(endpoint, before);
         }
         Ok(())
     }
@@ -923,21 +910,16 @@ impl BuildingHvacMachineLearningHistory {
         if !feature_manifest_is_well_formed(expected_feature_names) {
             return Vec::new();
         }
-        let key = [LibertasMessageArgument::Object(room_endpoint)];
-        let database = libertas_data_open_indexed(BUILDING_HVAC_ML_SAMPLE_RESOURCE, &key);
-        let mut records = Vec::new();
-        libertas_data_read_indexed_range::<crate::BuildingHvacPersistentData>(
-            database.handle,
+        let records = storage::samples(
+            room_endpoint,
             index,
-            IndexDirection::Below,
             BUILDING_HVAC_ML_MAXIMUM_RETAINED_SAMPLES_PER_ROOM,
-            &mut records,
         );
         let mut samples: Vec<_> = records
             .into_iter()
-            .filter_map(|record| match record.data {
+            .filter_map(|(index, data)| match data {
                 crate::BuildingHvacPersistentData::MachineLearningSampleV1 { sample }
-                    if i64::try_from(sample.observed_at) == Ok(record.index)
+                    if i64::try_from(sample.observed_at) == Ok(index)
                         && sample.room_endpoint == room_endpoint
                         && sample.observed_at <= through_utc
                         && sample.is_well_formed()

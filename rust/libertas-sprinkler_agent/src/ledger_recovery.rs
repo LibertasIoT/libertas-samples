@@ -6,30 +6,45 @@ const PAGE_SIZE: usize = 64;
 const YIELD_MICROSECONDS: u64 = 5_000;
 
 trait Ledger {
-    fn bounds(&self) -> (u64, i64, i64);
-    fn read_page(&self, index: i64, direction: IndexDirection) -> Vec<IndexedData<SprinklerData>>;
-    fn remove(&mut self, index: i64);
+    fn bounds(&self) -> Option<(i64, i64)>;
+    fn read_page(&self, index: i64, direction: Direction) -> Vec<ArchiveRecord>;
+    fn remove(&mut self, indexes: &[i64]);
 }
 
 struct HostLedger {
-    valve: LibertasDevice,
-    handle: libertas::LibertasDataStore,
+    archive: Archive,
+    transaction: RefCell<Option<storage::Tx>>,
 }
 
 impl Ledger for HostLedger {
-    fn bounds(&self) -> (u64, i64, i64) {
-        let stat = libertas_data_open_indexed(WATER_EVENTS_RESOURCE, &zone_key(self.valve));
-        (stat.count, stat.min_index, stat.max_index)
+    fn bounds(&self) -> Option<(i64, i64)> {
+        self.archive.bounds_in(
+            self.transaction
+                .borrow_mut()
+                .as_mut()
+                .expect("ledger snapshot"),
+        )
     }
-
-    fn read_page(&self, index: i64, direction: IndexDirection) -> Vec<IndexedData<SprinklerData>> {
-        let mut records = Vec::new();
-        libertas_data_read_indexed_range(self.handle, index, direction, PAGE_SIZE, &mut records);
-        records
+    fn read_page(&self, index: i64, direction: Direction) -> Vec<ArchiveRecord> {
+        self.archive.records_in(
+            self.transaction
+                .borrow_mut()
+                .as_mut()
+                .expect("ledger snapshot"),
+            index,
+            direction,
+            PAGE_SIZE,
+        )
     }
-
-    fn remove(&mut self, index: i64) {
-        libertas_data_remove_indexed_records(self.handle, index, index);
+    fn remove(&mut self, indexes: &[i64]) {
+        if let Some(snapshot) = self.transaction.get_mut().take() {
+            snapshot.commit();
+        }
+        let mut tx = self.archive.begin(Mode::ReadWrite);
+        for &index in indexes {
+            tx.delete((&self.archive.key(index)).into());
+        }
+        tx.commit();
     }
 }
 
@@ -40,7 +55,6 @@ enum RecoveryError {
     IncompleteRead,
     InvalidRecord(i64),
     DatabaseChanged,
-    UnconfirmedRemoval,
 }
 
 #[derive(Clone, Copy)]
@@ -61,7 +75,7 @@ struct LedgerScan {
     baseline: LibertasDateTime,
     split: i64,
     overlap_floor: i64,
-    original: (u64, i64, i64),
+    original: Option<(i64, i64)>,
     cursor: Cursor,
     scanned: u64,
     finished: bool,
@@ -78,12 +92,12 @@ impl LedgerScan {
         // a long manual run can precede many shorter weather periods.
         let overlap_floor = date_index(baseline.saturating_sub(u64::from(u32::MAX)))?;
         let original = ledger.bounds();
-        if original.0 > 0 && (original.1 < 0 || original.1 > original.2) {
+        if original.is_some_and(|(first, last)| first < 0 || first > last) {
             return Err(RecoveryError::InvalidBounds);
         }
-        let cursor = if original.0 == 0 {
+        let cursor = if original.is_none() {
             Cursor::Complete
-        } else if original.1 < split {
+        } else if original.is_some_and(|(first, _)| first < split) {
             Cursor::Before(split - 1)
         } else {
             Cursor::After(split)
@@ -109,24 +123,22 @@ impl LedgerScan {
             return Ok(true);
         }
         let (next, direction, before) = match self.cursor {
-            Cursor::Before(next) if next >= self.overlap_floor && next >= self.original.1 => {
-                (next, IndexDirection::Below, true)
+            Cursor::Before(next)
+                if next >= self.overlap_floor
+                    && self.original.is_some_and(|(first, _)| next >= first) =>
+            {
+                (next, Direction::Descending, true)
             }
             Cursor::Before(_) => {
                 self.cursor = Cursor::After(self.split);
                 return Ok(false);
             }
-            Cursor::After(next) if self.original.0 > 0 && next <= self.original.2 => {
-                (next, IndexDirection::Above, false)
+            Cursor::After(next) if self.original.is_some_and(|(_, last)| next <= last) => {
+                (next, Direction::Ascending, false)
             }
             Cursor::After(_) | Cursor::Complete => {
                 let current = ledger.bounds();
-                if current.0 != self.original.0
-                    || (current.0 > 0 && current != self.original)
-                    || (self.original.0 > 0
-                        && self.overlap_floor <= self.original.1
-                        && self.scanned != self.original.0)
-                {
+                if current != self.original {
                     return Err(RecoveryError::DatabaseChanged);
                 }
                 sort_water_events(&mut self.events);
@@ -140,8 +152,8 @@ impl LedgerScan {
         }
         let mut previous = None;
         for record in records {
-            if record.index < self.original.1
-                || record.index > self.original.2
+            if self.original.is_none_or(|(first, _)| record.index < first)
+                || self.original.is_none_or(|(_, last)| record.index > last)
                 || (before && (record.index > next || previous.is_some_and(|p| p <= record.index)))
                 || (!before && (record.index < next || previous.is_some_and(|p| p >= record.index)))
             {
@@ -166,12 +178,16 @@ impl LedgerScan {
                 self.folded.push(record.index);
             }
             self.cursor = if before {
-                if record.index <= self.overlap_floor || record.index == self.original.1 {
+                if record.index <= self.overlap_floor
+                    || self
+                        .original
+                        .is_some_and(|(first, _)| record.index == first)
+                {
                     Cursor::After(self.split)
                 } else {
                     Cursor::Before(record.index - 1)
                 }
-            } else if record.index == self.original.2 {
+            } else if self.original.is_some_and(|(_, last)| record.index == last) {
                 Cursor::Complete
             } else {
                 Cursor::After(record.index + 1)
@@ -184,17 +200,13 @@ impl LedgerScan {
         if !self.finished {
             return Err(RecoveryError::IncompleteRead);
         }
-        for _ in 0..PAGE_SIZE {
-            let Some(index) = self.folded.pop() else {
-                break;
-            };
-            ledger.remove(index);
-            self.removed += 1;
+        let count = self.folded.len().min(PAGE_SIZE);
+        let indexes: Vec<_> = self.folded.drain(self.folded.len() - count..).collect();
+        if !indexes.is_empty() {
+            ledger.remove(&indexes);
+            self.removed += count as u64;
         }
         if self.folded.is_empty() {
-            if ledger.bounds().0 != self.original.0.saturating_sub(self.removed) {
-                return Err(RecoveryError::UnconfirmedRemoval);
-            }
             return Ok(true);
         }
         Ok(false)
@@ -231,6 +243,9 @@ fn recover_next(job: &mut RecoveryJob) -> Result<bool, RecoveryError> {
             return Ok(false);
         }
         let pending = job.current.take().unwrap();
+        if let Some(snapshot) = pending.ledger.transaction.into_inner() {
+            snapshot.commit();
+        }
         libertas_log(
             LogLevel::Info,
             &alloc::format!(
@@ -251,11 +266,15 @@ fn recover_next(job: &mut RecoveryJob) -> Result<bool, RecoveryError> {
         return Ok(true);
     };
     let memory = load_zone_memory(configuration.valve, utc_seconds().unwrap_or_default());
-    let database =
-        libertas_data_open_indexed(WATER_EVENTS_RESOURCE, &zone_key(configuration.valve));
-    let ledger = HostLedger {
+    let archive = Archive::WaterEvents {
         valve: configuration.valve,
-        handle: database.handle,
+    };
+    // Retain one snapshot and lock across the bounded startup callbacks;
+    // delete already-folded input in bounded transactions after validation.
+    // The controller has no writers until startup recovery completes.
+    let ledger = HostLedger {
+        archive,
+        transaction: RefCell::new(Some(archive.begin(Mode::ReadOnly))),
     };
     let scan = LedgerScan::new(&ledger, memory.balance_baseline_at)?;
     job.current = Some(PendingZone {
@@ -319,7 +338,7 @@ pub(super) fn start(
 mod tests {
     use super::*;
     use alloc::{collections::BTreeMap, vec};
-    use core::cell::{Cell, RefCell};
+    use core::cell::RefCell;
 
     const DAY: u64 = 20_000 * SECONDS_PER_DAY;
 
@@ -328,39 +347,25 @@ mod tests {
         rows: BTreeMap<i64, SprinklerData>,
         reads: RefCell<Vec<(i64, bool)>>,
         fail_after: Option<usize>,
-        ignore_removals: bool,
         removed: Vec<i64>,
-        empty_bounds_counter: Cell<i64>,
     }
 
     impl Ledger for MemoryLedger {
-        fn bounds(&self) -> (u64, i64, i64) {
-            // The SDK makes min/max undefined for an empty database.
-            let undefined = self.empty_bounds_counter.get();
-            self.empty_bounds_counter.set(undefined + 1);
-            (
-                self.rows.len() as u64,
-                self.rows
-                    .first_key_value()
-                    .map_or(undefined, |(&key, _)| key),
-                self.rows
-                    .last_key_value()
-                    .map_or(undefined, |(&key, _)| key),
-            )
+        fn bounds(&self) -> Option<(i64, i64)> {
+            Some((
+                *self.rows.first_key_value()?.0,
+                *self.rows.last_key_value()?.0,
+            ))
         }
 
-        fn read_page(
-            &self,
-            index: i64,
-            direction: IndexDirection,
-        ) -> Vec<IndexedData<SprinklerData>> {
+        fn read_page(&self, index: i64, direction: Direction) -> Vec<ArchiveRecord> {
             if self
                 .fail_after
                 .is_some_and(|limit| self.reads.borrow().len() >= limit)
             {
                 return Vec::new();
             }
-            let below = matches!(direction, IndexDirection::Below);
+            let below = matches!(direction, Direction::Descending);
             self.reads.borrow_mut().push((index, below));
             let rows: Box<dyn Iterator<Item = (&i64, &SprinklerData)>> = if below {
                 Box::new(self.rows.range(..=index).rev())
@@ -368,18 +373,18 @@ mod tests {
                 Box::new(self.rows.range(index..))
             };
             rows.take(PAGE_SIZE)
-                .map(|(&index, data)| IndexedData {
+                .map(|(&index, data)| ArchiveRecord {
                     index,
                     data: data.clone(),
                 })
                 .collect()
         }
 
-        fn remove(&mut self, index: i64) {
-            if !self.ignore_removals {
+        fn remove(&mut self, indexes: &[i64]) {
+            for &index in indexes {
                 self.rows.remove(&index);
+                self.removed.push(index);
             }
-            self.removed.push(index);
         }
     }
 
@@ -518,7 +523,7 @@ mod tests {
     }
 
     #[test]
-    fn changing_database_or_failed_deletion_never_completes_recovery() {
+    fn changing_database_never_completes_recovery() {
         let mut ledger = MemoryLedger::default();
         insert(&mut ledger, irrigation(DAY - 60, 60));
         let mut scan = LedgerScan::new(&ledger, DAY).unwrap();
@@ -531,12 +536,8 @@ mod tests {
 
         let mut scan = LedgerScan::new(&ledger, DAY).unwrap();
         finish(&mut scan, &ledger).unwrap();
-        ledger.ignore_removals = true;
-        assert_eq!(
-            scan.discard_folded_page(&mut ledger),
-            Err(RecoveryError::UnconfirmedRemoval)
-        );
-        assert_eq!(ledger.rows.len(), 2);
+        assert!(scan.discard_folded_page(&mut ledger).unwrap());
+        assert_eq!(ledger.rows.len(), 1);
     }
 
     #[test]

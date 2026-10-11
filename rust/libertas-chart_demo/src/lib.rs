@@ -18,6 +18,18 @@ use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_chart, libertas_export,
 };
 
+/// Reserved storage keys; this demonstration currently writes no records.
+#[derive(LibertasExport, libertas_macros::LibertasKeyCodec, libertas_macros::LibertasKeyDecode)]
+pub enum ChartDataKey {
+    Reserved,
+}
+
+/// Reserved stored values for the function's required data schema.
+#[derive(LibertasExport, LibertasAvroEncode, LibertasAvroDecode)]
+pub enum ChartData {
+    Reserved { value: bool },
+}
+
 /// Business portfolio
 /// Identifies a product family in comparison charts.
 #[derive(
@@ -3409,6 +3421,7 @@ fn handle_gallery_request(
 /// and layered or polar comparisons. Each example demonstrates its applicable
 /// axes, legends, tooltips, shapes, colors, labels, and layout.
 #[libertas_export]
+#[libertas_macros::libertas_data_schema(key = ChartDataKey, value = ChartData)]
 pub fn chart_demo(
     /*
      * Gallery endpoint

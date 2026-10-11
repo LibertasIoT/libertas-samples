@@ -214,16 +214,11 @@ pub(super) fn write(valve: LibertasDevice, checkpoint: Option<SprinklerRestartAc
         "Invalid restart checkpoint"
     );
     let value = SprinklerData::WateringRestartV1 { checkpoint };
-    libertas_data_write_single(WATERING_RESTART_RESOURCE, &zone_key(valve), &value);
-    assert_eq!(
-        libertas_data_read_single::<SprinklerData>(WATERING_RESTART_RESOURCE, &zone_key(valve)),
-        Some(value),
-        "Watering restart checkpoint write was not confirmed"
-    );
+    storage::put(storage::zone(valve, ZoneRecord::Restart), &value);
 }
 
 pub(super) fn load(valve: LibertasDevice) -> Option<SprinklerRestartAccountingV1> {
-    match libertas_data_read_single(WATERING_RESTART_RESOURCE, &zone_key(valve)) {
+    match storage::get(storage::zone(valve, ZoneRecord::Restart)) {
         Some(SprinklerData::WateringRestartV1 { checkpoint }) => {
             assert!(
                 checkpoint.as_ref().is_none_or(valid),
@@ -239,79 +234,41 @@ pub(super) fn load(valve: LibertasDevice) -> Option<SprinklerRestartAccountingV1
     }
 }
 
-fn write_segment(valve: LibertasDevice, segment: SprinklerWaterEventV1) {
-    let database = libertas_data_open_indexed(WATER_EVENTS_RESOURCE, &zone_key(valve));
-    let index = water_event_index(&segment).expect("Invalid watering index");
+fn stage_segment(tx: &mut storage::Tx, valve: LibertasDevice, segment: &SprinklerWaterEventV1) {
+    let key =
+        Archive::WaterEvents { valve }.key(water_event_index(segment).expect("watering index"));
     if segment.duration_seconds() == 0 {
-        libertas_data_remove_indexed_records(database.handle, index, index);
-        assert!(
-            libertas_data_read_indexed::<SprinklerData>(database.handle, index)
-                .is_none_or(|saved| saved.index != index),
-            "Empty watering segment removal was not confirmed"
-        );
+        tx.delete((&key).into());
     } else {
-        let value = SprinklerData::WaterEventV1 { event: segment };
-        libertas_data_write_indexed(database.handle, index, &value);
-        assert!(
-            libertas_data_read_indexed::<SprinklerData>(database.handle, index)
-                .is_some_and(|saved| saved.index == index && saved.data == value),
-            "Watering segment write was not confirmed"
+        tx.put(
+            (&key).into(),
+            &SprinklerData::WaterEventV1 {
+                event: segment.clone(),
+            },
         );
     }
 }
 
-fn write_activity(valve: LibertasDevice, checkpoint: &SprinklerRestartAccountingV1) {
-    persist_watering_activity(valve, &checkpoint.activity);
-    let expected = watering_activity_state(checkpoint.activity.clone());
-    assert!(
-        matches!(libertas_data_read_single::<SprinklerData>(WATERING_ACTIVITY_STATE_RESOURCE, &zone_key(valve)),
-            Some(SprinklerData::WateringActivityStateV2 { state }) if state == expected),
-        "Watering activity checkpoint write was not confirmed"
-    );
-}
-
-trait CheckpointWriter {
-    fn journal(&mut self, checkpoint: Option<&SprinklerRestartAccountingV1>) -> Result<(), ()>;
-    fn activity(&mut self, checkpoint: &SprinklerRestartAccountingV1) -> Result<(), ()>;
-    fn segment(&mut self, segment: &SprinklerWaterEventV1) -> Result<(), ()>;
-}
-
-fn commit(
-    writer: &mut impl CheckpointWriter,
-    checkpoint: &SprinklerRestartAccountingV1,
-) -> Result<(), ()> {
-    if !valid(checkpoint) {
-        return Err(());
-    }
-    // The journal is authoritative if any later write or its readback fails.
-    writer.journal(Some(checkpoint))?;
-    writer.activity(checkpoint)?;
-    writer.segment(&checkpoint.segment)?;
-    if checkpoint.activity.outcome != SprinklerWateringOutcomeV1::Running {
-        writer.journal(None)?;
-    }
-    Ok(())
-}
-
-struct HostWriter(LibertasDevice);
-
-impl CheckpointWriter for HostWriter {
-    fn journal(&mut self, checkpoint: Option<&SprinklerRestartAccountingV1>) -> Result<(), ()> {
-        write(self.0, checkpoint.cloned());
-        Ok(())
-    }
-    fn activity(&mut self, checkpoint: &SprinklerRestartAccountingV1) -> Result<(), ()> {
-        write_activity(self.0, checkpoint);
-        Ok(())
-    }
-    fn segment(&mut self, segment: &SprinklerWaterEventV1) -> Result<(), ()> {
-        write_segment(self.0, segment.clone());
-        Ok(())
-    }
+fn write_segment(valve: LibertasDevice, segment: SprinklerWaterEventV1) {
+    let mut tx = storage::begin_zone(valve);
+    stage_segment(&mut tx, valve, &segment);
+    tx.commit();
 }
 
 pub(super) fn persist(valve: LibertasDevice, checkpoint: &SprinklerRestartAccountingV1) {
-    commit(&mut HostWriter(valve), checkpoint).expect("Watering accounting commit failed");
+    assert!(valid(checkpoint), "Invalid watering checkpoint");
+    let mut tx = storage::begin_zone(valve);
+    // The physical restart checkpoint and its accounting records publish together.
+    tx.put(
+        (&storage::zone(valve, ZoneRecord::Restart)).into(),
+        &SprinklerData::WateringRestartV1 {
+            checkpoint: (checkpoint.activity.outcome == SprinklerWateringOutcomeV1::Running)
+                .then(|| checkpoint.clone()),
+        },
+    );
+    persist_watering_activity_in(&mut tx, valve, &checkpoint.activity);
+    stage_segment(&mut tx, valve, &checkpoint.segment);
+    tx.commit();
 }
 
 pub(super) fn restore(
@@ -320,7 +277,7 @@ pub(super) fn restore(
     checkpoint: &SprinklerRestartAccountingV1,
 ) {
     // Runtime uses the confirmed prefix until a fresh valve report extends it.
-    // The journal retains the timed end across another restart.
+    // The checkpoint retains the timed end across another restart.
     replace_segment(events, &checkpoint.segment);
     persist(valve, checkpoint);
 }
@@ -551,17 +508,19 @@ mod tests {
     #[test]
     fn power_loss_uses_the_normal_running_checkpoint_without_a_shutdown_callback() {
         let saved = checkpoint();
-        let mut store = MemoryWriter::default();
-        commit(&mut store, &saved).unwrap();
+        let mut events = vec![saved.segment.clone()];
         // Both Hub and valve stop; their first post-boot report is Closed two
         // minutes after the last checkpoint. The outage uncertainty is bounded
         // by this report, not the remaining ten-minute reservation.
-        let closed = confirmed(store.journal.as_ref().unwrap(), false, START + 420).unwrap();
-        commit(&mut store, &closed).unwrap();
-        assert!(store.journal.is_none());
-        assert_eq!(store.events.len(), 1);
-        assert_eq!(store.events[0].duration_seconds(), 420);
-        assert_eq!(store.activity.unwrap().actual_duration_seconds, Some(420));
+        let closed = confirmed(&saved, false, START + 420).unwrap();
+        replace_segment(&mut events, &closed.segment);
+        assert_eq!(
+            closed.activity.outcome,
+            SprinklerWateringOutcomeV1::Completed
+        );
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].duration_seconds(), 420);
+        assert_eq!(closed.activity.actual_duration_seconds, Some(420));
     }
 
     #[test]
@@ -730,66 +689,5 @@ mod tests {
             SprinklerRestartAccountingV1::from_avro(&saved.to_avro()),
             Ok(saved)
         );
-    }
-
-    #[derive(Default)]
-    struct MemoryWriter {
-        journal: Option<SprinklerRestartAccountingV1>,
-        activity: Option<SprinklerWateringActivityV1>,
-        events: Vec<SprinklerWaterEventV1>,
-        writes: usize,
-        fail_after_write: Option<usize>,
-    }
-
-    impl MemoryWriter {
-        fn confirmed_write(&mut self) -> Result<(), ()> {
-            self.writes += 1;
-            if self.fail_after_write == Some(self.writes) {
-                Err(())
-            } else {
-                Ok(())
-            }
-        }
-    }
-
-    impl CheckpointWriter for MemoryWriter {
-        fn journal(&mut self, checkpoint: Option<&SprinklerRestartAccountingV1>) -> Result<(), ()> {
-            self.journal = checkpoint.cloned();
-            self.confirmed_write()
-        }
-        fn activity(&mut self, checkpoint: &SprinklerRestartAccountingV1) -> Result<(), ()> {
-            self.activity = Some(checkpoint.activity.clone());
-            self.confirmed_write()
-        }
-        fn segment(&mut self, segment: &SprinklerWaterEventV1) -> Result<(), ()> {
-            replace_segment(&mut self.events, segment);
-            self.confirmed_write()
-        }
-    }
-
-    #[test]
-    fn interrupted_close_commits_replay_the_known_stop_without_extending_it() {
-        let original = checkpoint();
-        let closed = confirmed(&original, false, START + 360).unwrap();
-        for failure in 1..=4 {
-            let mut writer = MemoryWriter {
-                journal: Some(original.clone()),
-                activity: Some(original.activity.clone()),
-                events: vec![projected_segment(&original)],
-                fail_after_write: Some(failure),
-                ..MemoryWriter::default()
-            };
-            assert_eq!(commit(&mut writer, &closed), Err(()));
-            if failure < 4 {
-                assert_eq!(writer.journal, Some(closed.clone()));
-            }
-            writer.fail_after_write = None;
-            if let Some(replay) = writer.journal.clone() {
-                commit(&mut writer, &replay).unwrap();
-            }
-            assert!(writer.journal.is_none());
-            assert_eq!(writer.events, vec![closed.segment.clone()]);
-            assert_eq!(writer.activity, Some(closed.activity.clone()));
-        }
     }
 }

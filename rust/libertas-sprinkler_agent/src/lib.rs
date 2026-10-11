@@ -12,6 +12,11 @@
 
 extern crate alloc;
 
+mod storage;
+use libertas::data::{Direction, Mode};
+use storage::{Archive, ArchiveRecord};
+pub use storage::{SprinklerKey, SystemRecord, ZoneRecord};
+
 mod ledger_recovery;
 mod watering_recovery;
 
@@ -20,19 +25,15 @@ use core::{any::Any, cell::RefCell};
 use libm::{asin, cos, floor, sin};
 
 use libertas::{
-    DataName, IndexDirection, IndexedData, LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasDevice,
-    LibertasEndpoint, LibertasEndpointHandlerResult, LibertasEndpointMessage,
-    LibertasEndpointStandardStatus, LibertasMessageArgument, LibertasUser, LogLevel,
-    NotificationImportance, OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_ALIVE, OP_ENDPOINT_PEER_DOWN,
-    OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ, OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ,
-    libertas_data_get_indexed_names, libertas_data_open_indexed, libertas_data_read_indexed,
-    libertas_data_read_indexed_range, libertas_data_read_single, libertas_data_remove_indexed_name,
-    libertas_data_remove_indexed_records, libertas_data_write_indexed, libertas_data_write_single,
-    libertas_endpoint_report, libertas_endpoint_response, libertas_endpoint_subscribe_request,
-    libertas_formatted_text, libertas_get_sys_ticks, libertas_get_utc_time, libertas_log,
-    libertas_notification_send, libertas_register_device_listener,
-    libertas_register_endpoint_status_listener, libertas_timer_cancel, libertas_timer_new_interval,
-    libertas_timer_update_interval,
+    LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasDevice, LibertasEndpoint,
+    LibertasEndpointHandlerResult, LibertasEndpointMessage, LibertasEndpointStandardStatus,
+    LibertasMessageArgument, LibertasUser, LogLevel, NotificationImportance, OP_ENDPOINT_DATA,
+    OP_ENDPOINT_PEER_ALIVE, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ,
+    OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_endpoint_report, libertas_endpoint_response,
+    libertas_endpoint_subscribe_request, libertas_formatted_text, libertas_get_sys_ticks,
+    libertas_get_utc_time, libertas_log, libertas_notification_send,
+    libertas_register_device_listener, libertas_register_endpoint_status_listener,
+    libertas_timer_cancel, libertas_timer_new_interval, libertas_timer_update_interval,
 };
 use libertas_hub::HubProtocol;
 use libertas_macros::{
@@ -258,29 +259,12 @@ pub const APP_STRINGS: [(&str, &str); 23] = [
         "Watering restart accounting for {0}.",
     ),
 ];
-const ZONE_DATA_RESOURCE: &str = APP_STRINGS[0].0;
-const WATER_EVENTS_RESOURCE: &str = APP_STRINGS[1].0;
-const SITE_LOCATION_RESOURCE: &str = APP_STRINGS[2].0;
-const WATERING_MODE_RESOURCE: &str = APP_STRINGS[3].0;
-const WINTERIZATION_REMINDER_RESOURCE: &str = APP_STRINGS[4].0;
-const WATERING_ACTIVITIES_RESOURCE: &str = APP_STRINGS[5].0;
-const DAILY_REPORT_RESOURCE: &str = APP_STRINGS[6].0;
-const WATERING_ACTIVITY_STATE_RESOURCE: &str = APP_STRINGS[7].0;
-const REPORT_WEATHER_OBSERVATIONS_RESOURCE: &str = APP_STRINGS[8].0;
-const REPORT_WEATHER_ARCHIVE_STATE_RESOURCE: &str = APP_STRINGS[9].0;
 const WINTERIZATION_WEATHER_NOTIFICATION_RESOURCE: &str = APP_STRINGS[10].0;
 const WINTERIZATION_SEASON_NOTIFICATION_RESOURCE: &str = APP_STRINGS[11].0;
-const MODELED_WEATHER_GAPS_RESOURCE: &str = APP_STRINGS[13].0;
-const REPORT_WEATHER_HISTORY_V2_RESOURCE: &str = APP_STRINGS[14].0;
 const WATER_USAGE_RAIN_LANE_RESOURCE: &str = APP_STRINGS[15].0;
 const WATER_USAGE_ZONE_LANE_RESOURCE: &str = APP_STRINGS[16].0;
 const INVALID_WATERING_PERCENT_RESOURCE: &str = APP_STRINGS[17].0;
 const INVALID_NO_WATERING_PERIODS_RESOURCE: &str = APP_STRINGS[18].0;
-const WATERING_RESTART_RESOURCE: &str = APP_STRINGS[22].0;
-// Older builds duplicated every activity into one indexed database per UTC
-// day. The per-zone activity archive is authoritative, so these databases can
-// be removed without migrating records.
-const LEGACY_WATERING_ACTIVITY_DAYS_RESOURCE: &str = "SPRINKLER_WATERING_ACTIVITY_DAYS_V1";
 
 /// Time period
 /// A start time and length of time for watering or a watering pause.
@@ -2827,40 +2811,21 @@ fn default_memory(now: LibertasDateTime) -> SprinklerZoneMemoryV1 {
     }
 }
 
-fn zone_key(valve: LibertasDevice) -> [LibertasMessageArgument<'static>; 1] {
-    [LibertasMessageArgument::Object(valve)]
-}
-
-fn system_key(weather_endpoint: LibertasEndpoint) -> [LibertasMessageArgument<'static>; 1] {
-    [LibertasMessageArgument::Object(weather_endpoint)]
-}
-
-fn report_weather_archive_key(
-    weather_endpoint: LibertasEndpoint,
-    generation: u64,
-) -> [LibertasMessageArgument<'static>; 2] {
-    [
-        LibertasMessageArgument::Object(weather_endpoint),
-        LibertasMessageArgument::Unsigned(generation),
-    ]
-}
-
 fn load_report_weather_archive_state(
     weather_endpoint: LibertasEndpoint,
 ) -> SprinklerReportWeatherArchiveStateV2 {
-    match libertas_data_read_single(
-        REPORT_WEATHER_ARCHIVE_STATE_RESOURCE,
-        &system_key(weather_endpoint),
-    ) {
+    match storage::get(storage::system(
+        weather_endpoint,
+        SystemRecord::ArchiveState,
+    )) {
         Some(SprinklerData::ReportWeatherArchiveStateV2 { state }) => state,
         _ => {
             let state = SprinklerReportWeatherArchiveStateV2 {
                 generation: 0,
                 location: None,
             };
-            libertas_data_write_single(
-                REPORT_WEATHER_ARCHIVE_STATE_RESOURCE,
-                &system_key(weather_endpoint),
+            storage::put(
+                storage::system(weather_endpoint, SystemRecord::ArchiveState),
                 &SprinklerData::ReportWeatherArchiveStateV2 { state },
             );
             state
@@ -2872,9 +2837,8 @@ fn persist_report_weather_archive_state(
     weather_endpoint: LibertasEndpoint,
     state: SprinklerReportWeatherArchiveStateV2,
 ) {
-    libertas_data_write_single(
-        REPORT_WEATHER_ARCHIVE_STATE_RESOURCE,
-        &system_key(weather_endpoint),
+    storage::put(
+        storage::system(weather_endpoint, SystemRecord::ArchiveState),
         &SprinklerData::ReportWeatherArchiveStateV2 { state },
     );
 }
@@ -2896,15 +2860,14 @@ fn same_weather_location(
 }
 
 fn persist_site_location(weather_endpoint: LibertasEndpoint, location: SprinklerWeatherLocationV1) {
-    libertas_data_write_single(
-        SITE_LOCATION_RESOURCE,
-        &system_key(weather_endpoint),
+    storage::put(
+        storage::system(weather_endpoint, SystemRecord::Location),
         &SprinklerData::SiteLocationV1 { location },
     );
 }
 
 fn load_site_location(weather_endpoint: LibertasEndpoint) -> Option<SprinklerWeatherLocationV1> {
-    match libertas_data_read_single(SITE_LOCATION_RESOURCE, &system_key(weather_endpoint)) {
+    match storage::get(storage::system(weather_endpoint, SystemRecord::Location)) {
         Some(SprinklerData::SiteLocationV1 { location }) if valid_site_location(location) => {
             Some(location)
         }
@@ -2913,15 +2876,17 @@ fn load_site_location(weather_endpoint: LibertasEndpoint) -> Option<SprinklerWea
 }
 
 fn persist_watering_mode(weather_endpoint: LibertasEndpoint, mode: SprinklerWateringModeV1) {
-    libertas_data_write_single(
-        WATERING_MODE_RESOURCE,
-        &system_key(weather_endpoint),
+    storage::put(
+        storage::system(weather_endpoint, SystemRecord::WateringMode),
         &SprinklerData::WateringModeV1 { mode },
     );
 }
 
 fn load_watering_mode(weather_endpoint: LibertasEndpoint) -> SprinklerWateringModeV1 {
-    match libertas_data_read_single(WATERING_MODE_RESOURCE, &system_key(weather_endpoint)) {
+    match storage::get(storage::system(
+        weather_endpoint,
+        SystemRecord::WateringMode,
+    )) {
         Some(SprinklerData::WateringModeV1 { mode }) => mode,
         _ => {
             let mode = SprinklerWateringModeV1::Active;
@@ -2935,9 +2900,8 @@ fn persist_winterization_reminder(
     weather_endpoint: LibertasEndpoint,
     memory: SprinklerWinterizationReminderMemoryV1,
 ) {
-    libertas_data_write_single(
-        WINTERIZATION_REMINDER_RESOURCE,
-        &system_key(weather_endpoint),
+    storage::put(
+        storage::system(weather_endpoint, SystemRecord::WinterizationReminder),
         &SprinklerData::WinterizationReminderV1 { memory },
     );
 }
@@ -2945,10 +2909,10 @@ fn persist_winterization_reminder(
 fn load_winterization_reminder(
     weather_endpoint: LibertasEndpoint,
 ) -> Option<SprinklerWinterizationReminderMemoryV1> {
-    match libertas_data_read_single(
-        WINTERIZATION_REMINDER_RESOURCE,
-        &system_key(weather_endpoint),
-    ) {
+    match storage::get(storage::system(
+        weather_endpoint,
+        SystemRecord::WinterizationReminder,
+    )) {
         Some(SprinklerData::WinterizationReminderV1 { memory }) if memory.last_reminded_at > 0 => {
             Some(memory)
         }
@@ -2957,9 +2921,8 @@ fn load_winterization_reminder(
 }
 
 fn persist_zone_memory(valve: LibertasDevice, memory: &SprinklerZoneMemoryV1) {
-    libertas_data_write_single(
-        ZONE_DATA_RESOURCE,
-        &zone_key(valve),
+    storage::put(
+        storage::zone(valve, ZoneRecord::Memory),
         &SprinklerData::ZoneMemoryV1 {
             memory: memory.clone(),
         },
@@ -2967,7 +2930,7 @@ fn persist_zone_memory(valve: LibertasDevice, memory: &SprinklerZoneMemoryV1) {
 }
 
 fn load_zone_memory(valve: LibertasDevice, now: LibertasDateTime) -> SprinklerZoneMemoryV1 {
-    match libertas_data_read_single(ZONE_DATA_RESOURCE, &zone_key(valve)) {
+    match storage::get(storage::zone(valve, ZoneRecord::Memory)) {
         Some(SprinklerData::ZoneMemoryV1 { memory }) if valid_memory(&memory) => {
             let Ok(hold_off_periods) = normalize_hold_offs(memory.hold_off_periods.clone()) else {
                 let memory = default_memory(now);
@@ -3021,22 +2984,23 @@ fn persist_report_weather_periods(
     if periods.is_empty() {
         return;
     }
-    let database = libertas_data_open_indexed(
-        REPORT_WEATHER_HISTORY_V2_RESOURCE,
-        &report_weather_archive_key(weather_endpoint, generation),
-    );
+    let database = Archive::WeatherHistory {
+        endpoint: weather_endpoint,
+        generation,
+    };
+    let mut tx = database.begin(Mode::ReadWrite);
     for period in periods {
         let Some(index) = report_weather_period_index(period) else {
             continue;
         };
         if valid_report_weather_period(period) {
-            libertas_data_write_indexed(
-                database.handle,
-                index,
+            tx.put(
+                (&database.key(index)).into(),
                 &SprinklerData::ReportWeatherPeriodV2 { period: *period },
             );
         }
     }
+    tx.commit();
 }
 
 fn report_weather_replacement_indexes(
@@ -3095,19 +3059,19 @@ fn replace_report_weather_period_span(
     };
     let first_index = replacement_indexes[0];
     let last_index = replacement_indexes[replacement_indexes.len() - 1];
-    let database = libertas_data_open_indexed(
-        REPORT_WEATHER_HISTORY_V2_RESOURCE,
-        &report_weather_archive_key(weather_endpoint, generation),
-    );
+    let database = Archive::WeatherHistory {
+        endpoint: weather_endpoint,
+        generation,
+    };
+    let mut tx = database.begin(Mode::ReadWrite);
     let mut existing_records = Vec::new();
-    if database.count > 0 {
-        libertas_data_read_indexed_range::<SprinklerData>(
-            database.handle,
+    if database.bounds_in(&mut tx).is_some() {
+        existing_records.extend(database.records_in(
+            &mut tx,
             first_index,
-            IndexDirection::Above,
+            Direction::Ascending,
             MAX_REPORT_WEATHER_REPLACEMENT_RECORDS_SCANNED,
-            &mut existing_records,
-        );
+        ));
     }
     let scan_complete = existing_records.len() < MAX_REPORT_WEATHER_REPLACEMENT_RECORDS_SCANNED
         || existing_records
@@ -3121,19 +3085,17 @@ fn replace_report_weather_period_span(
     let stale_indexes =
         stale_report_weather_period_indexes(&existing_indexes, &replacement_indexes, scan_complete);
 
-    // Submit every authoritative replacement first. Only after all replacement
-    // rows are durable candidates do we delete old keys absent from that span,
-    // so a stop between submissions can leave stale rows but never a hole.
+    // Replacement and stale-row removal publish together at commit.
     for (period, index) in periods.iter().zip(replacement_indexes) {
-        libertas_data_write_indexed(
-            database.handle,
-            index,
+        tx.put(
+            (&database.key(index)).into(),
             &SprinklerData::ReportWeatherPeriodV2 { period: *period },
         );
     }
     for index in stale_indexes {
-        libertas_data_remove_indexed_records(database.handle, index, index);
+        tx.delete((&database.key(index)).into());
     }
+    tx.commit();
 }
 
 fn valid_report_weather_observation(observation: &SprinklerCurrentWeatherV1) -> bool {
@@ -3281,12 +3243,11 @@ fn persist_report_weather_observation(
     let Ok(index) = i64::try_from(observation.valid_at) else {
         return;
     };
-    let database = libertas_data_open_indexed(
-        REPORT_WEATHER_OBSERVATIONS_RESOURCE,
-        &report_weather_archive_key(weather_endpoint, generation),
-    );
-    libertas_data_write_indexed(
-        database.handle,
+    let database = Archive::WeatherObservation {
+        endpoint: weather_endpoint,
+        generation,
+    };
+    database.put(
         index,
         &SprinklerData::ReportWeatherObservationV1 { observation },
     );
@@ -3300,13 +3261,11 @@ fn remove_report_weather_observation(
     let Ok(index) = i64::try_from(valid_at) else {
         return;
     };
-    let database = libertas_data_open_indexed(
-        REPORT_WEATHER_OBSERVATIONS_RESOURCE,
-        &report_weather_archive_key(weather_endpoint, generation),
-    );
-    if database.count > 0 {
-        libertas_data_remove_indexed_records(database.handle, index, index);
-    }
+    let database = Archive::WeatherObservation {
+        endpoint: weather_endpoint,
+        generation,
+    };
+    database.remove(index);
 }
 
 fn archive_weather_changes(
@@ -3513,13 +3472,10 @@ fn allocate_watering_activity_index(
     anchor: LibertasDateTime,
     origin: SprinklerWateringOriginV1,
 ) -> Option<(i64, u16)> {
-    let database = libertas_data_open_indexed(WATERING_ACTIVITIES_RESOURCE, &zone_key(valve));
+    let database = Archive::Activities { valve };
     for ordinal in 0..REPORT_ACTIVITY_INDEXES_PER_ORIGIN {
         let index = watering_activity_index(anchor, origin, ordinal)?;
-        // The SDK returns the first record at or above the requested index.
-        if libertas_data_read_indexed::<SprinklerData>(database.handle, index)
-            .is_none_or(|record| record.index != index)
-        {
+        if database.get(index).is_none() {
             return Some((index, ordinal));
         }
     }
@@ -3590,12 +3546,22 @@ fn watering_activity_needs_archive(activity: &SprinklerWateringActivityV1) -> bo
 }
 
 fn archive_watering_activity(valve: LibertasDevice, activity: &SprinklerWateringActivityV1) {
+    let mut tx = storage::begin_zone(valve);
+    archive_watering_activity_in(&mut tx, valve, activity);
+    tx.commit();
+}
+
+fn archive_watering_activity_in(
+    tx: &mut storage::Tx,
+    valve: LibertasDevice,
+    activity: &SprinklerWateringActivityV1,
+) {
     // Plans and command attempts live in the single authoritative state record.
     // The indexed archive contains observed runs and sparse terminal decisions.
     if !watering_activity_needs_archive(activity) {
         return;
     }
-    let database = libertas_data_open_indexed(WATERING_ACTIVITIES_RESOURCE, &zone_key(valve));
+    let database = Archive::Activities { valve };
     let mut archived = activity.clone();
     if let Some(key) = unwatered_activity_key(activity) {
         let Some(mut next_index) = i64::try_from(key.0)
@@ -3605,15 +3571,15 @@ fn archive_watering_activity(valve: LibertasDevice, activity: &SprinklerWatering
             return;
         };
         // Read the day in pages to bound memory regardless of archive size.
-        'pages: while database.count > 0 && next_index <= database.max_index {
+        let last_index = database.bounds_in(tx).map(|(_, last)| last);
+        'pages: while last_index.is_some_and(|last| next_index <= last) {
             let mut records = Vec::new();
-            libertas_data_read_indexed_range::<SprinklerData>(
-                database.handle,
+            records.extend(database.records_in(
+                tx,
                 next_index,
-                IndexDirection::Above,
+                Direction::Ascending,
                 ACTIVITY_ARCHIVE_PAGE_SIZE,
-                &mut records,
-            );
+            ));
             let Some(last_index) = records.last().map(|record| record.index) else {
                 break;
             };
@@ -3640,15 +3606,14 @@ fn archive_watering_activity(valve: LibertasDevice, activity: &SprinklerWatering
             next_index = next;
         }
     }
-    libertas_data_write_indexed(
-        database.handle,
-        archived.activity_index,
+    tx.put(
+        (&database.key(archived.activity_index)).into(),
         &SprinklerData::WateringActivityV1 { activity: archived },
     );
 }
 
 fn load_watering_activity_state(valve: LibertasDevice) -> Option<SprinklerWateringActivityStateV2> {
-    match libertas_data_read_single(WATERING_ACTIVITY_STATE_RESOURCE, &zone_key(valve)) {
+    match storage::get(storage::zone(valve, ZoneRecord::ActivityState)) {
         Some(SprinklerData::WateringActivityStateV2 { state }) => Some(state),
         _ => None,
     }
@@ -3671,9 +3636,8 @@ fn watering_activity_state(
 }
 
 fn persist_watering_activity_state(valve: LibertasDevice, state: SprinklerWateringActivityStateV2) {
-    libertas_data_write_single(
-        WATERING_ACTIVITY_STATE_RESOURCE,
-        &zone_key(valve),
+    storage::put(
+        storage::zone(valve, ZoneRecord::ActivityState),
         &SprinklerData::WateringActivityStateV2 { state },
     );
 }
@@ -3717,11 +3681,23 @@ fn persist_watering_activity(valve: LibertasDevice, activity: &SprinklerWatering
     if !valid_watering_activity(activity) {
         return;
     }
-    // The bounded state is authoritative across a restart. Write it first so
-    // a crash cannot resurrect a stale nonterminal audit row after a terminal
-    // transition. A missing audit write is repaired when this state is loaded.
-    persist_watering_activity_state(valve, watering_activity_state(activity.clone()));
-    archive_watering_activity(valve, activity);
+    let mut tx = storage::begin_zone(valve);
+    persist_watering_activity_in(&mut tx, valve, activity);
+    tx.commit();
+}
+
+fn persist_watering_activity_in(
+    tx: &mut storage::Tx,
+    valve: LibertasDevice,
+    activity: &SprinklerWateringActivityV1,
+) {
+    tx.put(
+        (&storage::zone(valve, ZoneRecord::ActivityState)).into(),
+        &SprinklerData::WateringActivityStateV2 {
+            state: watering_activity_state(activity.clone()),
+        },
+    );
+    archive_watering_activity_in(tx, valve, activity);
 }
 
 fn load_current_watering_activity(valve: LibertasDevice) -> Option<SprinklerWateringActivityV1> {
@@ -3746,8 +3722,8 @@ fn load_current_watering_activity(valve: LibertasDevice) -> Option<SprinklerWate
         WateringActivityLoadPlan::MigrateArchive => {}
     }
 
-    let database = libertas_data_open_indexed(WATERING_ACTIVITIES_RESOURCE, &zone_key(valve));
-    if database.count == 0 {
+    let database = Archive::Activities { valve };
+    if database.bounds().is_none() {
         persist_watering_activity_state(valve, empty_watering_activity_state());
         return None;
     }
@@ -3755,13 +3731,11 @@ fn load_current_watering_activity(valve: LibertasDevice) -> Option<SprinklerWate
     // Migrate an archive created before the authoritative bounded state existed.
     // This is deliberately bounded; ordinary startup reads only the state record.
     let mut records = Vec::new();
-    libertas_data_read_indexed_range::<SprinklerData>(
-        database.handle,
-        database.max_index,
-        IndexDirection::Below,
+    records.extend(database.records(
+        database.bounds().map_or(i64::MIN, |(_, last)| last),
+        Direction::Descending,
         32,
-        &mut records,
-    );
+    ));
     let mut recovered = None;
     for record in records {
         if let SprinklerData::WateringActivityV1 { activity } = record.data
@@ -3820,7 +3794,7 @@ fn persist_daily_reports(valve: LibertasDevice, reports: &[SprinklerDailyReportV
     if reports.is_empty() {
         return;
     }
-    let database = libertas_data_open_indexed(DAILY_REPORT_RESOURCE, &zone_key(valve));
+    let mut tx = storage::begin_zone(valve);
     for report in reports {
         if !valid_daily_report(report) {
             continue;
@@ -3828,20 +3802,12 @@ fn persist_daily_reports(valve: LibertasDevice, reports: &[SprinklerDailyReportV
         let Ok(index) = i64::try_from(report.starts_at) else {
             continue;
         };
-        libertas_data_write_indexed(
-            database.handle,
-            index,
+        tx.put(
+            (&Archive::DailyReports { valve }.key(index)).into(),
             &SprinklerData::DailyReportV1 { report: *report },
         );
-        assert!(
-            matches!(
-                libertas_data_read_indexed::<SprinklerData>(database.handle, index),
-                Some(IndexedData { index: saved_index, data: SprinklerData::DailyReportV1 { report: saved } })
-                    if saved_index == index && saved == *report
-            ),
-            "Daily checkpoint write was not confirmed; ledger must be retained"
-        );
     }
+    tx.commit();
 }
 
 fn valid_modeled_weather_gap(gap: &SprinklerModeledWeatherGapV1) -> bool {
@@ -3862,29 +3828,17 @@ fn load_modeled_weather_gaps(
     if starts_at >= ends_before {
         return Ok(Vec::new());
     }
-    let database = libertas_data_open_indexed(MODELED_WEATHER_GAPS_RESOURCE, &zone_key(valve));
-    if database.count == 0 {
+    let database = Archive::ModeledWeatherGaps { valve };
+    if database.bounds().is_none() {
         return Ok(Vec::new());
     }
     let start = i64::try_from(starts_at).map_err(|_| ())?;
     let end = i64::try_from(ends_before).map_err(|_| ())?;
     let mut records = Vec::new();
     if start > i64::MIN {
-        libertas_data_read_indexed_range::<SprinklerData>(
-            database.handle,
-            start - 1,
-            IndexDirection::Below,
-            1,
-            &mut records,
-        );
+        records.extend(database.records(start - 1, Direction::Descending, 1));
     }
-    libertas_data_read_indexed_range::<SprinklerData>(
-        database.handle,
-        start,
-        IndexDirection::Above,
-        maximum + 65,
-        &mut records,
-    );
+    records.extend(database.records(start, Direction::Ascending, maximum + 65));
     let mut gaps = Vec::new();
     for record in records {
         if record.index >= end {
@@ -3911,7 +3865,8 @@ fn persist_modeled_gap_delta(
     previous: &[SprinklerModeledWeatherGapV1],
     current: &[SprinklerModeledWeatherGapV1],
 ) {
-    let database = libertas_data_open_indexed(MODELED_WEATHER_GAPS_RESOURCE, &zone_key(valve));
+    let database = Archive::ModeledWeatherGaps { valve };
+    let mut tx = database.begin(Mode::ReadWrite);
     for gap in current {
         if !valid_modeled_weather_gap(gap)
             || previous
@@ -3924,9 +3879,8 @@ fn persist_modeled_gap_delta(
         let Ok(index) = i64::try_from(gap.starts_at) else {
             continue;
         };
-        libertas_data_write_indexed(
-            database.handle,
-            index,
+        tx.put(
+            (&database.key(index)).into(),
             &SprinklerData::ModeledWeatherGapV1 { gap: *gap },
         );
     }
@@ -3936,9 +3890,10 @@ fn persist_modeled_gap_delta(
         {
             // Only provider-history supersession or interval re-keying removes
             // one gap. No age-based path calls this for archived intervals.
-            libertas_data_remove_indexed_records(database.handle, index, index);
+            tx.delete((&database.key(index)).into());
         }
     }
+    tx.commit();
 }
 
 fn merged_provider_intervals(
@@ -4178,30 +4133,18 @@ fn load_report_weather_periods(
     let start = i64::try_from(range.starts_at).map_err(|_| ())?;
     let end = i64::try_from(range.ends_before).map_err(|_| ())?;
     let mut periods = ReportWeatherPeriods::default();
-    let database = libertas_data_open_indexed(
-        REPORT_WEATHER_HISTORY_V2_RESOURCE,
-        &report_weather_archive_key(weather_endpoint, generation),
-    );
-    if database.count == 0 {
+    let database = Archive::WeatherHistory {
+        endpoint: weather_endpoint,
+        generation,
+    };
+    if database.bounds().is_none() {
         return Ok(periods);
     }
     let mut records = Vec::new();
     if start > i64::MIN {
-        libertas_data_read_indexed_range::<SprinklerData>(
-            database.handle,
-            start - 1,
-            IndexDirection::Below,
-            1,
-            &mut records,
-        );
+        records.extend(database.records(start - 1, Direction::Descending, 1));
     }
-    libertas_data_read_indexed_range::<SprinklerData>(
-        database.handle,
-        start,
-        IndexDirection::Above,
-        MAX_REPORT_WEATHER_PERIODS + 65,
-        &mut records,
-    );
+    records.extend(database.records(start, Direction::Ascending, MAX_REPORT_WEATHER_PERIODS + 65));
     for record in records {
         if record.index >= end {
             break;
@@ -4232,23 +4175,21 @@ fn load_report_weather_observations(
     generation: u64,
     range: SprinklerReportTimeRangeV1,
 ) -> Result<Vec<SprinklerCurrentWeatherV1>, ()> {
-    let database = libertas_data_open_indexed(
-        REPORT_WEATHER_OBSERVATIONS_RESOURCE,
-        &report_weather_archive_key(weather_endpoint, generation),
-    );
-    if database.count == 0 {
+    let database = Archive::WeatherObservation {
+        endpoint: weather_endpoint,
+        generation,
+    };
+    if database.bounds().is_none() {
         return Ok(Vec::new());
     }
     let start = i64::try_from(range.starts_at).map_err(|_| ())?;
     let end = i64::try_from(range.ends_before).map_err(|_| ())?;
     let mut records = Vec::new();
-    libertas_data_read_indexed_range::<SprinklerData>(
-        database.handle,
+    records.extend(database.records(
         start,
-        IndexDirection::Above,
+        Direction::Ascending,
         MAX_REPORT_WEATHER_OBSERVATIONS + 65,
-        &mut records,
-    );
+    ));
     let mut observations = Vec::new();
     for record in records {
         if record.index >= end {
@@ -4290,7 +4231,7 @@ fn report_activity_overlaps(
 
 fn merge_report_activity(
     activities: &mut Vec<SprinklerWateringActivityV1>,
-    record: IndexedData<SprinklerData>,
+    record: ArchiveRecord,
     range: SprinklerReportTimeRangeV1,
     maximum: usize,
 ) -> Result<(), ()> {
@@ -4333,17 +4274,11 @@ fn load_report_activities(
     // preceding activity is therefore the only archive row whose anchor can be
     // before the query while its represented interval crosses the left edge.
     // Reading that one predecessor avoids a database per UTC day.
-    let database = libertas_data_open_indexed(WATERING_ACTIVITIES_RESOURCE, &zone_key(valve));
-    if database.count > 0 {
+    let database = Archive::Activities { valve };
+    if database.bounds().is_some() {
         if start > i64::MIN {
             let mut predecessor = Vec::new();
-            libertas_data_read_indexed_range::<SprinklerData>(
-                database.handle,
-                start - 1,
-                IndexDirection::Below,
-                1,
-                &mut predecessor,
-            );
+            predecessor.extend(database.records(start - 1, Direction::Descending, 1));
             if !predecessor.is_empty() {
                 if *remaining_records_scanned == 0 {
                     return Err(());
@@ -4353,13 +4288,11 @@ fn load_report_activities(
             }
         }
         let mut records = Vec::new();
-        libertas_data_read_indexed_range::<SprinklerData>(
-            database.handle,
+        records.extend(database.records(
             start,
-            IndexDirection::Above,
+            Direction::Ascending,
             remaining_records_scanned.saturating_add(1),
-            &mut records,
-        );
+        ));
         // Records at or beyond `end` are not part of this query and therefore
         // do not consume its scan budget, even though the one-sided database
         // API may have returned them in the same bounded read.
@@ -4383,8 +4316,8 @@ fn load_report_daily_records(
     valve: LibertasDevice,
     range: SprinklerReportTimeRangeV1,
 ) -> Result<Vec<SprinklerDailyReportV1>, ()> {
-    let database = libertas_data_open_indexed(DAILY_REPORT_RESOURCE, &zone_key(valve));
-    if database.count == 0 {
+    let database = Archive::DailyReports { valve };
+    if database.bounds().is_none() {
         return Ok(Vec::new());
     }
     let first_day = utc_day_start(range.starts_at);
@@ -4393,21 +4326,13 @@ fn load_report_daily_records(
     // Keep the nearest prior checkpoint as the fallback value when the first
     // selected day has no report of its own.
     if start > i64::MIN {
-        libertas_data_read_indexed_range::<SprinklerData>(
-            database.handle,
-            start - 1,
-            IndexDirection::Below,
-            1,
-            &mut records,
-        );
+        records.extend(database.records(start - 1, Direction::Descending, 1));
     }
-    libertas_data_read_indexed_range::<SprinklerData>(
-        database.handle,
+    records.extend(database.records(
         start,
-        IndexDirection::Above,
+        Direction::Ascending,
         MAX_REPORT_DAILY_RECORDS_PER_ZONE + 2,
-        &mut records,
-    );
+    ));
     let mut reports = Vec::new();
     for record in records {
         if u64::try_from(record.index).is_ok_and(|index| index >= range.ends_before) {
@@ -4466,26 +4391,36 @@ fn water_event_delta(
     delta
 }
 
-fn persist_water_event_delta(
+fn persist_water_event_delta_in(
+    tx: &mut storage::Tx,
     valve: LibertasDevice,
     previous: &[SprinklerWaterEventV1],
     current: &[SprinklerWaterEventV1],
-) {
+    baseline: LibertasDateTime,
+) -> Vec<i64> {
     let delta = water_event_delta(previous, current);
     if delta.upserts.is_empty() && delta.removals.is_empty() {
-        return;
+        return Vec::new();
     }
-    let database = libertas_data_open_indexed(WATER_EVENTS_RESOURCE, &zone_key(valve));
+    let database = Archive::WaterEvents { valve };
     for (index, event) in delta.upserts {
-        libertas_data_write_indexed(
-            database.handle,
-            index,
+        tx.put(
+            (&database.key(index)).into(),
             &SprinklerData::WaterEventV1 { event },
         );
     }
+    let mut folded = Vec::new();
     for index in delta.removals {
-        libertas_data_remove_indexed_records(database.handle, index, index);
+        if previous.iter().any(|event| {
+            water_event_index(event) == Some(index)
+                && event.ends_at().is_some_and(|end| end <= baseline)
+        }) {
+            folded.push(index);
+        } else {
+            tx.delete((&database.key(index)).into());
+        }
     }
+    folded
 }
 
 fn persist_zone_runtime_change(
@@ -4495,21 +4430,33 @@ fn persist_zone_runtime_change(
     previous_events: &[SprinklerWaterEventV1],
     water_events: &[SprinklerWaterEventV1],
 ) {
-    // Persist a folded baseline before deleting the events it replaces. If the
-    // process stops between these asynchronous submissions, startup filters the
-    // still-present events through the persisted baseline instead of counting
-    // them twice.
+    let mut tx = storage::begin_zone(valve);
     if memory != previous_memory {
-        persist_zone_memory(valve, memory);
-        assert!(
-            matches!(
-                libertas_data_read_single::<SprinklerData>(ZONE_DATA_RESOURCE, &zone_key(valve)),
-                Some(SprinklerData::ZoneMemoryV1 { memory: saved }) if saved == *memory
-            ),
-            "Balance checkpoint write was not confirmed; ledger must be retained"
+        tx.put(
+            (&storage::zone(valve, ZoneRecord::Memory)).into(),
+            &SprinklerData::ZoneMemoryV1 {
+                memory: memory.clone(),
+            },
         );
     }
-    persist_water_event_delta(valve, previous_events, water_events);
+    let folded = persist_water_event_delta_in(
+        &mut tx,
+        valve,
+        previous_events,
+        water_events,
+        memory.balance_baseline_at,
+    );
+    tx.commit();
+    // The committed baseline makes these old inputs redundant. Remove them in
+    // bounded transactions; an interruption cannot count them twice on restart.
+    let archive = Archive::WaterEvents { valve };
+    for indexes in folded.chunks(64) {
+        let mut tx = archive.begin(Mode::ReadWrite);
+        for &index in indexes {
+            tx.delete((&archive.key(index)).into());
+        }
+        tx.commit();
+    }
 }
 
 fn event_delta_millimeters(event: &SprinklerWaterEventV1, crop_coefficient: f32) -> f32 {
@@ -9073,51 +9020,24 @@ fn extend_report_data_extent(
     }
 }
 
-fn extend_report_indexed_database_extent(
+fn extend_report_archive_extent(
     extent: &mut Option<SprinklerReportDataExtent>,
-    existing_names: &[DataName],
-    resource: &str,
-    arguments: &[LibertasMessageArgument<'_>],
+    archive: Archive,
     indexes_per_second: i64,
 ) {
     if indexes_per_second <= 0 {
         return;
     }
-    // `libertas_data_open_indexed` may materialize a missing logical database.
-    // Range discovery is read-only, so consult the existing-name catalog first
-    // and never open a name that has not already been created by persistence.
-    if !existing_names.iter().any(|name| {
-        name.resource_name == resource
-            && name.arguments.len() == arguments.len()
-            && name
-                .arguments
-                .iter()
-                .zip(arguments)
-                .all(|(saved, expected)| saved == expected)
-    }) {
-        return;
-    }
-    let database = libertas_data_open_indexed(resource, arguments);
-    if database.count == 0 || database.min_index > database.max_index {
-        return;
-    }
-    let Some(first_at) = u64::try_from(database.min_index.div_euclid(indexes_per_second)).ok()
-    else {
+    let Some((first, last)) = archive.bounds() else {
         return;
     };
-    let Some(last_at) = u64::try_from(database.max_index.div_euclid(indexes_per_second)).ok()
-    else {
+    let (Ok(first_at), Ok(last_at)) = (
+        u64::try_from(first.div_euclid(indexes_per_second)),
+        u64::try_from(last.div_euclid(indexes_per_second)),
+    ) else {
         return;
     };
     extend_report_data_extent(extent, first_at, last_at);
-}
-
-fn remove_legacy_watering_activity_day_databases() {
-    for data_name in libertas_data_get_indexed_names() {
-        if data_name.resource_name == LEGACY_WATERING_ACTIVITY_DAYS_RESOURCE {
-            libertas_data_remove_indexed_name(&data_name);
-        }
-    }
 }
 
 fn report_database_data_extent(
@@ -9127,53 +9047,38 @@ fn report_database_data_extent(
     valves: &[LibertasDevice],
 ) -> Option<SprinklerReportDataExtent> {
     let mut extent = None;
-    let existing_names = libertas_data_get_indexed_names();
-    let weather_key = report_weather_archive_key(weather_endpoint, weather_generation);
-    extend_report_indexed_database_extent(
+    extend_report_archive_extent(
         &mut extent,
-        &existing_names,
-        REPORT_WEATHER_HISTORY_V2_RESOURCE,
-        &weather_key,
+        Archive::WeatherHistory {
+            endpoint: weather_endpoint,
+            generation: weather_generation,
+        },
         1,
     );
     if kind == SprinklerReportChartKind::WeatherEt {
-        extend_report_indexed_database_extent(
+        extend_report_archive_extent(
             &mut extent,
-            &existing_names,
-            REPORT_WEATHER_OBSERVATIONS_RESOURCE,
-            &weather_key,
+            Archive::WeatherObservation {
+                endpoint: weather_endpoint,
+                generation: weather_generation,
+            },
             1,
         );
     }
-    for valve in valves {
-        let key = zone_key(*valve);
+    for &valve in valves {
         if matches!(
             kind,
             SprinklerReportChartKind::WaterBalance | SprinklerReportChartKind::WaterUsage
         ) {
-            extend_report_indexed_database_extent(
+            extend_report_archive_extent(
                 &mut extent,
-                &existing_names,
-                WATERING_ACTIVITIES_RESOURCE,
-                &key,
+                Archive::Activities { valve },
                 REPORT_ACTIVITY_INDEXES_PER_SECOND,
             );
         }
         if kind == SprinklerReportChartKind::WaterBalance {
-            extend_report_indexed_database_extent(
-                &mut extent,
-                &existing_names,
-                DAILY_REPORT_RESOURCE,
-                &key,
-                1,
-            );
-            extend_report_indexed_database_extent(
-                &mut extent,
-                &existing_names,
-                MODELED_WEATHER_GAPS_RESOURCE,
-                &key,
-                1,
-            );
+            extend_report_archive_extent(&mut extent, Archive::DailyReports { valve }, 1);
+            extend_report_archive_extent(&mut extent, Archive::ModeledWeatherGaps { valve }, 1);
         }
     }
     extent
@@ -10940,7 +10845,7 @@ fn initial_active_state(
 /// Change log: updated protocol variants.
 /// [DefaultText]
 /// Smart sprinkler
-#[libertas_data_schema(SprinklerData)]
+#[libertas_data_schema(key = SprinklerKey, value = SprinklerData)]
 #[libertas_permissions(SPRINKLER_PERMISSIONS)]
 #[libertas_export]
 pub fn libertas_sprinkler(
@@ -11022,7 +10927,6 @@ fn start_sprinkler_controller(
     reminder_recipients: Vec<LibertasUser>,
     zones: Vec<ledger_recovery::RecoveredZone>,
 ) {
-    remove_legacy_watering_activity_day_databases();
     let now = utc_seconds().unwrap_or_default();
     let watering_mode = load_watering_mode(weather_endpoint);
     let report_weather_archive_state = load_report_weather_archive_state(weather_endpoint);
@@ -13510,7 +13414,7 @@ mod tests {
             activity.activity_index
                 < i64::try_from(range.starts_at).unwrap() * REPORT_ACTIVITY_INDEXES_PER_SECOND
         );
-        let record = IndexedData {
+        let record = ArchiveRecord {
             index: activity.activity_index,
             data: SprinklerData::WateringActivityV1 {
                 activity: activity.clone(),

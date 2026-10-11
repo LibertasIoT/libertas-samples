@@ -16,6 +16,18 @@ use libertas_macros::{
     LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_chart3d, libertas_export,
 };
 
+/// Reserved storage keys; this demonstration currently writes no records.
+#[derive(LibertasExport, libertas_macros::LibertasKeyCodec, libertas_macros::LibertasKeyDecode)]
+pub enum ChartDataKey {
+    Reserved,
+}
+
+/// Reserved stored values for the function's required data schema.
+#[derive(LibertasExport, LibertasAvroEncode, LibertasAvroDecode)]
+pub enum ChartData {
+    Reserved { value: bool },
+}
+
 /// Scatter cluster
 /// Distinguishes spatial groups in the scatter example.
 #[derive(
@@ -1986,6 +1998,7 @@ fn handle_gallery_request(
 /// camera configurations. Every mathematical transformation is evaluated by
 /// this application; the client receives only typed rows and chart metadata.
 #[libertas_export]
+#[libertas_macros::libertas_data_schema(key = ChartDataKey, value = ChartData)]
 pub fn chart3d_demo(
     /*
      * Gallery endpoint

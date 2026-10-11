@@ -27,8 +27,11 @@ extern crate alloc;
 mod building_hvac;
 
 use alloc::vec::Vec;
-use libertas::LibertasDateTime;
-use libertas_macros::{LibertasAvroDecode, LibertasAvroEncode, LibertasExport};
+use libertas::{LibertasDateTime, LibertasEndpoint};
+use libertas_macros::{
+    LibertasAvroDecode, LibertasAvroEncode, LibertasExport, LibertasKeyCodec, LibertasKeyDecode,
+    LibertasKeyFieldCodec, LibertasKeyFieldDecode,
+};
 
 pub use building_hvac::{
     BUILDING_HVAC_AIR_QUALITY_FRESHNESS_SECONDS, BUILDING_HVAC_AIR_QUALITY_HORIZON_SECONDS,
@@ -845,11 +848,36 @@ pub struct SprinklerWeatherHistoryMetadataV1 {
     pub valid_until: LibertasDateTime,
 }
 
+/// Saved weather keys
+/// Records for one endpoint share a transaction and scan prefix.
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasExport, LibertasKeyCodec, LibertasKeyDecode,
+)]
+pub enum SprinklerWeatherKey {
+    /// Weather belonging to one service endpoint
+    Endpoint {
+        endpoint: LibertasEndpoint,
+        record: SprinklerWeatherRecordKey,
+    },
+}
+
+/// Saved weather record identity
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, LibertasExport, LibertasKeyFieldCodec, LibertasKeyFieldDecode,
+)]
+pub enum SprinklerWeatherRecordKey {
+    Location,
+    HistoryMetadata,
+    HistoryPeriod { starts_at: LibertasDateTime },
+    Current,
+    Forecast,
+}
+
 /// Sprinkler weather persistent data
 /// Defines the complete set of values that the sprinkler weather agent may
 /// write to the Libertas database. History metadata, current conditions,
-/// forecast, and location are independent single records. Every completed
-/// history period is an indexed record keyed by its start timestamp.
+/// forecast, and location have separate typed keys. Every completed
+/// history period is keyed by its start timestamp.
 /// Subscription cursors and replay journals are intentionally absent: resetting
 /// them must not erase these records.
 #[derive(Clone, Debug, PartialEq, LibertasAvroDecode, LibertasAvroEncode, LibertasExport)]
@@ -871,9 +899,7 @@ pub enum SprinklerWeatherPersistentData {
         metadata: SprinklerWeatherHistoryMetadataV1,
     },
     /// History period V2
-    /// Stores one completed full-weather period in indexed data. It occupies
-    /// the removed V1 period's union position; the V2 history resource name
-    /// keeps those incompatible indexed records separate.
+    /// Stores one completed full-weather period under its typed timestamp key.
     HistoryPeriodV2 {
         /// History period
         /// Temperature, humidity, precipitation, reference ET, wind, and gusts.
@@ -1434,5 +1460,46 @@ mod tests {
             SprinklerWeatherPersistentData::avro_decode(&encoded[..encoded.len() - 1], &mut offset)
                 .is_err()
         );
+    }
+}
+
+#[cfg(test)]
+mod storage_key_tests {
+    use super::*;
+    use libertas::data::EncodedKey;
+
+    #[test]
+    fn production_key_layout_and_period_order_are_stable() {
+        let endpoint = 0x0102_0304_0506_0708;
+        let key = SprinklerWeatherKey::Endpoint {
+            endpoint,
+            record: SprinklerWeatherRecordKey::HistoryPeriod {
+                starts_at: 0x1112_1314_1516_1718,
+            },
+        };
+        let encoded = EncodedKey::new(&key).unwrap();
+        assert_eq!(
+            encoded.as_bytes(),
+            &[
+                0, 0, 0x81, 2, 3, 4, 5, 6, 7, 8, 0, 2, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+                0x18,
+            ]
+        );
+        assert_eq!(encoded.decode().unwrap(), key);
+        let metadata = EncodedKey::new(&SprinklerWeatherKey::Endpoint {
+            endpoint,
+            record: SprinklerWeatherRecordKey::HistoryMetadata,
+        })
+        .unwrap();
+        assert_eq!(metadata.as_bytes().len(), 20);
+        assert_eq!(&metadata.as_bytes()[10..], &[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]);
+        assert!(metadata.as_bytes() < encoded.as_bytes());
+        let other = EncodedKey::new(&SprinklerWeatherKey::Endpoint {
+            endpoint: endpoint + 1,
+            record: SprinklerWeatherRecordKey::Location,
+        })
+        .unwrap();
+        assert!(encoded.as_bytes() < other.as_bytes());
+        assert_ne!(&encoded.as_bytes()[..10], &other.as_bytes()[..10]);
     }
 }

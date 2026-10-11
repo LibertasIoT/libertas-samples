@@ -10,6 +10,9 @@
 
 extern crate alloc;
 
+mod storage;
+use storage::{HistoryRecord, RecordKey};
+
 use std::{
     any::Any,
     cell::{Cell, RefCell},
@@ -25,17 +28,13 @@ use std::{
 };
 
 use libertas::{
-    IndexDirection, IndexedData, LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasEndpoint,
-    LibertasEndpointHandlerResult, LibertasEndpointMessage, LibertasEndpointStandardStatus,
-    LibertasEndpointStatus, LibertasMessageArgument, LogLevel, OP_ENDPOINT_DATA,
-    OP_ENDPOINT_PEER_ALIVE, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP, OP_ENDPOINT_REQ,
-    OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_data_open_indexed,
-    libertas_data_read_indexed_range, libertas_data_read_single,
-    libertas_data_remove_indexed_records, libertas_data_remove_single, libertas_data_write_indexed,
-    libertas_data_write_single, libertas_endpoint_peer_alive, libertas_endpoint_remove_subscriber,
-    libertas_endpoint_report, libertas_endpoint_response, libertas_endpoint_subscribe_request,
-    libertas_get_sys_ticks, libertas_get_utc_time, libertas_log,
-    libertas_register_endpoint_listener, libertas_register_endpoint_status_listener,
+    LIBERTAS_HUB_ENDPOINT, LibertasDateTime, LibertasEndpoint, LibertasEndpointHandlerResult,
+    LibertasEndpointMessage, LibertasEndpointStandardStatus, LibertasEndpointStatus, LogLevel,
+    OP_ENDPOINT_DATA, OP_ENDPOINT_PEER_ALIVE, OP_ENDPOINT_PEER_DOWN, OP_ENDPOINT_PEER_UP,
+    OP_ENDPOINT_REQ, OP_ENDPOINT_RSP, OP_ENDPOINT_SUB_REQ, libertas_endpoint_peer_alive,
+    libertas_endpoint_remove_subscriber, libertas_endpoint_report, libertas_endpoint_response,
+    libertas_endpoint_subscribe_request, libertas_get_sys_ticks, libertas_get_utc_time,
+    libertas_log, libertas_register_endpoint_listener, libertas_register_endpoint_status_listener,
     libertas_register_shutdown_handler, libertas_register_wakeup_callback,
     libertas_shutdown_complete, libertas_timer_cancel, libertas_timer_new_interval,
     libertas_timer_update_interval, libertas_wake_up,
@@ -111,11 +110,6 @@ pub const APP_STRINGS: [(&str, &str); 7] = [
         "Use the Hub's location to request the correct local weather forecast.",
     ),
 ];
-const HISTORY_METADATA_RESOURCE: &str = APP_STRINGS[0].0;
-const HISTORY_PERIODS_RESOURCE: &str = APP_STRINGS[1].0;
-const CURRENT_RESOURCE: &str = APP_STRINGS[2].0;
-const FORECAST_RESOURCE: &str = APP_STRINGS[3].0;
-const LOCATION_RESOURCE: &str = APP_STRINGS[4].0;
 
 /// Sprinkler weather service
 /// Makes local weather available to Smart Sprinkler.
@@ -1071,13 +1065,8 @@ fn empty_report(cursor: SprinklerWeatherCursorV1) -> SprinklerWeatherIncremental
     }
 }
 
-fn persistent_key(endpoint: LibertasEndpoint) -> [LibertasMessageArgument<'static>; 1] {
-    [LibertasMessageArgument::Object(endpoint)]
-}
-
 fn load_location(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherLocationV1> {
-    let key = persistent_key(endpoint);
-    match libertas_data_read_single(LOCATION_RESOURCE, &key) {
+    match storage::get(endpoint, RecordKey::Location) {
         Some(SprinklerWeatherPersistentData::LocationV1 { location })
             if valid_weather_location(location) =>
         {
@@ -1088,7 +1077,7 @@ fn load_location(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherLocationV
                 LogLevel::Warn,
                 "Discarding an invalid persisted sprinkler weather location",
             );
-            libertas_data_remove_single(LOCATION_RESOURCE, &key);
+            storage::remove(endpoint, RecordKey::Location);
             None
         }
         None => None,
@@ -1126,7 +1115,7 @@ fn valid_history_period(period: &SprinklerWeatherHistoryPeriodV2) -> bool {
 }
 
 fn indexed_history_record_is_current(
-    record: &IndexedData<SprinklerWeatherPersistentData>,
+    record: &HistoryRecord,
     metadata: SprinklerWeatherHistoryMetadataV1,
 ) -> bool {
     let SprinklerWeatherPersistentData::HistoryPeriodV2 { period } = &record.data else {
@@ -1155,7 +1144,7 @@ struct IndexedHistoryReconstruction {
 
 fn reconstruct_indexed_history(
     metadata: SprinklerWeatherHistoryMetadataV1,
-    records: &[IndexedData<SprinklerWeatherPersistentData>],
+    records: &[HistoryRecord],
 ) -> IndexedHistoryReconstruction {
     let mut accepted = Vec::new();
     let mut records_to_remove = Vec::new();
@@ -1188,67 +1177,54 @@ fn reconstruct_indexed_history(
     }
 }
 
-fn clear_indexed_history(endpoint: LibertasEndpoint) {
-    let key = persistent_key(endpoint);
-    libertas_data_remove_single(HISTORY_METADATA_RESOURCE, &key);
-    let database = libertas_data_open_indexed(HISTORY_PERIODS_RESOURCE, &key);
-    if database.count > 0 {
-        libertas_data_remove_indexed_records(
-            database.handle,
-            database.min_index,
-            database.max_index,
-        );
-    }
-}
-
 fn load_indexed_history(endpoint: LibertasEndpoint) -> Option<SprinklerWeatherHistoryV2> {
-    let key = persistent_key(endpoint);
-    let metadata = match libertas_data_read_single(HISTORY_METADATA_RESOURCE, &key) {
+    let mut tx = storage::begin(endpoint);
+    let metadata = match tx.get((&storage::key(endpoint, RecordKey::HistoryMetadata)).into()) {
         Some(SprinklerWeatherPersistentData::HistoryMetadataV1 { metadata })
             if valid_history_metadata(metadata) =>
         {
             metadata
         }
         _ => {
-            clear_indexed_history(endpoint);
+            storage::clear_history(&mut tx, endpoint);
+            tx.commit();
             return None;
         }
     };
-    let database = libertas_data_open_indexed(HISTORY_PERIODS_RESOURCE, &key);
-    if database.count == 0
-        || database.count > u64::try_from(MAX_HISTORY_RECORDS_SCANNED).unwrap_or(u64::MAX)
-    {
-        clear_indexed_history(endpoint);
+    let records = storage::history(&mut tx, endpoint, MAX_HISTORY_RECORDS_SCANNED + 1);
+    if records.is_empty() || records.len() > MAX_HISTORY_RECORDS_SCANNED {
+        storage::clear_history(&mut tx, endpoint);
+        tx.commit();
         return None;
     }
-    let mut records = Vec::new();
-    libertas_data_read_indexed_range::<SprinklerWeatherPersistentData>(
-        database.handle,
-        database.max_index,
-        IndexDirection::Below,
-        MAX_HISTORY_RECORDS_SCANNED,
-        &mut records,
-    );
     let reconstruction = reconstruct_indexed_history(metadata, &records);
     for index in reconstruction.records_to_remove {
-        libertas_data_remove_indexed_records(database.handle, index, index);
+        tx.delete(
+            (&storage::key(
+                endpoint,
+                RecordKey::HistoryPeriod {
+                    starts_at: index as u64,
+                },
+            ))
+                .into(),
+        );
     }
     if reconstruction.history.is_none() {
-        clear_indexed_history(endpoint);
+        storage::clear_history(&mut tx, endpoint);
     }
+    tx.commit();
     reconstruction.history
 }
 
 fn load_snapshot(endpoint: LibertasEndpoint) -> SprinklerWeatherSnapshotV2 {
-    let key = persistent_key(endpoint);
     let history = load_indexed_history(endpoint);
-    let current = match libertas_data_read_single(CURRENT_RESOURCE, &key) {
+    let current = match storage::get(endpoint, RecordKey::Current) {
         Some(SprinklerWeatherPersistentData::CurrentV1 { current }) if valid_current(&current) => {
             Some(current)
         }
         _ => None,
     };
-    let forecast = match libertas_data_read_single(FORECAST_RESOURCE, &key) {
+    let forecast = match storage::get(endpoint, RecordKey::Forecast) {
         Some(SprinklerWeatherPersistentData::ForecastV1 { forecast })
             if valid_forecast(&forecast) =>
         {
@@ -1323,29 +1299,38 @@ fn persist_indexed_history(
     previous: Option<&SprinklerWeatherHistoryV2>,
     history: &SprinklerWeatherHistoryV2,
 ) {
-    let key = persistent_key(endpoint);
-    let database = libertas_data_open_indexed(HISTORY_PERIODS_RESOURCE, &key);
+    let mut tx = storage::begin(endpoint);
     let delta = indexed_history_delta(previous, history);
     for period in delta.upserts {
-        let Some(index) = history_period_index(&period) else {
-            continue;
-        };
-        libertas_data_write_indexed(
-            database.handle,
-            index,
+        tx.put(
+            (&storage::key(
+                endpoint,
+                RecordKey::HistoryPeriod {
+                    starts_at: period.starts_at,
+                },
+            ))
+                .into(),
             &SprinklerWeatherPersistentData::HistoryPeriodV2 { period },
         );
     }
     for index in delta.removals {
-        libertas_data_remove_indexed_records(database.handle, index, index);
+        tx.delete(
+            (&storage::key(
+                endpoint,
+                RecordKey::HistoryPeriod {
+                    starts_at: index as u64,
+                },
+            ))
+                .into(),
+        );
     }
-    libertas_data_write_single(
-        HISTORY_METADATA_RESOURCE,
-        &key,
+    tx.put(
+        (&storage::key(endpoint, RecordKey::HistoryMetadata)).into(),
         &SprinklerWeatherPersistentData::HistoryMetadataV1 {
             metadata: history_metadata(history),
         },
     );
+    tx.commit();
 }
 
 fn publish_persisted_history_change(
@@ -1367,14 +1352,13 @@ fn publish_persisted_history_change(
 
 fn publish_persisted_change(
     shared: &Rc<RefCell<WeatherServerState>>,
-    resource: &'static str,
+    record: RecordKey,
     persistent: SprinklerWeatherPersistentData,
     change: SprinklerWeatherChangeV1,
     now_utc: LibertasDateTime,
 ) {
     let endpoint = shared.borrow().endpoint;
-    let key = persistent_key(endpoint);
-    libertas_data_write_single(resource, &key, &persistent);
+    storage::put(endpoint, record, &persistent);
 
     publish_change(shared, change, now_utc);
 }
@@ -1395,7 +1379,7 @@ fn handle_provider_message(shared: &Rc<RefCell<WeatherServerState>>, message: Pr
             let now_utc = current.retrieved_at;
             publish_persisted_change(
                 shared,
-                CURRENT_RESOURCE,
+                RecordKey::Current,
                 SprinklerWeatherPersistentData::CurrentV1 { current },
                 SprinklerWeatherChangeV1::CurrentReplaceV1 { current },
                 now_utc,
@@ -1418,7 +1402,7 @@ fn handle_provider_message(shared: &Rc<RefCell<WeatherServerState>>, message: Pr
                     let now_utc = forecast.retrieved_at;
                     publish_persisted_change(
                         shared,
-                        FORECAST_RESOURCE,
+                        RecordKey::Forecast,
                         SprinklerWeatherPersistentData::ForecastV1 {
                             forecast: forecast.clone(),
                         },
@@ -1758,6 +1742,7 @@ fn weather_change_timestamp(shared: &Rc<RefCell<WeatherServerState>>) -> Liberta
 
 fn clear_weather_for_location_change(
     shared: &Rc<RefCell<WeatherServerState>>,
+    location: SprinklerWeatherLocationV1,
 ) -> Vec<SprinklerWeatherSectionV1> {
     let (endpoint, sections) = {
         let state = shared.borrow();
@@ -1773,10 +1758,7 @@ fn clear_weather_for_location_change(
         }
         (state.endpoint, sections)
     };
-    let key = persistent_key(endpoint);
-    clear_indexed_history(endpoint);
-    libertas_data_remove_single(CURRENT_RESOURCE, &key);
-    libertas_data_remove_single(FORECAST_RESOURCE, &key);
+    storage::clear_sections(endpoint, Some(location));
     shared.borrow_mut().snapshot = SprinklerWeatherSnapshotV2 {
         history: None,
         current: None,
@@ -1824,20 +1806,18 @@ fn accept_hub_location(
         return true;
     }
 
-    // Remove every old-site section before durably associating this endpoint
-    // with the new location. A stop at any point can therefore leave an empty
-    // cache, but can never relabel old weather as belonging to the new site.
+    // Commit the location and removal of old-site sections together before
+    // publishing or requesting weather for the new site.
     let cleared_sections = if previous.is_some() {
-        clear_weather_for_location_change(&weather)
+        clear_weather_for_location_change(&weather, location)
     } else {
+        storage::put(
+            endpoint,
+            RecordKey::Location,
+            &SprinklerWeatherPersistentData::LocationV1 { location },
+        );
         Vec::new()
     };
-    let key = persistent_key(endpoint);
-    libertas_data_write_single(
-        LOCATION_RESOURCE,
-        &key,
-        &SprinklerWeatherPersistentData::LocationV1 { location },
-    );
     state.borrow_mut().location = Some(location);
 
     if let Some(provider) = &provider {
@@ -2075,7 +2055,7 @@ fn handle_endpoint_event(
 /// Weather service can run at a time.
 /// [DefaultText]
 /// Local weather
-#[libertas_data_schema("libertas_weather::SprinklerWeatherPersistentData")]
+#[libertas_data_schema(key = libertas_weather::SprinklerWeatherKey, value = libertas_weather::SprinklerWeatherPersistentData)]
 #[libertas_permissions(WEATHER_AGENT_PERMISSIONS)]
 #[libertas_access_host("api.open-meteo.com")]
 #[libertas_singleton]
@@ -2090,10 +2070,7 @@ pub fn libertas_weather_server(sprinkler_weather: SprinklerWeatherEndpointServer
             LogLevel::Warn,
             "Discarding persisted sprinkler weather that has no associated location",
         );
-        let key = persistent_key(endpoint);
-        clear_indexed_history(endpoint);
-        libertas_data_remove_single(CURRENT_RESOURCE, &key);
-        libertas_data_remove_single(FORECAST_RESOURCE, &key);
+        storage::clear_sections(endpoint, None);
         snapshot = SprinklerWeatherSnapshotV2 {
             history: None,
             current: None,
@@ -2857,19 +2834,19 @@ mod tests {
         let mismatched = history_period(OLD_EPOCH - 10_800);
         let wrong_variant_index = i64::try_from(OLD_EPOCH - 14_400).unwrap();
         let records = vec![
-            IndexedData {
+            HistoryRecord {
                 index: history_period_index(&second).unwrap(),
                 data: SprinklerWeatherPersistentData::HistoryPeriodV2 { period: second },
             },
-            IndexedData {
+            HistoryRecord {
                 index: history_period_index(&mismatched).unwrap() + 1,
                 data: SprinklerWeatherPersistentData::HistoryPeriodV2 { period: mismatched },
             },
-            IndexedData {
+            HistoryRecord {
                 index: wrong_variant_index,
                 data: SprinklerWeatherPersistentData::CurrentV1 { current: current() },
             },
-            IndexedData {
+            HistoryRecord {
                 index: history_period_index(&first).unwrap(),
                 data: SprinklerWeatherPersistentData::HistoryPeriodV2 { period: first },
             },
