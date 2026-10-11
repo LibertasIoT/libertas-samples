@@ -221,14 +221,12 @@ the last checkpoint and first callback. If the valve loses power and closes,
 this can count a few outage minutes as watering. Manual runs remain externally
 owned and have no assumed timed finish.
 
-The temporary V1/V2 activity archive repair has been removed. Startup now begins
-directly with the permanent ledger recovery before enabling the controller.
-Permanent archive filtering and the command retry delay remain in effect.
-The historical `SprinklerData::ActivityArchiveCleanupV1` variant and its database
-resource labels remain for retained schema compatibility; startup no longer reads
-or writes cleanup markers. Current storage uses typed KV keys; a live upgrade
-from the legacy storage layout requires host-side data conversion before running
-this version.
+Startup reconciles the permanent ledger before enabling the controller.
+Archive filtering and the command retry delay remain in effect. Storage uses
+typed keys and transactions under the
+[KV specification](https://github.com/LibertasIoT/libertas-doc/blob/main/reference/protocols.md#transactional-key-value-api),
+with [fixed ordered key layouts](https://github.com/LibertasIoT/libertas-doc/blob/main/reference/protocols.md#key-encoding-and-ordering).
+This API is under development; no predecessor data conversion is required.
 
 Internet weather is an enhancement rather than a watering dependency. The
 controller always projects demand from the best available source: at least one
