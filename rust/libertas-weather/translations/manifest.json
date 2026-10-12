@@ -3,65 +3,53 @@
   "PackageName": "libertas-weather",
   "DefaultLocale": "en",
   "DefaultDocument": "libertas-weather.en.doc.json",
-  "DocumentShapeSha256": "sha256:a4c9afb99d2f373942443bc0d79cae6d3a8642cf031249f49a47be05688b467c",
-  "ExportedAt": "2026-08-16T16:08:37.056Z",
+  "DocumentShapeSha256": "sha256:6cb92a0be4a3b7d118b9e8c249ae4c6eca5dfd2afe5054ec986ff8837a323578",
+  "ExportedAt": "2026-10-12T22:29:13.221Z",
   "SourceSchema": {
-    "Attributes": [
-      {
-        "Name": "DefaultLocale",
-        "Value": "en"
-      },
-      {
-        "Name": "TypesOnly",
-        "Value": "true"
-      },
-      {
-        "Name": "no_std",
-        "Value": "true"
-      },
-      {
-        "Name": "Dependencies",
-        "Value": "{\"resolute\":[]}"
-      }
-    ],
-    "Functions": [],
-    "Revision": {
-      "ContentSha256": "sha256:dec872146fd5b130cb1f42cbd484d502c5ff59d6a5ea1a4db2bf827ff1de77ba",
-      "SourceTimestampUtcMs": 1786646472445
-    },
+    "AppDependencies": [],
     "Types": [
       {
-        "Attributes": [],
+        "ID": 0,
+        "NativeName": "BuildingHvacCurrentWeatherV1",
+        "Type": "Table",
         "BuiltinType": true,
         "Children": [
           {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
             "ID": 1,
             "NativeName": "retrieved_at",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [],
+            "Type": "DateTime",
             "BuiltinType": true,
             "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
             "ID": 2,
             "NativeName": "valid_until",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [],
+            "Type": "DateTime",
             "BuiltinType": true,
             "Children": [],
-            "ID": 3,
-            "NativeName": "valid_at",
+            "Attributes": [],
             "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
+            "Namespace": ""
           },
           {
+            "ID": 3,
+            "NativeName": "valid_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 4,
+            "NativeName": "interval_seconds",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "NumberMax",
@@ -84,28 +72,270 @@
                 "Value": "true"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 4,
-            "NativeName": "interval_seconds",
             "NativeType": "u32",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
+            "ID": 5,
+            "NativeName": "conditions",
+            "Type": "BuildingHvacOutdoorConditionsV1",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "BuildingHvacOutdoorAirQualityPeriodV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "starts_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "duration_seconds",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              },
+              {
+                "Name": "TimeInterval",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "u32",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "particulate_matter_2_5_micrograms_per_cubic_meter",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "microgram-per-cubic-meter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 4,
+            "NativeName": "particulate_matter_10_micrograms_per_cubic_meter",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "microgram-per-cubic-meter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 5,
+            "NativeName": "ozone_micrograms_per_cubic_meter",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "microgram-per-cubic-meter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 6,
+            "NativeName": "nitrogen_dioxide_micrograms_per_cubic_meter",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "microgram-per-cubic-meter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "BuildingHvacOutdoorAirQualityV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "retrieved_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "valid_until",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "periods",
+            "Type": "List",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 4,
+                "NativeName": "",
+                "Type": "BuildingHvacOutdoorAirQualityPeriodV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [],
+            "NativeType": "Vec < BuildingHvacOutdoorAirQualityPeriodV1 >",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "BuildingHvacOutdoorConditionsV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "dry_bulb_temperature_celsius",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "NumberType",
                 "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "celsius"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 5,
-            "NativeName": "temperature_celsius",
             "NativeType": "f32",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
+            "ID": 2,
+            "NativeName": "dew_point_temperature_celsius",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "celsius"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "relative_humidity_percent",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "NumberMax",
@@ -122,16 +352,21 @@
               {
                 "Name": "NumberType",
                 "Value": "u8"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "percent"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 6,
-            "NativeName": "relative_humidity_percent",
             "NativeType": "u8",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
+            "ID": 4,
+            "NativeName": "surface_pressure_hectopascals",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "NumberMin",
@@ -140,52 +375,21 @@
               {
                 "Name": "NumberType",
                 "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "hectopascal"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 7,
-            "NativeName": "precipitation_millimeters",
             "NativeType": "f32",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 8,
-            "NativeName": "reference_evapotranspiration_millimeters",
-            "NativeType": "f32",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 9,
+            "ID": 5,
             "NativeName": "wind_speed_meters_per_second",
-            "NativeType": "f32",
-            "Type": "Number"
-          },
-          {
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "NumberMin",
@@ -194,338 +398,743 @@
               {
                 "Name": "NumberType",
                 "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "meter-per-second"
               }
             ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 6,
+            "NativeName": "wind_gust_meters_per_second",
+            "Type": "Number",
             "BuiltinType": true,
             "Children": [],
-            "ID": 10,
-            "NativeName": "wind_gust_meters_per_second",
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "meter-per-second"
+              }
+            ],
             "NativeType": "f32",
-            "Type": "Number"
+            "Namespace": ""
+          },
+          {
+            "ID": 7,
+            "NativeName": "wind_direction_degrees",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "360"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u16"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "degree"
+              }
+            ],
+            "NativeType": "u16",
+            "Namespace": ""
+          },
+          {
+            "ID": 8,
+            "NativeName": "precipitation_millimeters",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "millimeter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 9,
+            "NativeName": "precipitation_kind",
+            "Type": "BuildingHvacPrecipitationKindV1",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 10,
+            "NativeName": "solar_elevation_degrees",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "90"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "-90"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "degree"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 11,
+            "NativeName": "solar_azimuth_degrees",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "360"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "degree"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 12,
+            "NativeName": "global_horizontal_irradiance_watts_per_square_meter",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "watt-per-square-meter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 13,
+            "NativeName": "direct_normal_irradiance_watts_per_square_meter",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "watt-per-square-meter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 14,
+            "NativeName": "diffuse_horizontal_irradiance_watts_per_square_meter",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "watt-per-square-meter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
           }
         ],
-        "ID": 0,
-        "NativeName": "SprinklerCurrentWeatherV1",
+        "Attributes": [],
         "NativeType": "",
-        "Type": "Table"
+        "Namespace": ""
       },
       {
-        "Attributes": [],
+        "ID": 0,
+        "NativeName": "BuildingHvacPrecipitationKindV1",
+        "Type": "Enumeration",
         "BuiltinType": true,
         "Children": [
           {
-            "Attributes": [],
+            "ID": 1,
+            "NativeName": "None",
+            "Type": "Number",
             "BuiltinType": true,
-            "Children": [
+            "Children": [],
+            "Attributes": [
               {
-                "Attributes": [],
-                "BuiltinType": true,
-                "Children": [],
-                "ID": 2,
-                "NativeName": "retrieved_at",
-                "NativeType": "LibertasDateTime",
-                "Type": "DateTime"
-              },
-              {
-                "Attributes": [],
-                "BuiltinType": true,
-                "Children": [],
-                "ID": 3,
-                "NativeName": "valid_until",
-                "NativeType": "LibertasDateTime",
-                "Type": "DateTime"
-              },
-              {
-                "Attributes": [],
-                "BuiltinType": true,
-                "Children": [
-                  {
-                    "Attributes": [],
-                    "BuiltinType": false,
-                    "Children": [],
-                    "ID": 5,
-                    "NativeName": "",
-                    "NativeType": "",
-                    "Type": "SprinklerWeatherHistoryPeriodV1"
-                  }
-                ],
-                "ID": 4,
-                "NativeName": "periods",
-                "NativeType": "Vec < SprinklerWeatherHistoryPeriodV1 >",
-                "Type": "List"
+                "Name": "Fixed",
+                "Value": "0"
               }
             ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "Rain",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "FreezingRain",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 4,
+            "NativeName": "Snow",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "3"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 5,
+            "NativeName": "Mixed",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "4"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 6,
+            "NativeName": "Unknown",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "5"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherChangeV1",
+        "Type": "Union",
+        "BuiltinType": true,
+        "Children": [
+          {
             "ID": 1,
             "NativeName": "HistoryPeriodsUpsertV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
-                "BuiltinType": false,
+                "ID": 2,
+                "NativeName": "retrieved_at",
+                "Type": "DateTime",
+                "BuiltinType": true,
                 "Children": [],
-                "ID": 7,
-                "NativeName": "range",
-                "NativeType": "",
-                "Type": "SprinklerWeatherTimeRangeV1"
+                "Attributes": [],
+                "NativeType": "LibertasDateTime",
+                "Namespace": ""
+              },
+              {
+                "ID": 3,
+                "NativeName": "valid_until",
+                "Type": "DateTime",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "LibertasDateTime",
+                "Namespace": ""
+              },
+              {
+                "ID": 4,
+                "NativeName": "periods",
+                "Type": "List",
+                "BuiltinType": true,
+                "Children": [
+                  {
+                    "ID": 5,
+                    "NativeName": "",
+                    "Type": "BuildingHvacWeatherHistoryPeriodV1",
+                    "BuiltinType": false,
+                    "Children": [],
+                    "Attributes": [],
+                    "NativeType": "",
+                    "Namespace": ""
+                  }
+                ],
+                "Attributes": [],
+                "NativeType": "Vec < BuildingHvacWeatherHistoryPeriodV1 >",
+                "Namespace": ""
               }
             ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
             "ID": 6,
             "NativeName": "HistoryPeriodsRemoveV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
+                "ID": 7,
+                "NativeName": "range",
+                "Type": "BuildingHvacWeatherTimeRangeV1",
                 "BuiltinType": false,
                 "Children": [],
-                "ID": 9,
-                "NativeName": "current",
+                "Attributes": [],
                 "NativeType": "",
-                "Type": "SprinklerCurrentWeatherV1"
+                "Namespace": ""
               }
             ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
             "ID": 8,
             "NativeName": "CurrentReplaceV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
-                "BuiltinType": true,
+                "ID": 9,
+                "NativeName": "current",
+                "Type": "BuildingHvacCurrentWeatherV1",
+                "BuiltinType": false,
                 "Children": [],
-                "ID": 11,
-                "NativeName": "retrieved_at",
-                "NativeType": "LibertasDateTime",
-                "Type": "DateTime"
-              },
-              {
                 "Attributes": [],
-                "BuiltinType": true,
-                "Children": [],
-                "ID": 12,
-                "NativeName": "valid_until",
-                "NativeType": "LibertasDateTime",
-                "Type": "DateTime"
-              },
-              {
-                "Attributes": [],
-                "BuiltinType": true,
-                "Children": [
-                  {
-                    "Attributes": [],
-                    "BuiltinType": false,
-                    "Children": [],
-                    "ID": 14,
-                    "NativeName": "",
-                    "NativeType": "",
-                    "Type": "SprinklerWeatherForecastPeriodV1"
-                  }
-                ],
-                "ID": 13,
-                "NativeName": "periods",
-                "NativeType": "Vec < SprinklerWeatherForecastPeriodV1 >",
-                "Type": "List"
+                "NativeType": "",
+                "Namespace": ""
               }
             ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "2"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
             "ID": 10,
             "NativeName": "ForecastPeriodsUpsertV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 16,
-                "NativeName": "range",
-                "NativeType": "",
-                "Type": "SprinklerWeatherTimeRangeV1"
-              }
-            ],
-            "ID": 15,
-            "NativeName": "ForecastPeriodsRemoveV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 18,
-                "NativeName": "section",
-                "NativeType": "",
-                "Type": "SprinklerWeatherSectionV1"
-              }
-            ],
-            "ID": 17,
-            "NativeName": "SectionClearV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 20,
-                "NativeName": "history",
-                "NativeType": "",
-                "Type": "SprinklerWeatherHistoryV1"
-              }
-            ],
-            "ID": 19,
-            "NativeName": "HistoryReplaceV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 22,
-                "NativeName": "forecast",
-                "NativeType": "",
-                "Type": "SprinklerWeatherForecastV1"
-              }
-            ],
-            "ID": 21,
-            "NativeName": "ForecastReplaceV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 24,
-                "NativeName": "location",
-                "NativeType": "",
-                "Type": "SprinklerWeatherLocationV1"
-              }
-            ],
-            "ID": 23,
-            "NativeName": "SiteReplaceV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": true,
-                "Children": [],
-                "ID": 26,
+                "ID": 11,
                 "NativeName": "retrieved_at",
-                "NativeType": "LibertasDateTime",
-                "Type": "DateTime"
-              },
-              {
-                "Attributes": [],
+                "Type": "DateTime",
                 "BuiltinType": true,
                 "Children": [],
-                "ID": 27,
-                "NativeName": "valid_until",
+                "Attributes": [],
                 "NativeType": "LibertasDateTime",
-                "Type": "DateTime"
+                "Namespace": ""
               },
               {
+                "ID": 12,
+                "NativeName": "valid_until",
+                "Type": "DateTime",
+                "BuiltinType": true,
+                "Children": [],
                 "Attributes": [],
+                "NativeType": "LibertasDateTime",
+                "Namespace": ""
+              },
+              {
+                "ID": 13,
+                "NativeName": "periods",
+                "Type": "List",
                 "BuiltinType": true,
                 "Children": [
                   {
-                    "Attributes": [],
+                    "ID": 14,
+                    "NativeName": "",
+                    "Type": "BuildingHvacWeatherForecastPeriodV1",
                     "BuiltinType": false,
                     "Children": [],
-                    "ID": 29,
-                    "NativeName": "",
+                    "Attributes": [],
                     "NativeType": "",
-                    "Type": "SprinklerWeatherHistoryPeriodV2"
+                    "Namespace": ""
                   }
                 ],
-                "ID": 28,
-                "NativeName": "periods",
-                "NativeType": "Vec < SprinklerWeatherHistoryPeriodV2 >",
-                "Type": "List"
+                "Attributes": [],
+                "NativeType": "Vec < BuildingHvacWeatherForecastPeriodV1 >",
+                "Namespace": ""
               }
             ],
-            "ID": 25,
-            "NativeName": "HistoryPeriodsUpsertV2",
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "3"
+              }
+            ],
             "NativeType": "",
-            "Type": "Table"
+            "Namespace": ""
           },
           {
-            "Attributes": [],
+            "ID": 15,
+            "NativeName": "ForecastPeriodsRemoveV1",
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
+                "ID": 16,
+                "NativeName": "range",
+                "Type": "BuildingHvacWeatherTimeRangeV1",
                 "BuiltinType": false,
                 "Children": [],
-                "ID": 31,
-                "NativeName": "history",
+                "Attributes": [],
                 "NativeType": "",
-                "Type": "SprinklerWeatherHistoryV2"
+                "Namespace": ""
               }
             ],
-            "ID": 30,
-            "NativeName": "HistoryReplaceV2",
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "4"
+              }
+            ],
             "NativeType": "",
-            "Type": "Table"
+            "Namespace": ""
+          },
+          {
+            "ID": 17,
+            "NativeName": "OutdoorAirQualityPeriodsUpsertV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 18,
+                "NativeName": "retrieved_at",
+                "Type": "DateTime",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "LibertasDateTime",
+                "Namespace": ""
+              },
+              {
+                "ID": 19,
+                "NativeName": "valid_until",
+                "Type": "DateTime",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "LibertasDateTime",
+                "Namespace": ""
+              },
+              {
+                "ID": 20,
+                "NativeName": "periods",
+                "Type": "List",
+                "BuiltinType": true,
+                "Children": [
+                  {
+                    "ID": 21,
+                    "NativeName": "",
+                    "Type": "BuildingHvacOutdoorAirQualityPeriodV1",
+                    "BuiltinType": false,
+                    "Children": [],
+                    "Attributes": [],
+                    "NativeType": "",
+                    "Namespace": ""
+                  }
+                ],
+                "Attributes": [],
+                "NativeType": "Vec < BuildingHvacOutdoorAirQualityPeriodV1 >",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "5"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 22,
+            "NativeName": "OutdoorAirQualityPeriodsRemoveV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 23,
+                "NativeName": "range",
+                "Type": "BuildingHvacWeatherTimeRangeV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "6"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 24,
+            "NativeName": "SectionClearV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 25,
+                "NativeName": "section",
+                "Type": "BuildingHvacWeatherSectionV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "7"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 26,
+            "NativeName": "HistoryReplaceV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 27,
+                "NativeName": "history",
+                "Type": "BuildingHvacWeatherHistoryV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "8"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 28,
+            "NativeName": "ForecastReplaceV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 29,
+                "NativeName": "forecast",
+                "Type": "BuildingHvacWeatherForecastV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "9"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 30,
+            "NativeName": "OutdoorAirQualityReplaceV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 31,
+                "NativeName": "outdoor_air_quality",
+                "Type": "BuildingHvacOutdoorAirQualityV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "10"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
           }
         ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherChangeV1",
+        "Attributes": [],
         "NativeType": "",
-        "Type": "Union"
+        "Namespace": ""
       },
       {
-        "Attributes": [],
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherCursorV1",
+        "Type": "Table",
         "BuiltinType": true,
         "Children": [
           {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
             "ID": 1,
             "NativeName": "epoch_timestamp",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
             "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
+            "Namespace": ""
           },
           {
+            "ID": 2,
+            "NativeName": "sequence",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "NumberMin",
@@ -540,33 +1149,36 @@
                 "Value": "u64"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "sequence",
             "NativeType": "u64",
-            "Type": "Number"
+            "Namespace": ""
           }
         ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherCursorV1",
+        "Attributes": [],
         "NativeType": "",
-        "Type": "Table"
+        "Namespace": ""
       },
       {
-        "Attributes": [],
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherForecastPeriodV1",
+        "Type": "Table",
         "BuiltinType": true,
         "Children": [
           {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
             "ID": 1,
             "NativeName": "starts_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
             "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
+            "Namespace": ""
           },
           {
+            "ID": 2,
+            "NativeName": "duration_seconds",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "NumberMax",
@@ -589,411 +1201,15 @@
                 "Value": "true"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "duration_seconds",
             "NativeType": "u32",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
-            "Attributes": [
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
             "ID": 3,
-            "NativeName": "temperature_celsius",
-            "NativeType": "f32",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMax",
-                "Value": "100"
-              },
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberStep",
-                "Value": "1"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "u8"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 4,
-            "NativeName": "relative_humidity_percent",
-            "NativeType": "u8",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMax",
-                "Value": "100"
-              },
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberStep",
-                "Value": "1"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "u8"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 5,
             "NativeName": "precipitation_probability_percent",
-            "NativeType": "u8",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
+            "Type": "Number",
             "BuiltinType": true,
             "Children": [],
-            "ID": 6,
-            "NativeName": "expected_precipitation_millimeters",
-            "NativeType": "f32",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 7,
-            "NativeName": "reference_evapotranspiration_millimeters",
-            "NativeType": "f32",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 8,
-            "NativeName": "wind_speed_meters_per_second",
-            "NativeType": "f32",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 9,
-            "NativeName": "wind_gust_meters_per_second",
-            "NativeType": "f32",
-            "Type": "Number"
-          }
-        ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherForecastPeriodV1",
-        "NativeType": "",
-        "Type": "Table"
-      },
-      {
-        "Attributes": [],
-        "BuiltinType": true,
-        "Children": [
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 1,
-            "NativeName": "retrieved_at",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "valid_until",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 4,
-                "NativeName": "",
-                "NativeType": "",
-                "Type": "SprinklerWeatherForecastPeriodV1"
-              }
-            ],
-            "ID": 3,
-            "NativeName": "periods",
-            "NativeType": "Vec < SprinklerWeatherForecastPeriodV1 >",
-            "Type": "List"
-          }
-        ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherForecastV1",
-        "NativeType": "",
-        "Type": "Table"
-      },
-      {
-        "Attributes": [],
-        "BuiltinType": true,
-        "Children": [
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 1,
-            "NativeName": "retrieved_at",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "valid_until",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          }
-        ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherHistoryMetadataV1",
-        "NativeType": "",
-        "Type": "Table"
-      },
-      {
-        "Attributes": [],
-        "BuiltinType": true,
-        "Children": [
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 1,
-            "NativeName": "starts_at",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMax",
-                "Value": "4294967295"
-              },
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberStep",
-                "Value": "1"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "u32"
-              },
-              {
-                "Name": "TimeInterval",
-                "Value": "true"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "duration_seconds",
-            "NativeType": "u32",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 3,
-            "NativeName": "precipitation_millimeters",
-            "NativeType": "f32",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 4,
-            "NativeName": "reference_evapotranspiration_millimeters",
-            "NativeType": "f32",
-            "Type": "Number"
-          }
-        ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherHistoryPeriodV1",
-        "NativeType": "",
-        "Type": "Table"
-      },
-      {
-        "Attributes": [],
-        "BuiltinType": true,
-        "Children": [
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 1,
-            "NativeName": "starts_at",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMax",
-                "Value": "4294967295"
-              },
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberStep",
-                "Value": "1"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "u32"
-              },
-              {
-                "Name": "TimeInterval",
-                "Value": "true"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "duration_seconds",
-            "NativeType": "u32",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 3,
-            "NativeName": "precipitation_millimeters",
-            "NativeType": "f32",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 4,
-            "NativeName": "reference_evapotranspiration_millimeters",
-            "NativeType": "f32",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 5,
-            "NativeName": "temperature_celsius",
-            "NativeType": "f32",
-            "Type": "Number"
-          },
-          {
             "Attributes": [
               {
                 "Name": "NumberMax",
@@ -1010,203 +1226,260 @@
               {
                 "Name": "NumberType",
                 "Value": "u8"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "percent"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 6,
-            "NativeName": "relative_humidity_percent",
             "NativeType": "u8",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 7,
-            "NativeName": "wind_speed_meters_per_second",
-            "NativeType": "f32",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "NumberMin",
-                "Value": "0"
-              },
-              {
-                "Name": "NumberType",
-                "Value": "f32"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 8,
-            "NativeName": "wind_gust_meters_per_second",
-            "NativeType": "f32",
-            "Type": "Number"
-          }
-        ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherHistoryPeriodV2",
-        "NativeType": "",
-        "Type": "Table"
-      },
-      {
-        "Attributes": [],
-        "BuiltinType": true,
-        "Children": [
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 1,
-            "NativeName": "retrieved_at",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "valid_until",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 4,
-                "NativeName": "",
-                "NativeType": "",
-                "Type": "SprinklerWeatherHistoryPeriodV1"
-              }
-            ],
-            "ID": 3,
-            "NativeName": "periods",
-            "NativeType": "Vec < SprinklerWeatherHistoryPeriodV1 >",
-            "Type": "List"
-          }
-        ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherHistoryV1",
-        "NativeType": "",
-        "Type": "Table"
-      },
-      {
-        "Attributes": [],
-        "BuiltinType": true,
-        "Children": [
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 1,
-            "NativeName": "retrieved_at",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "valid_until",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 4,
-                "NativeName": "",
-                "NativeType": "",
-                "Type": "SprinklerWeatherHistoryPeriodV2"
-              }
-            ],
-            "ID": 3,
-            "NativeName": "periods",
-            "NativeType": "Vec < SprinklerWeatherHistoryPeriodV2 >",
-            "Type": "List"
-          }
-        ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherHistoryV2",
-        "NativeType": "",
-        "Type": "Table"
-      },
-      {
-        "Attributes": [],
-        "BuiltinType": true,
-        "Children": [
-          {
-            "Attributes": [],
+            "ID": 4,
+            "NativeName": "conditions",
+            "Type": "BuildingHvacOutdoorConditionsV1",
             "BuiltinType": false,
             "Children": [],
+            "Attributes": [],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherForecastV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "retrieved_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "valid_until",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "periods",
+            "Type": "List",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 4,
+                "NativeName": "",
+                "Type": "BuildingHvacWeatherForecastPeriodV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [],
+            "NativeType": "Vec < BuildingHvacWeatherForecastPeriodV1 >",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherHistoryPeriodV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "starts_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "duration_seconds",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              },
+              {
+                "Name": "TimeInterval",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "u32",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "conditions",
+            "Type": "BuildingHvacOutdoorConditionsV1",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherHistoryV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "retrieved_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "valid_until",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "periods",
+            "Type": "List",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 4,
+                "NativeName": "",
+                "Type": "BuildingHvacWeatherHistoryPeriodV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [],
+            "NativeType": "Vec < BuildingHvacWeatherHistoryPeriodV1 >",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherIncrementalReportV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
             "ID": 1,
             "NativeName": "from_cursor",
-            "NativeType": "",
-            "Type": "SprinklerWeatherCursorV1"
-          },
-          {
-            "Attributes": [],
+            "Type": "BuildingHvacWeatherCursorV1",
             "BuiltinType": false,
             "Children": [],
-            "ID": 2,
-            "NativeName": "through_cursor",
+            "Attributes": [],
             "NativeType": "",
-            "Type": "SprinklerWeatherCursorV1"
+            "Namespace": ""
           },
           {
+            "ID": 2,
+            "NativeName": "through_cursor",
+            "Type": "BuildingHvacWeatherCursorV1",
+            "BuiltinType": false,
+            "Children": [],
             "Attributes": [],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "changes",
+            "Type": "List",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
                 "ID": 4,
                 "NativeName": "",
+                "Type": "BuildingHvacWeatherChangeV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
                 "NativeType": "",
-                "Type": "SprinklerWeatherChangeV1"
+                "Namespace": ""
               }
             ],
-            "ID": 3,
-            "NativeName": "changes",
-            "NativeType": "Vec < SprinklerWeatherChangeV1 >",
-            "Type": "List"
+            "Attributes": [],
+            "NativeType": "Vec < BuildingHvacWeatherChangeV1 >",
+            "Namespace": ""
           }
         ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherIncrementalReportV1",
+        "Attributes": [],
         "NativeType": "",
-        "Type": "Table"
+        "Namespace": ""
       },
       {
-        "Attributes": [],
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherLocationV1",
+        "Type": "Table",
         "BuiltinType": true,
         "Children": [
           {
+            "ID": 1,
+            "NativeName": "longitude_degrees",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "NumberMax",
@@ -1219,16 +1492,21 @@
               {
                 "Name": "NumberType",
                 "Value": "f64"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "degree"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 1,
-            "NativeName": "longitude_degrees",
             "NativeType": "f64",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
+            "ID": 2,
+            "NativeName": "latitude_degrees",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "NumberMax",
@@ -1241,154 +1519,256 @@
               {
                 "Name": "NumberType",
                 "Value": "f64"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "degree"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "latitude_degrees",
             "NativeType": "f64",
-            "Type": "Number"
+            "Namespace": ""
           }
         ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherLocationV1",
+        "Attributes": [],
         "NativeType": "",
-        "Type": "Table"
+        "Namespace": ""
       },
       {
-        "Attributes": [],
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherPersistentData",
+        "Type": "Union",
         "BuiltinType": true,
         "Children": [
           {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 2,
-                "NativeName": "location",
-                "NativeType": "",
-                "Type": "SprinklerWeatherLocationV1"
-              }
-            ],
             "ID": 1,
             "NativeName": "LocationV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
+                "ID": 2,
+                "NativeName": "location",
+                "Type": "BuildingHvacWeatherLocationV1",
                 "BuiltinType": false,
                 "Children": [],
-                "ID": 4,
-                "NativeName": "metadata",
+                "Attributes": [],
                 "NativeType": "",
-                "Type": "SprinklerWeatherHistoryMetadataV1"
+                "Namespace": ""
               }
             ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
             "ID": 3,
-            "NativeName": "HistoryMetadataV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
+            "NativeName": "HistoryV1",
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
+                "ID": 4,
+                "NativeName": "history",
+                "Type": "BuildingHvacWeatherHistoryV1",
                 "BuiltinType": false,
                 "Children": [],
-                "ID": 6,
-                "NativeName": "period",
+                "Attributes": [],
                 "NativeType": "",
-                "Type": "SprinklerWeatherHistoryPeriodV1"
+                "Namespace": ""
               }
             ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
             "ID": 5,
-            "NativeName": "HistoryPeriodV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 8,
-                "NativeName": "current",
-                "NativeType": "",
-                "Type": "SprinklerCurrentWeatherV1"
-              }
-            ],
-            "ID": 7,
             "NativeName": "CurrentV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
+                "ID": 6,
+                "NativeName": "current",
+                "Type": "BuildingHvacCurrentWeatherV1",
                 "BuiltinType": false,
                 "Children": [],
-                "ID": 10,
-                "NativeName": "forecast",
+                "Attributes": [],
                 "NativeType": "",
-                "Type": "SprinklerWeatherForecastV1"
+                "Namespace": ""
               }
             ],
-            "ID": 9,
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "2"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 7,
             "NativeName": "ForecastV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
+                "ID": 8,
+                "NativeName": "forecast",
+                "Type": "BuildingHvacWeatherForecastV1",
                 "BuiltinType": false,
                 "Children": [],
-                "ID": 12,
-                "NativeName": "period",
+                "Attributes": [],
                 "NativeType": "",
-                "Type": "SprinklerWeatherHistoryPeriodV2"
+                "Namespace": ""
               }
             ],
-            "ID": 11,
-            "NativeName": "HistoryPeriodV2",
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "3"
+              }
+            ],
             "NativeType": "",
-            "Type": "Table"
+            "Namespace": ""
+          },
+          {
+            "ID": 9,
+            "NativeName": "OutdoorAirQualityV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 10,
+                "NativeName": "outdoor_air_quality",
+                "Type": "BuildingHvacOutdoorAirQualityV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "4"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
           }
         ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherPersistentData",
+        "Attributes": [],
         "NativeType": "",
-        "Type": "Union"
+        "Namespace": ""
       },
       {
-        "Attributes": [],
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherProtocol",
+        "Type": "Union",
         "BuiltinType": true,
         "Children": [
           {
+            "ID": 1,
+            "NativeName": "GetBuildingHvacWeatherV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 2,
+                "NativeName": "after_cursor",
+                "Type": "BuildingHvacWeatherCursorV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  }
+                ],
+                "NativeType": "Option < BuildingHvacWeatherCursorV1 >",
+                "Namespace": ""
+              },
+              {
+                "ID": 3,
+                "NativeName": "history_range",
+                "Type": "BuildingHvacWeatherTimeRangeV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  }
+                ],
+                "NativeType": "Option < BuildingHvacWeatherTimeRangeV1 >",
+                "Namespace": ""
+              },
+              {
+                "ID": 4,
+                "NativeName": "include_current",
+                "Type": "Boolean",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "bool",
+                "Namespace": ""
+              },
+              {
+                "ID": 5,
+                "NativeName": "forecast_range",
+                "Type": "BuildingHvacWeatherTimeRangeV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  }
+                ],
+                "NativeType": "Option < BuildingHvacWeatherTimeRangeV1 >",
+                "Namespace": ""
+              },
+              {
+                "ID": 6,
+                "NativeName": "outdoor_air_quality_range",
+                "Type": "BuildingHvacWeatherTimeRangeV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  }
+                ],
+                "NativeType": "Option < BuildingHvacWeatherTimeRangeV1 >",
+                "Namespace": ""
+              }
+            ],
             "Attributes": [
               {
+                "Name": "AccessPrivilege",
+                "Value": "1"
+              },
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              },
+              {
                 "Name": "NextResponse",
-                "Value": "WeatherRecoveryV1"
+                "Value": "BuildingHvacWeatherRecoveryV1"
               },
               {
                 "Name": "Request",
@@ -1399,75 +1779,21 @@
                 "Value": "true"
               }
             ],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [
-                  {
-                    "Name": "Nullable",
-                    "Value": "true"
-                  }
-                ],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 2,
-                "NativeName": "after_cursor",
-                "NativeType": "Option < SprinklerWeatherCursorV1 >",
-                "Type": "SprinklerWeatherCursorV1"
-              },
-              {
-                "Attributes": [
-                  {
-                    "Name": "Nullable",
-                    "Value": "true"
-                  }
-                ],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 3,
-                "NativeName": "history_range",
-                "NativeType": "Option < SprinklerWeatherTimeRangeV1 >",
-                "Type": "SprinklerWeatherTimeRangeV1"
-              },
-              {
-                "Attributes": [],
-                "BuiltinType": true,
-                "Children": [],
-                "ID": 4,
-                "NativeName": "include_current",
-                "NativeType": "bool",
-                "Type": "Boolean"
-              },
-              {
-                "Attributes": [
-                  {
-                    "Name": "Nullable",
-                    "Value": "true"
-                  }
-                ],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 5,
-                "NativeName": "forecast_range",
-                "NativeType": "Option < SprinklerWeatherTimeRangeV1 >",
-                "Type": "SprinklerWeatherTimeRangeV1"
-              }
-            ],
-            "ID": 1,
-            "NativeName": "GetWeatherV1",
             "NativeType": "",
-            "Type": "Table"
+            "Namespace": ""
           },
           {
-            "Attributes": [
-              {
-                "Name": "Response",
-                "Value": "true"
-              }
-            ],
+            "ID": 7,
+            "NativeName": "BuildingHvacWeatherRecoveryV1",
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
+                "ID": 8,
+                "NativeName": "maximum_wait_interval_seconds",
+                "Type": "Number",
+                "BuiltinType": true,
+                "Children": [],
                 "Attributes": [
                   {
                     "Name": "NumberMax",
@@ -1490,198 +1816,239 @@
                     "Value": "true"
                   }
                 ],
-                "BuiltinType": true,
-                "Children": [],
-                "ID": 7,
-                "NativeName": "maximum_wait_interval_seconds",
                 "NativeType": "u32",
-                "Type": "Number"
+                "Namespace": ""
               },
               {
-                "Attributes": [],
+                "ID": 9,
+                "NativeName": "recovery",
+                "Type": "BuildingHvacWeatherRecoveryV1",
                 "BuiltinType": false,
                 "Children": [],
-                "ID": 8,
-                "NativeName": "recovery",
+                "Attributes": [],
                 "NativeType": "",
-                "Type": "SprinklerWeatherRecoveryV1"
+                "Namespace": ""
               }
             ],
-            "ID": 6,
-            "NativeName": "WeatherRecoveryV1",
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "1"
+              },
+              {
+                "Name": "Response",
+                "Value": "true"
+              }
+            ],
             "NativeType": "",
-            "Type": "Table"
+            "Namespace": ""
           },
           {
+            "ID": 10,
+            "NativeName": "BuildingHvacWeatherIncrementV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 11,
+                "NativeName": "report",
+                "Type": "BuildingHvacWeatherIncrementalReportV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
             "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "2"
+              },
               {
                 "Name": "SubscriptionData",
                 "Value": "true"
               }
             ],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 10,
-                "NativeName": "report",
-                "NativeType": "",
-                "Type": "SprinklerWeatherIncrementalReportV1"
-              }
-            ],
-            "ID": 9,
-            "NativeName": "WeatherIncrementV1",
             "NativeType": "",
-            "Type": "Table"
+            "Namespace": ""
           }
         ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherProtocol",
+        "Attributes": [],
         "NativeType": "",
-        "Type": "Union"
+        "Namespace": ""
       },
       {
-        "Attributes": [],
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherRecoveryErrorV1",
+        "Type": "Enumeration",
         "BuiltinType": true,
         "Children": [
           {
+            "ID": 1,
+            "NativeName": "InvalidRange",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "Fixed",
                 "Value": "0"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 1,
-            "NativeName": "InvalidRange",
             "NativeType": "",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
+            "ID": 2,
+            "NativeName": "CursorAhead",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "Fixed",
                 "Value": "1"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "CursorAhead",
             "NativeType": "",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
+            "ID": 3,
+            "NativeName": "RequestTooLarge",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "Fixed",
                 "Value": "2"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 3,
-            "NativeName": "RequestTooLarge",
             "NativeType": "",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
+            "ID": 4,
+            "NativeName": "TemporarilyUnavailable",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "Fixed",
                 "Value": "3"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 4,
-            "NativeName": "TemporarilyUnavailable",
             "NativeType": "",
-            "Type": "Number"
+            "Namespace": ""
           }
         ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherRecoveryErrorV1",
+        "Attributes": [],
         "NativeType": "",
-        "Type": "Enumeration"
+        "Namespace": ""
       },
       {
-        "Attributes": [],
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherRecoveryV1",
+        "Type": "Union",
         "BuiltinType": true,
         "Children": [
           {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 2,
-                "NativeName": "report",
-                "NativeType": "",
-                "Type": "SprinklerWeatherIncrementalReportV1"
-              }
-            ],
             "ID": 1,
             "NativeName": "ReplayedV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
+                "ID": 2,
+                "NativeName": "report",
+                "Type": "BuildingHvacWeatherIncrementalReportV1",
                 "BuiltinType": false,
                 "Children": [],
-                "ID": 4,
-                "NativeName": "reason",
-                "NativeType": "",
-                "Type": "SprinklerWeatherResetReasonV1"
-              },
-              {
                 "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 5,
-                "NativeName": "cursor",
                 "NativeType": "",
-                "Type": "SprinklerWeatherCursorV1"
-              },
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 6,
-                "NativeName": "snapshot",
-                "NativeType": "",
-                "Type": "SprinklerWeatherSnapshotV1"
+                "Namespace": ""
               }
             ],
-            "ID": 3,
-            "NativeName": "ResetV1",
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              }
+            ],
             "NativeType": "",
-            "Type": "Table"
+            "Namespace": ""
           },
           {
-            "Attributes": [],
+            "ID": 3,
+            "NativeName": "ResetV1",
+            "Type": "Table",
             "BuiltinType": true,
             "Children": [
               {
-                "Attributes": [],
+                "ID": 4,
+                "NativeName": "reason",
+                "Type": "BuildingHvacWeatherResetReasonV1",
                 "BuiltinType": false,
                 "Children": [],
-                "ID": 8,
-                "NativeName": "error",
+                "Attributes": [],
                 "NativeType": "",
-                "Type": "SprinklerWeatherRecoveryErrorV1"
+                "Namespace": ""
               },
               {
+                "ID": 5,
+                "NativeName": "cursor",
+                "Type": "BuildingHvacWeatherCursorV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              },
+              {
+                "ID": 6,
+                "NativeName": "snapshot",
+                "Type": "BuildingHvacWeatherSnapshotV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 7,
+            "NativeName": "ErrorV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 8,
+                "NativeName": "error",
+                "Type": "BuildingHvacWeatherRecoveryErrorV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              },
+              {
+                "ID": 9,
+                "NativeName": "retry_after_seconds",
+                "Type": "Number",
+                "BuiltinType": true,
+                "Children": [],
                 "Attributes": [
                   {
                     "Name": "Nullable",
@@ -1704,353 +2071,2402 @@
                     "Value": "u32"
                   }
                 ],
-                "BuiltinType": true,
-                "Children": [],
-                "ID": 9,
-                "NativeName": "retry_after_seconds",
                 "NativeType": "Option < u32 >",
-                "Type": "Number"
+                "Namespace": ""
               }
             ],
-            "ID": 7,
-            "NativeName": "ErrorV1",
-            "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
+            "Attributes": [
               {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 11,
-                "NativeName": "reason",
-                "NativeType": "",
-                "Type": "SprinklerWeatherResetReasonV1"
-              },
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 12,
-                "NativeName": "cursor",
-                "NativeType": "",
-                "Type": "SprinklerWeatherCursorV1"
-              },
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 13,
-                "NativeName": "location",
-                "NativeType": "",
-                "Type": "SprinklerWeatherLocationV1"
-              },
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 14,
-                "NativeName": "snapshot",
-                "NativeType": "",
-                "Type": "SprinklerWeatherSnapshotV1"
+                "Name": "Discriminator",
+                "Value": "2"
               }
             ],
-            "ID": 10,
-            "NativeName": "ResetAtSiteV1",
             "NativeType": "",
-            "Type": "Table"
-          },
-          {
-            "Attributes": [],
-            "BuiltinType": true,
-            "Children": [
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 16,
-                "NativeName": "reason",
-                "NativeType": "",
-                "Type": "SprinklerWeatherResetReasonV1"
-              },
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 17,
-                "NativeName": "cursor",
-                "NativeType": "",
-                "Type": "SprinklerWeatherCursorV1"
-              },
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 18,
-                "NativeName": "location",
-                "NativeType": "",
-                "Type": "SprinklerWeatherLocationV1"
-              },
-              {
-                "Attributes": [],
-                "BuiltinType": false,
-                "Children": [],
-                "ID": 19,
-                "NativeName": "snapshot",
-                "NativeType": "",
-                "Type": "SprinklerWeatherSnapshotV2"
-              }
-            ],
-            "ID": 15,
-            "NativeName": "ResetAtSiteV2",
-            "NativeType": "",
-            "Type": "Table"
+            "Namespace": ""
           }
         ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherRecoveryV1",
+        "Attributes": [],
         "NativeType": "",
-        "Type": "Union"
+        "Namespace": ""
       },
       {
-        "Attributes": [],
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherResetReasonV1",
+        "Type": "Enumeration",
         "BuiltinType": true,
         "Children": [
           {
-            "Attributes": [
-              {
-                "Name": "Fixed",
-                "Value": "0"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
             "ID": 1,
             "NativeName": "InitialSubscription",
-            "NativeType": "",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "Fixed",
-                "Value": "1"
-              }
-            ],
+            "Type": "Number",
             "BuiltinType": true,
             "Children": [],
-            "ID": 2,
-            "NativeName": "CursorExpired",
-            "NativeType": "",
-            "Type": "Number"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "Fixed",
-                "Value": "2"
-              }
-            ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 3,
-            "NativeName": "ServerCursorReset",
-            "NativeType": "",
-            "Type": "Number"
-          }
-        ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherResetReasonV1",
-        "NativeType": "",
-        "Type": "Enumeration"
-      },
-      {
-        "Attributes": [],
-        "BuiltinType": true,
-        "Children": [
-          {
             "Attributes": [
               {
                 "Name": "Fixed",
                 "Value": "0"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 1,
-            "NativeName": "History",
             "NativeType": "",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
+            "ID": 2,
+            "NativeName": "CursorExpired",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "Fixed",
                 "Value": "1"
               }
             ],
-            "BuiltinType": true,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "Current",
             "NativeType": "",
-            "Type": "Number"
+            "Namespace": ""
           },
           {
+            "ID": 3,
+            "NativeName": "ServerCursorReset",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
             "Attributes": [
               {
                 "Name": "Fixed",
                 "Value": "2"
               }
             ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherSectionV1",
+        "Type": "Enumeration",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "History",
+            "Type": "Number",
             "BuiltinType": true,
             "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "Current",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
             "ID": 3,
             "NativeName": "Forecast",
-            "NativeType": "",
-            "Type": "Number"
-          }
-        ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherSectionV1",
-        "NativeType": "",
-        "Type": "Enumeration"
-      },
-      {
-        "Attributes": [],
-        "BuiltinType": true,
-        "Children": [
-          {
-            "Attributes": [
-              {
-                "Name": "Nullable",
-                "Value": "true"
-              }
-            ],
-            "BuiltinType": false,
-            "Children": [],
-            "ID": 1,
-            "NativeName": "history",
-            "NativeType": "Option < SprinklerWeatherHistoryV1 >",
-            "Type": "SprinklerWeatherHistoryV1"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "Nullable",
-                "Value": "true"
-              }
-            ],
-            "BuiltinType": false,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "current",
-            "NativeType": "Option < SprinklerCurrentWeatherV1 >",
-            "Type": "SprinklerCurrentWeatherV1"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "Nullable",
-                "Value": "true"
-              }
-            ],
-            "BuiltinType": false,
-            "Children": [],
-            "ID": 3,
-            "NativeName": "forecast",
-            "NativeType": "Option < SprinklerWeatherForecastV1 >",
-            "Type": "SprinklerWeatherForecastV1"
-          }
-        ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherSnapshotV1",
-        "NativeType": "",
-        "Type": "Table"
-      },
-      {
-        "Attributes": [],
-        "BuiltinType": true,
-        "Children": [
-          {
-            "Attributes": [
-              {
-                "Name": "Nullable",
-                "Value": "true"
-              }
-            ],
-            "BuiltinType": false,
-            "Children": [],
-            "ID": 1,
-            "NativeName": "history",
-            "NativeType": "Option < SprinklerWeatherHistoryV2 >",
-            "Type": "SprinklerWeatherHistoryV2"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "Nullable",
-                "Value": "true"
-              }
-            ],
-            "BuiltinType": false,
-            "Children": [],
-            "ID": 2,
-            "NativeName": "current",
-            "NativeType": "Option < SprinklerCurrentWeatherV1 >",
-            "Type": "SprinklerCurrentWeatherV1"
-          },
-          {
-            "Attributes": [
-              {
-                "Name": "Nullable",
-                "Value": "true"
-              }
-            ],
-            "BuiltinType": false,
-            "Children": [],
-            "ID": 3,
-            "NativeName": "forecast",
-            "NativeType": "Option < SprinklerWeatherForecastV1 >",
-            "Type": "SprinklerWeatherForecastV1"
-          }
-        ],
-        "ID": 0,
-        "NativeName": "SprinklerWeatherSnapshotV2",
-        "NativeType": "",
-        "Type": "Table"
-      },
-      {
-        "Attributes": [],
-        "BuiltinType": true,
-        "Children": [
-          {
-            "Attributes": [],
+            "Type": "Number",
             "BuiltinType": true,
             "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 4,
+            "NativeName": "OutdoorAirQuality",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "3"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherSnapshotV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "history",
+            "Type": "BuildingHvacWeatherHistoryV1",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "Option < BuildingHvacWeatherHistoryV1 >",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "current",
+            "Type": "BuildingHvacCurrentWeatherV1",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "Option < BuildingHvacCurrentWeatherV1 >",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "forecast",
+            "Type": "BuildingHvacWeatherForecastV1",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "Option < BuildingHvacWeatherForecastV1 >",
+            "Namespace": ""
+          },
+          {
+            "ID": 4,
+            "NativeName": "outdoor_air_quality",
+            "Type": "BuildingHvacOutdoorAirQualityV1",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "Option < BuildingHvacOutdoorAirQualityV1 >",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "BuildingHvacWeatherTimeRangeV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
             "ID": 1,
             "NativeName": "starts_at",
-            "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
-          },
-          {
-            "Attributes": [],
+            "Type": "DateTime",
             "BuiltinType": true,
             "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
             "ID": 2,
             "NativeName": "ends_before",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
             "NativeType": "LibertasDateTime",
-            "Type": "DateTime"
+            "Namespace": ""
           }
         ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerCurrentWeatherV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "retrieved_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "valid_until",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "valid_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 4,
+            "NativeName": "interval_seconds",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              },
+              {
+                "Name": "TimeInterval",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "u32",
+            "Namespace": ""
+          },
+          {
+            "ID": 5,
+            "NativeName": "temperature_celsius",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "celsius"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 6,
+            "NativeName": "relative_humidity_percent",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "100"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u8"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "percent"
+              }
+            ],
+            "NativeType": "u8",
+            "Namespace": ""
+          },
+          {
+            "ID": 7,
+            "NativeName": "precipitation_millimeters",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "millimeter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 8,
+            "NativeName": "reference_evapotranspiration_millimeters",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "millimeter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 9,
+            "NativeName": "wind_speed_meters_per_second",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "meter-per-second"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 10,
+            "NativeName": "wind_gust_meters_per_second",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "meter-per-second"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherChangeV1",
+        "Type": "Union",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "HistoryPeriodsRemoveV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 2,
+                "NativeName": "range",
+                "Type": "SprinklerWeatherTimeRangeV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "CurrentReplaceV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 4,
+                "NativeName": "current",
+                "Type": "SprinklerCurrentWeatherV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 5,
+            "NativeName": "ForecastPeriodsUpsertV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 6,
+                "NativeName": "retrieved_at",
+                "Type": "DateTime",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "LibertasDateTime",
+                "Namespace": ""
+              },
+              {
+                "ID": 7,
+                "NativeName": "valid_until",
+                "Type": "DateTime",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "LibertasDateTime",
+                "Namespace": ""
+              },
+              {
+                "ID": 8,
+                "NativeName": "periods",
+                "Type": "List",
+                "BuiltinType": true,
+                "Children": [
+                  {
+                    "ID": 9,
+                    "NativeName": "",
+                    "Type": "SprinklerWeatherForecastPeriodV1",
+                    "BuiltinType": false,
+                    "Children": [],
+                    "Attributes": [],
+                    "NativeType": "",
+                    "Namespace": ""
+                  }
+                ],
+                "Attributes": [],
+                "NativeType": "Vec < SprinklerWeatherForecastPeriodV1 >",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "2"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 10,
+            "NativeName": "ForecastPeriodsRemoveV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 11,
+                "NativeName": "range",
+                "Type": "SprinklerWeatherTimeRangeV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "3"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 12,
+            "NativeName": "SectionClearV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 13,
+                "NativeName": "section",
+                "Type": "SprinklerWeatherSectionV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "4"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 14,
+            "NativeName": "ForecastReplaceV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 15,
+                "NativeName": "forecast",
+                "Type": "SprinklerWeatherForecastV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "5"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 16,
+            "NativeName": "SiteReplaceV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 17,
+                "NativeName": "location",
+                "Type": "SprinklerWeatherLocationV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "6"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 18,
+            "NativeName": "HistoryPeriodsUpsertV2",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 19,
+                "NativeName": "retrieved_at",
+                "Type": "DateTime",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "LibertasDateTime",
+                "Namespace": ""
+              },
+              {
+                "ID": 20,
+                "NativeName": "valid_until",
+                "Type": "DateTime",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "LibertasDateTime",
+                "Namespace": ""
+              },
+              {
+                "ID": 21,
+                "NativeName": "periods",
+                "Type": "List",
+                "BuiltinType": true,
+                "Children": [
+                  {
+                    "ID": 22,
+                    "NativeName": "",
+                    "Type": "SprinklerWeatherHistoryPeriodV2",
+                    "BuiltinType": false,
+                    "Children": [],
+                    "Attributes": [],
+                    "NativeType": "",
+                    "Namespace": ""
+                  }
+                ],
+                "Attributes": [],
+                "NativeType": "Vec < SprinklerWeatherHistoryPeriodV2 >",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "7"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 23,
+            "NativeName": "HistoryReplaceV2",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 24,
+                "NativeName": "history",
+                "Type": "SprinklerWeatherHistoryV2",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "8"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherCursorV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "epoch_timestamp",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "sequence",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u64"
+              }
+            ],
+            "NativeType": "u64",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherForecastPeriodV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "starts_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "duration_seconds",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              },
+              {
+                "Name": "TimeInterval",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "u32",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "temperature_celsius",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "celsius"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 4,
+            "NativeName": "relative_humidity_percent",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "100"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u8"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "percent"
+              }
+            ],
+            "NativeType": "u8",
+            "Namespace": ""
+          },
+          {
+            "ID": 5,
+            "NativeName": "precipitation_probability_percent",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "100"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u8"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "percent"
+              }
+            ],
+            "NativeType": "u8",
+            "Namespace": ""
+          },
+          {
+            "ID": 6,
+            "NativeName": "expected_precipitation_millimeters",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "millimeter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 7,
+            "NativeName": "reference_evapotranspiration_millimeters",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "millimeter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 8,
+            "NativeName": "wind_speed_meters_per_second",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "meter-per-second"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 9,
+            "NativeName": "wind_gust_meters_per_second",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "meter-per-second"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherForecastV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "retrieved_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "valid_until",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "periods",
+            "Type": "List",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 4,
+                "NativeName": "",
+                "Type": "SprinklerWeatherForecastPeriodV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [],
+            "NativeType": "Vec < SprinklerWeatherForecastPeriodV1 >",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherHistoryMetadataV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "retrieved_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "valid_until",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherHistoryPeriodV2",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "starts_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "duration_seconds",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "4294967295"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u32"
+              },
+              {
+                "Name": "TimeInterval",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "u32",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "precipitation_millimeters",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "millimeter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 4,
+            "NativeName": "reference_evapotranspiration_millimeters",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "millimeter"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 5,
+            "NativeName": "temperature_celsius",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "celsius"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 6,
+            "NativeName": "relative_humidity_percent",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "100"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberStep",
+                "Value": "1"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "u8"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "percent"
+              }
+            ],
+            "NativeType": "u8",
+            "Namespace": ""
+          },
+          {
+            "ID": 7,
+            "NativeName": "wind_speed_meters_per_second",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "meter-per-second"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          },
+          {
+            "ID": 8,
+            "NativeName": "wind_gust_meters_per_second",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMin",
+                "Value": "0"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f32"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "meter-per-second"
+              }
+            ],
+            "NativeType": "f32",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherHistoryV2",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "retrieved_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "valid_until",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "periods",
+            "Type": "List",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 4,
+                "NativeName": "",
+                "Type": "SprinklerWeatherHistoryPeriodV2",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [],
+            "NativeType": "Vec < SprinklerWeatherHistoryPeriodV2 >",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherIncrementalReportV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "from_cursor",
+            "Type": "SprinklerWeatherCursorV1",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "through_cursor",
+            "Type": "SprinklerWeatherCursorV1",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "changes",
+            "Type": "List",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 4,
+                "NativeName": "",
+                "Type": "SprinklerWeatherChangeV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [],
+            "NativeType": "Vec < SprinklerWeatherChangeV1 >",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherKey",
+        "Type": "Union",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "Endpoint",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 2,
+                "NativeName": "endpoint",
+                "Type": "Endpoint",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "LibertasEndpoint",
+                "Namespace": ""
+              },
+              {
+                "ID": 3,
+                "NativeName": "record",
+                "Type": "SprinklerWeatherRecordKey",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherLocationV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "longitude_degrees",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "180"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "-180"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f64"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "degree"
+              }
+            ],
+            "NativeType": "f64",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "latitude_degrees",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "NumberMax",
+                "Value": "90"
+              },
+              {
+                "Name": "NumberMin",
+                "Value": "-90"
+              },
+              {
+                "Name": "NumberType",
+                "Value": "f64"
+              },
+              {
+                "Name": "PhysicalUnit",
+                "Value": "degree"
+              }
+            ],
+            "NativeType": "f64",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherPersistentData",
+        "Type": "Union",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "LocationV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 2,
+                "NativeName": "location",
+                "Type": "SprinklerWeatherLocationV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "HistoryMetadataV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 4,
+                "NativeName": "metadata",
+                "Type": "SprinklerWeatherHistoryMetadataV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 5,
+            "NativeName": "HistoryPeriodV2",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 6,
+                "NativeName": "period",
+                "Type": "SprinklerWeatherHistoryPeriodV2",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "2"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 7,
+            "NativeName": "CurrentV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 8,
+                "NativeName": "current",
+                "Type": "SprinklerCurrentWeatherV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "3"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 9,
+            "NativeName": "ForecastV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 10,
+                "NativeName": "forecast",
+                "Type": "SprinklerWeatherForecastV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "4"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherProtocol",
+        "Type": "Union",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "GetWeatherV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 2,
+                "NativeName": "after_cursor",
+                "Type": "SprinklerWeatherCursorV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  }
+                ],
+                "NativeType": "Option < SprinklerWeatherCursorV1 >",
+                "Namespace": ""
+              },
+              {
+                "ID": 3,
+                "NativeName": "history_range",
+                "Type": "SprinklerWeatherTimeRangeV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  }
+                ],
+                "NativeType": "Option < SprinklerWeatherTimeRangeV1 >",
+                "Namespace": ""
+              },
+              {
+                "ID": 4,
+                "NativeName": "include_current",
+                "Type": "Boolean",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "bool",
+                "Namespace": ""
+              },
+              {
+                "ID": 5,
+                "NativeName": "forecast_range",
+                "Type": "SprinklerWeatherTimeRangeV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  }
+                ],
+                "NativeType": "Option < SprinklerWeatherTimeRangeV1 >",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "AccessPrivilege",
+                "Value": "1"
+              },
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              },
+              {
+                "Name": "NextResponse",
+                "Value": "WeatherRecoveryV1"
+              },
+              {
+                "Name": "Request",
+                "Value": "true"
+              },
+              {
+                "Name": "SubscriptionRequest",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 6,
+            "NativeName": "WeatherRecoveryV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 7,
+                "NativeName": "maximum_wait_interval_seconds",
+                "Type": "Number",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [
+                  {
+                    "Name": "NumberMax",
+                    "Value": "4294967295"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u32"
+                  },
+                  {
+                    "Name": "TimeInterval",
+                    "Value": "true"
+                  }
+                ],
+                "NativeType": "u32",
+                "Namespace": ""
+              },
+              {
+                "ID": 8,
+                "NativeName": "recovery",
+                "Type": "SprinklerWeatherRecoveryV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "1"
+              },
+              {
+                "Name": "Response",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 9,
+            "NativeName": "WeatherIncrementV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 10,
+                "NativeName": "report",
+                "Type": "SprinklerWeatherIncrementalReportV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "2"
+              },
+              {
+                "Name": "SubscriptionData",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherRecordKey",
+        "Type": "Union",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "Location",
+            "Type": "Nil",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "HistoryMetadata",
+            "Type": "Nil",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "HistoryPeriod",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 4,
+                "NativeName": "starts_at",
+                "Type": "DateTime",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "LibertasDateTime",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "2"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 5,
+            "NativeName": "Current",
+            "Type": "Nil",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "3"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 6,
+            "NativeName": "Forecast",
+            "Type": "Nil",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "4"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherRecoveryErrorV1",
+        "Type": "Enumeration",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "InvalidRange",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "CursorAhead",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "RequestTooLarge",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 4,
+            "NativeName": "TemporarilyUnavailable",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "3"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherRecoveryV1",
+        "Type": "Union",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "ReplayedV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 2,
+                "NativeName": "report",
+                "Type": "SprinklerWeatherIncrementalReportV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "ErrorV1",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 4,
+                "NativeName": "error",
+                "Type": "SprinklerWeatherRecoveryErrorV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              },
+              {
+                "ID": 5,
+                "NativeName": "retry_after_seconds",
+                "Type": "Number",
+                "BuiltinType": true,
+                "Children": [],
+                "Attributes": [
+                  {
+                    "Name": "Nullable",
+                    "Value": "true"
+                  },
+                  {
+                    "Name": "NumberMax",
+                    "Value": "4294967295"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u32"
+                  }
+                ],
+                "NativeType": "Option < u32 >",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 6,
+            "NativeName": "ResetAtSiteV2",
+            "Type": "Table",
+            "BuiltinType": true,
+            "Children": [
+              {
+                "ID": 7,
+                "NativeName": "reason",
+                "Type": "SprinklerWeatherResetReasonV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              },
+              {
+                "ID": 8,
+                "NativeName": "cursor",
+                "Type": "SprinklerWeatherCursorV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              },
+              {
+                "ID": 9,
+                "NativeName": "location",
+                "Type": "SprinklerWeatherLocationV1",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              },
+              {
+                "ID": 10,
+                "NativeName": "snapshot",
+                "Type": "SprinklerWeatherSnapshotV2",
+                "BuiltinType": false,
+                "Children": [],
+                "Attributes": [],
+                "NativeType": "",
+                "Namespace": ""
+              }
+            ],
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "2"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherResetReasonV1",
+        "Type": "Enumeration",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "InitialSubscription",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "CursorExpired",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "ServerCursorReset",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherSectionV1",
+        "Type": "Enumeration",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "History",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "0"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "Current",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "1"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "Forecast",
+            "Type": "Number",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Fixed",
+                "Value": "2"
+              }
+            ],
+            "NativeType": "",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
+        "ID": 0,
+        "NativeName": "SprinklerWeatherSnapshotV2",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "history",
+            "Type": "SprinklerWeatherHistoryV2",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "Option < SprinklerWeatherHistoryV2 >",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "current",
+            "Type": "SprinklerCurrentWeatherV1",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "Option < SprinklerCurrentWeatherV1 >",
+            "Namespace": ""
+          },
+          {
+            "ID": 3,
+            "NativeName": "forecast",
+            "Type": "SprinklerWeatherForecastV1",
+            "BuiltinType": false,
+            "Children": [],
+            "Attributes": [
+              {
+                "Name": "Nullable",
+                "Value": "true"
+              }
+            ],
+            "NativeType": "Option < SprinklerWeatherForecastV1 >",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
+        "NativeType": "",
+        "Namespace": ""
+      },
+      {
         "ID": 0,
         "NativeName": "SprinklerWeatherTimeRangeV1",
+        "Type": "Table",
+        "BuiltinType": true,
+        "Children": [
+          {
+            "ID": 1,
+            "NativeName": "starts_at",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          },
+          {
+            "ID": 2,
+            "NativeName": "ends_before",
+            "Type": "DateTime",
+            "BuiltinType": true,
+            "Children": [],
+            "Attributes": [],
+            "NativeType": "LibertasDateTime",
+            "Namespace": ""
+          }
+        ],
+        "Attributes": [],
         "NativeType": "",
-        "Type": "Table"
+        "Namespace": ""
       }
-    ]
+    ],
+    "Functions": [],
+    "Attributes": [
+      {
+        "Name": "DefaultLocale",
+        "Value": "en"
+      },
+      {
+        "Name": "TypesOnly",
+        "Value": "true"
+      },
+      {
+        "Name": "no_std",
+        "Value": "true"
+      }
+    ],
+    "Revision": {
+      "SourceTimestampUtcMs": 1791843991876,
+      "ContentSha256": "sha256:0152035b6a6b23a75fe4090966fa4a5872a823986b43b78e43d6e1146139b9be"
+    }
   }
 }

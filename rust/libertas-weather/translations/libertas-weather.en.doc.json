@@ -1,92 +1,267 @@
 {
-  "DocumentVersion": "0.0.1",
+  "DocumentVersion": "0.0.2",
   "Locale": "en",
   "DisplayName": "Libertas Weather",
-  "Description": "Defines weather data tailored to the decisions made by Libertas\napplications.\nThe sprinkler schema persists its Hub-provided site location separately from\nrecent history, current conditions, and forecast data. Each weather section\nhas a different refresh interval and may succeed or fail independently.\nRuntime snapshots may contain any combination of sections. Applications\npersist each successful section separately and retain older sections when a\nweather-data refresh fails. Incremental subscriptions use\nepoch-timestamp-and-sequence cursors so clients can distinguish a server\ncursor reset from stale or out-of-order data, replay retained changes, or\nrecover selected time ranges from cached data.\nThe building-HVAC schema supplies only the outdoor inputs needed for thermal\nload prediction, heat-pump operation, economizer decisions, and controlled\noutdoor-air ventilation. It keeps weather and outdoor-air-quality sections\nindependent because they have different providers and freshness behavior.\nLocal equipment and life-safety controls must continue to use their own\nsensors; cached internet weather is supervisory input, not a safety signal.",
+  "Description": "Defines weather data tailored to the decisions made by Libertas applications.\nThe sprinkler schema persists its Hub-provided site location separately from recent history, current conditions, and forecast data. Each weather section has a different refresh interval and may succeed or fail independently. Runtime snapshots may contain any combination of sections. Applications persist each successful section separately and retain older sections when a weather-data refresh fails. Incremental subscriptions use epoch-timestamp-and-sequence cursors so clients can distinguish a server cursor reset from stale or out-of-order data, replay retained changes, or recover selected time ranges from cached data.\nThe building-HVAC schema supplies only the outdoor inputs needed for thermal load prediction, heat-pump operation, economizer decisions, and controlled outdoor-air ventilation. It keeps weather and outdoor-air-quality sections independent because they have different providers and freshness behavior. Local equipment and life-safety controls must continue to use their own sensors; cached internet weather is supervisory input, not a safety signal.",
+  "StringResources": {},
   "List": [],
   "Types": [
     {
-      "Name": "SprinklerCurrentWeatherV1",
-      "DisplayName": "Sprinkler current weather",
-      "Description": "Contains immediate rain, freeze, humidity, wind, and water-balance inputs\nused to decide whether an otherwise scheduled watering operation may safely\nstart or continue.",
+      "Name": "BuildingHvacCurrentWeatherV1",
+      "DisplayName": "Building HVAC current weather",
+      "Description": "Contains the latest modeled outdoor conditions used by supervisory HVAC control. It does not replace a local outdoor sensor used for equipment or freeze protection.",
       "List": [
         {
           "Type": 0,
-          "Name": "Sprinkler current weather",
-          "Description": "Contains immediate rain, freeze, humidity, wind, and water-balance inputs\nused to decide whether an otherwise scheduled watering operation may safely\nstart or continue."
+          "Name": "Building HVAC current weather",
+          "Description": "Contains the latest modeled outdoor conditions used by supervisory HVAC control. It does not replace a local outdoor sensor used for equipment or freeze protection."
         },
         {
           "Type": 1,
           "Name": "Retrieved at",
-          "Description": "The date and time when the complete current-weather section was last\nretrieved, validated, and accepted."
+          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted."
         },
         {
           "Type": 2,
           "Name": "Valid until",
-          "Description": "The exclusive freshness deadline. Current weather is fresh while the\ncurrent time is earlier than this value. At or after this value, the\nsection remains cached but must not be treated as proof that watering is\nsafe."
+          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions."
         },
         {
           "Type": 3,
           "Name": "Valid at",
-          "Description": "The provider-supplied date and time represented by the current-condition\nvalues. This can differ from `retrieved_at`."
+          "Description": "The provider-supplied date and time represented by these current conditions."
         },
         {
           "Type": 4,
           "Name": "Observation interval",
-          "Description": "The backward-looking interval in seconds represented by accumulated\nprecipitation and evapotranspiration. Open-Meteo current weather normally\nuses a 900-second interval."
+          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval."
         },
         {
           "Type": 5,
-          "Name": "Temperature",
-          "Description": "Air temperature at two meters above ground in degrees Celsius. The\nsprinkler uses it to inhibit watering near or below freezing."
-        },
-        {
-          "Type": 6,
-          "Name": "Relative humidity",
-          "Description": "Relative humidity at two meters above ground, expressed as a percentage\nfrom 0 through 100. The sprinkler uses it to avoid unnecessarily long\nfoliage-wetness periods when overhead watering is required."
-        },
-        {
-          "Type": 7,
-          "Name": "Precipitation",
-          "Description": "Total rain, showers, and water-equivalent frozen precipitation\naccumulated during `interval_seconds`, in millimeters. The sprinkler uses\na nonzero value to inhibit watering while precipitation is occurring."
-        },
-        {
-          "Type": 8,
-          "Name": "Reference evapotranspiration",
-          "Description": "FAO-56 reference evapotranspiration accumulated during\n`interval_seconds`, in millimeters. It can extend the water balance until\nthe next completed historical period is available."
-        },
-        {
-          "Type": 9,
-          "Name": "Wind speed",
-          "Description": "Sustained wind speed at 10 meters above ground in meters per second. The\nconsuming sprinkler applies its configured wind threshold."
-        },
-        {
-          "Type": 10,
-          "Name": "Wind gust",
-          "Description": "Peak wind gust speed at 10 meters above ground in meters per second. The\nconsuming sprinkler uses it with sustained wind to avoid spray drift."
+          "Name": "Outdoor conditions",
+          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control."
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
-      "Name": "SprinklerWeatherChangeV1",
-      "DisplayName": "Sprinkler weather change",
-      "Description": "Defines one atomic mutation in the incremental sprinkler-weather stream.\nVariant order and field order are part of the append-only Avro wire format.",
+      "Name": "BuildingHvacOutdoorAirQualityPeriodV1",
+      "DisplayName": "Building HVAC outdoor-air-quality period",
+      "Description": "Contains modeled outdoor pollutant concentrations used to avoid increasing mechanical outdoor-air intake during unhealthy conditions. These regional model values do not replace local safety sensors or official emergency instructions.",
       "List": [
         {
           "Type": 0,
-          "Name": "Sprinkler weather change",
-          "Description": "Defines one atomic mutation in the incremental sprinkler-weather stream.\nVariant order and field order are part of the append-only Avro wire format."
+          "Name": "Building HVAC outdoor-air-quality period",
+          "Description": "Contains modeled outdoor pollutant concentrations used to avoid increasing mechanical outdoor-air intake during unhealthy conditions. These regional model values do not replace local safety sensors or official emergency instructions."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "The inclusive date and time represented by this air-quality period."
+        },
+        {
+          "Type": 2,
+          "Name": "Duration",
+          "Description": "The length of this period in seconds. Modeled outdoor air quality normally uses 3,600-second periods."
+        },
+        {
+          "Type": 3,
+          "Name": "Fine particulate matter",
+          "Description": "Modeled outdoor PM2.5 concentration in micrograms per cubic meter."
+        },
+        {
+          "Type": 4,
+          "Name": "Particulate matter",
+          "Description": "Modeled outdoor PM10 concentration in micrograms per cubic meter."
+        },
+        {
+          "Type": 5,
+          "Name": "Ozone",
+          "Description": "Modeled outdoor ozone concentration in micrograms per cubic meter."
+        },
+        {
+          "Type": 6,
+          "Name": "Nitrogen dioxide",
+          "Description": "Modeled outdoor nitrogen-dioxide concentration in micrograms per cubic meter."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacOutdoorAirQualityV1",
+      "DisplayName": "Building HVAC outdoor air quality",
+      "Description": "Contains current and forecast modeled outdoor pollutant periods for ventilation planning. It is independently optional and independently cached from physical weather.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC outdoor air quality",
+          "Description": "Contains current and forecast modeled outdoor pollutant periods for ventilation planning. It is independently optional and independently cached from physical weather."
+        },
+        {
+          "Type": 1,
+          "Name": "Retrieved at",
+          "Description": "The date and time when this complete air-quality section was retrieved, validated, and accepted."
+        },
+        {
+          "Type": 2,
+          "Name": "Valid until",
+          "Description": "The exclusive freshness deadline. Stale modeled values must not be interpreted as proof that outdoor air is safe."
+        },
+        {
+          "Type": 3,
+          "Name": "Air-quality periods",
+          "Description": "Current and future periods ordered from earliest to latest. A normal response covers no more than 48 hours."
+        },
+        {
+          "Type": 4,
+          "Name": "Air-quality period",
+          "Description": "Modeled outdoor pollutant concentrations for one period."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacOutdoorConditionsV1",
+      "DisplayName": "Building HVAC outdoor conditions",
+      "Description": "Contains the physical outdoor inputs required for HVAC load prediction, psychrometric calculations, economizer decisions, infiltration estimation, and weather-aware operation of exposed equipment.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC outdoor conditions",
+          "Description": "Contains the physical outdoor inputs required for HVAC load prediction, psychrometric calculations, economizer decisions, infiltration estimation, and weather-aware operation of exposed equipment."
+        },
+        {
+          "Type": 1,
+          "Name": "Dry-bulb temperature",
+          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius."
+        },
+        {
+          "Type": 2,
+          "Name": "Dew-point temperature",
+          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations."
+        },
+        {
+          "Type": 3,
+          "Name": "Relative humidity",
+          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values."
+        },
+        {
+          "Type": 4,
+          "Name": "Surface pressure",
+          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations."
+        },
+        {
+          "Type": 5,
+          "Name": "Wind speed",
+          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads."
+        },
+        {
+          "Type": 6,
+          "Name": "Wind gust",
+          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment."
+        },
+        {
+          "Type": 7,
+          "Name": "Wind direction",
+          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation."
+        },
+        {
+          "Type": 8,
+          "Name": "Precipitation",
+          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters."
+        },
+        {
+          "Type": 9,
+          "Name": "Precipitation kind",
+          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval."
+        },
+        {
+          "Type": 10,
+          "Name": "Solar elevation",
+          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value."
+        },
+        {
+          "Type": 11,
+          "Name": "Solar azimuth",
+          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal."
+        },
+        {
+          "Type": 12,
+          "Name": "Global horizontal irradiance",
+          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input."
+        },
+        {
+          "Type": 13,
+          "Name": "Direct normal irradiance",
+          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value."
+        },
+        {
+          "Type": 14,
+          "Name": "Diffuse horizontal irradiance",
+          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacPrecipitationKindV1",
+      "DisplayName": "Building HVAC precipitation kind",
+      "Description": "Classifies precipitation when its phase can affect outdoor coils, air intakes, dampers, or other exposed HVAC equipment.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC precipitation kind",
+          "Description": "Classifies precipitation when its phase can affect outdoor coils, air intakes, dampers, or other exposed HVAC equipment.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "No precipitation",
+              "Description": "No precipitation is represented for the period."
+            },
+            {
+              "Type": 2,
+              "Name": "Rain",
+              "Description": "Liquid rain or showers are represented for the period."
+            },
+            {
+              "Type": 3,
+              "Name": "Freezing rain",
+              "Description": "Supercooled liquid precipitation that can freeze on exposed equipment is represented for the period."
+            },
+            {
+              "Type": 4,
+              "Name": "Snow",
+              "Description": "Frozen precipitation dominated by snow is represented for the period."
+            },
+            {
+              "Type": 5,
+              "Name": "Mixed precipitation",
+              "Description": "More than one liquid or frozen precipitation phase is represented."
+            },
+            {
+              "Type": 6,
+              "Name": "Unknown precipitation",
+              "Description": "Precipitation exists, but the provider cannot classify its phase."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherChangeV1",
+      "DisplayName": "Building HVAC weather change",
+      "Description": "Defines one atomic mutation in the incremental building-HVAC weather stream. Variant and field order are part of the Avro wire contract.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather change",
+          "Description": "Defines one atomic mutation in the incremental building-HVAC weather stream. Variant and field order are part of the Avro wire contract."
         },
         {
           "Type": 1,
           "Name": "Upsert historical periods",
-          "Description": "Marks a successful history refresh and inserts or replaces periods by\n`starts_at`. An empty period list updates only retrieval and freshness\nmetadata."
+          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh."
         },
         {
           "Type": 2,
           "Name": "Retrieved at",
-          "Description": "The successful retrieval and validation time for the history section."
+          "Description": "The retrieval and validation time for the updated history section."
         },
         {
           "Type": 3,
@@ -101,12 +276,12 @@
         {
           "Type": 5,
           "Name": "Historical period",
-          "Description": "One completed V1 precipitation and reference-evapotranspiration\nperiod keyed by `starts_at`."
+          "Description": "One completed outdoor-condition period keyed by `starts_at`."
         },
         {
           "Type": 6,
           "Name": "Remove historical periods",
-          "Description": "Removes cached historical periods whose start times fall within the\nsupplied half-open range."
+          "Description": "Removes historical periods whose start times fall within the supplied half-open range."
         },
         {
           "Type": 7,
@@ -116,22 +291,22 @@
         {
           "Type": 8,
           "Name": "Replace current conditions",
-          "Description": "Replaces the complete current-condition section after a successful\nretrieval and validation."
+          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence."
         },
         {
           "Type": 9,
           "Name": "Current conditions",
-          "Description": "The newly accepted current-condition section."
+          "Description": "The complete newly accepted current-condition section."
         },
         {
           "Type": 10,
           "Name": "Upsert forecast periods",
-          "Description": "Marks a successful forecast refresh and inserts or replaces periods by\n`starts_at`. An empty period list updates only retrieval and freshness\nmetadata."
+          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh."
         },
         {
           "Type": 11,
           "Name": "Retrieved at",
-          "Description": "The successful retrieval and validation time for the forecast\nsection."
+          "Description": "The retrieval and validation time for the updated forecast section."
         },
         {
           "Type": 12,
@@ -146,12 +321,12 @@
         {
           "Type": 14,
           "Name": "Forecast period",
-          "Description": "One irrigation-planning period keyed by `starts_at`."
+          "Description": "One future outdoor-condition period keyed by `starts_at`."
         },
         {
           "Type": 15,
           "Name": "Remove forecast periods",
-          "Description": "Removes cached forecast periods whose start times fall within the\nsupplied half-open range."
+          "Description": "Removes forecast periods whose start times fall within the supplied half-open range."
         },
         {
           "Type": 16,
@@ -160,114 +335,112 @@
         },
         {
           "Type": 17,
-          "Name": "Clear weather section",
-          "Description": "Clears one section only when its cached value is known to be invalid,\nsuch as after failed validation or an incompatible migration. A provider\nrefresh failure by itself must not emit this change."
+          "Name": "Upsert outdoor-air-quality periods",
+          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh."
         },
         {
           "Type": 18,
+          "Name": "Retrieved at",
+          "Description": "The retrieval and validation time for the updated air-quality section."
+        },
+        {
+          "Type": 19,
+          "Name": "Valid until",
+          "Description": "The new exclusive freshness deadline for the air-quality section."
+        },
+        {
+          "Type": 20,
+          "Name": "Air-quality periods",
+          "Description": "Periods to insert or replace, ordered from earliest to latest."
+        },
+        {
+          "Type": 21,
+          "Name": "Air-quality period",
+          "Description": "One modeled pollutant period keyed by `starts_at`."
+        },
+        {
+          "Type": 22,
+          "Name": "Remove outdoor-air-quality periods",
+          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range."
+        },
+        {
+          "Type": 23,
+          "Name": "Time range",
+          "Description": "The half-open range of air-quality period start times to remove."
+        },
+        {
+          "Type": 24,
+          "Name": "Clear weather section",
+          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section."
+        },
+        {
+          "Type": 25,
           "Name": "Weather section",
           "Description": "The independently cached section to clear."
         },
         {
-          "Type": 19,
+          "Type": 26,
           "Name": "Replace history",
-          "Description": "Replaces the complete historical section after a successful provider\nrefresh. Periods absent from the replacement are no longer cached."
+          "Description": "Replaces the complete historical section after a successful refresh."
         },
         {
-          "Type": 20,
+          "Type": 27,
           "Name": "History",
-          "Description": "The complete newly accepted historical section."
+          "Description": "The complete newly accepted history section."
         },
         {
-          "Type": 21,
+          "Type": 28,
           "Name": "Replace forecast",
-          "Description": "Replaces the complete forecast section after a successful provider\nrefresh. Periods absent from the replacement are no longer cached."
+          "Description": "Replaces the complete forecast section after a successful refresh."
         },
         {
-          "Type": 22,
+          "Type": 29,
           "Name": "Forecast",
           "Description": "The complete newly accepted forecast section."
         },
         {
-          "Type": 23,
-          "Name": "Replace weather site",
-          "Description": "Identifies the physical site for every following weather change. A\nclient uses this value to keep retained history from different Hub\nlocations in separate generations without depending on callback order."
-        },
-        {
-          "Type": 24,
-          "Name": "Site location",
-          "Description": "WGS84 location used for provider observations and forecasts."
-        },
-        {
-          "Type": 25,
-          "Name": "Upsert historical periods V2",
-          "Description": "Marks a successful history refresh and inserts or replaces full-weather\nperiods by `starts_at` without changing the legacy V1 wire layout."
-        },
-        {
-          "Type": 26,
-          "Name": "Retrieved at",
-          "Description": "The successful retrieval and validation time for the history section."
-        },
-        {
-          "Type": 27,
-          "Name": "Valid until",
-          "Description": "The new exclusive freshness deadline for the history section."
-        },
-        {
-          "Type": 28,
-          "Name": "Historical periods",
-          "Description": "Full-weather periods to insert or replace, ordered oldest to newest."
-        },
-        {
-          "Type": 29,
-          "Name": "Historical period",
-          "Description": "One completed V2 observation keyed by `starts_at`."
-        },
-        {
           "Type": 30,
-          "Name": "Replace history V2",
-          "Description": "Replaces the complete full-observation history section after a\nsuccessful provider refresh."
+          "Name": "Replace outdoor air quality",
+          "Description": "Replaces the complete modeled pollutant section after a successful refresh."
         },
         {
           "Type": 31,
-          "Name": "History",
-          "Description": "The complete newly accepted V2 historical section."
+          "Name": "Outdoor air quality",
+          "Description": "The complete newly accepted outdoor-air-quality section."
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
-      "Name": "SprinklerWeatherCursorV1",
-      "DisplayName": "Sprinkler weather cursor",
-      "Description": "Identifies one applied state in an incremental sprinkler-weather stream. A\nclient compares both fields and must not interpret a smaller sequence alone\nas a server reset.",
+      "Name": "BuildingHvacWeatherCursorV1",
+      "DisplayName": "Building HVAC weather cursor",
+      "Description": "Identifies one fully applied state in an incremental building-HVAC weather stream. Clients compare the epoch timestamp and sequence together.",
       "List": [
         {
           "Type": 0,
-          "Name": "Sprinkler weather cursor",
-          "Description": "Identifies one applied state in an incremental sprinkler-weather stream. A\nclient compares both fields and must not interpret a smaller sequence alone\nas a server reset."
+          "Name": "Building HVAC weather cursor",
+          "Description": "Identifies one fully applied state in an incremental building-HVAC weather stream. Clients compare the epoch timestamp and sequence together."
         },
         {
           "Type": 1,
           "Name": "Epoch timestamp",
-          "Description": "The server-assigned date and time identifying the cursor generation.\nThis single field is both the stream epoch and an ordered timestamp; no\nseparate opaque epoch exists. It remains unchanged during normal\nsequence advancement. When the server loses its transient cursor or\nreplay journal, it assigns an epoch timestamp strictly newer than the\nprevious one and starts `sequence` again at zero. A client can first\nobserve a later post-reset sequence rather than zero. This timestamp\ndescribes cursor state, not the observation time of weather values."
+          "Description": "The server-assigned date and time identifying the stream generation. It remains constant during normal sequence advancement. A server that loses transient cursor state assigns a strictly newer timestamp."
         },
         {
           "Type": 2,
           "Name": "Sequence",
-          "Description": "Identifies the latest applied state change. The server increments this\nvalue once for every accepted weather change. It resets this value to\nzero when the transient server cursor is reset, then increments it for\nlater changes; a reset does not clear historical, current, or forecast\nweather data."
+          "Description": "The sequence of the latest applied atomic change. A server cursor reset starts it again at zero, although a client can first observe a later post-reset sequence."
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
-      "Name": "SprinklerWeatherForecastPeriodV1",
-      "DisplayName": "Sprinkler weather forecast period",
-      "Description": "Contains predicted water input, water loss, temperature, humidity, and wind\nhazards used to decide when and how much to water during one planning\nperiod.",
+      "Name": "BuildingHvacWeatherForecastPeriodV1",
+      "DisplayName": "Building HVAC forecast period",
+      "Description": "Contains predicted outdoor conditions for one model-predictive HVAC planning period.",
       "List": [
         {
           "Type": 0,
-          "Name": "Sprinkler weather forecast period",
-          "Description": "Contains predicted water input, water loss, temperature, humidity, and wind\nhazards used to decide when and how much to water during one planning\nperiod."
+          "Name": "Building HVAC forecast period",
+          "Description": "Contains predicted outdoor conditions for one model-predictive HVAC planning period."
         },
         {
           "Type": 1,
@@ -277,144 +450,846 @@
         {
           "Type": 2,
           "Name": "Duration",
-          "Description": "The length of this forecast period in seconds. Open-Meteo forecasts\nnormally use 3,600-second periods."
+          "Description": "The length of this forecast period in seconds. Providers may supply 900-second periods near the present and 3,600-second periods later."
         },
         {
           "Type": 3,
-          "Name": "Temperature",
-          "Description": "Predicted air temperature at two meters above ground in degrees Celsius.\nThe sprinkler uses it to avoid watering during forecast freezing\nconditions."
+          "Name": "Precipitation probability",
+          "Description": "Probability of measurable precipitation during this period as an integer percentage from 0 through 100."
         },
         {
           "Type": 4,
-          "Name": "Relative humidity",
-          "Description": "Predicted relative humidity at two meters above ground, expressed as an\ninteger percentage from 0 through 100. Together with solar position and\nsprinkler-head type, this helps avoid prolonged foliage wetness."
-        },
-        {
-          "Type": 5,
-          "Name": "Precipitation probability",
-          "Description": "Probability of measurable precipitation during this period, expressed as\nan integer percentage from 0 through 100. This expresses forecast\nuncertainty separately from expected precipitation amount."
-        },
-        {
-          "Type": 6,
-          "Name": "Expected precipitation",
-          "Description": "Predicted total rain, showers, and water-equivalent frozen precipitation\naccumulated during this period in millimeters."
-        },
-        {
-          "Type": 7,
-          "Name": "Reference evapotranspiration",
-          "Description": "Predicted FAO-56 reference evapotranspiration accumulated during this\nperiod in millimeters."
-        },
-        {
-          "Type": 8,
-          "Name": "Wind speed",
-          "Description": "Predicted sustained wind speed at 10 meters above ground in meters per\nsecond."
-        },
-        {
-          "Type": 9,
-          "Name": "Wind gust",
-          "Description": "Predicted peak wind gust speed at 10 meters above ground in meters per\nsecond. The sprinkler uses this with sustained wind to avoid scheduling\nwatering during likely spray drift."
+          "Name": "Outdoor conditions",
+          "Description": "Predicted temperature, moisture, pressure, wind, precipitation, and solar inputs for the period."
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
-      "Name": "SprinklerWeatherForecastV1",
-      "DisplayName": "Sprinkler weather forecast",
-      "Description": "Contains future hourly weather inputs used to plan sprinkler irrigation over\nthe next seven days. The last successful value is retained when a later\nforecast refresh fails.",
+      "Name": "BuildingHvacWeatherForecastV1",
+      "DisplayName": "Building HVAC weather forecast",
+      "Description": "Contains future outdoor conditions for load prediction, preheating, precooling, thermal storage, and weather-aware ventilation planning.",
       "List": [
         {
           "Type": 0,
-          "Name": "Sprinkler weather forecast",
-          "Description": "Contains future hourly weather inputs used to plan sprinkler irrigation over\nthe next seven days. The last successful value is retained when a later\nforecast refresh fails."
+          "Name": "Building HVAC weather forecast",
+          "Description": "Contains future outdoor conditions for load prediction, preheating, precooling, thermal storage, and weather-aware ventilation planning."
         },
         {
           "Type": 1,
           "Name": "Retrieved at",
-          "Description": "The date and time when the complete forecast section was last retrieved,\nvalidated, and accepted."
+          "Description": "The date and time when this complete forecast section was retrieved, validated, and accepted."
         },
         {
           "Type": 2,
           "Name": "Valid until",
-          "Description": "The exclusive freshness deadline. The forecast is fresh while the\ncurrent time is earlier than this value and stale at or after this value.\nA stale forecast remains available as degraded cached input."
+          "Description": "The exclusive freshness deadline. Older forecasts remain available for degraded planning but must not authorize safety-sensitive operation."
         },
         {
           "Type": 3,
           "Name": "Forecast periods",
-          "Description": "Future periods ordered from earliest to latest. A normal response covers\nthe next seven days at one-hour resolution; a shorter list is a valid\npartial forecast."
+          "Description": "Future periods ordered from earliest to latest. A normal response covers 72 hours, optionally using 15-minute periods for the first six hours and hourly periods afterward."
         },
         {
           "Type": 4,
           "Name": "Forecast period",
-          "Description": "Predicted precipitation, reference evapotranspiration, temperature,\nhumidity, and wind for one planning period."
+          "Description": "Predicted outdoor HVAC conditions for one planning period."
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
-      "Name": "SprinklerWeatherHistoryMetadataV1",
-      "DisplayName": "Sprinkler weather history metadata",
-      "Description": "Stores the freshness timestamps for dynamically reconstructed indexed\nhistory periods.",
+      "Name": "BuildingHvacWeatherHistoryPeriodV1",
+      "DisplayName": "Building HVAC historical weather period",
+      "Description": "Contains the outdoor conditions for one completed period used to restore or update a building thermal-state estimate.",
       "List": [
         {
           "Type": 0,
-          "Name": "Sprinkler weather history metadata",
-          "Description": "Stores the freshness timestamps for dynamically reconstructed indexed\nhistory periods."
+          "Name": "Building HVAC historical weather period",
+          "Description": "Contains the outdoor conditions for one completed period used to restore or update a building thermal-state estimate."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "The inclusive date and time at which this historical period begins."
+        },
+        {
+          "Type": 2,
+          "Name": "Duration",
+          "Description": "The length of this completed period in seconds. History normally uses 3,600-second periods."
+        },
+        {
+          "Type": 3,
+          "Name": "Outdoor conditions",
+          "Description": "The temperature, moisture, pressure, wind, precipitation, and solar conditions represented by this completed period."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherHistoryV1",
+      "DisplayName": "Building HVAC weather history",
+      "Description": "Contains recent completed outdoor-condition periods used for short-term thermal-state recovery. Long-term building learning belongs to the HVAC application's own telemetry and model persistence.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather history",
+          "Description": "Contains recent completed outdoor-condition periods used for short-term thermal-state recovery. Long-term building learning belongs to the HVAC application's own telemetry and model persistence."
         },
         {
           "Type": 1,
           "Name": "Retrieved at",
-          "Description": "The date and time when the complete indexed history set was last\nretrieved, validated, and accepted."
+          "Description": "The date and time when this complete history section was retrieved, validated, and accepted."
+        },
+        {
+          "Type": 2,
+          "Name": "Valid until",
+          "Description": "The exclusive freshness deadline. Older history remains available as degraded model input after this time."
+        },
+        {
+          "Type": 3,
+          "Name": "History periods",
+          "Description": "Completed periods ordered from oldest to newest. A normal response covers the previous 72 hours; a shorter list is valid partial history."
+        },
+        {
+          "Type": 4,
+          "Name": "History period",
+          "Description": "Outdoor HVAC conditions for one completed period."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherIncrementalReportV1",
+      "DisplayName": "Building HVAC weather incremental report",
+      "Description": "Carries an ordered, atomic range of building-HVAC weather changes. A client applies it only when `from_cursor` matches its last cursor. An empty report is caught-up recovery; periodic no-change liveness uses PeerAlive.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather incremental report",
+          "Description": "Carries an ordered, atomic range of building-HVAC weather changes. A client applies it only when `from_cursor` matches its last cursor. An empty report is caught-up recovery; periodic no-change liveness uses PeerAlive."
+        },
+        {
+          "Type": 1,
+          "Name": "From cursor",
+          "Description": "The exclusive lower cursor and exact client state required before applying the report."
+        },
+        {
+          "Type": 2,
+          "Name": "Through cursor",
+          "Description": "The inclusive cursor reached after atomically applying every change."
+        },
+        {
+          "Type": 3,
+          "Name": "Weather changes",
+          "Description": "Ordered changes in cursor sequence. Each change advances the sequence by exactly one; an empty list preserves the cursor."
+        },
+        {
+          "Type": 4,
+          "Name": "Weather change",
+          "Description": "One atomic state mutation in cursor order."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherLocationV1",
+      "DisplayName": "Building HVAC weather location",
+      "Description": "Stores the Libertas Hub location used to retrieve weather for one whole house or building.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather location",
+          "Description": "Stores the Libertas Hub location used to retrieve weather for one whole house or building."
+        },
+        {
+          "Type": 1,
+          "Name": "Longitude",
+          "Description": "WGS84 longitude in decimal degrees. Locations west of Greenwich use negative values."
+        },
+        {
+          "Type": 2,
+          "Name": "Latitude",
+          "Description": "WGS84 latitude in decimal degrees."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherPersistentData",
+      "DisplayName": "Building HVAC weather persistent data",
+      "Description": "Defines every value a building-HVAC weather agent may write to the Libertas database. Each variant is stored under its own stable resource identifier so partial provider failure cannot erase another section. Subscription cursors, journals, peers, and PeerAlive deadlines are not persistent.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather persistent data",
+          "Description": "Defines every value a building-HVAC weather agent may write to the Libertas database. Each variant is stored under its own stable resource identifier so partial provider failure cannot erase another section. Subscription cursors, journals, peers, and PeerAlive deadlines are not persistent."
+        },
+        {
+          "Type": 1,
+          "Name": "Building location",
+          "Description": "Stores the last valid site coordinates received from the Libertas Hub."
+        },
+        {
+          "Type": 2,
+          "Name": "Location",
+          "Description": "The WGS84 site coordinates used for provider requests."
+        },
+        {
+          "Type": 3,
+          "Name": "Recent history",
+          "Description": "Stores the last successfully accepted physical-weather history."
+        },
+        {
+          "Type": 4,
+          "Name": "History",
+          "Description": "Recent outdoor-condition periods with retrieval and freshness timestamps."
+        },
+        {
+          "Type": 5,
+          "Name": "Current conditions",
+          "Description": "Stores the last successfully accepted current physical weather."
+        },
+        {
+          "Type": 6,
+          "Name": "Current conditions",
+          "Description": "Current outdoor HVAC inputs with validity and retrieval timestamps."
+        },
+        {
+          "Type": 7,
+          "Name": "Forecast",
+          "Description": "Stores the last successfully accepted physical-weather forecast."
+        },
+        {
+          "Type": 8,
+          "Name": "Forecast",
+          "Description": "Future outdoor HVAC inputs with retrieval and freshness timestamps."
+        },
+        {
+          "Type": 9,
+          "Name": "Outdoor air quality",
+          "Description": "Stores the last successfully accepted modeled pollutant data separately from physical weather."
+        },
+        {
+          "Type": 10,
+          "Name": "Outdoor air quality",
+          "Description": "Current and future outdoor pollutant periods with retrieval and freshness timestamps."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherProtocol",
+      "DisplayName": "Building HVAC weather protocol",
+      "Description": "Defines one-shot and subscription transactions for whole-house or whole-building HVAC weather. The Libertas endpoint operation, not a field in this arbitrary message contract, selects one-shot or subscription behavior.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather protocol",
+          "Description": "Defines one-shot and subscription transactions for whole-house or whole-building HVAC weather. The Libertas endpoint operation, not a field in this arbitrary message contract, selects one-shot or subscription behavior."
+        },
+        {
+          "Type": 1,
+          "Name": "Get building HVAC weather",
+          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges."
+        },
+        {
+          "Type": 2,
+          "Name": "Resume cursor",
+          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after"
+        },
+        {
+          "Type": 3,
+          "Name": "Historical recovery range",
+          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
+          "NullText": "No history",
+          "SetText": "Include history for"
+        },
+        {
+          "Type": 4,
+          "Name": "Include current conditions",
+          "Description": "Whether a reset snapshot should include cached current outdoor conditions."
+        },
+        {
+          "Type": 5,
+          "Name": "Forecast recovery range",
+          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for"
+        },
+        {
+          "Type": 6,
+          "Name": "Outdoor-air-quality recovery range",
+          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
+          "NullText": "No outdoor air quality",
+          "SetText": "Include outdoor air quality for"
+        },
+        {
+          "Type": 7,
+          "Name": "Building HVAC weather recovery",
+          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive."
+        },
+        {
+          "Type": 8,
+          "Name": "Maximum wait interval",
+          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value."
+        },
+        {
+          "Type": 9,
+          "Name": "Recovery",
+          "Description": "The replay, reset snapshot, or typed error result."
+        },
+        {
+          "Type": 10,
+          "Name": "Building HVAC weather increment",
+          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it."
+        },
+        {
+          "Type": 11,
+          "Name": "Incremental report",
+          "Description": "The ordered, atomic cursor range and its weather changes."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherRecoveryErrorV1",
+      "DisplayName": "Building HVAC weather recovery error",
+      "Description": "Identifies a recovery request that cannot be satisfied by replay or a range-limited cached snapshot.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather recovery error",
+          "Description": "Identifies a recovery request that cannot be satisfied by replay or a range-limited cached snapshot.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Invalid time range",
+              "Description": "At least one requested half-open range is empty or reversed."
+            },
+            {
+              "Type": 2,
+              "Name": "Cursor ahead",
+              "Description": "The supplied cursor cannot be reconciled with current cursor state or the retained journal."
+            },
+            {
+              "Type": 3,
+              "Name": "Request too large",
+              "Description": "At least one requested recovery range exceeds bounded response capacity."
+            },
+            {
+              "Type": 4,
+              "Name": "Temporarily unavailable",
+              "Description": "A required cached record or recovery resource is temporarily unavailable."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherRecoveryV1",
+      "DisplayName": "Building HVAC weather recovery",
+      "Description": "Replays retained changes, establishes a new cursor and snapshot, or reports a recoverable request error.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather recovery",
+          "Description": "Replays retained changes, establishes a new cursor and snapshot, or reports a recoverable request error."
+        },
+        {
+          "Type": 1,
+          "Name": "Replayed changes",
+          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up."
+        },
+        {
+          "Type": 2,
+          "Name": "Incremental report",
+          "Description": "The contiguous retained change range beginning at the request cursor."
+        },
+        {
+          "Type": 3,
+          "Name": "Reset with snapshot",
+          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied."
+        },
+        {
+          "Type": 4,
+          "Name": "Reset reason",
+          "Description": "The reason the response contains a snapshot rather than replay."
+        },
+        {
+          "Type": 5,
+          "Name": "Current cursor",
+          "Description": "The cursor representing the returned snapshot."
+        },
+        {
+          "Type": 6,
+          "Name": "Weather snapshot",
+          "Description": "The available cached sections constrained by requested ranges."
+        },
+        {
+          "Type": 7,
+          "Name": "Recovery error",
+          "Description": "Rejects the request without changing client cursor or cached weather."
+        },
+        {
+          "Type": 8,
+          "Name": "Error",
+          "Description": "The reason recovery could not be completed."
+        },
+        {
+          "Type": 9,
+          "Name": "Retry delay",
+          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherResetReasonV1",
+      "DisplayName": "Building HVAC weather reset reason",
+      "Description": "Explains why recovery established state from a range-limited snapshot instead of replaying incremental changes.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather reset reason",
+          "Description": "Explains why recovery established state from a range-limited snapshot instead of replaying incremental changes.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Initial subscription",
+              "Description": "No previous cursor was supplied."
+            },
+            {
+              "Type": 2,
+              "Name": "Cursor expired",
+              "Description": "The requested sequence is older than the retained replay journal."
+            },
+            {
+              "Type": 3,
+              "Name": "Server cursor reset",
+              "Description": "The server lost or deliberately discarded only its transient cursor and replay journal; independently persisted weather sections remain usable."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherSectionV1",
+      "DisplayName": "Building HVAC weather section",
+      "Description": "Identifies one independently cached building-HVAC weather section.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather section",
+          "Description": "Identifies one independently cached building-HVAC weather section.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Recent history",
+              "Description": "Selects recent physical outdoor-condition history."
+            },
+            {
+              "Type": 2,
+              "Name": "Current conditions",
+              "Description": "Selects modeled current physical outdoor conditions."
+            },
+            {
+              "Type": 3,
+              "Name": "Weather forecast",
+              "Description": "Selects the future physical outdoor-condition forecast."
+            },
+            {
+              "Type": 4,
+              "Name": "Outdoor air quality",
+              "Description": "Selects modeled current and forecast outdoor pollutant concentrations."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherSnapshotV1",
+      "DisplayName": "Building HVAC weather snapshot",
+      "Description": "Contains the last successfully accepted value of each requested section. Missing sections have no usable cache; stale sections remain present with their original freshness deadlines.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather snapshot",
+          "Description": "Contains the last successfully accepted value of each requested section. Missing sections have no usable cache; stale sections remain present with their original freshness deadlines."
+        },
+        {
+          "Type": 1,
+          "Name": "Recent history",
+          "Description": "The requested recent outdoor-condition periods when usable cached history exists."
+        },
+        {
+          "Type": 2,
+          "Name": "Current conditions",
+          "Description": "The last accepted current outdoor conditions when requested and available."
+        },
+        {
+          "Type": 3,
+          "Name": "Weather forecast",
+          "Description": "The requested future outdoor-condition periods when usable cached forecast data exists."
+        },
+        {
+          "Type": 4,
+          "Name": "Outdoor air quality",
+          "Description": "The requested current and forecast pollutant periods when usable modeled air-quality data exists."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherTimeRangeV1",
+      "DisplayName": "Building HVAC weather time range",
+      "Description": "Selects a half-open interval of history, forecast, or outdoor-air-quality periods by their start times.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC weather time range",
+          "Description": "Selects a half-open interval of history, forecast, or outdoor-air-quality periods by their start times."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "The inclusive lower bound for selected period start times."
+        },
+        {
+          "Type": 2,
+          "Name": "End time",
+          "Description": "The exclusive upper bound for selected period start times. It must be later than `starts_at`."
+        }
+      ]
+    },
+    {
+      "Name": "SprinklerCurrentWeatherV1",
+      "DisplayName": "Sprinkler current weather",
+      "Description": "Contains immediate rain, freeze, humidity, wind, and water-balance inputs used to decide whether an otherwise scheduled watering operation may safely start or continue.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler current weather",
+          "Description": "Contains immediate rain, freeze, humidity, wind, and water-balance inputs used to decide whether an otherwise scheduled watering operation may safely start or continue."
+        },
+        {
+          "Type": 1,
+          "Name": "Retrieved at",
+          "Description": "The date and time when the complete current-weather section was last retrieved, validated, and accepted."
+        },
+        {
+          "Type": 2,
+          "Name": "Valid until",
+          "Description": "The exclusive freshness deadline. Current weather is fresh while the current time is earlier than this value. At or after this value, the section remains cached but must not be treated as proof that watering is safe."
+        },
+        {
+          "Type": 3,
+          "Name": "Valid at",
+          "Description": "The provider-supplied date and time represented by the current-condition values. This can differ from `retrieved_at`."
+        },
+        {
+          "Type": 4,
+          "Name": "Observation interval",
+          "Description": "The backward-looking interval in seconds represented by accumulated precipitation and evapotranspiration. Open-Meteo current weather normally uses a 900-second interval."
+        },
+        {
+          "Type": 5,
+          "Name": "Temperature",
+          "Description": "Air temperature at two meters above ground in degrees Celsius. The sprinkler uses it to inhibit watering near or below freezing."
+        },
+        {
+          "Type": 6,
+          "Name": "Relative humidity",
+          "Description": "Relative humidity at two meters above ground, expressed as a percentage from 0 through 100. The sprinkler uses it to avoid unnecessarily long foliage-wetness periods when overhead watering is required."
+        },
+        {
+          "Type": 7,
+          "Name": "Precipitation",
+          "Description": "Total rain, showers, and water-equivalent frozen precipitation accumulated during `interval_seconds`, in millimeters. The sprinkler uses a nonzero value to inhibit watering while precipitation is occurring."
+        },
+        {
+          "Type": 8,
+          "Name": "Reference evapotranspiration",
+          "Description": "FAO-56 reference evapotranspiration accumulated during `interval_seconds`, in millimeters. It can extend the water balance until the next completed historical period is available."
+        },
+        {
+          "Type": 9,
+          "Name": "Wind speed",
+          "Description": "Sustained wind speed at 10 meters above ground in meters per second. The consuming sprinkler applies its configured wind threshold."
+        },
+        {
+          "Type": 10,
+          "Name": "Wind gust",
+          "Description": "Peak wind gust speed at 10 meters above ground in meters per second. The consuming sprinkler uses it with sustained wind to avoid spray drift."
+        }
+      ]
+    },
+    {
+      "Name": "SprinklerWeatherChangeV1",
+      "DisplayName": "Sprinkler weather change",
+      "Description": "Defines one atomic mutation in the incremental sprinkler-weather stream. Variant order and field order are part of the append-only Avro wire format.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler weather change",
+          "Description": "Defines one atomic mutation in the incremental sprinkler-weather stream. Variant order and field order are part of the append-only Avro wire format."
+        },
+        {
+          "Type": 1,
+          "Name": "Remove historical periods",
+          "Description": "Removes cached historical periods whose start times fall within the supplied half-open range."
+        },
+        {
+          "Type": 2,
+          "Name": "Time range",
+          "Description": "The half-open range of historical period start times to remove."
+        },
+        {
+          "Type": 3,
+          "Name": "Replace current conditions",
+          "Description": "Replaces the complete current-condition section after a successful retrieval and validation."
+        },
+        {
+          "Type": 4,
+          "Name": "Current conditions",
+          "Description": "The newly accepted current-condition section."
+        },
+        {
+          "Type": 5,
+          "Name": "Upsert forecast periods",
+          "Description": "Marks a successful forecast refresh and inserts or replaces periods by `starts_at`. An empty period list updates only retrieval and freshness metadata."
+        },
+        {
+          "Type": 6,
+          "Name": "Retrieved at",
+          "Description": "The successful retrieval and validation time for the forecast section."
+        },
+        {
+          "Type": 7,
+          "Name": "Valid until",
+          "Description": "The new exclusive freshness deadline for the forecast section."
+        },
+        {
+          "Type": 8,
+          "Name": "Forecast periods",
+          "Description": "Periods to insert or replace, ordered from earliest to latest."
+        },
+        {
+          "Type": 9,
+          "Name": "Forecast period",
+          "Description": "One irrigation-planning period keyed by `starts_at`."
+        },
+        {
+          "Type": 10,
+          "Name": "Remove forecast periods",
+          "Description": "Removes cached forecast periods whose start times fall within the supplied half-open range."
+        },
+        {
+          "Type": 11,
+          "Name": "Time range",
+          "Description": "The half-open range of forecast period start times to remove."
+        },
+        {
+          "Type": 12,
+          "Name": "Clear weather section",
+          "Description": "Clears one section only when its cached value is known to be invalid, such as after failed validation or an incompatible migration. A provider refresh failure by itself must not emit this change."
+        },
+        {
+          "Type": 13,
+          "Name": "Weather section",
+          "Description": "The independently cached section to clear."
+        },
+        {
+          "Type": 14,
+          "Name": "Replace forecast",
+          "Description": "Replaces the complete forecast section after a successful provider refresh. Periods absent from the replacement are no longer cached."
+        },
+        {
+          "Type": 15,
+          "Name": "Forecast",
+          "Description": "The complete newly accepted forecast section."
+        },
+        {
+          "Type": 16,
+          "Name": "Replace weather site",
+          "Description": "Identifies the physical site for every following weather change. A client uses this value to keep retained history from different Hub locations in separate generations without depending on callback order."
+        },
+        {
+          "Type": 17,
+          "Name": "Site location",
+          "Description": "WGS84 location used for provider observations and forecasts."
+        },
+        {
+          "Type": 18,
+          "Name": "Upsert historical periods V2",
+          "Description": "Marks a successful history refresh and inserts or replaces full-weather periods by `starts_at`."
+        },
+        {
+          "Type": 19,
+          "Name": "Retrieved at",
+          "Description": "The successful retrieval and validation time for the history section."
+        },
+        {
+          "Type": 20,
+          "Name": "Valid until",
+          "Description": "The new exclusive freshness deadline for the history section."
+        },
+        {
+          "Type": 21,
+          "Name": "Historical periods",
+          "Description": "Full-weather periods to insert or replace, ordered oldest to newest."
+        },
+        {
+          "Type": 22,
+          "Name": "Historical period",
+          "Description": "One completed V2 observation keyed by `starts_at`."
+        },
+        {
+          "Type": 23,
+          "Name": "Replace history V2",
+          "Description": "Replaces the complete full-observation history section after a successful provider refresh."
+        },
+        {
+          "Type": 24,
+          "Name": "History",
+          "Description": "The complete newly accepted V2 historical section."
+        }
+      ]
+    },
+    {
+      "Name": "SprinklerWeatherCursorV1",
+      "DisplayName": "Sprinkler weather cursor",
+      "Description": "Identifies one applied state in an incremental sprinkler-weather stream. A client compares both fields and must not interpret a smaller sequence alone as a server reset.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler weather cursor",
+          "Description": "Identifies one applied state in an incremental sprinkler-weather stream. A client compares both fields and must not interpret a smaller sequence alone as a server reset."
+        },
+        {
+          "Type": 1,
+          "Name": "Epoch timestamp",
+          "Description": "The server-assigned date and time identifying the cursor generation. This single field is both the stream epoch and an ordered timestamp; no separate opaque epoch exists. It remains unchanged during normal sequence advancement. When the server loses its transient cursor or replay journal, it assigns an epoch timestamp strictly newer than the previous one and starts `sequence` again at zero. A client can first observe a later post-reset sequence rather than zero. This timestamp describes cursor state, not the observation time of weather values."
+        },
+        {
+          "Type": 2,
+          "Name": "Sequence",
+          "Description": "Identifies the latest applied state change. The server increments this value once for every accepted weather change. It resets this value to zero when the transient server cursor is reset, then increments it for later changes; a reset does not clear historical, current, or forecast weather data."
+        }
+      ]
+    },
+    {
+      "Name": "SprinklerWeatherForecastPeriodV1",
+      "DisplayName": "Sprinkler weather forecast period",
+      "Description": "Contains predicted water input, water loss, temperature, humidity, and wind hazards used to decide when and how much to water during one planning period.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler weather forecast period",
+          "Description": "Contains predicted water input, water loss, temperature, humidity, and wind hazards used to decide when and how much to water during one planning period."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "The inclusive date and time at which this forecast period begins."
+        },
+        {
+          "Type": 2,
+          "Name": "Duration",
+          "Description": "The length of this forecast period in seconds. Open-Meteo forecasts normally use 3,600-second periods."
+        },
+        {
+          "Type": 3,
+          "Name": "Temperature",
+          "Description": "Predicted air temperature at two meters above ground in degrees Celsius. The sprinkler uses it to avoid watering during forecast freezing conditions."
+        },
+        {
+          "Type": 4,
+          "Name": "Relative humidity",
+          "Description": "Predicted relative humidity at two meters above ground, expressed as an integer percentage from 0 through 100. Together with solar position and sprinkler-head type, this helps avoid prolonged foliage wetness."
+        },
+        {
+          "Type": 5,
+          "Name": "Precipitation probability",
+          "Description": "Probability of measurable precipitation during this period, expressed as an integer percentage from 0 through 100. This expresses forecast uncertainty separately from expected precipitation amount."
+        },
+        {
+          "Type": 6,
+          "Name": "Expected precipitation",
+          "Description": "Predicted total rain, showers, and water-equivalent frozen precipitation accumulated during this period in millimeters."
+        },
+        {
+          "Type": 7,
+          "Name": "Reference evapotranspiration",
+          "Description": "Predicted FAO-56 reference evapotranspiration accumulated during this period in millimeters."
+        },
+        {
+          "Type": 8,
+          "Name": "Wind speed",
+          "Description": "Predicted sustained wind speed at 10 meters above ground in meters per second."
+        },
+        {
+          "Type": 9,
+          "Name": "Wind gust",
+          "Description": "Predicted peak wind gust speed at 10 meters above ground in meters per second. The sprinkler uses this with sustained wind to avoid scheduling watering during likely spray drift."
+        }
+      ]
+    },
+    {
+      "Name": "SprinklerWeatherForecastV1",
+      "DisplayName": "Sprinkler weather forecast",
+      "Description": "Contains future hourly weather inputs used to plan sprinkler irrigation over the next seven days. The last successful value is retained when a later forecast refresh fails.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler weather forecast",
+          "Description": "Contains future hourly weather inputs used to plan sprinkler irrigation over the next seven days. The last successful value is retained when a later forecast refresh fails."
+        },
+        {
+          "Type": 1,
+          "Name": "Retrieved at",
+          "Description": "The date and time when the complete forecast section was last retrieved, validated, and accepted."
+        },
+        {
+          "Type": 2,
+          "Name": "Valid until",
+          "Description": "The exclusive freshness deadline. The forecast is fresh while the current time is earlier than this value and stale at or after this value. A stale forecast remains available as degraded cached input."
+        },
+        {
+          "Type": 3,
+          "Name": "Forecast periods",
+          "Description": "Future periods ordered from earliest to latest. A normal response covers the next seven days at one-hour resolution; a shorter list is a valid partial forecast."
+        },
+        {
+          "Type": 4,
+          "Name": "Forecast period",
+          "Description": "Predicted precipitation, reference evapotranspiration, temperature, humidity, and wind for one planning period."
+        }
+      ]
+    },
+    {
+      "Name": "SprinklerWeatherHistoryMetadataV1",
+      "DisplayName": "Sprinkler weather history metadata",
+      "Description": "Stores the freshness timestamps for dynamically reconstructed indexed history periods.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sprinkler weather history metadata",
+          "Description": "Stores the freshness timestamps for dynamically reconstructed indexed history periods."
+        },
+        {
+          "Type": 1,
+          "Name": "Retrieved at",
+          "Description": "The date and time when the complete indexed history set was last retrieved, validated, and accepted."
         },
         {
           "Type": 2,
           "Name": "Valid until",
           "Description": "The exclusive freshness deadline for the reconstructed history section."
         }
-      ],
-      "Strings": {}
-    },
-    {
-      "Name": "SprinklerWeatherHistoryPeriodV1",
-      "DisplayName": "Sprinkler weather history period",
-      "Description": "Contains the precipitation input and reference evapotranspiration loss for\none completed period in a sprinkler irrigation water balance.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Sprinkler weather history period",
-          "Description": "Contains the precipitation input and reference evapotranspiration loss for\none completed period in a sprinkler irrigation water balance."
-        },
-        {
-          "Type": 1,
-          "Name": "Start time",
-          "Description": "The inclusive date and time at which this historical period begins."
-        },
-        {
-          "Type": 2,
-          "Name": "Duration",
-          "Description": "The length of this historical period in seconds. Open-Meteo history\nnormally uses 3,600-second periods."
-        },
-        {
-          "Type": 3,
-          "Name": "Precipitation",
-          "Description": "Total precipitation, including the water equivalent of frozen\nprecipitation, accumulated during this period in millimeters. This is a\nrequired water input to the irrigation balance."
-        },
-        {
-          "Type": 4,
-          "Name": "Reference evapotranspiration",
-          "Description": "FAO-56 reference evapotranspiration accumulated during this period in\nmillimeters. This is the weather-driven water loss before applying a\nplant-specific crop coefficient."
-        }
-      ],
-      "Strings": {}
+      ]
     },
     {
       "Name": "SprinklerWeatherHistoryPeriodV2",
       "DisplayName": "Sprinkler weather history period V2",
-      "Description": "Extends the completed-period water balance with the temperature, humidity,\nsustained-wind, and gust observations needed to explain irrigation\ndecisions. V1 remains unchanged so previously persisted and transmitted\nrecords retain their positional Avro layout.",
+      "Description": "Extends the completed-period water balance with the temperature, humidity, sustained-wind, and gust observations needed to explain irrigation decisions.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler weather history period V2",
-          "Description": "Extends the completed-period water balance with the temperature, humidity,\nsustained-wind, and gust observations needed to explain irrigation\ndecisions. V1 remains unchanged so previously persisted and transmitted\nrecords retain their positional Avro layout."
+          "Description": "Extends the completed-period water balance with the temperature, humidity, sustained-wind, and gust observations needed to explain irrigation decisions."
         },
         {
           "Type": 1,
@@ -424,93 +1299,59 @@
         {
           "Type": 2,
           "Name": "Duration",
-          "Description": "The length of this historical period in seconds. Open-Meteo history\nnormally uses 3,600-second periods."
+          "Description": "The length of this historical period in seconds. Open-Meteo history normally uses 3,600-second periods."
         },
         {
           "Type": 3,
           "Name": "Precipitation",
-          "Description": "Total precipitation, including the water equivalent of frozen\nprecipitation, accumulated during this period in millimeters."
+          "Description": "Total precipitation, including the water equivalent of frozen precipitation, accumulated during this period in millimeters."
         },
         {
           "Type": 4,
           "Name": "Reference evapotranspiration",
-          "Description": "FAO-56 reference evapotranspiration accumulated during this period in\nmillimeters."
+          "Description": "FAO-56 reference evapotranspiration accumulated during this period in millimeters."
         },
         {
           "Type": 5,
           "Name": "Temperature",
-          "Description": "Air temperature at two meters above ground in degrees Celsius during\nthis historical period."
+          "Description": "Air temperature at two meters above ground in degrees Celsius during this historical period."
         },
         {
           "Type": 6,
           "Name": "Relative humidity",
-          "Description": "Relative humidity at two meters above ground, expressed as an integer\npercentage from 0 through 100 during this historical period."
+          "Description": "Relative humidity at two meters above ground, expressed as an integer percentage from 0 through 100 during this historical period."
         },
         {
           "Type": 7,
           "Name": "Wind speed",
-          "Description": "Sustained wind speed at 10 meters above ground in meters per second\nduring this historical period."
+          "Description": "Sustained wind speed at 10 meters above ground in meters per second during this historical period."
         },
         {
           "Type": 8,
           "Name": "Wind gust",
-          "Description": "Peak wind gust speed at 10 meters above ground in meters per second\nduring this historical period."
+          "Description": "Peak wind gust speed at 10 meters above ground in meters per second during this historical period."
         }
-      ],
-      "Strings": {}
-    },
-    {
-      "Name": "SprinklerWeatherHistoryV1",
-      "DisplayName": "Sprinkler weather history",
-      "Description": "Contains recent completed hourly periods used to reconstruct and update the\nsprinkler irrigation water balance. The last successful value is retained\nwhen a later history refresh fails.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Sprinkler weather history",
-          "Description": "Contains recent completed hourly periods used to reconstruct and update the\nsprinkler irrigation water balance. The last successful value is retained\nwhen a later history refresh fails."
-        },
-        {
-          "Type": 1,
-          "Name": "Retrieved at",
-          "Description": "The date and time when the complete history section was last retrieved,\nvalidated, and accepted."
-        },
-        {
-          "Type": 2,
-          "Name": "Valid until",
-          "Description": "The exclusive freshness deadline. The history is fresh while the current\ntime is earlier than this value and stale at or after this value. Stale\nhistory remains available as degraded cached input."
-        },
-        {
-          "Type": 3,
-          "Name": "History periods",
-          "Description": "Completed periods ordered from oldest to newest. A normal response covers\nthe previous seven days at one-hour resolution; a shorter list is valid\npartial history."
-        },
-        {
-          "Type": 4,
-          "Name": "History period",
-          "Description": "Precipitation and reference evapotranspiration for one completed period."
-        }
-      ],
-      "Strings": {}
+      ]
     },
     {
       "Name": "SprinklerWeatherHistoryV2",
       "DisplayName": "Sprinkler weather history V2",
-      "Description": "Contains recent completed periods with the full weather observations used\nfor both irrigation calculations and decision-explanation charts.",
+      "Description": "Contains recent completed periods with the full weather observations used for both irrigation calculations and decision-explanation charts.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler weather history V2",
-          "Description": "Contains recent completed periods with the full weather observations used\nfor both irrigation calculations and decision-explanation charts."
+          "Description": "Contains recent completed periods with the full weather observations used for both irrigation calculations and decision-explanation charts."
         },
         {
           "Type": 1,
           "Name": "Retrieved at",
-          "Description": "The date and time when the complete history section was last retrieved,\nvalidated, and accepted."
+          "Description": "The date and time when the complete history section was last retrieved, validated, and accepted."
         },
         {
           "Type": 2,
           "Name": "Valid until",
-          "Description": "The exclusive freshness deadline. Stale history remains available as a\ndegraded cached input."
+          "Description": "The exclusive freshness deadline. Stale history remains available as a degraded cached input."
         },
         {
           "Type": 3,
@@ -520,81 +1361,105 @@
         {
           "Type": 4,
           "Name": "History period",
-          "Description": "Temperature, humidity, precipitation, reference evapotranspiration, and\nwind for one completed period."
+          "Description": "Temperature, humidity, precipitation, reference evapotranspiration, and wind for one completed period."
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
       "Name": "SprinklerWeatherIncrementalReportV1",
       "DisplayName": "Sprinkler weather incremental report",
-      "Description": "Carries an ordered, atomic range of weather changes. A client applies the\nreport only when its stored cursor equals `from_cursor`, then stores\n`through_cursor`. An empty report is a caught-up recovery result; periodic\nno-change liveness uses PeerAlive.",
+      "Description": "Carries an ordered, atomic range of weather changes. A client applies the report only when its stored cursor equals `from_cursor`, then stores `through_cursor`. An empty report is a caught-up recovery result; periodic no-change liveness uses PeerAlive.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler weather incremental report",
-          "Description": "Carries an ordered, atomic range of weather changes. A client applies the\nreport only when its stored cursor equals `from_cursor`, then stores\n`through_cursor`. An empty report is a caught-up recovery result; periodic\nno-change liveness uses PeerAlive."
+          "Description": "Carries an ordered, atomic range of weather changes. A client applies the report only when its stored cursor equals `from_cursor`, then stores `through_cursor`. An empty report is a caught-up recovery result; periodic no-change liveness uses PeerAlive."
         },
         {
           "Type": 1,
           "Name": "From cursor",
-          "Description": "The exclusive lower cursor for this report and the exact cursor a client\nmust already hold before applying it."
+          "Description": "The exclusive lower cursor for this report and the exact cursor a client must already hold before applying it."
         },
         {
           "Type": 2,
           "Name": "Through cursor",
-          "Description": "The inclusive upper cursor reached after applying every change in this\nreport. It must retain the same epoch timestamp as `from_cursor`. A\nserver cursor reset is never carried as an incremental report; it\nrequires a full reset."
+          "Description": "The inclusive upper cursor reached after applying every change in this report. It must retain the same epoch timestamp as `from_cursor`. A server cursor reset is never carried as an incremental report; it requires a full reset."
         },
         {
           "Type": 3,
           "Name": "Weather changes",
-          "Description": "Ordered changes to apply atomically. Each item advances the sequence by\nexactly one; an empty list is caught-up recovery and does not advance the\ncursor or serve as periodic liveness."
+          "Description": "Ordered changes to apply atomically. Each item advances the sequence by exactly one; an empty list is caught-up recovery and does not advance the cursor or serve as periodic liveness."
         },
         {
           "Type": 4,
           "Name": "Weather change",
           "Description": "One atomic state mutation in cursor order."
         }
-      ],
-      "Strings": {}
+      ]
+    },
+    {
+      "Name": "SprinklerWeatherKey",
+      "DisplayName": "Saved weather keys",
+      "Description": "Records for one endpoint share a transaction and scan prefix.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Saved weather keys",
+          "Description": "Records for one endpoint share a transaction and scan prefix."
+        },
+        {
+          "Type": 1,
+          "Name": "Weather belonging to one service endpoint",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "endpoint",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "record",
+          "Description": ""
+        }
+      ]
     },
     {
       "Name": "SprinklerWeatherLocationV1",
       "DisplayName": "Sprinkler weather location",
-      "Description": "Stores the Libertas Hub location used to obtain weather for one sprinkler\nsite. It is cached independently from provider data so the weather agent can\ncontinue refreshing during a temporary Hub outage.",
+      "Description": "Stores the Libertas Hub location used to obtain weather for one sprinkler site. It is cached independently from provider data so the weather agent can continue refreshing during a temporary Hub outage.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler weather location",
-          "Description": "Stores the Libertas Hub location used to obtain weather for one sprinkler\nsite. It is cached independently from provider data so the weather agent can\ncontinue refreshing during a temporary Hub outage."
+          "Description": "Stores the Libertas Hub location used to obtain weather for one sprinkler site. It is cached independently from provider data so the weather agent can continue refreshing during a temporary Hub outage."
         },
         {
           "Type": 1,
           "Name": "Longitude",
-          "Description": "WGS84 longitude in decimal degrees. Locations west of Greenwich use\nnegative values."
+          "Description": "WGS84 longitude in decimal degrees. Locations west of Greenwich use negative values."
         },
         {
           "Type": 2,
           "Name": "Latitude",
           "Description": "WGS84 latitude in decimal degrees."
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
       "Name": "SprinklerWeatherPersistentData",
       "DisplayName": "Sprinkler weather persistent data",
-      "Description": "Defines the complete set of values that the sprinkler weather agent may\nwrite to the Libertas database. History metadata, current conditions,\nforecast, and location are independent single records. Every completed\nhistory period is an indexed record keyed by its start timestamp.\nSubscription cursors and replay journals are intentionally absent: resetting\nthem must not erase these records.",
+      "Description": "Defines the complete set of values that the sprinkler weather agent may write to the Libertas database. History metadata, current conditions, forecast, and location have separate typed keys. Every completed history period is keyed by its start timestamp. Subscription cursors and replay journals are intentionally absent: resetting them must not erase these records.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler weather persistent data",
-          "Description": "Defines the complete set of values that the sprinkler weather agent may\nwrite to the Libertas database. History metadata, current conditions,\nforecast, and location are independent single records. Every completed\nhistory period is an indexed record keyed by its start timestamp.\nSubscription cursors and replay journals are intentionally absent: resetting\nthem must not erase these records."
+          "Description": "Defines the complete set of values that the sprinkler weather agent may write to the Libertas database. History metadata, current conditions, forecast, and location have separate typed keys. Every completed history period is keyed by its start timestamp. Subscription cursors and replay journals are intentionally absent: resetting them must not erase these records."
         },
         {
           "Type": 1,
           "Name": "Sprinkler site location",
-          "Description": "Stores the last valid location reported by the Libertas Hub. The cached\nvalue lets provider refreshes continue while the Hub is temporarily\nunavailable."
+          "Description": "Stores the last valid location reported by the Libertas Hub. The cached value lets provider refreshes continue while the Hub is temporarily unavailable."
         },
         {
           "Type": 2,
@@ -613,71 +1478,64 @@
         },
         {
           "Type": 5,
-          "Name": "History period",
-          "Description": "Stores one completed hourly period in indexed data, keyed by its start\ntimestamp so corrections replace only that hour."
+          "Name": "History period V2",
+          "Description": "Stores one completed full-weather period under its typed timestamp key."
         },
         {
           "Type": 6,
           "Name": "History period",
-          "Description": "One completed V1 precipitation and reference-evapotranspiration\ninput."
+          "Description": "Temperature, humidity, precipitation, reference ET, wind, and gusts."
         },
         {
           "Type": 7,
           "Name": "Current conditions",
-          "Description": "Stores the last successfully retrieved and validated current-condition\nsection. A failed refresh leaves the existing database record unchanged."
+          "Description": "Stores the last successfully retrieved and validated current-condition section. A failed refresh leaves the existing database record unchanged."
         },
         {
           "Type": 8,
           "Name": "Current conditions",
-          "Description": "Immediate rain, freeze, humidity, wind, and water-balance inputs,\nincluding their retrieval and freshness timestamps."
+          "Description": "Immediate rain, freeze, humidity, wind, and water-balance inputs, including their retrieval and freshness timestamps."
         },
         {
           "Type": 9,
           "Name": "Forecast",
-          "Description": "Stores the last successfully retrieved and validated forecast section. A\nfailed refresh leaves the existing database record unchanged."
+          "Description": "Stores the last successfully retrieved and validated forecast section. A failed refresh leaves the existing database record unchanged."
         },
         {
           "Type": 10,
           "Name": "Forecast",
-          "Description": "Future precipitation, reference-evapotranspiration, temperature,\nhumidity, and wind inputs, including their retrieval and freshness\ntimestamps."
-        },
-        {
-          "Type": 11,
-          "Name": "History period V2",
-          "Description": "Stores one completed full-weather period in indexed data. This variant\nis appended so every previously persisted discriminant remains stable."
-        },
-        {
-          "Type": 12,
-          "Name": "History period",
-          "Description": "Temperature, humidity, precipitation, reference ET, wind, and gusts."
+          "Description": "Future precipitation, reference-evapotranspiration, temperature, humidity, and wind inputs, including their retrieval and freshness timestamps."
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
       "Name": "SprinklerWeatherProtocol",
       "DisplayName": "Sprinkler weather protocol",
-      "Description": "Defines the typed Libertas endpoint transaction for requesting or subscribing\nto sprinkler weather. Responses expose independently available history,\ncurrent, and forecast sections so an outage does not hide usable cached data.\nThe Libertas endpoint status contract rejects malformed Avro and values used\nin the wrong message role; those transport errors are not recovery variants.",
+      "Description": "Defines the typed Libertas endpoint transaction for requesting or subscribing to sprinkler weather. Responses expose independently available history, current, and forecast sections so an outage does not hide usable cached data. The Libertas endpoint status contract rejects malformed Avro and values used in the wrong message role; those transport errors are not recovery variants.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler weather protocol",
-          "Description": "Defines the typed Libertas endpoint transaction for requesting or subscribing\nto sprinkler weather. Responses expose independently available history,\ncurrent, and forecast sections so an outage does not hide usable cached data.\nThe Libertas endpoint status contract rejects malformed Avro and values used\nin the wrong message role; those transport errors are not recovery variants."
+          "Description": "Defines the typed Libertas endpoint transaction for requesting or subscribing to sprinkler weather. Responses expose independently available history, current, and forecast sections so an outage does not hide usable cached data. The Libertas endpoint status contract rejects malformed Avro and values used in the wrong message role; those transport errors are not recovery variants."
         },
         {
           "Type": 1,
           "Name": "Get sprinkler weather",
-          "Description": "Performs a one-shot incremental read or starts or resumes an incremental\nsubscription. The Libertas endpoint operation selects the behavior; it is\nnot encoded in this message. The server replays retained changes after\n`after_cursor` when possible, or returns a range-limited cached snapshot."
+          "Description": "Performs a one-shot incremental read or starts or resumes an incremental subscription. The Libertas endpoint operation selects the behavior; it is not encoded in this message. The server replays retained changes after `after_cursor` when possible, or returns a range-limited cached snapshot."
         },
         {
           "Type": 2,
           "Name": "Resume cursor",
-          "Description": "The last cursor fully and atomically applied by the client. `None`\nrequests an initial range-limited snapshot. The server compares both\nfields; a lower sequence indicates a reset only when the response\ncursor also has a newer epoch timestamp."
+          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial range-limited snapshot. The server compares both fields; a lower sequence indicates a reset only when the response cursor also has a newer epoch timestamp.",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after"
         },
         {
           "Type": 3,
           "Name": "Historical recovery range",
-          "Description": "The half-open range of historical period start times to include when\nreplay is impossible. `None` excludes history from the reset\nsnapshot."
+          "Description": "The half-open range of historical period start times to include when replay is impossible. `None` excludes history from the reset snapshot.",
+          "NullText": "No history",
+          "SetText": "Include history for"
         },
         {
           "Type": 4,
@@ -687,17 +1545,19 @@
         {
           "Type": 5,
           "Name": "Forecast recovery range",
-          "Description": "The half-open range of forecast period start times to include when\nreplay is impossible. `None` excludes forecast data from the reset\nsnapshot."
+          "Description": "The half-open range of forecast period start times to include when replay is impossible. `None` excludes forecast data from the reset snapshot.",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for"
         },
         {
           "Type": 6,
           "Name": "Sprinkler weather recovery",
-          "Description": "Responds to a weather request with replayed changes, a reset snapshot,\nor a recoverable error. Every response supplies a maximum wait interval.\nA subscription client uses it after a successful replay or reset; a\none-shot client ignores it. After an error, the recovery error and retry\ndelay take precedence."
+          "Description": "Responds to a weather request with replayed changes, a reset snapshot, or a recoverable error. Every response supplies a maximum wait interval. A subscription client uses it after a successful replay or reset; a one-shot client ignores it. After an error, the recovery error and retry delay take precedence."
         },
         {
           "Type": 7,
           "Name": "Maximum wait interval",
-          "Description": "The maximum number of seconds a subscription client waits after a\nsuccessful recovery, incremental report, or PeerAlive. The server\nsends changed data or PeerAlive first. One-shot clients ignore this\nrequired, nonzero value."
+          "Description": "The maximum number of seconds a subscription client waits after a successful recovery, incremental report, or PeerAlive. The server sends changed data or PeerAlive first. One-shot clients ignore this required, nonzero value."
         },
         {
           "Type": 8,
@@ -707,25 +1567,66 @@
         {
           "Type": 9,
           "Name": "Sprinkler weather increment",
-          "Description": "Reports only state changes after a successful weather request. A cursor\nmismatch or non-contiguous range requires another\nsubscription request; the client must not apply the report partially.\nA valid report or PeerAlive restarts the recovery response's wait timer;\nPeerAlive never enters this data schema or changes the cursor."
+          "Description": "Reports only state changes after a successful weather request. A cursor mismatch or non-contiguous range requires another subscription request; the client must not apply the report partially. A valid report or PeerAlive restarts the recovery response's wait timer; PeerAlive never enters this data schema or changes the cursor."
         },
         {
           "Type": 10,
           "Name": "Incremental report",
           "Description": "The ordered atomic cursor range and its weather changes."
         }
-      ],
-      "Strings": {}
+      ]
+    },
+    {
+      "Name": "SprinklerWeatherRecordKey",
+      "DisplayName": "Saved weather record identity",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Saved weather record identity",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Location",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "HistoryMetadata",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "HistoryPeriod",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "starts_at",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Current",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Forecast",
+          "Description": ""
+        }
+      ]
     },
     {
       "Name": "SprinklerWeatherRecoveryErrorV1",
       "DisplayName": "Sprinkler weather recovery error",
-      "Description": "Identifies a recovery request that cannot be satisfied with either replayed\nchanges or a range-limited cached snapshot.",
+      "Description": "Identifies a recovery request that cannot be satisfied with either replayed changes or a range-limited cached snapshot.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler weather recovery error",
-          "Description": "Identifies a recovery request that cannot be satisfied with either replayed\nchanges or a range-limited cached snapshot.",
+          "Description": "Identifies a recovery request that cannot be satisfied with either replayed changes or a range-limited cached snapshot.",
           "Enum": [
             {
               "Type": 1,
@@ -735,37 +1636,36 @@
             {
               "Type": 2,
               "Name": "Cursor ahead",
-              "Description": "The supplied epoch-timestamp-and-sequence cursor cannot be reconciled\nwith the server's current cursor or retained replay journal."
+              "Description": "The supplied epoch-timestamp-and-sequence cursor cannot be reconciled with the server's current cursor or retained replay journal."
             },
             {
               "Type": 3,
               "Name": "Request too large",
-              "Description": "The requested recovery ranges exceed the server's bounded response\ncapacity."
+              "Description": "The requested recovery ranges exceed the server's bounded response capacity."
             },
             {
               "Type": 4,
               "Name": "Temporarily unavailable",
-              "Description": "Cached data or another required recovery resource is temporarily\nunavailable; the client may retry after the supplied delay."
+              "Description": "Cached data or another required recovery resource is temporarily unavailable; the client may retry after the supplied delay."
             }
           ]
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
       "Name": "SprinklerWeatherRecoveryV1",
       "DisplayName": "Sprinkler weather recovery",
-      "Description": "Returns replayed changes, establishes a new cursor with a range-limited\nsnapshot, or reports a recoverable request error.",
+      "Description": "Returns replayed changes, establishes a new cursor with a range-limited snapshot, or reports a recoverable request error.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler weather recovery",
-          "Description": "Returns replayed changes, establishes a new cursor with a range-limited\nsnapshot, or reports a recoverable request error."
+          "Description": "Returns replayed changes, establishes a new cursor with a range-limited snapshot, or reports a recoverable request error."
         },
         {
           "Type": 1,
           "Name": "Replayed changes",
-          "Description": "Continues the requested stream by replaying every retained change after\nthe supplied cursor. An empty report means the client is already caught\nup."
+          "Description": "Continues the requested stream by replaying every retained change after the supplied cursor. An empty report means the client is already caught up."
         },
         {
           "Type": 2,
@@ -774,101 +1674,55 @@
         },
         {
           "Type": 3,
-          "Name": "Reset with snapshot",
-          "Description": "Establishes a new cursor when replay is impossible or no cursor was\nsupplied. History and forecast sections are limited to the fallback\nranges requested by the client. A server cursor reset changes only\ntransient cursor state: the returned snapshot is rebuilt from retained\npersistent sections and, when necessary, data retrieved from Open-Meteo."
+          "Name": "Recovery error",
+          "Description": "Rejects the request without changing the client's cursor or local weather state."
         },
         {
           "Type": 4,
-          "Name": "Reset reason",
-          "Description": "The reason a snapshot replaced incremental replay."
-        },
-        {
-          "Type": 5,
-          "Name": "Current cursor",
-          "Description": "The cursor representing the returned snapshot. Subsequent reports\nbegin with this value as `from_cursor`. For `ServerCursorReset`, its\nepoch timestamp is strictly newer and its sequence is lower than the\nrequest cursor. The sequence can be greater than zero when changes\noccurred after the server reset and before this response."
-        },
-        {
-          "Type": 6,
-          "Name": "Weather snapshot",
-          "Description": "The available cached sections constrained by the requested fallback\nranges."
-        },
-        {
-          "Type": 7,
-          "Name": "Recovery error",
-          "Description": "Rejects the request without changing the client's cursor or local\nweather state."
-        },
-        {
-          "Type": 8,
           "Name": "Error",
           "Description": "The reason recovery could not be completed."
         },
         {
-          "Type": 9,
+          "Type": 5,
           "Name": "Retry delay",
-          "Description": "The suggested delay in seconds before retrying. `None` means the\nrequest parameters must change before a retry can succeed."
+          "Description": "The suggested delay in seconds before retrying. `None` means the request parameters must change before a retry can succeed."
+        },
+        {
+          "Type": 6,
+          "Name": "Reset with site snapshot V2",
+          "Description": "Establishes a new cursor and binds a full-observation history snapshot to its provider site."
+        },
+        {
+          "Type": 7,
+          "Name": "Reset reason",
+          "Description": "The reason a snapshot replaced incremental replay."
+        },
+        {
+          "Type": 8,
+          "Name": "Current cursor",
+          "Description": "The cursor representing the returned snapshot."
+        },
+        {
+          "Type": 9,
+          "Name": "Site location",
+          "Description": "WGS84 location used to obtain the returned weather sections."
         },
         {
           "Type": 10,
-          "Name": "Reset with site snapshot",
-          "Description": "Establishes a new cursor and explicitly binds the returned snapshot to\nits provider site. New servers use this variant whenever a valid Hub\nlocation is known; `ResetV1` remains decodable for older servers."
-        },
-        {
-          "Type": 11,
-          "Name": "Reset reason",
-          "Description": "The reason a snapshot replaced incremental replay."
-        },
-        {
-          "Type": 12,
-          "Name": "Current cursor",
-          "Description": "The cursor representing the returned snapshot."
-        },
-        {
-          "Type": 13,
-          "Name": "Site location",
-          "Description": "WGS84 location used to obtain the returned weather sections."
-        },
-        {
-          "Type": 14,
-          "Name": "Weather snapshot",
-          "Description": "Available cached sections constrained by requested fallback ranges."
-        },
-        {
-          "Type": 15,
-          "Name": "Reset with site snapshot V2",
-          "Description": "Establishes a new cursor and binds a full-observation history snapshot\nto its provider site. This append-only variant leaves all V1 recovery\ndiscriminants unchanged."
-        },
-        {
-          "Type": 16,
-          "Name": "Reset reason",
-          "Description": "The reason a snapshot replaced incremental replay."
-        },
-        {
-          "Type": 17,
-          "Name": "Current cursor",
-          "Description": "The cursor representing the returned snapshot."
-        },
-        {
-          "Type": 18,
-          "Name": "Site location",
-          "Description": "WGS84 location used to obtain the returned weather sections."
-        },
-        {
-          "Type": 19,
           "Name": "Weather snapshot",
           "Description": "Available V2 cached sections constrained by requested ranges."
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
       "Name": "SprinklerWeatherResetReasonV1",
       "DisplayName": "Sprinkler weather reset reason",
-      "Description": "Explains why recovery returned a range-limited snapshot instead of replaying\nincremental changes after the requested cursor.",
+      "Description": "Explains why recovery returned a range-limited snapshot instead of replaying incremental changes after the requested cursor.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler weather reset reason",
-          "Description": "Explains why recovery returned a range-limited snapshot instead of replaying\nincremental changes after the requested cursor.",
+          "Description": "Explains why recovery returned a range-limited snapshot instead of replaying incremental changes after the requested cursor.",
           "Enum": [
             {
               "Type": 1,
@@ -883,12 +1737,11 @@
             {
               "Type": 3,
               "Name": "Server cursor reset",
-              "Description": "The server lost or deliberately discarded only its transient cursor and\nreplay journal. Persisted weather sections remain usable, and missing\nhistorical data can be retrieved again from Open-Meteo."
+              "Description": "The server lost or deliberately discarded only its transient cursor and replay journal. Persisted weather sections remain usable, and missing historical data can be retrieved again from Open-Meteo."
             }
           ]
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
       "Name": "SprinklerWeatherSectionV1",
@@ -917,46 +1770,17 @@
             }
           ]
         }
-      ],
-      "Strings": {}
-    },
-    {
-      "Name": "SprinklerWeatherSnapshotV1",
-      "DisplayName": "Sprinkler weather snapshot",
-      "Description": "Contains the last successfully accepted value of each requested weather\nsection. Missing sections have no usable cached value; stale sections remain\npresent with their original `valid_until` timestamps.",
-      "List": [
-        {
-          "Type": 0,
-          "Name": "Sprinkler weather snapshot",
-          "Description": "Contains the last successfully accepted value of each requested weather\nsection. Missing sections have no usable cached value; stale sections remain\npresent with their original `valid_until` timestamps."
-        },
-        {
-          "Type": 1,
-          "Name": "Recent history",
-          "Description": "The requested historical periods, when usable cached history exists."
-        },
-        {
-          "Type": 2,
-          "Name": "Current conditions",
-          "Description": "The last accepted current conditions when requested and available."
-        },
-        {
-          "Type": 3,
-          "Name": "Forecast",
-          "Description": "The requested forecast periods, when usable cached forecast data exists."
-        }
-      ],
-      "Strings": {}
+      ]
     },
     {
       "Name": "SprinklerWeatherSnapshotV2",
       "DisplayName": "Sprinkler weather snapshot V2",
-      "Description": "Contains independently available full-observation history, current\nconditions, and forecast sections. Missing sections have no usable cached\nvalue; stale sections retain their original validity timestamps.",
+      "Description": "Contains independently available full-observation history, current conditions, and forecast sections. Missing sections have no usable cached value; stale sections retain their original validity timestamps.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler weather snapshot V2",
-          "Description": "Contains independently available full-observation history, current\nconditions, and forecast sections. Missing sections have no usable cached\nvalue; stale sections retain their original validity timestamps."
+          "Description": "Contains independently available full-observation history, current conditions, and forecast sections. Missing sections have no usable cached value; stale sections retain their original validity timestamps."
         },
         {
           "Type": 1,
@@ -973,18 +1797,17 @@
           "Name": "Forecast",
           "Description": "The requested forecast periods when usable cached data exists."
         }
-      ],
-      "Strings": {}
+      ]
     },
     {
       "Name": "SprinklerWeatherTimeRangeV1",
       "DisplayName": "Sprinkler weather time range",
-      "Description": "Selects a half-open interval of historical or forecast periods for recovery.\nA period is selected when its start time is at least `starts_at` and earlier\nthan `ends_before`.",
+      "Description": "Selects a half-open interval of historical or forecast periods for recovery. A period is selected when its start time is at least `starts_at` and earlier than `ends_before`.",
       "List": [
         {
           "Type": 0,
           "Name": "Sprinkler weather time range",
-          "Description": "Selects a half-open interval of historical or forecast periods for recovery.\nA period is selected when its start time is at least `starts_at` and earlier\nthan `ends_before`."
+          "Description": "Selects a half-open interval of historical or forecast periods for recovery. A period is selected when its start time is at least `starts_at` and earlier than `ends_before`."
         },
         {
           "Type": 1,
@@ -994,10 +1817,9 @@
         {
           "Type": 2,
           "Name": "End time",
-          "Description": "The exclusive upper bound for selected period start times. This value\nmust be later than `starts_at`."
+          "Description": "The exclusive upper bound for selected period start times. This value must be later than `starts_at`."
         }
-      ],
-      "Strings": {}
+      ]
     }
   ]
 }

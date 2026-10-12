@@ -1,0 +1,2656 @@
+{
+  "DocumentVersion": "0.0.2",
+  "Locale": "zh-Hans",
+  "DisplayName": "Smart Building Climate",
+  "Description": "Helps keep rooms comfortable by coordinating thermostats, indoor sensors, outdoor weather, and optional local sensors.\nAdd the rooms in the building, choose which thermostat serves each room, and select the people who should receive important heating and cooling warnings. Each room gets its own comfort controls, current conditions, and schedule.",
+  "StringResources": {
+    "HVAC_CONDITION_CONTROL_UNAVAILABLE": "temperature control unavailable",
+    "HVAC_CONDITION_COOLING_NOT_RECOVERING": "cooling not recovering",
+    "HVAC_CONDITION_EXCESSIVE_HEAT": "excessive heat",
+    "HVAC_CONDITION_FREEZE_RISK": "freeze risk",
+    "HVAC_CONDITION_HEATING_NOT_RECOVERING": "heating not recovering",
+    "HVAC_CONTROL_INVALID_NORMALIZED_PREFERENCE": "Comfort or savings must be between minus one and one.",
+    "HVAC_CONTROL_INVALID_TEMPERATURE_BAND": "The requested temperatures conflict with each other or the physical thermostat limits.",
+    "HVAC_CONTROL_REVISION_CONFLICT": "The room changed on another client. Review the current settings and retry.",
+    "HVAC_CONTROL_TEMPORARILY_UNAVAILABLE": "The thermostat limits are not currently available. Retry after its next report.",
+    "HVAC_CONTROL_UNSUPPORTED_OPERATING_PREFERENCE": "The physical thermostat does not support that operating preference.",
+    "HVAC_EXTERNAL_FEATURE_INPUTS": "Optional building HVAC utility, equipment, occupancy, calendar, and metering inputs.",
+    "HVAC_LOCAL_OUTDOOR_AIR_QUALITY": "Local outdoor air quality for this building.",
+    "HVAC_LOCAL_OUTDOOR_HUMIDITY": "Local outdoor humidity for this building.",
+    "HVAC_LOCAL_OUTDOOR_TEMPERATURE": "Local outdoor temperature for this building.",
+    "HVAC_ML_MODELS": "Accepted building climate thermal prediction models for {0}.",
+    "HVAC_ML_SAMPLE": "Thermal learning sample history for {0}.",
+    "HVAC_OUTDOOR_AIR_QUALITY": "Modeled outdoor air quality for this building.",
+    "HVAC_ROOM_CONTROL": "Room HVAC control and revision for {0}.",
+    "HVAC_ROOM_LEARNING": "Room HVAC continuous-learning state for {0}.",
+    "HVAC_ROOM_SCHEDULE": "Calculated schedule: {0}.",
+    "HVAC_ROOM_SENSOR_STATE": "Room environmental sensor state for {0}.",
+    "HVAC_ROOM_STATISTICS": "Room HVAC statistics and recent conditions for {0}.",
+    "HVAC_ROOM_STATUS": "Room status: {0}. HVAC: {1}. Air quality: {2}.",
+    "HVAC_ROOM_URGENT_NOTIFICATION_STATE": "Urgent HVAC notification state for {0}.",
+    "HVAC_URGENT_CONDITION_RECOVERED": "HVAC warning cleared for {0}: {1}. Current temperature is {2}.",
+    "HVAC_URGENT_CONTROL_UNAVAILABLE": "Urgent HVAC warning for {0}: trustworthy temperature or thermostat data has been unavailable for {1}. Check the sensors and thermostat.",
+    "HVAC_URGENT_COOLING_NOT_RECOVERING": "Urgent HVAC warning for {0}: cooling has not restored the room after {1}; current temperature is {2}. Check the cooling system.",
+    "HVAC_URGENT_EXCESSIVE_HEAT": "Urgent HVAC warning for {0}: room temperature is {1}. Check cooling and the room promptly. This is not a life-safety alarm.",
+    "HVAC_URGENT_FREEZE_RISK": "Urgent HVAC warning for {0}: room temperature is {1}. Check heating and protect plumbing. This is not a life-safety alarm.",
+    "HVAC_URGENT_HEATING_NOT_RECOVERING": "Urgent HVAC warning for {0}: heating has not restored the room after {1}; current temperature is {2}. Check the heating system.",
+    "HVAC_WEATHER_CURRENT": "Current building HVAC weather for this building.",
+    "HVAC_WEATHER_FORECAST": "Building HVAC weather forecast for this building.",
+    "HVAC_WEATHER_HISTORY": "Building HVAC weather history for this building.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Allow the building climate task to receive location-specific outdoor conditions and forecasts from the weather agent."
+  },
+  "List": [
+    {
+      "Name": "libertas_building_climate",
+      "DisplayName": "Smart Building Climate",
+      "Description": "Keeps each room comfortable while balancing comfort and energy use across thermostats that may serve more than one room. The user names the rooms, assigns their thermostats and indoor sensors, optionally chooses outdoor sensors, and chooses local weather, additional building information, and people to notify. The user can select each room's heating and cooling mode, preferred temperature range, and balance between comfort and savings. The climate controller combines current sensor readings and weather with available energy-price, occupancy, window, calendar, meter, and central equipment information. The climate controller automatically learns how rooms respond, coordinates shared thermostats, adjusts bounded heating and cooling setpoints, and calculates upcoming room plans. The climate controller shows room and outdoor conditions, air quality, sensor availability, heating or cooling activity, effective setpoints, comfort statistics, learned behavior, and upcoming plans. The climate controller sends selected people warnings, reminders, and recovery messages for freeze risk, excessive heat, unavailable control, or ineffective heating and cooling; these are not life-safety alarms.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building",
+          "Description": "Add rooms first, then add thermostats and choose the rooms each one serves. Every room needs at least one temperature sensor and must be assigned to exactly one thermostat. Humidity and air quality sensors are optional. Also choose at least one person to receive important warnings."
+        },
+        {
+          "Type": 1,
+          "Name": "Weather service",
+          "Description": "Choose the local weather service used to help plan heating and cooling."
+        },
+        {
+          "Type": 2,
+          "Name": "Additional building information",
+          "Description": "Optionally choose a service that provides energy prices, occupancy, window state, meters, calendar information, or central equipment data. Leave this blank when that information is not available.",
+          "NullText": "不使用额外的楼宇信息",
+          "SetText": "使用服务："
+        }
+      ],
+      "DefaultText": "Smart building climate"
+    }
+  ],
+  "Types": [
+    {
+      "Name": "BuildingHvacActiveUrgentConditionV1",
+      "DisplayName": "Active urgent HVAC condition",
+      "Description": "Exposes one confirmed condition in a room runtime snapshot. A condition remains active during its recovery-confirmation interval so stale or oscillating data cannot falsely clear an urgent warning.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Active urgent HVAC condition",
+          "Description": "Exposes one confirmed condition in a room runtime snapshot. A condition remains active during its recovery-confirmation interval so stale or oscillating data cannot falsely clear an urgent warning."
+        },
+        {
+          "Type": 1,
+          "Name": "Condition",
+          "Description": "The confirmed time-sensitive HVAC condition."
+        },
+        {
+          "Type": 2,
+          "Name": "Severity",
+          "Description": "The current Libertas delivery priority for this condition."
+        },
+        {
+          "Type": 3,
+          "Name": "Active since",
+          "Description": "The UTC time at which the continuously qualifying condition began, not the later time at which its confirmation interval expired."
+        },
+        {
+          "Type": 4,
+          "Name": "Updated at",
+          "Description": "The UTC time represented by the latest fresh evidence for the condition."
+        },
+        {
+          "Type": 5,
+          "Name": "Room temperature",
+          "Description": "The latest fresh room temperature in degrees Celsius when the condition has a trustworthy measurement. It is absent for unavailable control."
+        },
+        {
+          "Type": 6,
+          "Name": "Last notification time",
+          "Description": "The UTC time when the controller most recently submitted this condition to the Libertas notification framework. It is absent until the first notification attempt has been persisted and submitted."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacAirMeasurementKindV1",
+      "DisplayName": "Sensor air measurement kind",
+      "Description": "Identifies one optional standard Matter concentration-measurement cluster discovered on the configured outdoor Air Quality Sensor. The controller does not require every sensor to implement every kind.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sensor air measurement kind",
+          "Description": "Identifies one optional standard Matter concentration-measurement cluster discovered on the configured outdoor Air Quality Sensor. The controller does not require every sensor to implement every kind.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Carbon dioxide",
+              "Description": "Carbon-dioxide concentration, commonly used to assess ventilation."
+            },
+            {
+              "Type": 2,
+              "Name": "Carbon monoxide",
+              "Description": "Carbon-monoxide concentration. This supervisory value never replaces a certified life-safety alarm."
+            },
+            {
+              "Type": 3,
+              "Name": "Nitrogen dioxide",
+              "Description": "Nitrogen-dioxide concentration."
+            },
+            {
+              "Type": 4,
+              "Name": "Ozone",
+              "Description": "Ozone concentration."
+            },
+            {
+              "Type": 5,
+              "Name": "PM1",
+              "Description": "Particulate matter with aerodynamic diameter at most 1 micrometer."
+            },
+            {
+              "Type": 6,
+              "Name": "PM2.5",
+              "Description": "Particulate matter with aerodynamic diameter at most 2.5 micrometers."
+            },
+            {
+              "Type": 7,
+              "Name": "PM10",
+              "Description": "Particulate matter with aerodynamic diameter at most 10 micrometers."
+            },
+            {
+              "Type": 8,
+              "Name": "Formaldehyde",
+              "Description": "Formaldehyde concentration."
+            },
+            {
+              "Type": 9,
+              "Name": "Total volatile organic compounds",
+              "Description": "Total volatile-organic-compound concentration."
+            },
+            {
+              "Type": 10,
+              "Name": "Radon",
+              "Description": "Radon activity concentration."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacAirMeasurementUnitV1",
+      "DisplayName": "Sensor air measurement unit",
+      "Description": "Preserves the standard Matter unit reported with a concentration. Consumers must interpret `measured_value_in_reported_unit` together with this unit and must not convert mass concentration to a mixing ratio without the required gas and atmospheric context.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sensor air measurement unit",
+          "Description": "Preserves the standard Matter unit reported with a concentration. Consumers must interpret `measured_value_in_reported_unit` together with this unit and must not convert mass concentration to a mixing ratio without the required gas and atmospheric context.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Parts per million",
+              "Description": "A mixing ratio in parts per million."
+            },
+            {
+              "Type": 2,
+              "Name": "Parts per billion",
+              "Description": "A mixing ratio in parts per billion."
+            },
+            {
+              "Type": 3,
+              "Name": "Parts per trillion",
+              "Description": "A mixing ratio in parts per trillion."
+            },
+            {
+              "Type": 4,
+              "Name": "Milligrams per cubic meter",
+              "Description": "A mass concentration in milligrams per cubic meter."
+            },
+            {
+              "Type": 5,
+              "Name": "Micrograms per cubic meter",
+              "Description": "A mass concentration in micrograms per cubic meter."
+            },
+            {
+              "Type": 6,
+              "Name": "Nanograms per cubic meter",
+              "Description": "A mass concentration in nanograms per cubic meter."
+            },
+            {
+              "Type": 7,
+              "Name": "Picograms per cubic meter",
+              "Description": "A mass concentration in picograms per cubic meter."
+            },
+            {
+              "Type": 8,
+              "Name": "Becquerels per cubic meter",
+              "Description": "A radioactive-activity concentration in becquerels per cubic meter."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacAirMeasurementV1",
+      "DisplayName": "Sensor air measurement",
+      "Description": "Carries one current concentration discovered from an optional cluster on the configured Matter Air Quality Sensor. The runtime accepts only finite, nonnegative measurements whose Matter measurement medium is air.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sensor air measurement",
+          "Description": "Carries one current concentration discovered from an optional cluster on the configured Matter Air Quality Sensor. The runtime accepts only finite, nonnegative measurements whose Matter measurement medium is air."
+        },
+        {
+          "Type": 1,
+          "Name": "Measurement kind",
+          "Description": "The pollutant or particulate represented by this value."
+        },
+        {
+          "Type": 2,
+          "Name": "Measured value in reported unit",
+          "Description": "The finite nonnegative numeric value in `reported_unit`."
+        },
+        {
+          "Type": 3,
+          "Name": "Reported unit",
+          "Description": "The standard Matter measurement unit accompanying this value."
+        },
+        {
+          "Type": 4,
+          "Name": "Concentration level",
+          "Description": "The optional standard Matter qualitative classification for this particular concentration."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacAirQualityReadingV1",
+      "DisplayName": "Sensor air quality reading",
+      "Description": "Caches the last accepted overall classification and every supported current concentration from the optional Matter Air Quality Sensor. Optional cluster discovery makes PM2.5, carbon dioxide, and other supported measurements runtime capabilities rather than configuration flags.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sensor air quality reading",
+          "Description": "Caches the last accepted overall classification and every supported current concentration from the optional Matter Air Quality Sensor. Optional cluster discovery makes PM2.5, carbon dioxide, and other supported measurements runtime capabilities rather than configuration flags."
+        },
+        {
+          "Type": 1,
+          "Name": "Observed at",
+          "Description": "The UTC time represented by the accepted Air Quality Sensor data."
+        },
+        {
+          "Type": 2,
+          "Name": "Valid until",
+          "Description": "The exclusive UTC deadline after which the controller treats all values in this reading as stale."
+        },
+        {
+          "Type": 3,
+          "Name": "Overall air quality",
+          "Description": "The optional standard Matter overall classification."
+        },
+        {
+          "Type": 4,
+          "Name": "Concentration measurements",
+          "Description": "Current values from supported standard Matter concentration clusters, ordered by measurement kind with at most one value per kind. Missing kinds are unsupported, unavailable, or stale and are never inferred safe."
+        },
+        {
+          "Type": 5,
+          "Name": "Concentration measurement",
+          "Description": "One typed value including its sensor-reported unit."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacAirQualityV1",
+      "DisplayName": "Sensor air quality",
+      "Description": "Maps the standard Matter Air Quality cluster's overall classification. This classification is descriptive sensor output; stale or missing data is never evidence that outdoor air is safe for ventilation.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sensor air quality",
+          "Description": "Maps the standard Matter Air Quality cluster's overall classification. This classification is descriptive sensor output; stale or missing data is never evidence that outdoor air is safe for ventilation.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Unknown",
+              "Description": "The sensor cannot classify current air quality."
+            },
+            {
+              "Type": 2,
+              "Name": "Good",
+              "Description": "The sensor classifies current air quality as good."
+            },
+            {
+              "Type": 3,
+              "Name": "Fair",
+              "Description": "The sensor classifies current air quality as fair."
+            },
+            {
+              "Type": 4,
+              "Name": "Moderate",
+              "Description": "The sensor classifies current air quality as moderate."
+            },
+            {
+              "Type": 5,
+              "Name": "Poor",
+              "Description": "The sensor classifies current air quality as poor."
+            },
+            {
+              "Type": 6,
+              "Name": "Very poor",
+              "Description": "The sensor classifies current air quality as very poor."
+            },
+            {
+              "Type": 7,
+              "Name": "Extremely poor",
+              "Description": "The sensor classifies current air quality as extremely poor."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacBuildingV1",
+      "DisplayName": "Building setup",
+      "Description": "Add rooms first, then add thermostats and choose the rooms each one serves.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building setup",
+          "Description": "Add rooms first, then add thermostats and choose the rooms each one serves."
+        },
+        {
+          "Type": 1,
+          "Name": "Rooms",
+          "Description": "Add every room that should have its own climate controls."
+        },
+        {
+          "Type": 2,
+          "Name": "Room",
+          "Description": "One named room with its own controls."
+        },
+        {
+          "Type": 3,
+          "Name": "Thermostats",
+          "Description": "Add the thermostats and choose the rooms and sensors served by each one."
+        },
+        {
+          "Type": 4,
+          "Name": "Thermostat",
+          "Description": "One thermostat and the rooms it serves."
+        },
+        {
+          "Type": 5,
+          "Name": "Outdoor sensors",
+          "Description": "Optionally choose local outdoor temperature, humidity, and air quality sensors. Local readings are used together with the weather service.",
+          "NullText": "不使用室外传感器",
+          "SetText": "使用室外传感器："
+        },
+        {
+          "Type": 6,
+          "Name": "People to notify",
+          "Description": "Choose who should receive important heating and cooling warnings, reminders, and recovery messages. These are not life-safety alarms."
+        },
+        {
+          "Type": 7,
+          "Name": "Person to notify",
+          "Description": "One person who should receive building climate warnings."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacConcentrationLevelV1",
+      "DisplayName": "Sensor concentration level",
+      "Description": "Maps the optional qualitative level reported by one standard Matter concentration-measurement cluster.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Sensor concentration level",
+          "Description": "Maps the optional qualitative level reported by one standard Matter concentration-measurement cluster.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Unknown",
+              "Description": "The sensor cannot classify this concentration."
+            },
+            {
+              "Type": 2,
+              "Name": "Low",
+              "Description": "The sensor classifies this concentration as low."
+            },
+            {
+              "Type": 3,
+              "Name": "Medium",
+              "Description": "The sensor classifies this concentration as medium."
+            },
+            {
+              "Type": 4,
+              "Name": "High",
+              "Description": "The sensor classifies this concentration as high."
+            },
+            {
+              "Type": 5,
+              "Name": "Critical",
+              "Description": "The sensor classifies this concentration as critical."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacCrossZoneInfluenceV1",
+      "DisplayName": "Cross-zone influence",
+      "Description": "Exposes the learned read-only effect of one other thermostat-zone operating while this room's own thermostat-zone is inactive. The values are supervisory predictions, never equipment or life-safety limits.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Cross-zone influence",
+          "Description": "Exposes the learned read-only effect of one other thermostat-zone operating while this room's own thermostat-zone is inactive. The values are supervisory predictions, never equipment or life-safety limits."
+        },
+        {
+          "Type": 1,
+          "Name": "Source thermostat",
+          "Description": "The other Matter thermostat whose heating or cooling calls create the learned passive effect in this room."
+        },
+        {
+          "Type": 2,
+          "Name": "Heating effect",
+          "Description": "Predicted room temperature rise in degrees Celsius per hour of source thermostat heating. It is absent until sufficient identifiable evidence exists."
+        },
+        {
+          "Type": 3,
+          "Name": "Heating confidence",
+          "Description": "Normalized confidence from 0.0 through 1.0 in the heating-effect estimate."
+        },
+        {
+          "Type": 4,
+          "Name": "Cooling effect",
+          "Description": "Predicted room temperature drop in degrees Celsius per hour of source thermostat cooling. It is absent until sufficient identifiable evidence exists."
+        },
+        {
+          "Type": 5,
+          "Name": "Cooling confidence",
+          "Description": "Normalized confidence from 0.0 through 1.0 in the cooling-effect estimate."
+        },
+        {
+          "Type": 6,
+          "Name": "Learned at",
+          "Description": "The UTC time of the latest accepted observation for either mode. It is absent before the first accepted observation."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacExternalFeatureClientV1",
+      "DisplayName": "Additional building information",
+      "Description": "Optionally use energy prices, occupancy, windows, meters, or equipment data from another service.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Additional building information",
+          "Description": "Optionally use energy prices, occupancy, windows, meters, or equipment data from another service."
+        },
+        {
+          "Type": 1,
+          "Name": "Information service",
+          "Description": "Choose where the optional building information comes from."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacExternalFeatureInputErrorV1",
+      "DisplayName": "External feature input error",
+      "Description": "Explains why the optional operational-data stream cannot currently provide a complete snapshot.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "External feature input error",
+          "Description": "Explains why the optional operational-data stream cannot currently provide a complete snapshot.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Temporarily unavailable",
+              "Description": "The provider cannot currently query its upstream utility, equipment, or building-management source."
+            },
+            {
+              "Type": 2,
+              "Name": "Invalid source data",
+              "Description": "The upstream response could not be validated without guessing."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacExternalFeatureInputV1",
+      "DisplayName": "External feature input",
+      "Description": "Supplies one time-bounded numeric value for an existing machine-learning column. The input cannot add a new model column or override a value observed directly by this controller. It is intended for utility schedules, central equipment telemetry, occupancy and window state, local calendar context, thermostat PI demand, delivered thermal energy, and metered building energy.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "External feature input",
+          "Description": "Supplies one time-bounded numeric value for an existing machine-learning column. The input cannot add a new model column or override a value observed directly by this controller. It is intended for utility schedules, central equipment telemetry, occupancy and window state, local calendar context, thermostat PI demand, delivered thermal energy, and metered building energy."
+        },
+        {
+          "Type": 1,
+          "Name": "Feature name",
+          "Description": "Exact stable name from the controller's machine-learning manifest, such as `utility.current_price_per_kilowatt_hour` or `equipment.central.current.electric_power_kilowatts`. Unknown names are rejected rather than silently creating a different model shape."
+        },
+        {
+          "Type": 2,
+          "Name": "Observed at",
+          "Description": "UTC timestamp represented by this value."
+        },
+        {
+          "Type": 3,
+          "Name": "Valid until",
+          "Description": "Exclusive UTC freshness deadline. Expired values remain persistently recoverable but are passed to XGBoost as missing."
+        },
+        {
+          "Type": 4,
+          "Name": "Value",
+          "Description": "Finite value in the unit stated by `feature_name`. A semantic zero must be sent as zero; omit an unavailable feature from the snapshot."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacExternalFeatureProtocol",
+      "DisplayName": "Building HVAC external-feature protocol",
+      "Description": "Defines a full-snapshot one-shot and subscription contract for optional utility, equipment, occupancy, calendar, and metering inputs. The endpoint operation distinguishes a one-shot read from a subscription.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC external-feature protocol",
+          "Description": "Defines a full-snapshot one-shot and subscription contract for optional utility, equipment, occupancy, calendar, and metering inputs. The endpoint operation distinguishes a one-shot read from a subscription."
+        },
+        {
+          "Type": 1,
+          "Name": "Get external features",
+          "Description": "Reads the current snapshot or starts a subscription."
+        },
+        {
+          "Type": 2,
+          "Name": "External features",
+          "Description": "Correlated complete snapshot response. Subscription clients restart their timeout after this response, later updates, and PeerAlive."
+        },
+        {
+          "Type": 3,
+          "Name": "Maximum wait interval",
+          "Description": "Nonzero maximum seconds before a subscription client retries another external-feature request after silence."
+        },
+        {
+          "Type": 4,
+          "Name": "Snapshot",
+          "Description": "Complete current optional-input replacement."
+        },
+        {
+          "Type": 5,
+          "Name": "External feature update",
+          "Description": "Complete replacement after an accepted change; no-change liveness uses PeerAlive."
+        },
+        {
+          "Type": 6,
+          "Name": "Snapshot",
+          "Description": "Complete current optional-input replacement."
+        },
+        {
+          "Type": 7,
+          "Name": "External feature error",
+          "Description": "Correlated typed error. The previous persistent snapshot remains intact."
+        },
+        {
+          "Type": 8,
+          "Name": "Error",
+          "Description": "Provider or validation failure."
+        },
+        {
+          "Type": 9,
+          "Name": "Retry after",
+          "Description": "Nonzero delay before retrying."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacExternalFeatureSnapshotV1",
+      "DisplayName": "External feature snapshot",
+      "Description": "Carries the complete currently known optional operational inputs. Values are sorted by feature name. `retrieved_at` advances for a changed replacement; no-change liveness uses PeerAlive. Invalid, older, or conflicting reports leave the last valid independently persisted snapshot unchanged.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "External feature snapshot",
+          "Description": "Carries the complete currently known optional operational inputs. Values are sorted by feature name. `retrieved_at` advances for a changed replacement; no-change liveness uses PeerAlive. Invalid, older, or conflicting reports leave the last valid independently persisted snapshot unchanged."
+        },
+        {
+          "Type": 1,
+          "Name": "Retrieved at",
+          "Description": "UTC time when the provider assembled and validated this complete replacement snapshot. A changed replacement must use a newer value."
+        },
+        {
+          "Type": 2,
+          "Name": "Inputs",
+          "Description": "Complete sorted set of optional numeric inputs."
+        },
+        {
+          "Type": 3,
+          "Name": "External feature input",
+          "Description": "One time-bounded value for an existing machine-learning column."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacHumidityReadingV1",
+      "DisplayName": "Humidity reading",
+      "Description": "Caches one accepted reading from a standard Matter Humidity Sensor logical device.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Humidity reading",
+          "Description": "Caches one accepted reading from a standard Matter Humidity Sensor logical device."
+        },
+        {
+          "Type": 1,
+          "Name": "Observed at",
+          "Description": "The UTC time represented by the Matter humidity report."
+        },
+        {
+          "Type": 2,
+          "Name": "Valid until",
+          "Description": "The exclusive UTC deadline after which the controller treats this reading as stale."
+        },
+        {
+          "Type": 3,
+          "Name": "Relative humidity",
+          "Description": "Measured relative humidity as a percentage."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacIndoorSensorStateV1",
+      "DisplayName": "Indoor sensor state",
+      "Description": "Exposes independently fresh readings from one configured indoor Matter sensor station. Temperature identifies the station; optional humidity and Air Quality Sensor logical devices may report on different schedules.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Indoor sensor state",
+          "Description": "Exposes independently fresh readings from one configured indoor Matter sensor station. Temperature identifies the station; optional humidity and Air Quality Sensor logical devices may report on different schedules."
+        },
+        {
+          "Type": 1,
+          "Name": "Temperature sensor",
+          "Description": "The station's required Matter Temperature Sensor logical device."
+        },
+        {
+          "Type": 2,
+          "Name": "Temperature",
+          "Description": "The last accepted reading from `temperature_sensor`."
+        },
+        {
+          "Type": 3,
+          "Name": "Humidity sensor",
+          "Description": "The optional Matter Humidity Sensor logical device paired with this station."
+        },
+        {
+          "Type": 4,
+          "Name": "Relative humidity",
+          "Description": "The last accepted reading from `humidity_sensor`."
+        },
+        {
+          "Type": 5,
+          "Name": "Air quality sensor",
+          "Description": "The optional Matter Air Quality Sensor logical device paired with this station."
+        },
+        {
+          "Type": 6,
+          "Name": "Air quality",
+          "Description": "The last accepted overall classification and runtime-discovered concentration measurements from `air_quality_sensor`."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacIndoorSensorV1",
+      "DisplayName": "Indoor sensor group",
+      "Description": "Choose the sensors at one place in the room. Temperature is required; humidity and air quality are optional.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Indoor sensor group",
+          "Description": "Choose the sensors at one place in the room. Temperature is required; humidity and air quality are optional."
+        },
+        {
+          "Type": 1,
+          "Name": "Temperature sensor",
+          "Description": "Choose the temperature sensor at this place in the room."
+        },
+        {
+          "Type": 2,
+          "Name": "Humidity sensor",
+          "Description": "Optionally choose a humidity sensor at the same place.",
+          "NullText": "不使用湿度传感器"
+        },
+        {
+          "Type": 3,
+          "Name": "Air quality sensor",
+          "Description": "Optionally choose an air quality sensor at the same place.",
+          "NullText": "不使用空气质量传感器"
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacLocalOutdoorSensorStateV1",
+      "DisplayName": "Local outdoor sensor state",
+      "Description": "Exposes the independently available sections of the optional outdoor Matter station. `None` for this whole value means no station is configured; a present state with a missing section means that section is unavailable or has no accepted reading.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Local outdoor sensor state",
+          "Description": "Exposes the independently available sections of the optional outdoor Matter station. `None` for this whole value means no station is configured; a present state with a missing section means that section is unavailable or has no accepted reading."
+        },
+        {
+          "Type": 1,
+          "Name": "Temperature",
+          "Description": "Last accepted reading from the station's required temperature sensor."
+        },
+        {
+          "Type": 2,
+          "Name": "Relative humidity",
+          "Description": "Last accepted reading from the station's optional humidity sensor."
+        },
+        {
+          "Type": 3,
+          "Name": "Air quality",
+          "Description": "Last accepted reading from the station's optional Air Quality Sensor and the concentration clusters it supports at runtime."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacMachineLearningFeatureVectorV1",
+      "DisplayName": "Compact machine-learning feature vector",
+      "Description": "Stores one ordered observation without repeating thousands of feature-name strings in every indexed record. The corresponding full ordered names are regenerated from configuration and checked against `manifest_sha256` before a sample can be selected or trained.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Compact machine-learning feature vector",
+          "Description": "Stores one ordered observation without repeating thousands of feature-name strings in every indexed record. The corresponding full ordered names are regenerated from configuration and checked against `manifest_sha256` before a sample can be selected or trained."
+        },
+        {
+          "Type": 1,
+          "Name": "Manifest SHA-256",
+          "Description": "Thirty-two deterministic checksum bytes over the feature-schema version and ordered names, including each name length so concatenation cannot create ambiguity."
+        },
+        {
+          "Type": 2,
+          "Name": "Feature count",
+          "Description": "Total number of columns, including omitted missing columns."
+        },
+        {
+          "Type": 3,
+          "Name": "Present values",
+          "Description": "Sorted sparse values. A missing column has no entry; a meaningful zero has an entry whose value is zero."
+        },
+        {
+          "Type": 4,
+          "Name": "Indexed feature",
+          "Description": "One present finite value at its manifest column."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacMachineLearningIndexedFeatureV1",
+      "DisplayName": "Indexed machine-learning feature",
+      "Description": "Stores one present value from a compact sparse observation. Missing columns are omitted; semantic zeros remain present entries.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Indexed machine-learning feature",
+          "Description": "Stores one present value from a compact sparse observation. Missing columns are omitted; semantic zeros remain present entries."
+        },
+        {
+          "Type": 1,
+          "Name": "Column index",
+          "Description": "Zero-based position in the manifest named by the containing vector."
+        },
+        {
+          "Type": 2,
+          "Name": "Value",
+          "Description": "Finite present value. Missing values have no indexed entry."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacMachineLearningModelSetV1",
+      "DisplayName": "Persisted model set",
+      "Description": "Complete bounded set of independently promoted thermal models.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Persisted model set",
+          "Description": "Complete bounded set of independently promoted thermal models."
+        },
+        {
+          "Type": 1,
+          "Name": "Room endpoint",
+          "Description": "Stable room identity used as the persistent database key."
+        },
+        {
+          "Type": 2,
+          "Name": "Model slots",
+          "Description": "At most one active and one rollback model for each horizon."
+        },
+        {
+          "Type": 3,
+          "Name": "Model slot",
+          "Description": "One independently validated thermal horizon."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacMachineLearningModelSlotV1",
+      "DisplayName": "Persisted model slot",
+      "Description": "Keeps one active model and one immediate rollback artifact for a prediction horizon. The previous model is never used unless explicitly restored.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Persisted model slot",
+          "Description": "Keeps one active model and one immediate rollback artifact for a prediction horizon. The previous model is never used unless explicitly restored."
+        },
+        {
+          "Type": 1,
+          "Name": "Prediction horizon",
+          "Description": "Unique model target represented by this slot."
+        },
+        {
+          "Type": 2,
+          "Name": "Active model",
+          "Description": "Model permitted to produce bounded supervisory predictions."
+        },
+        {
+          "Type": 3,
+          "Name": "Previous model",
+          "Description": "Last superseded accepted model retained for rollback."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacMachineLearningModelV1",
+      "DisplayName": "Persisted XGBoost thermal model",
+      "Description": "Self-describing accepted model artifact. The UBJSON bytes are loaded only after the manifest, validation evidence, feature order, and checksum pass.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Persisted XGBoost thermal model",
+          "Description": "Self-describing accepted model artifact. The UBJSON bytes are loaded only after the manifest, validation evidence, feature order, and checksum pass."
+        },
+        {
+          "Type": 1,
+          "Name": "Room endpoint",
+          "Description": "Stable room identity whose thermal behavior this model learned."
+        },
+        {
+          "Type": 2,
+          "Name": "Prediction horizon",
+          "Description": "Thermal target represented by this model."
+        },
+        {
+          "Type": 3,
+          "Name": "Feature schema version",
+          "Description": "Exact feature-vector contract used for training."
+        },
+        {
+          "Type": 4,
+          "Name": "Ordered feature names",
+          "Description": "Human- and AI-readable manifest matching both the XGBoost model metadata and numeric column order. Trees split on indexes after training."
+        },
+        {
+          "Type": 5,
+          "Name": "Feature name",
+          "Description": "One stable feature identifier in model-column order."
+        },
+        {
+          "Type": 6,
+          "Name": "XGBoost version",
+          "Description": "Bundled native XGBoost version that produced the UBJSON artifact."
+        },
+        {
+          "Type": 7,
+          "Name": "Trained at",
+          "Description": "UTC timestamp when candidate fitting and validation completed."
+        },
+        {
+          "Type": 8,
+          "Name": "Training range start",
+          "Description": "Earliest feature timestamp included in candidate fitting."
+        },
+        {
+          "Type": 9,
+          "Name": "Training range end",
+          "Description": "Latest feature timestamp included in candidate fitting."
+        },
+        {
+          "Type": 10,
+          "Name": "Boost rounds",
+          "Description": "Number of shallow trees fitted by the bounded training policy."
+        },
+        {
+          "Type": 11,
+          "Name": "Maximum tree depth",
+          "Description": "Maximum depth allowed by the bounded training policy."
+        },
+        {
+          "Type": 12,
+          "Name": "Learning rate",
+          "Description": "XGBoost shrinkage used during fitting."
+        },
+        {
+          "Type": 13,
+          "Name": "Validation",
+          "Description": "Time-forward promotion evidence for this artifact."
+        },
+        {
+          "Type": 14,
+          "Name": "Model SHA-256",
+          "Description": "Thirty-two checksum bytes over `model_ubjson`, checked before loading."
+        },
+        {
+          "Type": 15,
+          "Name": "Model UBJSON",
+          "Description": "Bounded XGBoost model bytes. They are application data, not executable code, and are never interpreted until the manifest and checksum pass."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacMachineLearningSampleV1",
+      "DisplayName": "Machine-learning training sample",
+      "Description": "One indexed room observation and the temperature changes later measured at each supported horizon. It is written only after at least one target becomes known; missing targets remain available for later completion.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Machine-learning training sample",
+          "Description": "One indexed room observation and the temperature changes later measured at each supported horizon. It is written only after at least one target becomes known; missing targets remain available for later completion."
+        },
+        {
+          "Type": 1,
+          "Name": "Observed at",
+          "Description": "UTC timestamp of the feature observation and ordered sample key."
+        },
+        {
+          "Type": 2,
+          "Name": "Room endpoint",
+          "Description": "Stable room identity used to reject a sample read from the wrong indexed room history."
+        },
+        {
+          "Type": 3,
+          "Name": "Features",
+          "Description": "Compact sparse thermal feature values at `observed_at`. The manifest hash must match the full ordered names regenerated for this building."
+        },
+        {
+          "Type": 4,
+          "Name": "Fifteen-minute temperature change",
+          "Description": "Fused room temperature after 15 minutes minus the observed temperature."
+        },
+        {
+          "Type": 5,
+          "Name": "Thirty-minute temperature change",
+          "Description": "Fused room temperature after 30 minutes minus the observed temperature."
+        },
+        {
+          "Type": 6,
+          "Name": "Sixty-minute temperature change",
+          "Description": "Fused room temperature after 60 minutes minus the observed temperature."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacMachineLearningValidationV1",
+      "DisplayName": "Machine-learning validation metrics",
+      "Description": "Time-forward validation evidence used to decide whether a model may replace the deterministic fallback or an older accepted model.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Machine-learning validation metrics",
+          "Description": "Time-forward validation evidence used to decide whether a model may replace the deterministic fallback or an older accepted model."
+        },
+        {
+          "Type": 1,
+          "Name": "Training samples",
+          "Description": "Number of older ordered samples used to fit the candidate."
+        },
+        {
+          "Type": 2,
+          "Name": "Validation samples",
+          "Description": "Number of newest ordered samples held out from fitting."
+        },
+        {
+          "Type": 3,
+          "Name": "Candidate RMSE",
+          "Description": "Root mean square temperature-change error in degrees Celsius on the time-forward holdout."
+        },
+        {
+          "Type": 4,
+          "Name": "Baseline RMSE",
+          "Description": "Root mean square error of predicting no temperature change on the same holdout."
+        },
+        {
+          "Type": 5,
+          "Name": "Improvement",
+          "Description": "Fractional RMSE reduction relative to the deterministic baseline."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacOnlineRegressionStateV1",
+      "DisplayName": "Online regression state",
+      "Description": "Stores sufficient statistics for one continuously learned scalar relationship. The controller decays old weight in completed half-life steps, then adds each accepted observation without retaining an unbounded raw history.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Online regression state",
+          "Description": "Stores sufficient statistics for one continuously learned scalar relationship. The controller decays old weight in completed half-life steps, then adds each accepted observation without retaining an unbounded raw history."
+        },
+        {
+          "Type": 1,
+          "Name": "Updated at",
+          "Description": "The UTC time of the latest accepted observation. It is absent for an empty learner."
+        },
+        {
+          "Type": 2,
+          "Name": "Accepted observations",
+          "Description": "The lifetime number of accepted observations before forgetting weights."
+        },
+        {
+          "Type": 3,
+          "Name": "Effective sample weight",
+          "Description": "The quality-weighted observation count after age-based forgetting."
+        },
+        {
+          "Type": 4,
+          "Name": "Weighted input squared sum",
+          "Description": "The decayed sum of quality weight multiplied by squared model input."
+        },
+        {
+          "Type": 5,
+          "Name": "Weighted input-output sum",
+          "Description": "The decayed sum of quality weight multiplied by model input and observed output."
+        },
+        {
+          "Type": 6,
+          "Name": "Weighted output squared sum",
+          "Description": "The decayed sum of quality weight multiplied by squared observed output."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacOutdoorAirAnalyticsV1",
+      "DisplayName": "Outdoor air analytics",
+      "Description": "Contains psychrometric values derived from one fresh, internally consistent building-HVAC current-weather section. These values support sensible and latent load calculations without persisting redundant weather fields.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Outdoor air analytics",
+          "Description": "Contains psychrometric values derived from one fresh, internally consistent building-HVAC current-weather section. These values support sensible and latent load calculations without persisting redundant weather fields."
+        },
+        {
+          "Type": 1,
+          "Name": "Weather valid time",
+          "Description": "The provider time represented by the source current conditions."
+        },
+        {
+          "Type": 2,
+          "Name": "Humidity ratio",
+          "Description": "Kilograms of water vapor per kilogram of dry air, derived from dew point and surface pressure."
+        },
+        {
+          "Type": 3,
+          "Name": "Moist-air enthalpy",
+          "Description": "Approximate kilojoules per kilogram of dry air, derived from dry-bulb temperature and humidity ratio."
+        },
+        {
+          "Type": 4,
+          "Name": "Wet-bulb temperature",
+          "Description": "Approximate thermodynamic wet-bulb temperature in degrees Celsius, solved from pressure and the derived humidity ratio."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacOutdoorSensorV1",
+      "DisplayName": "Outdoor sensor group",
+      "Description": "Optionally use sensors at one representative outdoor location. Temperature is required; humidity and air quality are optional.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Outdoor sensor group",
+          "Description": "Optionally use sensors at one representative outdoor location. Temperature is required; humidity and air quality are optional."
+        },
+        {
+          "Type": 1,
+          "Name": "Outdoor temperature sensor",
+          "Description": "Choose a shaded sensor that measures the outdoor air, away from exhaust and equipment heat."
+        },
+        {
+          "Type": 2,
+          "Name": "Outdoor humidity sensor",
+          "Description": "Optionally choose a humidity sensor at the same outdoor location.",
+          "NullText": "不使用室外湿度传感器"
+        },
+        {
+          "Type": 3,
+          "Name": "Outdoor air quality sensor",
+          "Description": "Optionally choose an air quality sensor at the same outdoor location.",
+          "NullText": "不使用室外空气质量传感器"
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacPersistedCrossZoneLearnerV1",
+      "DisplayName": "Persisted cross-zone learner",
+      "Description": "Stores separate continuously learned heating and cooling sufficient statistics for one directional source-thermostat to affected-room edge.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Persisted cross-zone learner",
+          "Description": "Stores separate continuously learned heating and cooling sufficient statistics for one directional source-thermostat to affected-room edge."
+        },
+        {
+          "Type": 1,
+          "Name": "Source thermostat",
+          "Description": "The other Matter thermostat whose calls may influence this room."
+        },
+        {
+          "Type": 2,
+          "Name": "Heating learner",
+          "Description": "Learns positive residual room-temperature rise per source heating runtime hour."
+        },
+        {
+          "Type": 3,
+          "Name": "Cooling learner",
+          "Description": "Learns positive residual room-temperature drop per source cooling runtime hour."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacPersistedRoomConditionPeriodV1",
+      "DisplayName": "Persisted room condition period",
+      "Description": "Retains one bounded, time-aggregated room condition period so statistics and thermal-response calculations can continue after a restart without treating a last-known instantaneous sensor value as current.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Persisted room condition period",
+          "Description": "Retains one bounded, time-aggregated room condition period so statistics and thermal-response calculations can continue after a restart without treating a last-known instantaneous sensor value as current."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "The inclusive UTC start of this aggregated condition period."
+        },
+        {
+          "Type": 2,
+          "Name": "Duration",
+          "Description": "The nonzero length of the period in seconds."
+        },
+        {
+          "Type": 3,
+          "Name": "Room temperature",
+          "Description": "The time-weighted room temperature in degrees Celsius. It is absent for a period with no trustworthy room-temperature coverage."
+        },
+        {
+          "Type": 4,
+          "Name": "Room relative humidity",
+          "Description": "The time-weighted room relative humidity percentage. It is absent for a period with no trustworthy humidity coverage."
+        },
+        {
+          "Type": 5,
+          "Name": "HVAC activity",
+          "Description": "The dominant thermostat activity observed during this period."
+        },
+        {
+          "Type": 6,
+          "Name": "Effective heating setpoint",
+          "Description": "The time-weighted effective heating setpoint in degrees Celsius. It is absent when the room contributed no heating target."
+        },
+        {
+          "Type": 7,
+          "Name": "Effective cooling setpoint",
+          "Description": "The time-weighted effective cooling setpoint in degrees Celsius. It is absent when the room contributed no cooling target."
+        },
+        {
+          "Type": 8,
+          "Name": "Outdoor dry-bulb temperature",
+          "Description": "The time-aligned cached outdoor dry-bulb temperature in degrees Celsius. It is absent when no weather period covered this room period."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacPersistedUrgentConditionV1",
+      "DisplayName": "Persisted urgent-condition tracker",
+      "Description": "Stores one room condition's debounce, reminder, recovery, and last qualifying temperature evidence. Current sensor truth remains in the independently persisted sensor record.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Persisted urgent-condition tracker",
+          "Description": "Stores one room condition's debounce, reminder, recovery, and last qualifying temperature evidence. Current sensor truth remains in the independently persisted sensor record."
+        },
+        {
+          "Type": 1,
+          "Name": "Condition",
+          "Description": "The unique condition tracked by this room record."
+        },
+        {
+          "Type": 2,
+          "Name": "Tracking phase",
+          "Description": "Whether the condition is awaiting activation, active, or awaiting confirmed recovery."
+        },
+        {
+          "Type": 3,
+          "Name": "Condition started at",
+          "Description": "The UTC time at which evidence first continuously qualified for this occurrence."
+        },
+        {
+          "Type": 4,
+          "Name": "Phase started at",
+          "Description": "The UTC time at which the current tracking phase began."
+        },
+        {
+          "Type": 5,
+          "Name": "Updated at",
+          "Description": "The UTC time represented by the latest fresh evidence applied to this tracker."
+        },
+        {
+          "Type": 6,
+          "Name": "Last qualifying temperature",
+          "Description": "The latest fresh room temperature associated with this condition. It is absent only while temperature control is unavailable. Retaining it lets a restart preserve the last confirmed evidence without treating it as a new current sensor reading."
+        },
+        {
+          "Type": 7,
+          "Name": "Last notification time",
+          "Description": "The UTC time when this occurrence was most recently submitted to the notification framework. It is absent before activation."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacPersistentData",
+      "DisplayName": "Building climate persistent data",
+      "Description": "Defines every database record written by the controller. Room records use the configured room endpoint as their stable key. Local outdoor sensor and weather records are singleton sections. No record contains subscription cursors, peer state, or transaction identifiers.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building climate persistent data",
+          "Description": "Defines every database record written by the controller. Room records use the configured room endpoint as their stable key. Local outdoor sensor and weather records are singleton sections. No record contains subscription cursors, peer state, or transaction identifiers."
+        },
+        {
+          "Type": 1,
+          "Name": "Room control",
+          "Description": "Stores the last accepted writable room intent and its optimistic concurrency revision. It is written before publishing accepted runtime data."
+        },
+        {
+          "Type": 2,
+          "Name": "Control revision",
+          "Description": "The persisted room-control revision."
+        },
+        {
+          "Type": 3,
+          "Name": "Room control",
+          "Description": "The complete last accepted writable room intent."
+        },
+        {
+          "Type": 4,
+          "Name": "Room statistics",
+          "Description": "Stores the latest bounded room comfort and data-availability statistics and its recent condition periods so a restart does not silently reset the visible collection window or short-term thermal context."
+        },
+        {
+          "Type": 5,
+          "Name": "Room statistics",
+          "Description": "The complete persisted statistics collection window."
+        },
+        {
+          "Type": 6,
+          "Name": "Recent room conditions",
+          "Description": "Ordered, non-overlapping periods covering at most the most recent day. Missing sensor or weather coverage remains explicit inside each period."
+        },
+        {
+          "Type": 7,
+          "Name": "Room condition period",
+          "Description": "One aggregated indoor, setpoint, activity, and outdoor condition period."
+        },
+        {
+          "Type": 8,
+          "Name": "Room learning",
+          "Description": "Stores continuous cross-zone learning sufficient statistics for one affected room. Persist this record after each accepted learning update before exposing the newly derived influence."
+        },
+        {
+          "Type": 9,
+          "Name": "Room learning state",
+          "Description": "The complete bounded source-zone influence learner for this room."
+        },
+        {
+          "Type": 10,
+          "Name": "Room sensor state",
+          "Description": "Stores the independently last accepted readings for each configured indoor sensor station. The record is keyed by room endpoint; stale data remains historical context and is not treated as current after restart."
+        },
+        {
+          "Type": 11,
+          "Name": "Indoor sensor states",
+          "Description": "The bounded sensor-station list in configuration order. A missing optional reading does not erase another valid station capability."
+        },
+        {
+          "Type": 12,
+          "Name": "Indoor sensor state",
+          "Description": "Last accepted temperature, humidity, and air-quality sections for one station."
+        },
+        {
+          "Type": 13,
+          "Name": "Local outdoor temperature",
+          "Description": "Stores the last valid reading from the configured local outdoor temperature sensor independently from weather and other station sections. A failed or invalid Matter report leaves this record unchanged."
+        },
+        {
+          "Type": 14,
+          "Name": "Local outdoor temperature",
+          "Description": "The accepted temperature value and its freshness deadline."
+        },
+        {
+          "Type": 15,
+          "Name": "Local outdoor humidity",
+          "Description": "Stores the last valid reading from the optional local outdoor humidity sensor independently. Absence of this record means no reading is available and does not clear temperature or air quality."
+        },
+        {
+          "Type": 16,
+          "Name": "Local outdoor humidity",
+          "Description": "The accepted relative-humidity value and its freshness deadline."
+        },
+        {
+          "Type": 17,
+          "Name": "Local outdoor air quality",
+          "Description": "Stores the last valid overall air-quality classification and supported concentration readings from the optional Matter Air Quality Sensor. Missing or stale values remain unknown, not safe."
+        },
+        {
+          "Type": 18,
+          "Name": "Local outdoor air quality",
+          "Description": "The accepted bounded air-quality reading and its freshness deadline."
+        },
+        {
+          "Type": 19,
+          "Name": "Weather history",
+          "Description": "Stores the last accepted building-HVAC physical weather history section. A failed refresh leaves this record unchanged."
+        },
+        {
+          "Type": 20,
+          "Name": "Weather history",
+          "Description": "Recent outdoor physical conditions used for load-model context."
+        },
+        {
+          "Type": 21,
+          "Name": "Current weather",
+          "Description": "Stores the last accepted building-HVAC current physical weather section. Stale data remains available but is not evidence that outdoor-air or economizer operation is safe."
+        },
+        {
+          "Type": 22,
+          "Name": "Current weather",
+          "Description": "The last accepted current outdoor physical conditions."
+        },
+        {
+          "Type": 23,
+          "Name": "Weather forecast",
+          "Description": "Stores the last accepted building-HVAC physical forecast section for restart-time preheating and precooling calculations."
+        },
+        {
+          "Type": 24,
+          "Name": "Weather forecast",
+          "Description": "The last accepted outdoor physical forecast."
+        },
+        {
+          "Type": 25,
+          "Name": "Outdoor air quality",
+          "Description": "Stores the last accepted modeled outdoor-air-quality section separately from physical weather. Missing or stale model data remains unknown, not safe."
+        },
+        {
+          "Type": 26,
+          "Name": "Outdoor air quality",
+          "Description": "The last accepted modeled outdoor-air-quality periods."
+        },
+        {
+          "Type": 27,
+          "Name": "External feature inputs",
+          "Description": "Stores the last complete valid optional operational-input snapshot independently from Matter and weather data. Expiration makes individual values missing for inference but does not delete recoverable evidence."
+        },
+        {
+          "Type": 28,
+          "Name": "External feature snapshot",
+          "Description": "Utility, equipment, occupancy, local-calendar, demand, and metering inputs accepted from the configured optional endpoint."
+        },
+        {
+          "Type": 29,
+          "Name": "Room urgent notification state",
+          "Description": "Stores bounded activation, reminder, and recovery state for one room. Persist each state transition before sending its notification so a restart does not reset confirmation intervals or create an avoidable duplicate-warning burst."
+        },
+        {
+          "Type": 30,
+          "Name": "Urgent-condition trackers",
+          "Description": "At most one tracker exists for each condition. An absent tracker means that condition is inactive with no pending transition."
+        },
+        {
+          "Type": 31,
+          "Name": "Urgent-condition tracker",
+          "Description": "One condition's persisted debounce and last-notification state."
+        },
+        {
+          "Type": 32,
+          "Name": "Machine-learning models",
+          "Description": "Stores every accepted thermal model together with one rollback artifact per horizon. A candidate is persisted here before it is activated on the XGBoost worker."
+        },
+        {
+          "Type": 33,
+          "Name": "Model set",
+          "Description": "Complete bounded active and rollback model state."
+        },
+        {
+          "Type": 34,
+          "Name": "Machine-learning sample",
+          "Description": "One record in a room-keyed indexed history. Its database index is `sample.observed_at`; the value repeats the timestamp and stable room endpoint so a mismatched or corrupt record can be rejected. The controller retains 400 days, then selects bounded recent and stratified seasonal, outdoor-weather, and equipment-state evidence for training."
+        },
+        {
+          "Type": 35,
+          "Name": "Training sample",
+          "Description": "Validated features and any temperature-change labels that have become available for this observation."
+        },
+        {
+          "Type": 36,
+          "Name": "Atomic active and rollback model references",
+          "Description": ""
+        },
+        {
+          "Type": 37,
+          "Name": "slots",
+          "Description": ""
+        },
+        {
+          "Type": 38,
+          "Name": "",
+          "Description": ""
+        },
+        {
+          "Type": 39,
+          "Name": "Immutable portion of one encoded model artifact",
+          "Description": ""
+        },
+        {
+          "Type": 40,
+          "Name": "bytes",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomActivityV1",
+      "DisplayName": "Room HVAC activity",
+      "Description": "Describes the observed or inferred current activity affecting one room.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room HVAC activity",
+          "Description": "Describes the observed or inferred current activity affecting one room.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Unknown activity",
+              "Description": "The associated thermostat has not reported a trustworthy running state."
+            },
+            {
+              "Type": 2,
+              "Name": "Idle",
+              "Description": "The associated thermostat reports no active heating or cooling."
+            },
+            {
+              "Type": 3,
+              "Name": "Heating",
+              "Description": "The associated thermostat reports active heating."
+            },
+            {
+              "Type": 4,
+              "Name": "Cooling",
+              "Description": "The associated thermostat reports active cooling."
+            },
+            {
+              "Type": 5,
+              "Name": "Fan only",
+              "Description": "The associated thermostat reports fan operation without active heating or cooling."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomControlErrorV1",
+      "DisplayName": "Room control error",
+      "Description": "Explains why a room-control replacement was not accepted.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room control error",
+          "Description": "Explains why a room-control replacement was not accepted.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Revision conflict",
+              "Description": "Another client changed the room after the supplied expected revision."
+            },
+            {
+              "Type": 2,
+              "Name": "Invalid temperature band",
+              "Description": "The heating target is not lower than the cooling target or a temperature value is not finite."
+            },
+            {
+              "Type": 3,
+              "Name": "Invalid normalized preference",
+              "Description": "The comfort-or-savings value is not finite or lies outside -1.0 through 1.0."
+            },
+            {
+              "Type": 4,
+              "Name": "Unsupported operating preference",
+              "Description": "The associated physical thermostat cannot support the requested heating or cooling mode."
+            },
+            {
+              "Type": 5,
+              "Name": "Temporarily unavailable",
+              "Description": "Required persistent or thermostat state is temporarily unavailable."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomControlV1",
+      "DisplayName": "Room control",
+      "Description": "Contains the writable user intent for one room. The controller validates it against the associated thermostat's reported limits and shared-system constraints before changing a physical setpoint.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room control",
+          "Description": "Contains the writable user intent for one room. The controller validates it against the associated thermostat's reported limits and shared-system constraints before changing a physical setpoint."
+        },
+        {
+          "Type": 1,
+          "Name": "Operating preference",
+          "Description": "The heating and cooling demand modes this room may contribute."
+        },
+        {
+          "Type": 2,
+          "Name": "Preferred heating temperature",
+          "Description": "The lowest preferred room temperature in degrees Celsius. It must be lower than `preferred_cooling_temperature_celsius`."
+        },
+        {
+          "Type": 3,
+          "Name": "Preferred cooling temperature",
+          "Description": "The highest preferred room temperature in degrees Celsius. It must be higher than `preferred_heating_temperature_celsius`."
+        },
+        {
+          "Type": 4,
+          "Name": "Comfort or savings",
+          "Description": "A normalized room preference from -1.0 for stronger energy-cost optimization, through 0.0 for balanced operation, to 1.0 for stronger comfort optimization. Hard safety and temperature limits are unchanged."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomDataQualityV1",
+      "DisplayName": "Room data quality",
+      "Description": "Summarizes whether the controller has enough recent Matter reports to calculate and safely apply supervisory room setpoints.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room data quality",
+          "Description": "Summarizes whether the controller has enough recent Matter reports to calculate and safely apply supervisory room setpoints.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Ready",
+              "Description": "Required thermostat and temperature data are fresh."
+            },
+            {
+              "Type": 2,
+              "Name": "Degraded",
+              "Description": "The room remains observable through a fallback source, but one or more configured devices are stale or unavailable."
+            },
+            {
+              "Type": 3,
+              "Name": "Unavailable",
+              "Description": "No trustworthy current room temperature or associated thermostat state is available, so the controller must not apply optimized setpoints."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomLearningStateV1",
+      "DisplayName": "Room learning state",
+      "Description": "Persists bounded continuous-learning state for one affected room. The record is keyed by that room's stable endpoint; each list item is one directional influence from another thermostat-zone.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room learning state",
+          "Description": "Persists bounded continuous-learning state for one affected room. The record is keyed by that room's stable endpoint; each list item is one directional influence from another thermostat-zone."
+        },
+        {
+          "Type": 1,
+          "Name": "Passive outdoor coupling learner",
+          "Description": "Learns natural room-temperature movement toward outdoor temperature from periods in which every thermostat-zone is inactive."
+        },
+        {
+          "Type": 2,
+          "Name": "Cross-zone learners",
+          "Description": "One learner for each other configured thermostat-zone. At most one edge exists for a source thermostat."
+        },
+        {
+          "Type": 3,
+          "Name": "Cross-zone learner",
+          "Description": "Separate heating and cooling online regression state for one source."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomMachineLearningV1",
+      "DisplayName": "Room machine-learning state",
+      "Description": "Read-only model state and latest predictions exposed with room data.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room machine-learning state",
+          "Description": "Read-only model state and latest predictions exposed with room data."
+        },
+        {
+          "Type": 1,
+          "Name": "Latest predictions",
+          "Description": "At most one current prediction for each supported horizon."
+        },
+        {
+          "Type": 2,
+          "Name": "Thermal prediction",
+          "Description": "One bounded XGBoost result or explicit deterministic fallback."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomObservedStateV1",
+      "DisplayName": "Room observed state",
+      "Description": "Contains read-only current room measurements, sensor availability, physical thermostat association, and the effective setpoints chosen after arbitration with other rooms sharing that thermostat.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room observed state",
+          "Description": "Contains read-only current room measurements, sensor availability, physical thermostat association, and the effective setpoints chosen after arbitration with other rooms sharing that thermostat."
+        },
+        {
+          "Type": 1,
+          "Name": "Data quality",
+          "Description": "Whether current room state is ready, degraded, or unavailable."
+        },
+        {
+          "Type": 2,
+          "Name": "Observed at",
+          "Description": "The UTC time represented by the latest accepted room state. It is absent until wall-clock time and trustworthy device reports are both available."
+        },
+        {
+          "Type": 3,
+          "Name": "Room temperature",
+          "Description": "The robust fused room temperature in degrees Celsius. It is absent when no configured temperature sensor has a fresh valid value."
+        },
+        {
+          "Type": 4,
+          "Name": "Room relative humidity",
+          "Description": "The robust fused room relative humidity as a percentage. It is absent when no configured humidity sensor has a fresh valid value."
+        },
+        {
+          "Type": 5,
+          "Name": "Effective heating setpoint",
+          "Description": "The heating setpoint in degrees Celsius currently requested from the shared physical thermostat after room arbitration. It is absent before the thermostat is ready or when the room requests no heating demand."
+        },
+        {
+          "Type": 6,
+          "Name": "Effective cooling setpoint",
+          "Description": "The cooling setpoint in degrees Celsius currently requested from the shared physical thermostat after room arbitration. It is absent before the thermostat is ready or when the room requests no cooling demand."
+        },
+        {
+          "Type": 7,
+          "Name": "HVAC activity",
+          "Description": "The current heating, cooling, fan, idle, or unknown activity reported by the associated physical thermostat."
+        },
+        {
+          "Type": 8,
+          "Name": "Physical thermostat",
+          "Description": "The configured Matter Thermostat logical device that serves this room."
+        },
+        {
+          "Type": 9,
+          "Name": "Indoor sensor states",
+          "Description": "Current independently available readings for every configured sensor station in this room. This is the runtime query surface for station-level PM2.5, carbon dioxide, and other supported air measurements."
+        },
+        {
+          "Type": 10,
+          "Name": "Indoor sensor state",
+          "Description": "One required temperature sensor and its optional humidity and air-quality capabilities."
+        },
+        {
+          "Type": 11,
+          "Name": "Fresh temperature sensors",
+          "Description": "The number of configured room temperature sensors currently contributing trustworthy values."
+        },
+        {
+          "Type": 12,
+          "Name": "Configured temperature sensors",
+          "Description": "The total number of Matter Temperature Sensor logical devices configured for this room."
+        },
+        {
+          "Type": 13,
+          "Name": "Fresh humidity sensors",
+          "Description": "The number of configured room humidity sensors currently contributing trustworthy values."
+        },
+        {
+          "Type": 14,
+          "Name": "Configured humidity sensors",
+          "Description": "The total number of Matter Humidity Sensor logical devices configured for this room."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomOperatingPreferenceV1",
+      "DisplayName": "Room operating preference",
+      "Description": "Describes the heating and cooling demand a user permits for one room. The physical thermostat remains responsible for equipment protection and for enforcing capabilities it actually supports.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room operating preference",
+          "Description": "Describes the heating and cooling demand a user permits for one room. The physical thermostat remains responsible for equipment protection and for enforcing capabilities it actually supports.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Automatic heating and cooling",
+              "Description": "The room may request heating or cooling to remain inside its preferred temperature band."
+            },
+            {
+              "Type": 2,
+              "Name": "Heating only",
+              "Description": "The room may request heating but does not request cooling."
+            },
+            {
+              "Type": 3,
+              "Name": "Cooling only",
+              "Description": "The room may request cooling but does not request heating."
+            },
+            {
+              "Type": 4,
+              "Name": "No room demand",
+              "Description": "The room contributes no heating or cooling demand. This does not command shared physical HVAC equipment off when another room still needs it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomPlanPeriodV1",
+      "DisplayName": "Room plan period",
+      "Description": "Contains the read-only effective room targets calculated for one future period.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room plan period",
+          "Description": "Contains the read-only effective room targets calculated for one future period."
+        },
+        {
+          "Type": 1,
+          "Name": "Start time",
+          "Description": "The inclusive UTC time at which this calculated period begins."
+        },
+        {
+          "Type": 2,
+          "Name": "Duration",
+          "Description": "The length of the calculated period in seconds."
+        },
+        {
+          "Type": 3,
+          "Name": "Heating setpoint",
+          "Description": "The effective heating setpoint in degrees Celsius for the period. It is absent when this room contributes no heating demand."
+        },
+        {
+          "Type": 4,
+          "Name": "Cooling setpoint",
+          "Description": "The effective cooling setpoint in degrees Celsius for the period. It is absent when this room contributes no cooling demand."
+        },
+        {
+          "Type": 5,
+          "Name": "Plan reason",
+          "Description": "The principal reason these effective targets differ from or preserve the room's writable comfort intent."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomPlanReasonV1",
+      "DisplayName": "Room plan reason",
+      "Description": "Explains the principal reason for one calculated room schedule period.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room plan reason",
+          "Description": "Explains the principal reason for one calculated room schedule period.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Room comfort",
+              "Description": "The period follows the room's writable comfort intent."
+            },
+            {
+              "Type": 2,
+              "Name": "Weather preconditioning",
+              "Description": "The controller shifts heating or cooling ahead of forecast outdoor load."
+            },
+            {
+              "Type": 3,
+              "Name": "Low-cost preconditioning",
+              "Description": "The controller shifts conditioning into a lower-cost utility period."
+            },
+            {
+              "Type": 4,
+              "Name": "High-cost reduction",
+              "Description": "The controller reduces discretionary conditioning during a higher-cost utility period without crossing hard comfort limits."
+            },
+            {
+              "Type": 5,
+              "Name": "Shared thermostat arbitration",
+              "Description": "Multiple rooms sharing one thermostat require one reconciled physical setpoint."
+            },
+            {
+              "Type": 6,
+              "Name": "Degraded fallback",
+              "Description": "Missing or stale optimization inputs require conservative local operation."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomPlanV1",
+      "DisplayName": "Room plan",
+      "Description": "Contains the current read-only calculated schedule for one room. It exposes user-visible decisions without claiming that rooms sharing one physical thermostat can be actuated independently.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room plan",
+          "Description": "Contains the current read-only calculated schedule for one room. It exposes user-visible decisions without claiming that rooms sharing one physical thermostat can be actuated independently."
+        },
+        {
+          "Type": 1,
+          "Name": "Formatted schedule",
+          "Description": "Canonical formatted-text bytes containing a package-local resource key and typed Libertas Message Arguments summarizing the calculated periods, setpoints, and principal reasons. It is a derived presentation of `periods`; clients performing calculations must use the structured fields below. Do not Base64-wrap this byte array."
+        },
+        {
+          "Type": 2,
+          "Name": "Calculated at",
+          "Description": "The UTC time when the controller produced this complete plan."
+        },
+        {
+          "Type": 3,
+          "Name": "Valid until",
+          "Description": "The exclusive UTC deadline after which the plan must be recalculated."
+        },
+        {
+          "Type": 4,
+          "Name": "Plan periods",
+          "Description": "Ordered, non-overlapping future periods covering no more than 24 hours."
+        },
+        {
+          "Type": 5,
+          "Name": "Plan period",
+          "Description": "One calculated room target period and its reason."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomProtocol",
+      "DisplayName": "Building HVAC room protocol",
+      "Description": "Defines every externally visible runtime request, response, and subscription report for one room. The configured endpoint identifies the room, so messages never carry a reorder-sensitive room-array index.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building HVAC room protocol",
+          "Description": "Defines every externally visible runtime request, response, and subscription report for one room. The configured endpoint identifies the room, so messages never carry a reorder-sensitive room-array index."
+        },
+        {
+          "Type": 1,
+          "Name": "Get room",
+          "Description": "Reads the current room runtime or starts a subscription. The endpoint operation selects one-shot or subscription behavior."
+        },
+        {
+          "Type": 2,
+          "Name": "Replace room control",
+          "Description": "Atomically replaces all writable room intent when `expected_revision` still matches the server's current room revision. Its accepted or rejected acknowledgement leaves the current room data installed; an accepted change is published separately as authoritative room data."
+        },
+        {
+          "Type": 3,
+          "Name": "Expected revision",
+          "Description": "The revision from the last fully received room runtime. A mismatch rejects the write without changing persistent data."
+        },
+        {
+          "Type": 4,
+          "Name": "Room control",
+          "Description": "The complete replacement writable intent."
+        },
+        {
+          "Type": 5,
+          "Name": "Room data",
+          "Description": "Carries the complete authoritative room runtime. It is returned for a room request and reported to subscribers after a visible change. An accepted control replacement publishes this data before its correlated acknowledgement. No-change liveness uses PeerAlive instead of repeating UI-visible data."
+        },
+        {
+          "Type": 6,
+          "Name": "Formatted room status",
+          "Description": "Canonical formatted-text bytes containing a package-local resource key and typed Libertas Message Arguments for current comfort, HVAC activity, noteworthy air measurements, and the next schedule change. It is a derived view only; clients and control logic must use the structured fields in this message. Do not Base64-wrap this byte array."
+        },
+        {
+          "Type": 7,
+          "Name": "Maximum wait interval",
+          "Description": "The maximum number of seconds a subscribed client waits after this response, report, or PeerAlive before requesting the room again. The server sends changed data or PeerAlive first. One-shot clients ignore it."
+        },
+        {
+          "Type": 8,
+          "Name": "Control revision",
+          "Description": "The monotonically increasing revision of accepted writable room control. Sensor-only changes do not create avoidable write conflicts."
+        },
+        {
+          "Type": 9,
+          "Name": "Room control",
+          "Description": "The complete current writable user intent for this room."
+        },
+        {
+          "Type": 10,
+          "Name": "Observed state",
+          "Description": "Current read-only sensor, thermostat, and effective-setpoint state."
+        },
+        {
+          "Type": 11,
+          "Name": "Active urgent conditions",
+          "Description": "Confirmed time-sensitive HVAC warnings for this room. The structured list remains authoritative even though activation, reminders, and recovery are also delivered as localized notifications. These are supervisory HVAC warnings, not life-safety alarms."
+        },
+        {
+          "Type": 12,
+          "Name": "Active urgent condition",
+          "Description": "One confirmed condition and its latest evidence and delivery time."
+        },
+        {
+          "Type": 13,
+          "Name": "Local outdoor sensor state",
+          "Description": "Independently available current readings from the optional local Matter outdoor station. The same read-only building-level state is included on every room endpoint so a runtime room query can discover PM2.5, carbon dioxide, and other supported measurements."
+        },
+        {
+          "Type": 14,
+          "Name": "Outdoor air analytics",
+          "Description": "Psychrometric humidity ratio, moist-air enthalpy, and wet-bulb temperature derived from fresh current weather. It is absent when current weather is stale or internally inconsistent."
+        },
+        {
+          "Type": 15,
+          "Name": "Room statistics",
+          "Description": "Read-only statistics when at least one valid collection window has been completed or is in progress."
+        },
+        {
+          "Type": 16,
+          "Name": "Passive outdoor coupling",
+          "Description": "Learned fraction per hour by which the room naturally moves toward outdoor temperature while all thermostat-zones are inactive. It is absent until sufficient clean passive periods have been observed."
+        },
+        {
+          "Type": 17,
+          "Name": "Passive model confidence",
+          "Description": "Normalized confidence from 0.0 through 1.0 in the passive outdoor coupling estimate."
+        },
+        {
+          "Type": 18,
+          "Name": "Cross-zone influences",
+          "Description": "Learned effects from other thermostat-zones on this room while its own zone is inactive. The controller uses these estimates to avoid over-conditioning an ostensibly off room."
+        },
+        {
+          "Type": 19,
+          "Name": "Cross-zone influence",
+          "Description": "One directional source-thermostat to affected-room estimate."
+        },
+        {
+          "Type": 20,
+          "Name": "Machine-learning predictions",
+          "Description": "Read-only bounded near-term room temperature changes. Each result names XGBoost or deterministic fallback as its source. These values inform planning but never replace thermostat, deadband, explicit `Off`, urgent-condition, or life-safety constraints."
+        },
+        {
+          "Type": 21,
+          "Name": "Calculated plan",
+          "Description": "The read-only room schedule when the optimizer has sufficient data to calculate one."
+        },
+        {
+          "Type": 22,
+          "Name": "Room control rejected",
+          "Description": "Rejects a control replacement without changing persistent or runtime state. This error is presented without replacing the current room data, and the current revision and control let a client reconcile before retrying."
+        },
+        {
+          "Type": 23,
+          "Name": "Formatted rejection",
+          "Description": "Canonical formatted-text bytes containing the package-local resource key and typed Libertas Message Arguments that explain the rejection and safe next action. It is derived from `error` and the current structured control state and is not Base64-wrapped."
+        },
+        {
+          "Type": 24,
+          "Name": "Error",
+          "Description": "The reason the complete control replacement was rejected."
+        },
+        {
+          "Type": 25,
+          "Name": "Current control revision",
+          "Description": "The unchanged current control revision."
+        },
+        {
+          "Type": 26,
+          "Name": "Current room control",
+          "Description": "The unchanged current writable intent."
+        },
+        {
+          "Type": 27,
+          "Name": "Room control accepted",
+          "Description": "Confirms that the complete room control was persisted and applied. This acknowledgement does not replace the authoritative room data published immediately before it."
+        },
+        {
+          "Type": 28,
+          "Name": "Accepted control revision",
+          "Description": "The new control revision assigned to the accepted replacement."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomStatisticsV1",
+      "DisplayName": "Room statistics",
+      "Description": "Contains read-only comfort and sensor-availability statistics for one room over a documented half-open collection window. Shared equipment runtime and energy are not attributed to individual rooms without an explicit metering model.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room statistics",
+          "Description": "Contains read-only comfort and sensor-availability statistics for one room over a documented half-open collection window. Shared equipment runtime and energy are not attributed to individual rooms without an explicit metering model."
+        },
+        {
+          "Type": 1,
+          "Name": "Window start",
+          "Description": "The inclusive UTC start of the statistics collection window."
+        },
+        {
+          "Type": 2,
+          "Name": "Window end",
+          "Description": "The exclusive UTC end of the statistics collection window."
+        },
+        {
+          "Type": 3,
+          "Name": "Temperature samples",
+          "Description": "The number of accepted fused room-temperature samples in the window."
+        },
+        {
+          "Type": 4,
+          "Name": "Minimum temperature",
+          "Description": "The lowest accepted fused room temperature in degrees Celsius."
+        },
+        {
+          "Type": 5,
+          "Name": "Mean temperature",
+          "Description": "The time-weighted mean accepted fused room temperature in degrees Celsius."
+        },
+        {
+          "Type": 6,
+          "Name": "Maximum temperature",
+          "Description": "The highest accepted fused room temperature in degrees Celsius."
+        },
+        {
+          "Type": 7,
+          "Name": "Temperature data availability",
+          "Description": "The number of seconds in the window for which a trustworthy fused room temperature was available."
+        },
+        {
+          "Type": 8,
+          "Name": "Below-heating comfort",
+          "Description": "Accumulated temperature deficit below the active preferred heating target, in degree-minutes Celsius."
+        },
+        {
+          "Type": 9,
+          "Name": "Above-cooling comfort",
+          "Description": "Accumulated temperature excess above the active preferred cooling target, in degree-minutes Celsius."
+        },
+        {
+          "Type": 10,
+          "Name": "Humidity samples",
+          "Description": "The number of accepted fused room-humidity samples in the window."
+        },
+        {
+          "Type": 11,
+          "Name": "Mean relative humidity",
+          "Description": "The time-weighted mean accepted fused room relative humidity percentage. It is absent when the room has no humidity samples in the window."
+        },
+        {
+          "Type": 12,
+          "Name": "Heating activity",
+          "Description": "The number of seconds in the window during which the associated thermostat reported active heating. Shared equipment time is descriptive and is not an allocation of energy consumption to this room."
+        },
+        {
+          "Type": 13,
+          "Name": "Cooling activity",
+          "Description": "The number of seconds in the window during which the associated thermostat reported active cooling. Shared equipment time is descriptive and is not an allocation of energy consumption to this room."
+        },
+        {
+          "Type": 14,
+          "Name": "Fan-only activity",
+          "Description": "The number of seconds in the window during which the associated thermostat reported fan operation without heating or cooling."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacRoomV1",
+      "DisplayName": "Room",
+      "Description": "Add a room people can recognize and choose where its climate controls appear.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room",
+          "Description": "Add a room people can recognize and choose where its climate controls appear."
+        },
+        {
+          "Type": 1,
+          "Name": "Room name",
+          "Description": "Enter a unique, recognizable name such as Living Room or Main Bedroom."
+        },
+        {
+          "Type": 2,
+          "Name": "Room controls",
+          "Description": "Choose where this room's comfort settings, conditions, and schedule will be available."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacTemperatureReadingV1",
+      "DisplayName": "Temperature reading",
+      "Description": "Caches one accepted reading from a standard Matter Temperature Sensor logical device.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Temperature reading",
+          "Description": "Caches one accepted reading from a standard Matter Temperature Sensor logical device."
+        },
+        {
+          "Type": 1,
+          "Name": "Observed at",
+          "Description": "The UTC time represented by the Matter temperature report."
+        },
+        {
+          "Type": 2,
+          "Name": "Valid until",
+          "Description": "The exclusive UTC deadline after which the controller treats this reading as stale."
+        },
+        {
+          "Type": 3,
+          "Name": "Temperature",
+          "Description": "Measured air temperature in degrees Celsius."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacThermalPredictionHorizonV1",
+      "DisplayName": "Thermal prediction horizon",
+      "Description": "Selects one independently trained room-temperature-change model. Separate models avoid silently combining targets with different error distributions.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Thermal prediction horizon",
+          "Description": "Selects one independently trained room-temperature-change model. Separate models avoid silently combining targets with different error distributions.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Fifteen minutes",
+              "Description": "Predicts room temperature movement during the next control period."
+            },
+            {
+              "Type": 2,
+              "Name": "Thirty minutes",
+              "Description": "Predicts near-term movement across two control periods."
+            },
+            {
+              "Type": 3,
+              "Name": "Sixty minutes",
+              "Description": "Predicts the one-hour response used for preconditioning decisions."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacThermalPredictionSourceV1",
+      "DisplayName": "Thermal prediction source",
+      "Description": "Makes deterministic fallback explicit rather than presenting it as a learned result.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Thermal prediction source",
+          "Description": "Makes deterministic fallback explicit rather than presenting it as a learned result.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "XGBoost",
+              "Description": "Prediction came from the currently accepted bounded model."
+            },
+            {
+              "Type": 2,
+              "Name": "Deterministic fallback",
+              "Description": "No validated model or usable output existed, so the controller assumes no additional near-term temperature movement."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacThermalPredictionV1",
+      "DisplayName": "Room thermal prediction",
+      "Description": "One bounded read-only near-term prediction used as an input to deterministic planning and shared-thermostat arbitration.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room thermal prediction",
+          "Description": "One bounded read-only near-term prediction used as an input to deterministic planning and shared-thermostat arbitration."
+        },
+        {
+          "Type": 1,
+          "Name": "Prediction horizon",
+          "Description": "Future interval represented by the temperature change."
+        },
+        {
+          "Type": 2,
+          "Name": "Predicted temperature change",
+          "Description": "Degrees Celsius relative to current room temperature. Positive values predict warming and negative values predict cooling."
+        },
+        {
+          "Type": 3,
+          "Name": "Prediction source",
+          "Description": "Whether the value came from XGBoost or deterministic fallback."
+        },
+        {
+          "Type": 4,
+          "Name": "Model trained at",
+          "Description": "Training timestamp of the active model, absent for fallback."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacThermostatRoomV1",
+      "DisplayName": "Room served by this thermostat",
+      "Description": "Choose a room and the indoor sensors used to keep it comfortable.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room served by this thermostat",
+          "Description": "Choose a room and the indoor sensors used to keep it comfortable."
+        },
+        {
+          "Type": 1,
+          "Name": "Room",
+          "Description": "Choose one of the rooms added above."
+        },
+        {
+          "Type": 2,
+          "Name": "Indoor sensor groups",
+          "Description": "Add at least one place in this room where temperature is measured. You can also add humidity and air quality sensors at each place."
+        },
+        {
+          "Type": 3,
+          "Name": "Indoor sensor group",
+          "Description": "Sensors located together at one place in this room."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacThermostatV1",
+      "DisplayName": "Thermostat",
+      "Description": "Choose a thermostat and all the rooms it serves.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Thermostat",
+          "Description": "Choose a thermostat and all the rooms it serves."
+        },
+        {
+          "Type": 1,
+          "Name": "Thermostat",
+          "Description": "Choose the thermostat to control."
+        },
+        {
+          "Type": 2,
+          "Name": "Rooms served",
+          "Description": "Add every room controlled by this thermostat. Each room must be assigned to exactly one thermostat."
+        },
+        {
+          "Type": 3,
+          "Name": "Room",
+          "Description": "One room and the sensors used for it."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacUrgentConditionPhaseV1",
+      "DisplayName": "Urgent-condition tracking phase",
+      "Description": "Persists activation and recovery debounce across application restarts so a restart neither immediately clears a warning nor creates a burst of duplicate notifications.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Urgent-condition tracking phase",
+          "Description": "Persists activation and recovery debounce across application restarts so a restart neither immediately clears a warning nor creates a burst of duplicate notifications.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Activation pending",
+              "Description": "The condition currently qualifies but has not yet remained continuous for its activation-confirmation interval."
+            },
+            {
+              "Type": 2,
+              "Name": "Active",
+              "Description": "The condition is confirmed and its urgent warning remains active."
+            },
+            {
+              "Type": 3,
+              "Name": "Recovery pending",
+              "Description": "Fresh evidence crossed the recovery hysteresis boundary, but the recovery-confirmation interval has not yet completed."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacUrgentConditionV1",
+      "DisplayName": "Urgent HVAC condition",
+      "Description": "Identifies time-sensitive supervisory conditions that warrant direct user attention. These warnings help protect comfort, equipment, and property; they are not certified smoke, fire, carbon-monoxide, medical, or other life-safety alarms.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Urgent HVAC condition",
+          "Description": "Identifies time-sensitive supervisory conditions that warrant direct user attention. These warnings help protect comfort, equipment, and property; they are not certified smoke, fire, carbon-monoxide, medical, or other life-safety alarms.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "Freeze risk",
+              "Description": "Fresh room temperature remained at or below 5 degrees Celsius for at least five minutes."
+            },
+            {
+              "Type": 2,
+              "Name": "Excessive heat",
+              "Description": "Fresh room temperature remained at or above 35 degrees Celsius for at least five minutes."
+            },
+            {
+              "Type": 3,
+              "Name": "Temperature control unavailable",
+              "Description": "Trustworthy room temperature or associated thermostat state remained unavailable for at least ten minutes."
+            },
+            {
+              "Type": 4,
+              "Name": "Heating not recovering",
+              "Description": "A room at or below 15 degrees Celsius had at least 80 percent fresh temperature and heating-runtime coverage for one hour but warmed by less than 0.5 degrees Celsius."
+            },
+            {
+              "Type": 5,
+              "Name": "Cooling not recovering",
+              "Description": "A room at or above 30 degrees Celsius had at least 80 percent fresh temperature and cooling-runtime coverage for one hour but cooled by less than 0.5 degrees Celsius."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacUrgentNotificationSeverityV1",
+      "DisplayName": "Urgent HVAC notification severity",
+      "Description": "Maps an application-specific urgency decision to the Libertas notification framework. Severity describes delivery priority and does not turn a supervisory HVAC warning into a certified life-safety alarm.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Urgent HVAC notification severity",
+          "Description": "Maps an application-specific urgency decision to the Libertas notification framework. Severity describes delivery priority and does not turn a supervisory HVAC warning into a certified life-safety alarm.",
+          "Enum": [
+            {
+              "Type": 1,
+              "Name": "High",
+              "Description": "Requires prompt attention because temperature supervision or HVAC recovery appears unavailable."
+            },
+            {
+              "Type": 2,
+              "Name": "Severe",
+              "Description": "Requires immediate attention because a confirmed room temperature can damage property or threaten occupant comfort."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "BuildingHvacWeatherClientV1",
+      "DisplayName": "Weather service",
+      "Description": "Choose the local weather information used to plan heating and cooling.",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Weather service",
+          "Description": "Choose the local weather information used to plan heating and cooling."
+        },
+        {
+          "Type": 1,
+          "Name": "Weather service",
+          "Description": "Choose where current conditions, forecasts, and outdoor air quality come from."
+        }
+      ]
+    },
+    {
+      "Name": "BuildingRecord",
+      "DisplayName": "Building-wide cached inputs",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Building-wide cached inputs",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "OutdoorTemperature",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "OutdoorHumidity",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "OutdoorAirQuality",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "WeatherHistory",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "WeatherCurrent",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "WeatherForecast",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "ProviderAirQuality",
+          "Description": ""
+        },
+        {
+          "Type": 8,
+          "Name": "ExternalFeatures",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ClimateKey",
+      "DisplayName": "Climate persistence keys",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Climate persistence keys",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Building",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "record",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Room",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "endpoint",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "record",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Models",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "endpoint",
+          "Description": ""
+        },
+        {
+          "Type": 8,
+          "Name": "record",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ModelRecord",
+      "DisplayName": "Model manifest and immutable artifact parts",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Model manifest and immutable artifact parts",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Manifest",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Part",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "digest",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "part",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "ModelReference",
+      "DisplayName": "Reference to a complete, checksummed model artifact",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Reference to a complete, checksummed model artifact",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "digest",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "byte_length",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "RoomRecord",
+      "DisplayName": "Room state and training history",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Room state and training history",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "Control",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "Statistics",
+          "Description": ""
+        },
+        {
+          "Type": 3,
+          "Name": "Learning",
+          "Description": ""
+        },
+        {
+          "Type": 4,
+          "Name": "Sensors",
+          "Description": ""
+        },
+        {
+          "Type": 5,
+          "Name": "Urgent",
+          "Description": ""
+        },
+        {
+          "Type": 6,
+          "Name": "Sample",
+          "Description": ""
+        },
+        {
+          "Type": 7,
+          "Name": "index",
+          "Description": ""
+        }
+      ]
+    },
+    {
+      "Name": "StoredModelSlot",
+      "DisplayName": "Independently promoted model with its immediate rollback artifact",
+      "Description": "",
+      "List": [
+        {
+          "Type": 0,
+          "Name": "Independently promoted model with its immediate rollback artifact",
+          "Description": ""
+        },
+        {
+          "Type": 1,
+          "Name": "active",
+          "Description": ""
+        },
+        {
+          "Type": 2,
+          "Name": "previous",
+          "Description": ""
+        }
+      ]
+    }
+  ]
+}
