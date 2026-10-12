@@ -836,10 +836,18 @@ pub enum BuildingHvacWeatherProtocol {
         /// Resume cursor
         /// The last cursor fully and atomically applied by the client. `None`
         /// requests an initial snapshot.
+        /// [NullText]
+        /// Start from a fresh snapshot
+        /// [SetText]
+        /// Resume after
         after_cursor: Option<BuildingHvacWeatherCursorV1>,
         /// Historical recovery range
         /// The half-open historical range to include when replay is impossible.
         /// `None` excludes history from a reset snapshot.
+        /// [NullText]
+        /// No history
+        /// [SetText]
+        /// Include history for
         history_range: Option<BuildingHvacWeatherTimeRangeV1>,
         /// Include current conditions
         /// Whether a reset snapshot should include cached current outdoor
@@ -848,10 +856,18 @@ pub enum BuildingHvacWeatherProtocol {
         /// Forecast recovery range
         /// The half-open physical-weather forecast range to include when replay
         /// is impossible. `None` excludes forecast data.
+        /// [NullText]
+        /// No forecast
+        /// [SetText]
+        /// Include forecast for
         forecast_range: Option<BuildingHvacWeatherTimeRangeV1>,
         /// Outdoor-air-quality recovery range
         /// The half-open pollutant period range to include when replay is
         /// impossible. `None` excludes modeled outdoor air quality.
+        /// [NullText]
+        /// No outdoor air quality
+        /// [SetText]
+        /// Include outdoor air quality for
         outdoor_air_quality_range: Option<BuildingHvacWeatherTimeRangeV1>,
     },
     /// Building HVAC weather recovery

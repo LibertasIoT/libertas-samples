@@ -1761,11 +1761,17 @@ pub struct BuildingHvacIndoorSensorV1 {
     pub temperature_sensor: LibertasDevice,
     /// Humidity sensor
     /// Optionally choose a humidity sensor at the same place.
+    /// [NullText]
+    /// No humidity sensor
+    #[libertas_default($null)]
     #[libertas_device_type("BQEBAYcGAA==")]
     #[libertas_unique(3)]
     pub humidity_sensor: Option<LibertasDevice>,
     /// Air quality sensor
     /// Optionally choose an air quality sensor at the same place.
+    /// [NullText]
+    /// No air quality sensor
+    #[libertas_default($null)]
     #[libertas_device_type("BQEBASwA")]
     #[libertas_unique(3)]
     pub air_quality_sensor: Option<LibertasDevice>,
@@ -1785,10 +1791,16 @@ pub struct BuildingHvacOutdoorSensorV1 {
     pub temperature_sensor: LibertasDevice,
     /// Outdoor humidity sensor
     /// Optionally choose a humidity sensor at the same outdoor location.
+    /// [NullText]
+    /// No outdoor humidity sensor
+    #[libertas_default($null)]
     #[libertas_device_type("BQEBAYcGAA==")]
     pub humidity_sensor: Option<LibertasDevice>,
     /// Outdoor air quality sensor
     /// Optionally choose an air quality sensor at the same outdoor location.
+    /// [NullText]
+    /// No outdoor air quality sensor
+    #[libertas_default($null)]
     #[libertas_device_type("BQEBASwA")]
     pub air_quality_sensor: Option<LibertasDevice>,
 }
@@ -1852,6 +1864,11 @@ pub struct BuildingHvacBuildingV1 {
     /// Outdoor sensors
     /// Optionally choose local outdoor temperature, humidity, and air quality
     /// sensors. Local readings are used together with the weather service.
+    /// [NullText]
+    /// No outdoor sensors
+    /// [SetText]
+    /// Use outdoor sensors
+    #[libertas_default($null)]
     pub outdoor_sensor: Option<BuildingHvacOutdoorSensorV1>,
     /// People to notify
     /// Choose who should receive important heating and cooling warnings,
@@ -4330,7 +4347,12 @@ pub fn libertas_building_climate(
      * Optionally choose a service that provides energy prices, occupancy,
      * window state, meters, calendar information, or central equipment data.
      * Leave this blank when that information is not available.
+     * [NullText]
+     * No additional building information
+     * [SetText]
+     * Use the service
      */
+    #[libertas_default($null)]
     external_features: Option<BuildingHvacExternalFeatureClientV1>,
 ) {
     if validate_building_configuration(&building).is_err()

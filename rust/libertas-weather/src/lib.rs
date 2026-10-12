@@ -762,11 +762,19 @@ pub enum SprinklerWeatherProtocol {
         /// requests an initial range-limited snapshot. The server compares both
         /// fields; a lower sequence indicates a reset only when the response
         /// cursor also has a newer epoch timestamp.
+        /// [NullText]
+        /// Start from a fresh snapshot
+        /// [SetText]
+        /// Resume after
         after_cursor: Option<SprinklerWeatherCursorV1>,
         /// Historical recovery range
         /// The half-open range of historical period start times to include when
         /// replay is impossible. `None` excludes history from the reset
         /// snapshot.
+        /// [NullText]
+        /// No history
+        /// [SetText]
+        /// Include history for
         history_range: Option<SprinklerWeatherTimeRangeV1>,
         /// Include current conditions
         /// Whether a reset snapshot should include cached current conditions.
@@ -775,6 +783,10 @@ pub enum SprinklerWeatherProtocol {
         /// The half-open range of forecast period start times to include when
         /// replay is impossible. `None` excludes forecast data from the reset
         /// snapshot.
+        /// [NullText]
+        /// No forecast
+        /// [SetText]
+        /// Include forecast for
         forecast_range: Option<SprinklerWeatherTimeRangeV1>,
     },
     /// Sprinkler weather recovery
