@@ -1,5 +1,5 @@
 {
-  "Description": "Definiert Wetterdaten, die auf die von Libertas-Anwendungen getroffenen Entscheidungen zugeschnitten sind. Das Sprinklerschema speichert den vom Hub bereitgestellten Standort separat vom jüngsten Verlauf, den aktuellen Bedingungen und den Vorhersagedaten. Jeder Wetterabschnitt hat ein anderes Aktualisierungsintervall und kann unabhängig erfolgreich sein oder fehlschlagen. Laufzeitmomentaufnahmen können eine beliebige Kombination von Abschnitten enthalten. Anwendungen speichern jeden erfolgreich abgerufenen Abschnitt separat und behalten ältere Abschnitte bei, wenn die Aktualisierung der Wetterdaten fehlschlägt. Inkrementelle Abonnements verwenden Cursor aus Epochenzeitstempel und Sequenznummer, damit Clients das Zurücksetzen eines Server-Cursors von veralteten oder nicht reihenfolgegerechten Daten unterscheiden, aufbewahrte Änderungen erneut wiedergeben oder ausgewählte Zeiträume aus zwischengespeicherten Daten wiederherstellen können. Das Gebäude-HLK-Schema stellt ausschließlich die Außendaten bereit, die für die Vorhersage der thermischen Last, den Wärmepumpenbetrieb, Entscheidungen über die freie Kühlung und die kontrollierte Außenluftlüftung erforderlich sind. Wetter- und Außenluftqualitätsabschnitte werden unabhängig voneinander verwaltet, da sie unterschiedliche Anbieter und unterschiedliches Aktualitätsverhalten aufweisen. Lokale Anlagen- und Sicherheitssteuerungen müssen weiterhin ihre eigenen Sensoren verwenden; zwischengespeicherte Wetterdaten aus dem Internet dienen der übergeordneten Steuerung und sind kein Sicherheitssignal.",
+  "Description": "Definiert Wetterdaten, die auf die von Libertas-Anwendungen getroffenen Entscheidungen zugeschnitten sind.\nDas Sprinklerschema speichert den vom Hub bereitgestellten Standortstandort getrennt vom aktuellen Verlauf, den aktuellen Bedingungen und Prognosedaten. Jeder Wetterabschnitt hat ein anderes Aktualisierungsintervall und kann unabhängig voneinander erfolgreich sein oder fehlschlagen. Laufzeit-Snapshots können eine beliebige Kombination von Abschnitten enthalten. Anwendungen behalten jeden erfolgreichen Abschnitt separat bei und behalten ältere Abschnitte bei, wenn eine Wetterdatenaktualisierung fehlschlägt. Inkrementelle Abonnements verwenden Epochen-Zeitstempel- und Sequenz-Cursor, damit Clients ein Zurücksetzen des Server-Cursors von veralteten oder nicht ordnungsgemäßen Daten unterscheiden, beibehaltene Änderungen wiedergeben oder ausgewählte Zeitbereiche aus zwischengespeicherten Daten wiederherstellen können.\nDas Gebäude-HLK-Schema liefert nur die Außeneingänge, die für die Vorhersage der Wärmelast, den Betrieb der Wärmepumpe, Economizer-Entscheidungen und die kontrollierte Außenluftlüftung erforderlich sind. Dadurch bleiben Wetter- und Außenluftqualitätsabschnitte unabhängig, da sie unterschiedliche Anbieter und Frischeverhalten haben. Lokale Geräte und Lebenssicherheitskontrollen müssen weiterhin ihre eigenen Sensoren verwenden; Das zwischengespeicherte Internetwetter ist eine Überwachungseingabe und kein Sicherheitssignal.",
   "DisplayName": "Libertas-Wetter",
   "DocumentVersion": "0.0.2",
   "List": [],
@@ -16,28 +16,28 @@
           "Type": 0
         },
         {
-          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
-          "Name": "Retrieved at",
+          "Description": "Das Datum und die Uhrzeit, zu der dieser vollständige Abschnitt mit dem aktuellen Zustand abgerufen, validiert und akzeptiert wurde.",
+          "Name": "Abgerufen am",
           "Type": 1
         },
         {
-          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
-          "Name": "Valid until",
+          "Description": "Der exklusive Frischetermin. Zu diesem Zeitpunkt oder danach dürfen die zwischengespeicherten Werte keinen Economizer-Betrieb oder andere wetterabhängige Optimierungen zulassen, die bekannte aktuelle Bedingungen erfordern.",
+          "Name": "Gültig bis",
           "Type": 2
         },
         {
-          "Description": "The provider-supplied date and time represented by these current conditions.",
-          "Name": "Valid at",
+          "Description": "Das vom Anbieter bereitgestellte Datum und die in diesen aktuellen Bedingungen angegebene Uhrzeit.",
+          "Name": "Gültig am",
           "Type": 3
         },
         {
-          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
-          "Name": "Observation interval",
+          "Description": "Das rückwärtsgerichtete Intervall in Sekunden, dargestellt durch den angesammelten Niederschlag. Das aktuelle Wetter verwendet normalerweise ein 900-Sekunden-Intervall.",
+          "Name": "Beobachtungsintervall",
           "Type": 4
         },
         {
-          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
-          "Name": "Outdoor conditions",
+          "Description": "Die neuesten modellierten Temperatur-, Feuchtigkeits-, Druck-, Wind-, Niederschlags- und Solareingänge für die Überwachung der HVAC-Steuerung.",
+          "Name": "Außenbedingungen",
           "Type": 5
         }
       ],
@@ -127,73 +127,73 @@
           "Type": 0
         },
         {
-          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
-          "Name": "Dry-bulb temperature",
+          "Description": "Außenlufttemperatur in zwei Metern Höhe in Grad Celsius.",
+          "Name": "Trockenkugeltemperatur",
           "Type": 1
         },
         {
-          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
-          "Name": "Dew-point temperature",
+          "Description": "Taupunkttemperatur im Freien in zwei Metern Höhe in Grad Celsius. Zusammen mit dem Druck unterstützt dies die Berechnung des Feuchtigkeitsverhältnisses, der Enthalpie, der Feuchtkugel, des Kondensationsrisikos und der latenten Last.",
+          "Name": "Taupunkttemperatur",
           "Type": 2
         },
         {
-          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
-          "Name": "Relative humidity",
+          "Description": "Relative Luftfeuchtigkeit im Freien in zwei Metern Höhe als ganzzahliger Prozentsatz von 0 bis 100. Dieser Anbieterwert unterstützt die Anzeige und Validierung; Psychrometrische Berechnungen sollten einen konsistenten Eingabesatz verwenden, anstatt widersprüchliche redundante Werte zu mischen.",
+          "Name": "Relative Luftfeuchtigkeit",
           "Type": 3
         },
         {
-          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
-          "Name": "Surface pressure",
+          "Description": "Atmosphärischer Druck auf der Gebäudehöhe in Hektopascal. Für psychrometrische Berechnungen wird der Oberflächendruck und nicht der auf Meereshöhe reduzierte Druck verwendet.",
+          "Name": "Oberflächendruck",
           "Type": 4
         },
         {
-          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
-          "Name": "Wind speed",
+          "Description": "Anhaltende Windgeschwindigkeit im Freien in 10 Metern Höhe in Metern pro Sekunde. Ein Gebäudemodell kann damit Infiltration und druckbedingte Außenluftbelastungen abschätzen.",
+          "Name": "Windgeschwindigkeit",
           "Type": 5
         },
         {
-          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
-          "Name": "Wind gust",
+          "Description": "Spitzenwindböe im Freien in 10 Metern Höhe in Metern pro Sekunde. Es unterstützt die konservative Kontrolle freiliegender Dämpfer und Geräte.",
+          "Name": "Windböe",
           "Type": 6
         },
         {
-          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
-          "Name": "Wind direction",
+          "Description": "Richtung, aus der der Wind kommt, in Grad im Uhrzeigersinn vom wahren Norden. Null und 360 stehen beide für den Norden. Die Richtung ist nur dann sinnvoll, wenn das Gebäudemodell die Fassadenausrichtung kennt.",
+          "Name": "Windrichtung",
           "Type": 7
         },
         {
-          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
-          "Name": "Precipitation",
+          "Description": "Gesamtes flüssiges Wasseräquivalent, das sich über das Aufnahmeintervall angesammelt hat, in Millimetern.",
+          "Name": "Niederschlag",
           "Type": 8
         },
         {
-          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
-          "Name": "Precipitation kind",
+          "Description": "Die flüssige oder gefrorene Niederschlagsphase, die sich während des Eindämmungsintervalls auf exponierte HVAC-Geräte auswirkt.",
+          "Name": "Niederschlagsart",
           "Type": 9
         },
         {
-          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
-          "Name": "Solar elevation",
+          "Description": "Geometrische Höhe des Sonnenmittelpunkts in Grad über dem astronomischen Horizont zum dargestellten Beobachtungszeitpunkt. Bei negativen Werten liegt die Sonne unter dem Horizont. Verwenden Sie zur Berechnung dieses Werts den `valid_at` des enthaltenden aktuellen Datensatzes oder den Mittelpunkt eines enthaltenden Verlaufs- oder Prognosezeitraums zusammen mit den Baustellenkoordinaten.",
+          "Name": "Sonnenhöhe",
           "Type": 10
         },
         {
-          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
-          "Name": "Solar azimuth",
+          "Description": "Richtung des Sonnenmittelpunkts in Grad im Uhrzeigersinn vom wahren Norden zur gleichen dargestellten Beobachtungszeit. HVAC Machine-Learning-Konsumenten konvertieren diesen zyklischen Winkel in Sinus und Cosinus, anstatt den rohen Gradwert als Ordinalzahl zu interpretieren.",
+          "Name": "Sonnenazimut",
           "Type": 11
         },
         {
-          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
-          "Name": "Global horizontal irradiance",
+          "Description": "Gesamte direkte und diffuse Sonnenenergie, die auf eine horizontale Fläche einfällt, in Watt pro Quadratmeter. Dies ist der primäre solare Gewinneintrag für das gesamte Gebäude.",
+          "Name": "Globale horizontale Strahlungsintensität",
           "Type": 12
         },
         {
-          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
-          "Name": "Direct normal irradiance",
+          "Description": "Direkte Sonnenenergie, die auf eine Fläche senkrecht zur Sonne einfällt, in Watt pro Quadratmeter. Orientierte Fassaden- und Verschattungsmodelle können diesen Wert verwenden.",
+          "Name": "Direkte Normalbestrahlung",
           "Type": 13
         },
         {
-          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
-          "Name": "Diffuse horizontal irradiance",
+          "Description": "Auf eine horizontale Fläche einfallende diffuse Sonnenenergie in Watt pro Quadratmeter. Orientierte Fassaden- und Verschattungsmodelle können diesen Wert bei direkter normaler Einstrahlung verwenden.",
+          "Name": "Diffuse horizontale Bestrahlungsstärke",
           "Type": 14
         }
       ],
@@ -253,158 +253,158 @@
           "Type": 0
         },
         {
-          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
-          "Name": "Upsert historical periods",
+          "Description": "Fügt nach einer erfolgreichen Verlaufsaktualisierung abgeschlossene Perioden durch `starts_at` ein oder ersetzt sie.",
+          "Name": "Historische Perioden einfügen",
           "Type": 1
         },
         {
-          "Description": "The retrieval and validation time for the updated history section.",
-          "Name": "Retrieved at",
+          "Description": "Die Abruf- und Validierungszeit für den aktualisierten Verlaufsabschnitt.",
+          "Name": "Abgerufen am",
           "Type": 2
         },
         {
-          "Description": "The new exclusive freshness deadline for the history section.",
-          "Name": "Valid until",
+          "Description": "Der neue exklusive Aktualitätsstichtag für den Verlaufsabschnitt.",
+          "Name": "Gültig bis",
           "Type": 3
         },
         {
-          "Description": "Periods to insert or replace, ordered from oldest to newest.",
-          "Name": "Historical periods",
+          "Description": "Einzufügende oder zu ersetzende Zeiträume, geordnet vom ältesten zum neuesten.",
+          "Name": "Historische Zeiträume",
           "Type": 4
         },
         {
-          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
-          "Name": "Historical period",
+          "Description": "Eine abgeschlossene Außenbedingungsperiode mit dem Schlüssel `starts_at`.",
+          "Name": "Historischer Zeitraum",
           "Type": 5
         },
         {
-          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove historical periods",
+          "Description": "Entfernt historische Zeiträume, deren Startzeiten in den angegebenen halboffenen Bereich fallen.",
+          "Name": "Historische Zeiträume entfernen",
           "Type": 6
         },
         {
-          "Description": "The half-open range of historical period start times to remove.",
-          "Name": "Time range",
+          "Description": "Der halboffene Bereich der zu entfernenden Startzeiten historischer Zeiträume.",
+          "Name": "Zeitraum",
           "Type": 7
         },
         {
-          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
-          "Name": "Replace current conditions",
+          "Description": "Ersetzt den kompletten Abschnitt „aktueller Zustand“ nach erfolgreichem Abruf, Validierung und Persistenz.",
+          "Name": "Aktuelle Bedingungen ersetzen",
           "Type": 8
         },
         {
-          "Description": "The complete newly accepted current-condition section.",
-          "Name": "Current conditions",
+          "Description": "Der komplette neu übernommene Abschnitt zum aktuellen Zustand.",
+          "Name": "Aktuelle Bedingungen",
           "Type": 9
         },
         {
-          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
-          "Name": "Upsert forecast periods",
+          "Description": "Fügt nach einer erfolgreichen Prognoseaktualisierung zukünftige Perioden ein oder ersetzt diese durch `starts_at`.",
+          "Name": "Vorhersagezeiträume einfügen oder aktualisieren",
           "Type": 10
         },
         {
-          "Description": "The retrieval and validation time for the updated forecast section.",
-          "Name": "Retrieved at",
+          "Description": "Die Abruf- und Validierungszeit für den aktualisierten Prognoseabschnitt.",
+          "Name": "Abgerufen am",
           "Type": 11
         },
         {
-          "Description": "The new exclusive freshness deadline for the forecast section.",
-          "Name": "Valid until",
+          "Description": "Der neue exklusive Aktualitätsstichtag für den Prognoseabschnitt.",
+          "Name": "Gültig bis",
           "Type": 12
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Forecast periods",
+          "Description": "Einzufügende oder zu ersetzende Zeiträume, vom frühesten bis zum spätesten geordnet.",
+          "Name": "Prognosezeiträume",
           "Type": 13
         },
         {
-          "Description": "One future outdoor-condition period keyed by `starts_at`.",
-          "Name": "Forecast period",
+          "Description": "Ein zukünftiger Zeitraum mit Außenbedingungen, verschlüsselt durch `starts_at`.",
+          "Name": "Prognosezeitraum",
           "Type": 14
         },
         {
-          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove forecast periods",
+          "Description": "Entfernt Prognosezeiträume, deren Startzeiten in den angegebenen halboffenen Bereich fallen.",
+          "Name": "Prognosezeiträume entfernen",
           "Type": 15
         },
         {
-          "Description": "The half-open range of forecast period start times to remove.",
-          "Name": "Time range",
+          "Description": "Der halboffene Bereich der Startzeiten der zu entfernenden Prognosezeiträume.",
+          "Name": "Zeitraum",
           "Type": 16
         },
         {
-          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
-          "Name": "Upsert outdoor-air-quality periods",
+          "Description": "Fügt nach einer erfolgreichen Aktualisierung der Luftqualität Schadstoffperioden um `starts_at` ein oder ersetzt sie.",
+          "Name": "Geben Sie Zeiträume für die Luftqualität im Freien ein",
           "Type": 17
         },
         {
-          "Description": "The retrieval and validation time for the updated air-quality section.",
-          "Name": "Retrieved at",
+          "Description": "Die Abruf- und Validierungszeit für den aktualisierten Luftqualitätsabschnitt.",
+          "Name": "Abgerufen am",
           "Type": 18
         },
         {
-          "Description": "The new exclusive freshness deadline for the air-quality section.",
-          "Name": "Valid until",
+          "Description": "Der neue exklusive Frischetermin für den Bereich Luftqualität.",
+          "Name": "Gültig bis",
           "Type": 19
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Air-quality periods",
+          "Description": "Einzufügende oder zu ersetzende Zeiträume, vom frühesten bis zum spätesten geordnet.",
+          "Name": "Luftqualitätszeiträume",
           "Type": 20
         },
         {
-          "Description": "One modeled pollutant period keyed by `starts_at`.",
-          "Name": "Air-quality period",
+          "Description": "Ein modellierter Schadstoffzeitraum, verschlüsselt durch `starts_at`.",
+          "Name": "Luftqualitätszeitraum",
           "Type": 21
         },
         {
-          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove outdoor-air-quality periods",
+          "Description": "Entfernt Schadstoffperioden, deren Startzeiten in den angegebenen halboffenen Bereich fallen.",
+          "Name": "Entfernen Sie Zeiträume mit Luftqualität im Freien",
           "Type": 22
         },
         {
-          "Description": "The half-open range of air-quality period start times to remove.",
-          "Name": "Time range",
+          "Description": "Der halboffene Bereich der zu entfernenden Startzeiten des Luftqualitätszeitraums.",
+          "Name": "Zeitraum",
           "Type": 23
         },
         {
-          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
-          "Name": "Clear weather section",
+          "Description": "Löscht einen Abschnitt erst, nachdem sich herausstellt, dass sein zwischengespeicherter Wert ungültig ist. Ein Anbieter-, Internet- oder Aktualisierungsfehler allein darf keinen Abschnitt löschen.",
+          "Name": "Wetterabschnitt löschen",
           "Type": 24
         },
         {
-          "Description": "The independently cached section to clear.",
-          "Name": "Weather section",
+          "Description": "Der unabhängig zwischengespeicherte Abschnitt, der gelöscht werden soll.",
+          "Name": "Wetterabschnitt",
           "Type": 25
         },
         {
-          "Description": "Replaces the complete historical section after a successful refresh.",
-          "Name": "Replace history",
+          "Description": "Ersetzt nach erfolgreicher Aktualisierung den kompletten historischen Abschnitt.",
+          "Name": "Geschichte ersetzen",
           "Type": 26
         },
         {
-          "Description": "The complete newly accepted history section.",
-          "Name": "History",
+          "Description": "Der komplette neu übernommene Geschichtsteil.",
+          "Name": "Verlauf",
           "Type": 27
         },
         {
-          "Description": "Replaces the complete forecast section after a successful refresh.",
-          "Name": "Replace forecast",
+          "Description": "Ersetzt nach erfolgreicher Aktualisierung den kompletten Prognoseabschnitt.",
+          "Name": "Prognose ersetzen",
           "Type": 28
         },
         {
-          "Description": "The complete newly accepted forecast section.",
-          "Name": "Forecast",
+          "Description": "Der vollständige neu übernommene Prognoseabschnitt.",
+          "Name": "Prognose",
           "Type": 29
         },
         {
-          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
-          "Name": "Replace outdoor air quality",
+          "Description": "Ersetzt nach erfolgreicher Aktualisierung den gesamten modellierten Schadstoffabschnitt.",
+          "Name": "Ersetzen Sie die Luftqualität im Freien",
           "Type": 30
         },
         {
-          "Description": "The complete newly accepted outdoor-air-quality section.",
-          "Name": "Outdoor air quality",
+          "Description": "Der komplett neu übernommene Abschnitt zur Außenluftqualität.",
+          "Name": "Außenluftqualität",
           "Type": 31
         }
       ],
@@ -681,66 +681,66 @@
           "Type": 0
         },
         {
-          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
-          "Name": "Get building HVAC weather",
+          "Description": "Führt einen einmaligen inkrementellen Lesevorgang durch oder startet oder setzt ein Abonnement fort. Der Server gibt nach Möglichkeit beibehaltene Änderungen nach `after_cursor` wieder oder gibt unabhängig zwischengespeicherte Abschnitte zurück, die auf die angeforderten Fallbackbereiche beschränkt sind.",
+          "Name": "Holen Sie sich das Gebäude-HVAC-Wetter",
           "Type": 1
         },
         {
-          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
-          "Name": "Resume cursor",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "Description": "Der letzte Cursor, der vollständig und atomar vom Client angewendet wird. `None` fordert einen ersten Snapshot an.",
+          "Name": "Fortsetzungs-Cursor",
+          "NullText": "Beginnen Sie mit einem neuen Schnappschuss",
+          "SetText": "Danach fortfahren",
           "Type": 2
         },
         {
-          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
-          "Name": "Historical recovery range",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "Description": "Der halboffene historische Bereich, der einbezogen werden soll, wenn eine Wiederholung nicht möglich ist. `None` schließt den Verlauf von einem Reset-Snapshot aus.",
+          "Name": "Historischer Wiederherstellungsbereich",
+          "NullText": "Keine Geschichte",
+          "SetText": "Fügen Sie den Verlauf für ein",
           "Type": 3
         },
         {
-          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
-          "Name": "Include current conditions",
+          "Description": "Ob ein Reset-Snapshot zwischengespeicherte aktuelle Außenbedingungen enthalten soll.",
+          "Name": "Aktuelle Bedingungen einbeziehen",
           "Type": 4
         },
         {
-          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
-          "Name": "Forecast recovery range",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "Description": "Der halboffene physische Wettervorhersagebereich, der berücksichtigt werden soll, wenn eine Wiederholung nicht möglich ist. `None` schließt Prognosedaten aus.",
+          "Name": "Vorhersage-Wiederherstellungsbereich",
+          "NullText": "Keine Prognose",
+          "SetText": "Prognose für einbeziehen",
           "Type": 5
         },
         {
-          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
-          "Name": "Outdoor-air-quality recovery range",
-          "NullText": "No outdoor air quality",
-          "SetText": "Include outdoor air quality for",
+          "Description": "Der halboffene Schadstoffzeitraum umfasst den Bereich, in dem eine Wiederholung nicht möglich ist. `None` schließt modellierte Außenluftqualität aus.",
+          "Name": "Bereich zur Wiederherstellung der Außenluftqualität",
+          "NullText": "Keine Außenluftqualität",
+          "SetText": "Berücksichtigen Sie die Qualität der Außenluft",
           "Type": 6
         },
         {
-          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
-          "Name": "Building HVAC weather recovery",
+          "Description": "Reagiert auf jede gültige Get-Anfrage mit einer Wiederholung, einem Reset-Snapshot oder einem eingegebenen Fehler. Abonnement-Clients starten ihr Timeout nach erfolgreicher Wiederherstellung, späteren Datenberichten und PeerAlive neu.",
+          "Name": "Wiederherstellung von Gebäude-HVAC-Wetterdaten",
           "Type": 7
         },
         {
-          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
-          "Name": "Maximum wait interval",
+          "Description": "Maximale Sekunden, die ein Abonnement-Client wartet, bevor er es mit seinem letzten Cursor erneut versucht. Der Server sendet zuerst geänderte Daten oder PeerAlive. Ein One-Shot-Client ignoriert diesen erforderlichen Wert ungleich Null.",
+          "Name": "Maximales Warteintervall",
           "Type": 8
         },
         {
-          "Description": "The replay, reset snapshot, or typed error result.",
-          "Name": "Recovery",
+          "Description": "Das Ergebnis der Wiedergabe, des Reset-Snapshots oder des eingegebenen Fehlers.",
+          "Name": "Wiederherstellung",
           "Type": 9
         },
         {
-          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
-          "Name": "Building HVAC weather increment",
+          "Description": "Meldet Änderungen nach erfolgreicher Abonnementwiederherstellung. Ein Client wendet den gesamten zusammenhängenden Bereich an oder wendet keinen davon an.",
+          "Name": "Gebäude HVAC Wetterinkrement",
           "Type": 10
         },
         {
-          "Description": "The ordered, atomic cursor range and its weather changes.",
-          "Name": "Incremental report",
+          "Description": "Der geordnete, atomare Cursorbereich und seine Wetteränderungen.",
+          "Name": "Inkrementeller Bericht",
           "Type": 11
         }
       ],
@@ -790,48 +790,48 @@
           "Type": 0
         },
         {
-          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
-          "Name": "Replayed changes",
+          "Description": "Setzt den Stream mit jeder beibehaltenen Änderung nach dem angegebenen Cursor fort. Ein leerer Bericht bedeutet, dass der Kunde nicht weiterkommt.",
+          "Name": "Wiederholte Änderungen",
           "Type": 1
         },
         {
-          "Description": "The contiguous retained change range beginning at the request cursor.",
-          "Name": "Incremental report",
+          "Description": "Der zusammenhängende beibehaltene Änderungsbereich, beginnend am Anforderungscursor.",
+          "Name": "Inkrementeller Bericht",
           "Type": 2
         },
         {
-          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
-          "Name": "Reset with snapshot",
+          "Description": "Erstellt den Status aus unabhängig zwischengespeicherten Abschnitten, wenn eine Wiedergabe nicht möglich ist oder kein Cursor bereitgestellt wurde.",
+          "Name": "Mit Snapshot zurücksetzen",
           "Type": 3
         },
         {
-          "Description": "The reason the response contains a snapshot rather than replay.",
-          "Name": "Reset reason",
+          "Description": "Der Grund, warum die Antwort einen Schnappschuss und keine Wiederholung enthält.",
+          "Name": "Grund für das Zurücksetzen",
           "Type": 4
         },
         {
-          "Description": "The cursor representing the returned snapshot.",
-          "Name": "Current cursor",
+          "Description": "Der Cursor, der die zurückgegebene Momentaufnahme repräsentiert.",
+          "Name": "Aktueller Cursor",
           "Type": 5
         },
         {
-          "Description": "The available cached sections constrained by requested ranges.",
-          "Name": "Weather snapshot",
+          "Description": "Die verfügbaren zwischengespeicherten Abschnitte, eingeschränkt durch angeforderte Bereiche.",
+          "Name": "Wettermomentaufnahme",
           "Type": 6
         },
         {
-          "Description": "Rejects the request without changing client cursor or cached weather.",
-          "Name": "Recovery error",
+          "Description": "Lehnt die Anfrage ab, ohne den Client-Cursor oder das zwischengespeicherte Wetter zu ändern.",
+          "Name": "Wiederherstellungsfehler",
           "Type": 7
         },
         {
-          "Description": "The reason recovery could not be completed.",
-          "Name": "Error",
+          "Description": "Der Grund, aus dem die Wiederherstellung nicht abgeschlossen werden konnte.",
+          "Name": "Fehler",
           "Type": 8
         },
         {
-          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
-          "Name": "Retry delay",
+          "Description": "Empfohlene Sekunden vor dem erneuten Versuch. `None` bedeutet, dass sich die Anforderung ändern muss, bevor ein erneuter Versuch erfolgreich sein kann.",
+          "Name": "Wiederholungsverzögerung",
           "Type": 9
         }
       ],
@@ -1398,27 +1398,27 @@
       "Name": "SprinklerWeatherIncrementalReportV1"
     },
     {
-      "Description": "Records for one endpoint share a transaction and scan prefix.",
-      "DisplayName": "Saved weather keys",
+      "Description": "Datensätze für einen Endpunkt teilen sich ein Transaktions- und Scanpräfix.",
+      "DisplayName": "Gespeicherte Wetterschlüssel",
       "List": [
         {
-          "Description": "Records for one endpoint share a transaction and scan prefix.",
-          "Name": "Saved weather keys",
+          "Description": "Datensätze für einen Endpunkt teilen sich ein Transaktions- und Scanpräfix.",
+          "Name": "Gespeicherte Wetterschlüssel",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Weather belonging to one service endpoint",
+          "Name": "Wetter, das zu einem Dienstendpunkt gehört",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "Endpunkt",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "aufzeichnen",
           "Type": 3
         }
       ],
@@ -1525,15 +1525,15 @@
         {
           "Description": "Der letzte vom Client vollständig und atomar angewendete Cursor. `None` fordert eine anfängliche bereichsbegrenzte Momentaufnahme an. Der Server vergleicht beide Felder; eine niedrigere Sequenz weist nur dann auf ein Zurücksetzen hin, wenn der Antwort-Cursor außerdem einen neueren Epochenzeitstempel aufweist.",
           "Name": "Fortsetzungs-Cursor",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "NullText": "Beginnen Sie mit einem neuen Schnappschuss",
+          "SetText": "Danach fortfahren",
           "Type": 2
         },
         {
           "Description": "Der halboffene Bereich der Startzeiten historischer Zeiträume, der einbezogen werden soll, wenn eine Wiedergabe nicht möglich ist. `None` schließt den Verlauf aus der Momentaufnahme zum Zurücksetzen aus.",
           "Name": "Historischer Wiederherstellungsbereich",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "NullText": "Keine Geschichte",
+          "SetText": "Fügen Sie den Verlauf für ein",
           "Type": 3
         },
         {
@@ -1544,8 +1544,8 @@
         {
           "Description": "Der halboffene Bereich der Startzeiten von Vorhersagezeiträumen, der einbezogen werden soll, wenn eine Wiedergabe nicht möglich ist. `None` schließt Vorhersagedaten aus der Momentaufnahme zum Zurücksetzen aus.",
           "Name": "Vorhersage-Wiederherstellungsbereich",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "NullText": "Keine Prognose",
+          "SetText": "Prognose für einbeziehen",
           "Type": 5
         },
         {
@@ -1578,41 +1578,41 @@
     },
     {
       "Description": "",
-      "DisplayName": "Saved weather record identity",
+      "DisplayName": "Gespeicherte Identität des Wetterdatensatzes",
       "List": [
         {
           "Description": "",
-          "Name": "Saved weather record identity",
+          "Name": "Gespeicherte Identität des Wetterdatensatzes",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Location",
+          "Name": "Standort",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "HistoryMetadata",
+          "Name": "Verlaufsmetadaten",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "HistoryPeriod",
+          "Name": "GeschichteZeitraum",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "starts_at",
+          "Name": "startet_at",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "Current",
+          "Name": "Aktuell",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Forecast",
+          "Name": "Prognose",
           "Type": 6
         }
       ],

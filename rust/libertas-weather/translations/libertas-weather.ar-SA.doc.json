@@ -1,5 +1,5 @@
 {
-  "Description": "يعرّف بيانات الطقس المصممة خصيصًا للقرارات التي تتخذها تطبيقات ليبرتاس. يحتفظ مخطط نظام الرش بموقعه الذي يوفره المحور بصورة منفصلة عن السجل الحديث والظروف الحالية وبيانات التوقعات. لكل قسم من أقسام الطقس فاصل زمني مختلف للتحديث، وقد ينجح أو يفشل بصورة مستقلة. قد تتضمن لقطات وقت التشغيل أي مجموعة من الأقسام. تحفظ التطبيقات كل قسم ناجح بصورة منفصلة، وتحتفظ بالأقسام الأقدم عند فشل تحديث بيانات الطقس. تستخدم الاشتراكات التزايدية مؤشرات تتكون من الطابع الزمني للحقبة والتسلسل، لكي يتمكن العملاء من تمييز إعادة تعيين مؤشر الخادم عن البيانات القديمة أو غير المرتبة، أو إعادة تشغيل التغييرات المحتفظ بها، أو استرداد نطاقات زمنية محددة من البيانات المخزنة مؤقتًا. لا يوفر مخطط نظام التدفئة والتهوية وتكييف الهواء في المبنى سوى المدخلات الخارجية اللازمة للتنبؤ بالحمل الحراري، وتشغيل المضخات الحرارية، واتخاذ قرارات المقتصد، والتهوية المتحكم بها بالهواء الخارجي. ويُبقي قسمي الطقس وجودة الهواء الخارجي مستقلين لأن لهما مزودين مختلفين وسلوكًا مختلفًا من حيث حداثة البيانات. يجب أن تواصل المعدات المحلية وأنظمة السلامة الحيوية استخدام مستشعراتها الخاصة؛ فالطقس المخزن مؤقتًا من الإنترنت مدخل إشرافي وليس إشارة سلامة.",
+  "Description": "يحدد بيانات الطقس المصممة خصيصًا للقرارات التي تتخذها تطبيقات Libertas.\nيحتفظ مخطط الرشاش بموقع الموقع الذي يوفره المحور بشكل منفصل عن التاريخ الحديث والظروف الحالية وبيانات التنبؤ. يحتوي كل قسم من أقسام الطقس على فترة تحديث مختلفة وقد ينجح أو يفشل بشكل مستقل. قد تحتوي لقطات وقت التشغيل على أي مجموعة من الأقسام. تستمر التطبيقات في كل قسم ناجح على حدة وتحتفظ بالأقسام الأقدم عند فشل تحديث بيانات الطقس. تستخدم الاشتراكات المتزايدة مؤشرات الطابع الزمني والتسلسل حتى يتمكن العملاء من التمييز بين إعادة تعيين مؤشر الخادم والبيانات القديمة أو الخارجة عن الترتيب، أو إعادة تشغيل التغييرات المحتجزة، أو استعادة النطاقات الزمنية المحددة من البيانات المخزنة مؤقتًا.\nيوفر مخطط HVAC للمبنى فقط المدخلات الخارجية اللازمة للتنبؤ بالحمل الحراري، وتشغيل المضخة الحرارية، وقرارات الاقتصاد، وتهوية الهواء الخارجي الخاضعة للتحكم. إنها تحافظ على استقلالية أقسام الطقس وجودة الهواء الخارجي نظرًا لاختلاف مقدمي الخدمة وسلوك النضارة. يجب أن تستمر المعدات المحلية وضوابط سلامة الحياة في استخدام أجهزة الاستشعار الخاصة بها؛ يعد طقس الإنترنت المخبأ بمثابة مدخلات إشرافية، وليس إشارة أمان.",
   "DisplayName": "طقس ليبرتاس",
   "DocumentVersion": "0.0.2",
   "List": [],
@@ -16,28 +16,28 @@
           "Type": 0
         },
         {
-          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
-          "Name": "Retrieved at",
+          "Description": "التاريخ والوقت الذي تم فيه استرداد قسم الحالة الحالية الكامل والتحقق من صحته وقبوله.",
+          "Name": "وقت الاسترداد",
           "Type": 1
         },
         {
-          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
-          "Name": "Valid until",
+          "Description": "الموعد النهائي للنضارة الحصرية. في هذا الوقت أو بعده، يجب ألا تسمح القيم المخزنة مؤقتًا بتشغيل الموفر أو أي تحسينات أخرى تعتمد على الطقس والتي تتطلب ظروفًا حالية معروفة.",
+          "Name": "صالح حتى",
           "Type": 2
         },
         {
-          "Description": "The provider-supplied date and time represented by these current conditions.",
-          "Name": "Valid at",
+          "Description": "التاريخ والوقت المقدم من الموفر والممثل بهذه الظروف الحالية.",
+          "Name": "وقت سريان البيانات",
           "Type": 3
         },
         {
-          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
-          "Name": "Observation interval",
+          "Description": "الفاصل الزمني للخلف بالثواني الذي يمثله هطول الأمطار المتراكم. يستخدم الطقس الحالي عادة فاصل زمني مدته 900 ثانية.",
+          "Name": "فترة الرصد",
           "Type": 4
         },
         {
-          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
-          "Name": "Outdoor conditions",
+          "Description": "أحدث نماذج لدرجة الحرارة والرطوبة والضغط والرياح وهطول الأمطار ومدخلات الطاقة الشمسية للتحكم الإشرافي HVAC.",
+          "Name": "الظروف الخارجية",
           "Type": 5
         }
       ],
@@ -127,73 +127,73 @@
           "Type": 0
         },
         {
-          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
-          "Name": "Dry-bulb temperature",
+          "Description": "درجة حرارة الهواء الخارجي على ارتفاع مترين فوق سطح الأرض بالدرجات المئوية.",
+          "Name": "درجة حرارة المصباح الجاف",
           "Type": 1
         },
         {
-          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
-          "Name": "Dew-point temperature",
+          "Description": "درجة حرارة نقطة الندى في الهواء الطلق على ارتفاع مترين فوق سطح الأرض بالدرجات المئوية. جنبًا إلى جنب مع الضغط، يدعم ذلك حسابات نسبة الرطوبة والمحتوى الحراري والمصباح الرطب ومخاطر التكثيف والحمل الكامن.",
+          "Name": "درجة حرارة نقطة الندى",
           "Type": 2
         },
         {
-          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
-          "Name": "Relative humidity",
+          "Description": "الرطوبة النسبية الخارجية على ارتفاع مترين فوق سطح الأرض كنسبة مئوية صحيحة من 0 إلى 100. تدعم قيمة الموفر هذه العرض والتحقق من الصحة؛ يجب أن تستخدم الحسابات النفسية مجموعة مدخلات واحدة متسقة بدلاً من خلط القيم الزائدة عن الحاجة.",
+          "Name": "الرطوبة النسبية",
           "Type": 3
         },
         {
-          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
-          "Name": "Surface pressure",
+          "Description": "الضغط الجوي عند ارتفاع المبنى بالهكتوباسكال. يُستخدم الضغط السطحي، بدلاً من الضغط المخفض إلى مستوى سطح البحر، في الحسابات السيكرومترية.",
+          "Name": "الضغط السطحي",
           "Type": 4
         },
         {
-          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
-          "Name": "Wind speed",
+          "Description": "سرعة الرياح الخارجية المستمرة على ارتفاع 10 أمتار فوق سطح الأرض بالمتر في الثانية. قد يستخدمه نموذج البناء لتقدير التسلل وأحمال الهواء الخارجي المدفوعة بالضغط.",
+          "Name": "سرعة الرياح",
           "Type": 5
         },
         {
-          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
-          "Name": "Wind gust",
+          "Description": "تبلغ ذروة الرياح الخارجية 10 أمتار فوق سطح الأرض بالأمتار في الثانية. وهو يدعم التحكم المحافظ في المخمدات والمعدات المكشوفة.",
+          "Name": "هبّة الرياح",
           "Type": 6
         },
         {
-          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
-          "Name": "Wind direction",
+          "Description": "الاتجاه الذي تنطلق منه الرياح بالدرجات في اتجاه عقارب الساعة من الشمال الحقيقي. صفر و360 كلاهما يمثلان الشمال. يكون الاتجاه مفيدًا فقط عندما يعرف نموذج المبنى اتجاه الواجهة.",
+          "Name": "اتجاه الرياح",
           "Type": 7
         },
         {
-          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
-          "Name": "Precipitation",
+          "Description": "إجمالي مكافئ الماء السائل المتراكم خلال فترة الاحتواء، بالملليمتر.",
+          "Name": "الهطول",
           "Type": 8
         },
         {
-          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
-          "Name": "Precipitation kind",
+          "Description": "تؤثر مرحلة الترسيب السائل أو المتجمد على معدات HVAC المكشوفة خلال فترة الاحتواء.",
+          "Name": "نوع هطول الأمطار",
           "Type": 9
         },
         {
-          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
-          "Name": "Solar elevation",
+          "Description": "الارتفاع الهندسي لمركز الشمس بالدرجات فوق الأفق الفلكي في وقت الرصد الممثل. القيم السلبية تضع الشمس تحت الأفق. استخدم `valid_at` السجل الحالي المحتوي عليه أو نقطة المنتصف للسجل المحتوي أو فترة التنبؤ مع إحداثيات موقع البناء لحساب هذه القيمة.",
+          "Name": "الارتفاع الشمسي",
           "Type": 10
         },
         {
-          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
-          "Name": "Solar azimuth",
+          "Description": "اتجاه مركز الشمس بالدرجات في اتجاه عقارب الساعة من الشمال الحقيقي في نفس وقت المراقبة الممثل. HVAC يقوم مستهلكو التعلم الآلي بتحويل هذه الزاوية الدورية إلى جيب وجيب التمام بدلاً من تفسير قيمة الدرجة الأولية على أنها ترتيبية.",
+          "Name": "السمت الشمسي",
           "Type": 11
         },
         {
-          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
-          "Name": "Global horizontal irradiance",
+          "Description": "إجمالي حادث الطاقة الشمسية المباشرة والمنتشرة على سطح أفقي بالواط لكل متر مربع. هذا هو المدخل الأساسي لكسب الطاقة الشمسية في المبنى بأكمله.",
+          "Name": "الإشعاع الأفقي العالمي",
           "Type": 12
         },
         {
-          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
-          "Name": "Direct normal irradiance",
+          "Description": "حادثة طاقة شمسية مباشرة على سطح طبيعي للشمس بالواط لكل متر مربع. قد تستخدم نماذج الواجهة والتظليل الموجهة هذه القيمة.",
+          "Name": "الإشعاع الطبيعي المباشر",
           "Type": 13
         },
         {
-          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
-          "Name": "Diffuse horizontal irradiance",
+          "Description": "حادثة طاقة شمسية منتشرة في السماء على سطح أفقي بالواط لكل متر مربع. قد تستخدم نماذج الواجهة والتظليل الموجهة هذه القيمة مع الإشعاع الطبيعي المباشر.",
+          "Name": "إشعاع أفقي منتشر",
           "Type": 14
         }
       ],
@@ -253,158 +253,158 @@
           "Type": 0
         },
         {
-          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
-          "Name": "Upsert historical periods",
+          "Description": "إدراج الفترات المكتملة أو استبدالها بواسطة `starts_at` بعد تحديث السجل بنجاح.",
+          "Name": "Upsert الفترات التاريخية",
           "Type": 1
         },
         {
-          "Description": "The retrieval and validation time for the updated history section.",
-          "Name": "Retrieved at",
+          "Description": "وقت الاسترجاع والتحقق من صحة قسم السجل المحدث.",
+          "Name": "وقت الاسترداد",
           "Type": 2
         },
         {
-          "Description": "The new exclusive freshness deadline for the history section.",
-          "Name": "Valid until",
+          "Description": "الموعد النهائي الحصري الجديد لحداثة قسم السجل.",
+          "Name": "صالح حتى",
           "Type": 3
         },
         {
-          "Description": "Periods to insert or replace, ordered from oldest to newest.",
-          "Name": "Historical periods",
+          "Description": "الفترات المراد إدراجها أو استبدالها، مرتبة من الأقدم إلى الأحدث.",
+          "Name": "الفترات التاريخية",
           "Type": 4
         },
         {
-          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
-          "Name": "Historical period",
+          "Description": "فترة تكييف خارجية واحدة مكتملة بمفتاح `starts_at`.",
+          "Name": "الفترة التاريخية",
           "Type": 5
         },
         {
-          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove historical periods",
+          "Description": "يزيل الفترات التاريخية التي تقع أوقات بدايتها ضمن النطاق نصف المفتوح المتوفر.",
+          "Name": "إزالة الفترات التاريخية",
           "Type": 6
         },
         {
-          "Description": "The half-open range of historical period start times to remove.",
-          "Name": "Time range",
+          "Description": "النطاق نصف المفتوح لأوقات بدء الفترات التاريخية المراد إزالتها.",
+          "Name": "النطاق الزمني",
           "Type": 7
         },
         {
-          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
-          "Name": "Replace current conditions",
+          "Description": "يستبدل قسم الحالة الحالية الكامل بعد الاسترداد والتحقق والمثابرة بنجاح.",
+          "Name": "استبدال الظروف الحالية",
           "Type": 8
         },
         {
-          "Description": "The complete newly accepted current-condition section.",
-          "Name": "Current conditions",
+          "Description": "قسم الحالة الحالية الكامل المقبول حديثًا.",
+          "Name": "الظروف الحالية",
           "Type": 9
         },
         {
-          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
-          "Name": "Upsert forecast periods",
+          "Description": "يقوم بإدراج الفترات المستقبلية أو استبدالها بـ `starts_at` بعد تحديث التوقعات بنجاح.",
+          "Name": "إدراج فترات التوقعات أو تحديثها",
           "Type": 10
         },
         {
-          "Description": "The retrieval and validation time for the updated forecast section.",
-          "Name": "Retrieved at",
+          "Description": "وقت الاسترداد والتحقق من الصحة لقسم التنبؤ المحدث.",
+          "Name": "وقت الاسترداد",
           "Type": 11
         },
         {
-          "Description": "The new exclusive freshness deadline for the forecast section.",
-          "Name": "Valid until",
+          "Description": "الموعد النهائي الحصري الجديد لحداثة قسم التنبؤات.",
+          "Name": "صالح حتى",
           "Type": 12
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Forecast periods",
+          "Description": "الفترات المراد إدراجها أو استبدالها، مرتبة من الأقدم إلى الأحدث.",
+          "Name": "فترات التنبؤ",
           "Type": 13
         },
         {
-          "Description": "One future outdoor-condition period keyed by `starts_at`.",
-          "Name": "Forecast period",
+          "Description": "فترة حالة خارجية واحدة مستقبلية يتم تحديدها بواسطة `starts_at`.",
+          "Name": "فترة التنبؤ",
           "Type": 14
         },
         {
-          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove forecast periods",
+          "Description": "يزيل فترات التنبؤ التي تقع أوقات بدايتها ضمن النطاق نصف المفتوح المتوفر.",
+          "Name": "إزالة فترات التنبؤ",
           "Type": 15
         },
         {
-          "Description": "The half-open range of forecast period start times to remove.",
-          "Name": "Time range",
+          "Description": "النطاق نصف المفتوح لأوقات بدء فترات التنبؤ المراد إزالتها.",
+          "Name": "النطاق الزمني",
           "Type": 16
         },
         {
-          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
-          "Name": "Upsert outdoor-air-quality periods",
+          "Description": "إدراج فترات التلوث أو استبدالها بمقدار `starts_at` بعد تحديث ناجح لجودة الهواء.",
+          "Name": "تحسين فترات جودة الهواء الخارجي",
           "Type": 17
         },
         {
-          "Description": "The retrieval and validation time for the updated air-quality section.",
-          "Name": "Retrieved at",
+          "Description": "وقت الاسترجاع والتحقق من صحة قسم جودة الهواء المحدث.",
+          "Name": "وقت الاسترداد",
           "Type": 18
         },
         {
-          "Description": "The new exclusive freshness deadline for the air-quality section.",
-          "Name": "Valid until",
+          "Description": "الموعد النهائي الجديد الحصري للنضارة لقسم جودة الهواء.",
+          "Name": "صالح حتى",
           "Type": 19
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Air-quality periods",
+          "Description": "الفترات المراد إدراجها أو استبدالها، مرتبة من الأقدم إلى الأحدث.",
+          "Name": "فترات جودة الهواء",
           "Type": 20
         },
         {
-          "Description": "One modeled pollutant period keyed by `starts_at`.",
-          "Name": "Air-quality period",
+          "Description": "فترة ملوثة نموذجية واحدة مرمزة بـ `starts_at`.",
+          "Name": "فترة جودة الهواء",
           "Type": 21
         },
         {
-          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove outdoor-air-quality periods",
+          "Description": "يزيل فترات التلوث التي تقع أوقات بدايتها ضمن نطاق نصف مفتوح المزود.",
+          "Name": "قم بإزالة فترات جودة الهواء الخارجي",
           "Type": 22
         },
         {
-          "Description": "The half-open range of air-quality period start times to remove.",
-          "Name": "Time range",
+          "Description": "النطاق النصف مفتوح لأوقات بدء فترة جودة الهواء المراد إزالتها.",
+          "Name": "النطاق الزمني",
           "Type": 23
         },
         {
-          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
-          "Name": "Clear weather section",
+          "Description": "يقوم بمسح قسم واحد فقط بعد إثبات عدم صلاحية قيمته المخزنة مؤقتًا. يجب ألا يقوم الموفر أو الإنترنت أو فشل التحديث وحده بمسح أي قسم.",
+          "Name": "مسح قسم الطقس",
           "Type": 24
         },
         {
-          "Description": "The independently cached section to clear.",
-          "Name": "Weather section",
+          "Description": "القسم المخزن مؤقتًا بصورة مستقلة والمراد مسحه.",
+          "Name": "قسم الطقس",
           "Type": 25
         },
         {
-          "Description": "Replaces the complete historical section after a successful refresh.",
-          "Name": "Replace history",
+          "Description": "يستبدل القسم التاريخي الكامل بعد التحديث الناجح.",
+          "Name": "استبدال التاريخ",
           "Type": 26
         },
         {
-          "Description": "The complete newly accepted history section.",
-          "Name": "History",
+          "Description": "قسم التاريخ المقبول حديثا الكامل.",
+          "Name": "السجل",
           "Type": 27
         },
         {
-          "Description": "Replaces the complete forecast section after a successful refresh.",
-          "Name": "Replace forecast",
+          "Description": "يستبدل قسم التوقعات الكامل بعد التحديث الناجح.",
+          "Name": "استبدال التنبؤات",
           "Type": 28
         },
         {
-          "Description": "The complete newly accepted forecast section.",
-          "Name": "Forecast",
+          "Description": "قسم التنبؤات الجديد المقبول بالكامل.",
+          "Name": "توقعات",
           "Type": 29
         },
         {
-          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
-          "Name": "Replace outdoor air quality",
+          "Description": "يستبدل قسم الملوثات النموذجي الكامل بعد التحديث الناجح.",
+          "Name": "استبدال جودة الهواء الخارجي",
           "Type": 30
         },
         {
-          "Description": "The complete newly accepted outdoor-air-quality section.",
-          "Name": "Outdoor air quality",
+          "Description": "قسم جودة الهواء الخارجي الكامل المقبول حديثًا.",
+          "Name": "جودة الهواء الخارجي",
           "Type": 31
         }
       ],
@@ -681,66 +681,66 @@
           "Type": 0
         },
         {
-          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
-          "Name": "Get building HVAC weather",
+          "Description": "إجراء قراءة تزايدية لمرة واحدة أو بدء الاشتراك أو استئنافه. يقوم الخادم بإعادة عرض التغييرات التي تم الاحتفاظ بها بعد `after_cursor` عندما يكون ذلك ممكنًا أو يقوم بإرجاع الأقسام المخزنة مؤقتًا بشكل مستقل والمقيدة بالنطاقات الاحتياطية المطلوبة.",
+          "Name": "احصل على طقس المبنى HVAC",
           "Type": 1
         },
         {
-          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
-          "Name": "Resume cursor",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "Description": "يتم تطبيق المؤشر الأخير بشكل كامل وذري من قبل العميل. `None` يطلب لقطة أولية.",
+          "Name": "مؤشر الاستئناف",
+          "NullText": "ابدأ من لقطة جديدة",
+          "SetText": "استئناف بعد",
           "Type": 2
         },
         {
-          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
-          "Name": "Historical recovery range",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "Description": "النطاق التاريخي نصف المفتوح الذي سيتم تضمينه عندما تكون إعادة التشغيل مستحيلة. `None` يستبعد السجل من لقطة إعادة التعيين.",
+          "Name": "نطاق استرداد السجل التاريخي",
+          "NullText": "لا يوجد تاريخ",
+          "SetText": "تضمين التاريخ ل",
           "Type": 3
         },
         {
-          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
-          "Name": "Include current conditions",
+          "Description": "ما إذا كان يجب أن تتضمن لقطة إعادة التعيين الظروف الخارجية الحالية المخزنة مؤقتًا.",
+          "Name": "تضمين الظروف الحالية",
           "Type": 4
         },
         {
-          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
-          "Name": "Forecast recovery range",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "Description": "نطاق توقعات الطقس الفعلي نصف المفتوح الذي سيتم تضمينه عندما تكون إعادة التشغيل مستحيلة. `None` لا يشمل بيانات التوقعات.",
+          "Name": "نطاق استرداد التوقعات",
+          "NullText": "لا توقعات",
+          "SetText": "تضمين توقعات ل",
           "Type": 5
         },
         {
-          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
-          "Name": "Outdoor-air-quality recovery range",
-          "NullText": "No outdoor air quality",
-          "SetText": "Include outdoor air quality for",
+          "Description": "نطاق فترة التلوث نصف المفتوحة الذي يجب تضمينه عندما تكون إعادة التشغيل مستحيلة. `None` لا يشمل جودة الهواء الخارجي النموذجية.",
+          "Name": "نطاق استعادة جودة الهواء الخارجي",
+          "NullText": "عدم وجود نوعية الهواء في الهواء الطلق",
+          "SetText": "تضمين جودة الهواء الخارجي لـ",
           "Type": 6
         },
         {
-          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
-          "Name": "Building HVAC weather recovery",
+          "Description": "يستجيب لكل طلب الحصول على صالح مع إعادة التشغيل، أو لقطة إعادة تعيين، أو خطأ مكتوب. يقوم عملاء الاشتراك بإعادة تشغيل المهلة الخاصة بهم بعد الاسترداد الناجح وتقارير البيانات اللاحقة وPeerAlive.",
+          "Name": "استرداد طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
           "Type": 7
         },
         {
-          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
-          "Name": "Maximum wait interval",
+          "Description": "الحد الأقصى للثواني التي ينتظرها عميل الاشتراك قبل إعادة المحاولة باستخدام المؤشر الأخير. يرسل الخادم البيانات المتغيرة أو PeerAlive أولاً. يتجاهل عميل اللقطة الواحدة هذه القيمة المطلوبة غير الصفرية.",
+          "Name": "الحد الأقصى لفترة الانتظار",
           "Type": 8
         },
         {
-          "Description": "The replay, reset snapshot, or typed error result.",
-          "Name": "Recovery",
+          "Description": "إعادة التشغيل أو إعادة تعيين اللقطة أو نتيجة الخطأ المكتوب.",
+          "Name": "الاسترداد",
           "Type": 9
         },
         {
-          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
-          "Name": "Building HVAC weather increment",
+          "Description": "تقارير التغييرات بعد نجاح استرداد الاشتراك. يطبق العميل النطاق المجاور الكامل أو لا يطبق أيًا منه.",
+          "Name": "بناء HVAC زيادة الطقس",
           "Type": 10
         },
         {
-          "Description": "The ordered, atomic cursor range and its weather changes.",
-          "Name": "Incremental report",
+          "Description": "نطاق المؤشر الذري المرتب وتغيرات الطقس الخاصة به.",
+          "Name": "تقرير تزايدي",
           "Type": 11
         }
       ],
@@ -790,48 +790,48 @@
           "Type": 0
         },
         {
-          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
-          "Name": "Replayed changes",
+          "Description": "يستمر الدفق مع كل تغيير تم الاحتفاظ به بعد المؤشر المتوفر. التقرير الفارغ يعني أن العميل قد تم القبض عليه.",
+          "Name": "التغييرات المعاد تشغيلها",
           "Type": 1
         },
         {
-          "Description": "The contiguous retained change range beginning at the request cursor.",
-          "Name": "Incremental report",
+          "Description": "نطاق التغيير المحتفظ به المتجاور الذي يبدأ عند مؤشر الطلب.",
+          "Name": "تقرير تزايدي",
           "Type": 2
         },
         {
-          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
-          "Name": "Reset with snapshot",
+          "Description": "ينشئ الحالة من الأقسام المخزنة مؤقتًا بشكل مستقل عندما تكون إعادة التشغيل مستحيلة أو عندما لا يتم توفير المؤشر.",
+          "Name": "إعادة تعيين مع لقطة",
           "Type": 3
         },
         {
-          "Description": "The reason the response contains a snapshot rather than replay.",
-          "Name": "Reset reason",
+          "Description": "السبب أن الرد يحتوي على لقطة بدلاً من إعادة التشغيل.",
+          "Name": "سبب إعادة التعيين",
           "Type": 4
         },
         {
-          "Description": "The cursor representing the returned snapshot.",
-          "Name": "Current cursor",
+          "Description": "المؤشر الذي يمثّل اللقطة المُعادة.",
+          "Name": "المؤشر الحالي",
           "Type": 5
         },
         {
-          "Description": "The available cached sections constrained by requested ranges.",
-          "Name": "Weather snapshot",
+          "Description": "الأقسام المتوفرة المخزنة مؤقتًا مقيدة بالنطاقات المطلوبة.",
+          "Name": "لقطة الطقس",
           "Type": 6
         },
         {
-          "Description": "Rejects the request without changing client cursor or cached weather.",
-          "Name": "Recovery error",
+          "Description": "يرفض الطلب دون تغيير مؤشر العميل أو الطقس المخبأ.",
+          "Name": "خطأ في الاسترداد",
           "Type": 7
         },
         {
-          "Description": "The reason recovery could not be completed.",
-          "Name": "Error",
+          "Description": "سبب تعذّر إكمال الاسترداد.",
+          "Name": "خطأ",
           "Type": 8
         },
         {
-          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
-          "Name": "Retry delay",
+          "Description": "الثواني المقترحة قبل إعادة المحاولة. `None` يعني أن الطلب يجب أن يتغير قبل أن تنجح عملية إعادة المحاولة.",
+          "Name": "مهلة إعادة المحاولة",
           "Type": 9
         }
       ],
@@ -1398,27 +1398,27 @@
       "Name": "SprinklerWeatherIncrementalReportV1"
     },
     {
-      "Description": "Records for one endpoint share a transaction and scan prefix.",
-      "DisplayName": "Saved weather keys",
+      "Description": "تشترك السجلات الخاصة بنقطة نهاية واحدة في المعاملة وبادئة المسح.",
+      "DisplayName": "مفاتيح الطقس المحفوظة",
       "List": [
         {
-          "Description": "Records for one endpoint share a transaction and scan prefix.",
-          "Name": "Saved weather keys",
+          "Description": "تشترك السجلات الخاصة بنقطة نهاية واحدة في المعاملة وبادئة المسح.",
+          "Name": "مفاتيح الطقس المحفوظة",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Weather belonging to one service endpoint",
+          "Name": "الطقس ينتمي إلى نقطة نهاية خدمة واحدة",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "نقطة النهاية",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "سجل",
           "Type": 3
         }
       ],
@@ -1525,15 +1525,15 @@
         {
           "Description": "آخر مؤشر طبّقه العميل بالكامل وبصورة ذرية. تطلب `None` لقطة أولية محدودة بنطاق. يقارن الخادم كلا الحقلين؛ ولا يشير تسلسل أقل إلى إعادة تعيين إلا عندما يتضمن مؤشر الاستجابة أيضًا طابعًا زمنيًا أحدث للعصر.",
           "Name": "مؤشر الاستئناف",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "NullText": "ابدأ من لقطة جديدة",
+          "SetText": "استئناف بعد",
           "Type": 2
         },
         {
           "Description": "النطاق نصف المفتوح لأوقات بدء الفترات التاريخية المطلوب تضمينها عندما تتعذر إعادة التشغيل. تستبعد `None` السجل التاريخي من لقطة إعادة التعيين.",
           "Name": "نطاق استرداد السجل التاريخي",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "NullText": "لا يوجد تاريخ",
+          "SetText": "تضمين التاريخ ل",
           "Type": 3
         },
         {
@@ -1544,8 +1544,8 @@
         {
           "Description": "النطاق نصف المفتوح لأوقات بدء فترات التوقعات المطلوب تضمينها عندما تتعذر إعادة التشغيل. تستبعد `None` بيانات التوقعات من لقطة إعادة التعيين.",
           "Name": "نطاق استرداد التوقعات",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "NullText": "لا توقعات",
+          "SetText": "تضمين توقعات ل",
           "Type": 5
         },
         {
@@ -1578,41 +1578,41 @@
     },
     {
       "Description": "",
-      "DisplayName": "Saved weather record identity",
+      "DisplayName": "هوية سجل الطقس المحفوظة",
       "List": [
         {
           "Description": "",
-          "Name": "Saved weather record identity",
+          "Name": "هوية سجل الطقس المحفوظة",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Location",
+          "Name": "الموقع",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "HistoryMetadata",
+          "Name": "البيانات الوصفية للتاريخ",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "HistoryPeriod",
+          "Name": "فترة التاريخ",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "starts_at",
+          "Name": "يبدأ_في",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "Current",
+          "Name": "الحالي",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Forecast",
+          "Name": "توقعات",
           "Type": 6
         }
       ],

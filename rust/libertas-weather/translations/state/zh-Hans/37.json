@@ -1,32 +1,32 @@
 {
   "Entries": {
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"interval_seconds\"/property/\"Description\"": {
-      "Current": "sha256:3266527f64d4b1a8f32032aeee4a6928c03363a2942a51f5f0d2f846105d3447",
-      "Target": "累计降水量和蒸散量所代表的向后回溯时间区间，单位为秒。Open-Meteo 当前天气通常\n使用 900 秒区间。"
+      "Current": "sha256:48c5708793b5a19ad1629ab644fb24fad12f949ecbcd4a744637ccbf8d1bafeb",
+      "Target": "以秒为单位的回溯间隔，由累积降水量和蒸散量表示。 Open-Meteo 当前天气通常使用 900 秒的间隔。"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"interval_seconds\"/property/\"Name\"": {
       "Current": "sha256:44e7e839ab6ca29edfaecb7f3af240ebd0776213100c994f109eab1b1ad058de",
       "Target": "观测区间"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"precipitation_millimeters\"/property/\"Description\"": {
-      "Current": "sha256:3c23ce6ac12ff94f9edcb3e6cc6c3e281350ec1f0313cc6e80f9f150e8cf3494",
-      "Target": "在 `interval_seconds` 期间累计的降雨、阵雨以及以水当量表示的固态降水总量，单位为毫米。\n喷灌系统在该值非零时禁止浇水，以避免在降水期间进行灌溉。"
+      "Current": "sha256:812c6891a3af063b0e4c6ab1bad1b32a65718762d1f9d10c9ba2b479c08c0ecf",
+      "Target": "`interval_seconds` 期间累积的总降雨量、阵雨和水当量冰冻降水量（以毫米为单位）。洒水器使用非零值来抑制降水发生时的浇水。"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"precipitation_millimeters\"/property/\"Name\"": {
       "Current": "sha256:c6a18292e50f81efc906d552184f61019358d49c5ccccd44e5ae2e6b2a6f4d74",
       "Target": "降水量"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"reference_evapotranspiration_millimeters\"/property/\"Description\"": {
-      "Current": "sha256:b91d5aa9b95b709727e4a793af016c84ee61f8b65938704885986b365c3d5df3",
-      "Target": "在 `interval_seconds` 期间累计的 FAO-56 参考蒸散量，单位为毫米。在下一个完整历史时段\n可用之前，可使用该值延续水量平衡计算。"
+      "Current": "sha256:16a87cac7a649e182737f1f827d5f1996e6685d2f9d9ffb46f9dfa09748f3d2c",
+      "Target": "`interval_seconds`期间累积的FAO-56参考蒸散量，以毫米为单位。它可以将水平衡延长到下一个完整的历史时期可用。"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"reference_evapotranspiration_millimeters\"/property/\"Name\"": {
       "Current": "sha256:ec57618c4443c10bf72a5aa04ab9eaff57162b9c29c6502b8de848308260e43b",
       "Target": "参考蒸散量"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"relative_humidity_percent\"/property/\"Description\"": {
-      "Current": "sha256:48feda611bb9f0efee1b4c838b828cbd22268a6707089ed1348794428db3ff5c",
-      "Target": "地面以上两米处的相对湿度，以 0 到 100 的百分比表示。当必须进行顶部喷灌时，喷灌系统使用\n该值避免叶面不必要地长时间保持湿润。"
+      "Current": "sha256:4ee68e5bcaa35327db60ba67dc5f08978ce1940c61d107545ca1556cf03e7772",
+      "Target": "距地面两米处的相对湿度，以 0 到 100 之间的百分比表示。喷头使用它来避免在需要高空浇水时不必要的长时间叶子湿润。"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"relative_humidity_percent\"/property/\"Name\"": {
       "Current": "sha256:7ff0ff46de13caf2e30fa5c5b4ec23e237869847792408f5b423dff608dcc0d6",
@@ -57,16 +57,16 @@
       "Target": "有效时间"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"valid_until\"/property/\"Description\"": {
-      "Current": "sha256:4faf397f340a3fb1598cff787b86494ff1f89443813e3c76ed10ec9e66de673c",
-      "Target": "排除式的数据新鲜度截止时间。当前时间早于该值时，当前天气视为最新。达到或超过该值后，\n该部分仍保留在缓存中，但不得再将其作为浇水安全的证明。"
+      "Current": "sha256:5587d2ad727704b47055319b14984b1867389072ef5e1b8ba0a8ef280a094e23",
+      "Target": "独家新鲜度截止日期。当前天气新鲜，但当前时间早于该值。达到或超过此值时，该部分仍会被缓存，但不得视为浇水安全的证据。"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"valid_until\"/property/\"Name\"": {
       "Current": "sha256:e44d91aecda8ad1c406c39ecca86979690455c6d2f29ce1516d69961ea6c3db7",
       "Target": "有效截止时间"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"wind_gust_meters_per_second\"/property/\"Description\"": {
-      "Current": "sha256:ae4fa8f0ce13eabd67fa9053ec98bfc389619e2a40c95ddfbe85a95afff4a68c",
-      "Target": "地面以上 10 米处的最大阵风速度，单位为米/秒。喷灌系统将该值与持续风速结合使用，\n以避免喷雾漂移。"
+      "Current": "sha256:233bda7798c8853a4635ad3bfc7815b745b2a37d0ece7a1e8163052fafd82288",
+      "Target": "距地面 10 米处的峰值阵风速度（米每秒）。消耗型喷头在持续风的作用下使用它，以避免喷雾漂移。"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"wind_gust_meters_per_second\"/property/\"Name\"": {
       "Current": "sha256:3774edfe66634e3ef4ee57e94391b77d44b0d786db0e3cb94f657f998ce79293",
@@ -81,16 +81,16 @@
       "Target": "风速"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/property/\"Description\"": {
-      "Current": "sha256:ef787cb53510ad24ea5ce154a2bf3b2a49373d040cf87d9b9ee2761fb6713f7b",
-      "Target": "包含即时降雨、冰冻、湿度、风和水量平衡输入，用于判断原本已计划的浇水操作是否可以安全地\n开始或继续。"
+      "Current": "sha256:8d2f8b38cc0a8c6718033ab702211a64b406487319768135ed08c6c178562988",
+      "Target": "包含即时降雨、冰冻、湿度、风和水平衡输入，用于决定其他安排的浇水操作是否可以安全开始或继续。"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/property/\"Name\"": {
       "Current": "sha256:6bf8e3f388693d973356145848464ce097a8f967276feb8f89daf48a9425e243",
       "Target": "喷灌当前天气"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/property/\"Description\"": {
-      "Current": "sha256:04e245d0d88c8033e48bc926fa96ef305922beb496979ee430ece26dacd53701",
-      "Target": "包含即时降雨、冰冻、湿度、风和水量平衡输入，用于判断原本已计划的浇水操作是否可以安全地\n开始或继续。"
+      "Current": "sha256:f5fc7f176101850f3613dd62c5f51e0bd268b97de7b382c1f9d31c3c7cc097f4",
+      "Target": "包含即时降雨、冰冻、湿度、风和水平衡输入，用于决定其他安排的浇水操作是否可以安全开始或继续。"
     },
     "type/\"\"/\"SprinklerCurrentWeatherV1\"/property/\"DisplayName\"": {
       "Current": "sha256:1f338fb2306d42431cea4a18f248863d86a11a461f5b27c450384afcee8b7be0",
@@ -169,8 +169,8 @@
       "Target": "天气快照"
     },
     "type/\"\"/\"SprinklerWeatherRecoveryV1\"/\"SprinklerWeatherRecoveryV1\"/\"ResetAtSiteV2\"/property/\"Description\"": {
-      "Current": "sha256:517ec035de1f952dd1f4dd7eb9c8ace4e511091da56646583e2afc99e20b5c18",
-      "Target": "建立新游标，并将完整观测历史快照绑定到其提供商场地。该只追加变体保持所有 V1 恢复判别值\n不变。"
+      "Current": "sha256:e18e3eff366c34f46097b29430b3e864cf8df4f5625efda3f455c110b971f99e",
+      "Target": "建立一个新游标并将完整观察历史快照绑定到其提供者站点。"
     },
     "type/\"\"/\"SprinklerWeatherRecoveryV1\"/\"SprinklerWeatherRecoveryV1\"/\"ResetAtSiteV2\"/property/\"Name\"": {
       "Current": "sha256:cffe8f0c353ac676d6d3572d9a333df7d4427a007829b8fa82c722c16dfd44ab",
@@ -194,5 +194,51 @@
     }
   },
   "Reviewed": {},
-  "Translated": {}
+  "Translated": {
+    "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"interval_seconds\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:48c5708793b5a19ad1629ab644fb24fad12f949ecbcd4a744637ccbf8d1bafeb"
+    },
+    "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"precipitation_millimeters\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:812c6891a3af063b0e4c6ab1bad1b32a65718762d1f9d10c9ba2b479c08c0ecf"
+    },
+    "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"reference_evapotranspiration_millimeters\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:16a87cac7a649e182737f1f827d5f1996e6685d2f9d9ffb46f9dfa09748f3d2c"
+    },
+    "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"relative_humidity_percent\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:4ee68e5bcaa35327db60ba67dc5f08978ce1940c61d107545ca1556cf03e7772"
+    },
+    "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"valid_until\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:5587d2ad727704b47055319b14984b1867389072ef5e1b8ba0a8ef280a094e23"
+    },
+    "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/\"wind_gust_meters_per_second\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:233bda7798c8853a4635ad3bfc7815b745b2a37d0ece7a1e8163052fafd82288"
+    },
+    "type/\"\"/\"SprinklerCurrentWeatherV1\"/\"SprinklerCurrentWeatherV1\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:8d2f8b38cc0a8c6718033ab702211a64b406487319768135ed08c6c178562988"
+    },
+    "type/\"\"/\"SprinklerCurrentWeatherV1\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:f5fc7f176101850f3613dd62c5f51e0bd268b97de7b382c1f9d31c3c7cc097f4"
+    },
+    "type/\"\"/\"SprinklerWeatherRecoveryV1\"/\"SprinklerWeatherRecoveryV1\"/\"ResetAtSiteV2\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:e18e3eff366c34f46097b29430b3e864cf8df4f5625efda3f455c110b971f99e"
+    }
+  }
 }

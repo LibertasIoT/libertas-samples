@@ -1,26 +1,26 @@
 {
-  "Description": "Helps keep rooms comfortable by coordinating thermostats, indoor sensors, outdoor weather, and optional local sensors.\nAdd the rooms in the building, choose which thermostat serves each room, and select the people who should receive important heating and cooling warnings. Each room gets its own comfort controls, current conditions, and schedule.",
-  "DisplayName": "Smart Building Climate",
+  "Description": "通过协调恒温器、室内传感器、室外天气和可选的本地传感器，帮助保持房间舒适。\n添加建筑物中的房间，选择为每个房间提供服务的恒温器，并选择应接收重要供暖和制冷警告的人员。每个房间都有自己的舒适控制、当前条件和时间表。",
+  "DisplayName": "智能建筑气候",
   "DocumentVersion": "0.0.2",
   "List": [
     {
-      "DefaultText": "Smart building climate",
-      "Description": "Keeps each room comfortable while balancing comfort and energy use across thermostats that may serve more than one room. The user names the rooms, assigns their thermostats and indoor sensors, optionally chooses outdoor sensors, and chooses local weather, additional building information, and people to notify. The user can select each room's heating and cooling mode, preferred temperature range, and balance between comfort and savings. The climate controller combines current sensor readings and weather with available energy-price, occupancy, window, calendar, meter, and central equipment information. The climate controller automatically learns how rooms respond, coordinates shared thermostats, adjusts bounded heating and cooling setpoints, and calculates upcoming room plans. The climate controller shows room and outdoor conditions, air quality, sensor availability, heating or cooling activity, effective setpoints, comfort statistics, learned behavior, and upcoming plans. The climate controller sends selected people warnings, reminders, and recovery messages for freeze risk, excessive heat, unavailable control, or ineffective heating and cooling; these are not life-safety alarms.",
-      "DisplayName": "Smart Building Climate",
+      "DefaultText": "智能建筑气候",
+      "Description": "保持每个房间的舒适度，同时平衡可能为多个房间提供服务的恒温器的舒适度和能源使用。用户为房间命名，分配其恒温器和室内传感器，选择性地选择室外传感器，并选择当地天气、附加建筑信息和要通知的人员。用户可以选择每个房间的供暖和制冷模式、首选温度范围以及舒适与节省之间的平衡。气候控制器将当前传感器读数和天气与可用的能源价格、占用率、窗口、日历、仪表和中央设备信息相结合。气候控制器自动学习房间如何响应，协调共享恒温器，调整有限的加热和冷却设定点，并计算即将到来的房间计划。气候控制器显示室内和室外条件、空气质量、传感器可用性、加热或冷却活动、有效设定点、舒适度统计数据、学习行为和即将到来的计划。气候控制器向选定的人员发送关于冰冻风险、过热、无法控制或无效加热和冷却的警告、提醒和恢复消息；这些不是生命安全警报。",
+      "DisplayName": "智能建筑气候",
       "List": [
         {
-          "Description": "Add rooms first, then add thermostats and choose the rooms each one serves. Every room needs at least one temperature sensor and must be assigned to exactly one thermostat. Humidity and air quality sensors are optional. Also choose at least one person to receive important warnings.",
-          "Name": "Building",
+          "Description": "首先添加房间，然后添加恒温器并选择每个房间服务的房间。每个房间至少需要一个温度传感器，并且必须恰好分配给一个恒温器。湿度和空气质量传感器是可选的。还要选择至少一个人来接收重要警告。",
+          "Name": "建筑",
           "Type": 0
         },
         {
-          "Description": "Choose the local weather service used to help plan heating and cooling.",
-          "Name": "Weather service",
+          "Description": "选择用于帮助规划供暖和制冷的当地气象服务。",
+          "Name": "天气服务",
           "Type": 1
         },
         {
-          "Description": "Optionally choose a service that provides energy prices, occupancy, window state, meters, calendar information, or central equipment data. Leave this blank when that information is not available.",
-          "Name": "Additional building information",
+          "Description": "您可以选择提供能源价格、占用率、窗口状态、仪表、日历信息或中央设备数据的服务。当该信息不可用时，请将此留空。",
+          "Name": "附加建筑信息",
           "NullText": "不使用额外的楼宇信息",
           "SetText": "使用服务：",
           "Type": 2
@@ -31,699 +31,699 @@
   ],
   "Locale": "zh-Hans",
   "StringResources": {
-    "HVAC_CONDITION_CONTROL_UNAVAILABLE": "temperature control unavailable",
-    "HVAC_CONDITION_COOLING_NOT_RECOVERING": "cooling not recovering",
-    "HVAC_CONDITION_EXCESSIVE_HEAT": "excessive heat",
-    "HVAC_CONDITION_FREEZE_RISK": "freeze risk",
-    "HVAC_CONDITION_HEATING_NOT_RECOVERING": "heating not recovering",
-    "HVAC_CONTROL_INVALID_NORMALIZED_PREFERENCE": "Comfort or savings must be between minus one and one.",
-    "HVAC_CONTROL_INVALID_TEMPERATURE_BAND": "The requested temperatures conflict with each other or the physical thermostat limits.",
-    "HVAC_CONTROL_REVISION_CONFLICT": "The room changed on another client. Review the current settings and retry.",
-    "HVAC_CONTROL_TEMPORARILY_UNAVAILABLE": "The thermostat limits are not currently available. Retry after its next report.",
-    "HVAC_CONTROL_UNSUPPORTED_OPERATING_PREFERENCE": "The physical thermostat does not support that operating preference.",
-    "HVAC_EXTERNAL_FEATURE_INPUTS": "Optional building HVAC utility, equipment, occupancy, calendar, and metering inputs.",
-    "HVAC_LOCAL_OUTDOOR_AIR_QUALITY": "Local outdoor air quality for this building.",
-    "HVAC_LOCAL_OUTDOOR_HUMIDITY": "Local outdoor humidity for this building.",
-    "HVAC_LOCAL_OUTDOOR_TEMPERATURE": "Local outdoor temperature for this building.",
-    "HVAC_ML_MODELS": "Accepted building climate thermal prediction models for {0}.",
-    "HVAC_ML_SAMPLE": "Thermal learning sample history for {0}.",
-    "HVAC_OUTDOOR_AIR_QUALITY": "Modeled outdoor air quality for this building.",
-    "HVAC_ROOM_CONTROL": "Room HVAC control and revision for {0}.",
-    "HVAC_ROOM_LEARNING": "Room HVAC continuous-learning state for {0}.",
-    "HVAC_ROOM_SCHEDULE": "Calculated schedule: {0}.",
-    "HVAC_ROOM_SENSOR_STATE": "Room environmental sensor state for {0}.",
-    "HVAC_ROOM_STATISTICS": "Room HVAC statistics and recent conditions for {0}.",
-    "HVAC_ROOM_STATUS": "Room status: {0}. HVAC: {1}. Air quality: {2}.",
-    "HVAC_ROOM_URGENT_NOTIFICATION_STATE": "Urgent HVAC notification state for {0}.",
-    "HVAC_URGENT_CONDITION_RECOVERED": "HVAC warning cleared for {0}: {1}. Current temperature is {2}.",
-    "HVAC_URGENT_CONTROL_UNAVAILABLE": "Urgent HVAC warning for {0}: trustworthy temperature or thermostat data has been unavailable for {1}. Check the sensors and thermostat.",
-    "HVAC_URGENT_COOLING_NOT_RECOVERING": "Urgent HVAC warning for {0}: cooling has not restored the room after {1}; current temperature is {2}. Check the cooling system.",
-    "HVAC_URGENT_EXCESSIVE_HEAT": "Urgent HVAC warning for {0}: room temperature is {1}. Check cooling and the room promptly. This is not a life-safety alarm.",
-    "HVAC_URGENT_FREEZE_RISK": "Urgent HVAC warning for {0}: room temperature is {1}. Check heating and protect plumbing. This is not a life-safety alarm.",
-    "HVAC_URGENT_HEATING_NOT_RECOVERING": "Urgent HVAC warning for {0}: heating has not restored the room after {1}; current temperature is {2}. Check the heating system.",
-    "HVAC_WEATHER_CURRENT": "Current building HVAC weather for this building.",
-    "HVAC_WEATHER_FORECAST": "Building HVAC weather forecast for this building.",
-    "HVAC_WEATHER_HISTORY": "Building HVAC weather history for this building.",
-    "libertas.permission.ACCESS_FINE_LOCATION": "Allow the building climate task to receive location-specific outdoor conditions and forecasts from the weather agent."
+    "HVAC_CONDITION_CONTROL_UNAVAILABLE": "温度控制不可用",
+    "HVAC_CONDITION_COOLING_NOT_RECOVERING": "冷却未恢复",
+    "HVAC_CONDITION_EXCESSIVE_HEAT": "过热",
+    "HVAC_CONDITION_FREEZE_RISK": "冻结风险",
+    "HVAC_CONDITION_HEATING_NOT_RECOVERING": "供暖未恢复",
+    "HVAC_CONTROL_INVALID_NORMALIZED_PREFERENCE": "舒适度或节省量必须在负一到一之间。",
+    "HVAC_CONTROL_INVALID_TEMPERATURE_BAND": "所请求的温度相互冲突或与物理恒温器限制相冲突。",
+    "HVAC_CONTROL_REVISION_CONFLICT": "另一个客户换了房间。检查当前设置并重试。",
+    "HVAC_CONTROL_TEMPORARILY_UNAVAILABLE": "恒温器限制当前不可用。在下一个报告后重试。",
+    "HVAC_CONTROL_UNSUPPORTED_OPERATING_PREFERENCE": "物理恒温器不支持该操作偏好。",
+    "HVAC_EXTERNAL_FEATURE_INPUTS": "可选建筑 HVAC 公用设施、设备、占用、日历和计量输入。",
+    "HVAC_LOCAL_OUTDOOR_AIR_QUALITY": "该建筑当地的室外空气质量。",
+    "HVAC_LOCAL_OUTDOOR_HUMIDITY": "该建筑的当地室外湿度。",
+    "HVAC_LOCAL_OUTDOOR_TEMPERATURE": "该建筑物的当地室外温度。",
+    "HVAC_ML_MODELS": "已接受为 {0} 构建气候热预测模型。",
+    "HVAC_ML_SAMPLE": "{0} 的热学习样本历史记录。",
+    "HVAC_OUTDOOR_AIR_QUALITY": "为该建筑模拟室外空气质量。",
+    "HVAC_ROOM_CONTROL": "HVAC 室对 {0} 进行控制和修订。",
+    "HVAC_ROOM_LEARNING": "HVAC 房间 {0} 的持续学习状态。",
+    "HVAC_ROOM_SCHEDULE": "计算出的时间表：{0}。",
+    "HVAC_ROOM_SENSOR_STATE": "{0} 的室内环境传感器状态。",
+    "HVAC_ROOM_STATISTICS": "HVAC 房间的统计数据和近期状况 {0}。",
+    "HVAC_ROOM_STATUS": "房间状态：{0}。 HVAC：{1}。空气质量：{2}。",
+    "HVAC_ROOM_URGENT_NOTIFICATION_STATE": "{0} 的紧急 HVAC 通知状态。",
+    "HVAC_URGENT_CONDITION_RECOVERED": "已清除 {0} 的 HVAC 警告：{1}。当前温度为 {2}。",
+    "HVAC_URGENT_CONTROL_UNAVAILABLE": "针对 {0} 的紧急 HVAC 警告：{1} 无法获得可靠的温度或恒温器数据。检查传感器和恒温器。",
+    "HVAC_URGENT_COOLING_NOT_RECOVERING": "针对 {0} 的紧急 HVAC 警告：{1} 之后房间尚未恢复制冷；当前温度为 {2}。检查冷却系统。",
+    "HVAC_URGENT_EXCESSIVE_HEAT": "针对 {0} 的紧急 HVAC 警告：室温为 {1}。及时检查冷却和房间。这不是生命安全警报。",
+    "HVAC_URGENT_FREEZE_RISK": "针对 {0} 的紧急 HVAC 警告：室温为 {1}。检查加热并保护管道。这不是生命安全警报。",
+    "HVAC_URGENT_HEATING_NOT_RECOVERING": "针对{0}的紧急HVAC警告：{1}后房间供暖尚未恢复；当前温度为 {2}。检查供暖系统。",
+    "HVAC_WEATHER_CURRENT": "该建筑的当前建筑 HVAC 天气。",
+    "HVAC_WEATHER_FORECAST": "建筑 HVAC 该建筑的天气预报。",
+    "HVAC_WEATHER_HISTORY": "该建筑的建筑 HVAC 天气历史记录。",
+    "libertas.permission.ACCESS_FINE_LOCATION": "允许建筑气候任务从气象代理接收特定位置的室外条件和预报。"
   },
   "Types": [
     {
-      "Description": "Exposes one confirmed condition in a room runtime snapshot. A condition remains active during its recovery-confirmation interval so stale or oscillating data cannot falsely clear an urgent warning.",
-      "DisplayName": "Active urgent HVAC condition",
+      "Description": "在房间运行时快照中公开一个已确认的条件。条件在其恢复确认间隔期间保持活动状态，因此陈旧或振荡的数据无法错误地清除紧急警告。",
+      "DisplayName": "当前紧急暖通空调状况",
       "List": [
         {
-          "Description": "Exposes one confirmed condition in a room runtime snapshot. A condition remains active during its recovery-confirmation interval so stale or oscillating data cannot falsely clear an urgent warning.",
-          "Name": "Active urgent HVAC condition",
+          "Description": "在房间运行时快照中公开一个已确认的条件。条件在其恢复确认间隔期间保持活动状态，因此陈旧或振荡的数据无法错误地清除紧急警告。",
+          "Name": "当前紧急暖通空调状况",
           "Type": 0
         },
         {
-          "Description": "The confirmed time-sensitive HVAC condition.",
-          "Name": "Condition",
+          "Description": "已确认且需要及时处理的暖通空调状况。",
+          "Name": "条件",
           "Type": 1
         },
         {
-          "Description": "The current Libertas delivery priority for this condition.",
-          "Name": "Severity",
+          "Description": "此条件的当前 Libertas 传送优先级。",
+          "Name": "严重性",
           "Type": 2
         },
         {
-          "Description": "The UTC time at which the continuously qualifying condition began, not the later time at which its confirmation interval expired.",
-          "Name": "Active since",
+          "Description": "连续合格条件开始的 UTC 时间，而不是其确认间隔到期的较晚时间。",
+          "Name": "活跃以来",
           "Type": 3
         },
         {
-          "Description": "The UTC time represented by the latest fresh evidence for the condition.",
-          "Name": "Updated at",
+          "Description": "由该情况的最新证据表示的 UTC 时间。",
+          "Name": "更新时间",
           "Type": 4
         },
         {
-          "Description": "The latest fresh room temperature in degrees Celsius when the condition has a trustworthy measurement. It is absent for unavailable control.",
-          "Name": "Room temperature",
+          "Description": "当条件具有可靠的测量值时，最新的新鲜室温（以摄氏度为单位）。它不存在是因为无​​法控制。",
+          "Name": "室温",
           "Type": 5
         },
         {
-          "Description": "The UTC time when the controller most recently submitted this condition to the Libertas notification framework. It is absent until the first notification attempt has been persisted and submitted.",
-          "Name": "Last notification time",
+          "Description": "控制器最近将此条件提交给 Libertas 通知框架时的 UTC 时间。在第一次通知尝试被持久化并提交之前，它一直不存在。",
+          "Name": "最后通知时间",
           "Type": 6
         }
       ],
       "Name": "BuildingHvacActiveUrgentConditionV1"
     },
     {
-      "Description": "Identifies one optional standard Matter concentration-measurement cluster discovered on the configured outdoor Air Quality Sensor. The controller does not require every sensor to implement every kind.",
-      "DisplayName": "Sensor air measurement kind",
+      "Description": "识别在配置的室外空气质量传感器上发现的一个可选标准 Matter 浓度测量集群。控制器并不要求每个传感器都实现每种类型。",
+      "DisplayName": "传感器空气测量种类",
       "List": [
         {
-          "Description": "Identifies one optional standard Matter concentration-measurement cluster discovered on the configured outdoor Air Quality Sensor. The controller does not require every sensor to implement every kind.",
+          "Description": "识别在配置的室外空气质量传感器上发现的一个可选标准 Matter 浓度测量集群。控制器并不要求每个传感器都实现每种类型。",
           "Enum": [
             {
-              "Description": "Carbon-dioxide concentration, commonly used to assess ventilation.",
-              "Name": "Carbon dioxide",
+              "Description": "二氧化碳浓度，通常用于评估通风情况。",
+              "Name": "二氧化碳",
               "Type": 1
             },
             {
-              "Description": "Carbon-monoxide concentration. This supervisory value never replaces a certified life-safety alarm.",
-              "Name": "Carbon monoxide",
+              "Description": "一氧化碳浓度。该监控值永远不会取代经过认证的生命安全警报。",
+              "Name": "一氧化碳",
               "Type": 2
             },
             {
-              "Description": "Nitrogen-dioxide concentration.",
-              "Name": "Nitrogen dioxide",
+              "Description": "二氧化氮浓度。",
+              "Name": "二氧化氮",
               "Type": 3
             },
             {
-              "Description": "Ozone concentration.",
-              "Name": "Ozone",
+              "Description": "臭氧浓度。",
+              "Name": "臭氧",
               "Type": 4
             },
             {
-              "Description": "Particulate matter with aerodynamic diameter at most 1 micrometer.",
+              "Description": "空气动力学直径最大为1微米的颗粒物。",
               "Name": "PM1",
               "Type": 5
             },
             {
-              "Description": "Particulate matter with aerodynamic diameter at most 2.5 micrometers.",
+              "Description": "空气动力学直径最大为 2.5 微米的颗粒物。",
               "Name": "PM2.5",
               "Type": 6
             },
             {
-              "Description": "Particulate matter with aerodynamic diameter at most 10 micrometers.",
+              "Description": "空气动力学直径至多10微米的颗粒物。",
               "Name": "PM10",
               "Type": 7
             },
             {
-              "Description": "Formaldehyde concentration.",
-              "Name": "Formaldehyde",
+              "Description": "甲醛浓度。",
+              "Name": "甲醛",
               "Type": 8
             },
             {
-              "Description": "Total volatile-organic-compound concentration.",
-              "Name": "Total volatile organic compounds",
+              "Description": "挥发性有机化合物总浓度。",
+              "Name": "挥发性有机化合物总量",
               "Type": 9
             },
             {
-              "Description": "Radon activity concentration.",
-              "Name": "Radon",
+              "Description": "氡活度浓度。",
+              "Name": "氡气",
               "Type": 10
             }
           ],
-          "Name": "Sensor air measurement kind",
+          "Name": "传感器空气测量种类",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacAirMeasurementKindV1"
     },
     {
-      "Description": "Preserves the standard Matter unit reported with a concentration. Consumers must interpret `measured_value_in_reported_unit` together with this unit and must not convert mass concentration to a mixing ratio without the required gas and atmospheric context.",
-      "DisplayName": "Sensor air measurement unit",
+      "Description": "保留报告的浓度标准 Matter 单位。消费者必须将 `measured_value_in_reported_unit` 与该单位一起解释，并且不得在没有所需气体和大气环境的情况下将质量浓度转换为混合比。",
+      "DisplayName": "传感器空气测量单元",
       "List": [
         {
-          "Description": "Preserves the standard Matter unit reported with a concentration. Consumers must interpret `measured_value_in_reported_unit` together with this unit and must not convert mass concentration to a mixing ratio without the required gas and atmospheric context.",
+          "Description": "保留报告的浓度标准 Matter 单位。消费者必须将 `measured_value_in_reported_unit` 与该单位一起解释，并且不得在没有所需气体和大气环境的情况下将质量浓度转换为混合比。",
           "Enum": [
             {
-              "Description": "A mixing ratio in parts per million.",
-              "Name": "Parts per million",
+              "Description": "混合比例以百万分之一为单位。",
+              "Name": "百万分之一",
               "Type": 1
             },
             {
-              "Description": "A mixing ratio in parts per billion.",
-              "Name": "Parts per billion",
+              "Description": "混合比例以十亿分之一为单位。",
+              "Name": "十亿分之一",
               "Type": 2
             },
             {
-              "Description": "A mixing ratio in parts per trillion.",
-              "Name": "Parts per trillion",
+              "Description": "混合比以万亿分之一为单位。",
+              "Name": "万亿分之一",
               "Type": 3
             },
             {
-              "Description": "A mass concentration in milligrams per cubic meter.",
-              "Name": "Milligrams per cubic meter",
+              "Description": "质量浓度，以毫克每立方米为单位。",
+              "Name": "毫克每立方米",
               "Type": 4
             },
             {
-              "Description": "A mass concentration in micrograms per cubic meter.",
-              "Name": "Micrograms per cubic meter",
+              "Description": "质量浓度，单位为微克每立方米。",
+              "Name": "微克每立方米",
               "Type": 5
             },
             {
-              "Description": "A mass concentration in nanograms per cubic meter.",
-              "Name": "Nanograms per cubic meter",
+              "Description": "质量浓度，单位为纳克每立方米。",
+              "Name": "纳克每立方米",
               "Type": 6
             },
             {
-              "Description": "A mass concentration in picograms per cubic meter.",
-              "Name": "Picograms per cubic meter",
+              "Description": "质量浓度，以皮克每立方米为单位。",
+              "Name": "每立方米皮克",
               "Type": 7
             },
             {
-              "Description": "A radioactive-activity concentration in becquerels per cubic meter.",
-              "Name": "Becquerels per cubic meter",
+              "Description": "放射性活度浓度，单位为贝克勒尔每立方米。",
+              "Name": "贝克勒尔每立方米",
               "Type": 8
             }
           ],
-          "Name": "Sensor air measurement unit",
+          "Name": "传感器空气测量单元",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacAirMeasurementUnitV1"
     },
     {
-      "Description": "Carries one current concentration discovered from an optional cluster on the configured Matter Air Quality Sensor. The runtime accepts only finite, nonnegative measurements whose Matter measurement medium is air.",
-      "DisplayName": "Sensor air measurement",
+      "Description": "携带从配置的 Matter 空气质量传感器上的可选集群发现的当前浓度。运行时仅接受有限的非负测量，其 Matter 测量介质是空气。",
+      "DisplayName": "传感器空气测量",
       "List": [
         {
-          "Description": "Carries one current concentration discovered from an optional cluster on the configured Matter Air Quality Sensor. The runtime accepts only finite, nonnegative measurements whose Matter measurement medium is air.",
-          "Name": "Sensor air measurement",
+          "Description": "携带从配置的 Matter 空气质量传感器上的可选集群发现的当前浓度。运行时仅接受有限的非负测量，其 Matter 测量介质是空气。",
+          "Name": "传感器空气测量",
           "Type": 0
         },
         {
-          "Description": "The pollutant or particulate represented by this value.",
-          "Name": "Measurement kind",
+          "Description": "该值代表的污染物或颗粒物。",
+          "Name": "测量种类",
           "Type": 1
         },
         {
-          "Description": "The finite nonnegative numeric value in `reported_unit`.",
-          "Name": "Measured value in reported unit",
+          "Description": "`reported_unit` 中的有限非负数值。",
+          "Name": "以报告单位表示的测量值",
           "Type": 2
         },
         {
-          "Description": "The standard Matter measurement unit accompanying this value.",
-          "Name": "Reported unit",
+          "Description": "该值附带的标准 Matter 测量单位。",
+          "Name": "举报单位",
           "Type": 3
         },
         {
-          "Description": "The optional standard Matter qualitative classification for this particular concentration.",
-          "Name": "Concentration level",
+          "Description": "此特定浓度的可选标准 Matter 定性分类。",
+          "Name": "浓度水平",
           "Type": 4
         }
       ],
       "Name": "BuildingHvacAirMeasurementV1"
     },
     {
-      "Description": "Caches the last accepted overall classification and every supported current concentration from the optional Matter Air Quality Sensor. Optional cluster discovery makes PM2.5, carbon dioxide, and other supported measurements runtime capabilities rather than configuration flags.",
-      "DisplayName": "Sensor air quality reading",
+      "Description": "缓存最后接受的总体分类以及来自可选 Matter 空气质量传感器的每个支持的当前浓度。可选的集群发现使 PM2.5、二氧化碳和其他支持的测量运行时功能而不是配置标志。",
+      "DisplayName": "传感器空气质量读数",
       "List": [
         {
-          "Description": "Caches the last accepted overall classification and every supported current concentration from the optional Matter Air Quality Sensor. Optional cluster discovery makes PM2.5, carbon dioxide, and other supported measurements runtime capabilities rather than configuration flags.",
-          "Name": "Sensor air quality reading",
+          "Description": "缓存最后接受的总体分类以及来自可选 Matter 空气质量传感器的每个支持的当前浓度。可选的集群发现使 PM2.5、二氧化碳和其他支持的测量运行时功能而不是配置标志。",
+          "Name": "传感器空气质量读数",
           "Type": 0
         },
         {
-          "Description": "The UTC time represented by the accepted Air Quality Sensor data.",
-          "Name": "Observed at",
+          "Description": "由接受的空气质量传感器数据表示的 UTC 时间。",
+          "Name": "观察于",
           "Type": 1
         },
         {
-          "Description": "The exclusive UTC deadline after which the controller treats all values in this reading as stale.",
-          "Name": "Valid until",
+          "Description": "唯一的 UTC 截止时间，在此之后控制器会将此读数中的所有值视为过时。",
+          "Name": "有效截止时间",
           "Type": 2
         },
         {
-          "Description": "The optional standard Matter overall classification.",
-          "Name": "Overall air quality",
+          "Description": "可选标准Matter整体分类。",
+          "Name": "整体空气质量",
           "Type": 3
         },
         {
-          "Description": "Current values from supported standard Matter concentration clusters, ordered by measurement kind with at most one value per kind. Missing kinds are unsupported, unavailable, or stale and are never inferred safe.",
-          "Name": "Concentration measurements",
+          "Description": "来自支持的标准物质浓度簇的当前值，按测量类型排序，每种测量最多一个值。缺失的种类是不受支持、不可用或过时的，并且永远不会被推断为安全的。",
+          "Name": "浓度测量值",
           "Type": 4
         },
         {
-          "Description": "One typed value including its sensor-reported unit.",
-          "Name": "Concentration measurement",
+          "Description": "一种键入的值，包括其传感器报告的单位。",
+          "Name": "浓度测量",
           "Type": 5
         }
       ],
       "Name": "BuildingHvacAirQualityReadingV1"
     },
     {
-      "Description": "Maps the standard Matter Air Quality cluster's overall classification. This classification is descriptive sensor output; stale or missing data is never evidence that outdoor air is safe for ventilation.",
-      "DisplayName": "Sensor air quality",
+      "Description": "映射标准 Matter 空气质量集群的总体分类。该分类是描述性传感器输出；陈旧或丢失的数据永远不能证明室外空气可以安全通风。",
+      "DisplayName": "传感器空气质量",
       "List": [
         {
-          "Description": "Maps the standard Matter Air Quality cluster's overall classification. This classification is descriptive sensor output; stale or missing data is never evidence that outdoor air is safe for ventilation.",
+          "Description": "映射标准 Matter 空气质量集群的总体分类。该分类是描述性传感器输出；陈旧或丢失的数据永远不能证明室外空气可以安全通风。",
           "Enum": [
             {
-              "Description": "The sensor cannot classify current air quality.",
-              "Name": "Unknown",
+              "Description": "传感器无法对当前空气质量进行分类。",
+              "Name": "未知",
               "Type": 1
             },
             {
-              "Description": "The sensor classifies current air quality as good.",
-              "Name": "Good",
+              "Description": "传感器将当前空气质量分类为良好。",
+              "Name": "好",
               "Type": 2
             },
             {
-              "Description": "The sensor classifies current air quality as fair.",
-              "Name": "Fair",
+              "Description": "传感器将当前空气质量归类为一般。",
+              "Name": "公平",
               "Type": 3
             },
             {
-              "Description": "The sensor classifies current air quality as moderate.",
-              "Name": "Moderate",
+              "Description": "传感器将当前空气质量分类为中等。",
+              "Name": "中等",
               "Type": 4
             },
             {
-              "Description": "The sensor classifies current air quality as poor.",
-              "Name": "Poor",
+              "Description": "传感器将当前空气质量归类为较差。",
+              "Name": "可怜",
               "Type": 5
             },
             {
-              "Description": "The sensor classifies current air quality as very poor.",
-              "Name": "Very poor",
+              "Description": "传感器将当前空气质量分类为非常差。",
+              "Name": "很穷",
               "Type": 6
             },
             {
-              "Description": "The sensor classifies current air quality as extremely poor.",
-              "Name": "Extremely poor",
+              "Description": "传感器将当前空气质量归类为极差。",
+              "Name": "极其贫困",
               "Type": 7
             }
           ],
-          "Name": "Sensor air quality",
+          "Name": "传感器空气质量",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacAirQualityV1"
     },
     {
-      "Description": "Add rooms first, then add thermostats and choose the rooms each one serves.",
-      "DisplayName": "Building setup",
+      "Description": "首先添加房间，然后添加恒温器并选择每个房间服务的房间。",
+      "DisplayName": "建筑设置",
       "List": [
         {
-          "Description": "Add rooms first, then add thermostats and choose the rooms each one serves.",
-          "Name": "Building setup",
+          "Description": "首先添加房间，然后添加恒温器并选择每个房间服务的房间。",
+          "Name": "建筑设置",
           "Type": 0
         },
         {
-          "Description": "Add every room that should have its own climate controls.",
-          "Name": "Rooms",
+          "Description": "添加每个应该有自己的气候控制的房间。",
+          "Name": "客房",
           "Type": 1
         },
         {
-          "Description": "One named room with its own controls.",
-          "Name": "Room",
+          "Description": "一间已命名的房间，有自己的控制装置。",
+          "Name": "房间",
           "Type": 2
         },
         {
-          "Description": "Add the thermostats and choose the rooms and sensors served by each one.",
-          "Name": "Thermostats",
+          "Description": "添加恒温器并选择每个恒温器所服务的房间和传感器。",
+          "Name": "恒温器",
           "Type": 3
         },
         {
-          "Description": "One thermostat and the rooms it serves.",
-          "Name": "Thermostat",
+          "Description": "一台恒温器及其服务的房间。",
+          "Name": "恒温器",
           "Type": 4
         },
         {
-          "Description": "Optionally choose local outdoor temperature, humidity, and air quality sensors. Local readings are used together with the weather service.",
-          "Name": "Outdoor sensors",
+          "Description": "可选择本地室外温度、湿度和空气质量传感器。当地读数与气象服务一起使用。",
+          "Name": "室外传感器",
           "NullText": "不使用室外传感器",
           "SetText": "使用室外传感器：",
           "Type": 5
         },
         {
-          "Description": "Choose who should receive important heating and cooling warnings, reminders, and recovery messages. These are not life-safety alarms.",
-          "Name": "People to notify",
+          "Description": "选择谁应该接收重要的加热和冷却警告、提醒和恢复消息。这些不是生命安全警报。",
+          "Name": "需要通知的人",
           "Type": 6
         },
         {
-          "Description": "One person who should receive building climate warnings.",
-          "Name": "Person to notify",
+          "Description": "应该收到建筑气候警告的人。",
+          "Name": "通知对象",
           "Type": 7
         }
       ],
       "Name": "BuildingHvacBuildingV1"
     },
     {
-      "Description": "Maps the optional qualitative level reported by one standard Matter concentration-measurement cluster.",
-      "DisplayName": "Sensor concentration level",
+      "Description": "映射由一个标准 Matter 浓度测量簇报告的可选定性水平。",
+      "DisplayName": "传感器浓度水平",
       "List": [
         {
-          "Description": "Maps the optional qualitative level reported by one standard Matter concentration-measurement cluster.",
+          "Description": "映射由一个标准 Matter 浓度测量簇报告的可选定性水平。",
           "Enum": [
             {
-              "Description": "The sensor cannot classify this concentration.",
-              "Name": "Unknown",
+              "Description": "传感器无法对该浓度进行分类。",
+              "Name": "未知",
               "Type": 1
             },
             {
-              "Description": "The sensor classifies this concentration as low.",
-              "Name": "Low",
+              "Description": "传感器将此浓度归类为低浓度。",
+              "Name": "最低价",
               "Type": 2
             },
             {
-              "Description": "The sensor classifies this concentration as medium.",
-              "Name": "Medium",
+              "Description": "传感器将此浓度归类为中等浓度。",
+              "Name": "中等",
               "Type": 3
             },
             {
-              "Description": "The sensor classifies this concentration as high.",
-              "Name": "High",
+              "Description": "传感器将此浓度归类为高浓度。",
+              "Name": "最高价",
               "Type": 4
             },
             {
-              "Description": "The sensor classifies this concentration as critical.",
-              "Name": "Critical",
+              "Description": "传感器将此浓度归类为临界浓度。",
+              "Name": "关键",
               "Type": 5
             }
           ],
-          "Name": "Sensor concentration level",
+          "Name": "传感器浓度水平",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacConcentrationLevelV1"
     },
     {
-      "Description": "Exposes the learned read-only effect of one other thermostat-zone operating while this room's own thermostat-zone is inactive. The values are supervisory predictions, never equipment or life-safety limits.",
-      "DisplayName": "Cross-zone influence",
+      "Description": "暴露在该房间自己的恒温器区域处于非活动状态时另一恒温器区域正在运行的已知只读效果。 The values are supervisory predictions, never equipment or life-safety limits.",
+      "DisplayName": "跨区域影响力",
       "List": [
         {
-          "Description": "Exposes the learned read-only effect of one other thermostat-zone operating while this room's own thermostat-zone is inactive. The values are supervisory predictions, never equipment or life-safety limits.",
-          "Name": "Cross-zone influence",
+          "Description": "暴露在该房间自己的恒温器区域处于非活动状态时另一恒温器区域正在运行的已知只读效果。 The values are supervisory predictions, never equipment or life-safety limits.",
+          "Name": "跨区域影响力",
           "Type": 0
         },
         {
-          "Description": "The other Matter thermostat whose heating or cooling calls create the learned passive effect in this room.",
-          "Name": "Source thermostat",
+          "Description": "另一个 Matter 恒温器，其加热或冷却调用会在这个房间中产生习得的被动效果。",
+          "Name": "源温控器",
           "Type": 1
         },
         {
-          "Description": "Predicted room temperature rise in degrees Celsius per hour of source thermostat heating. It is absent until sufficient identifiable evidence exists.",
-          "Name": "Heating effect",
+          "Description": "Predicted room temperature rise in degrees Celsius per hour of source thermostat heating.在存在足够的可识别证据之前，它是不存在的。",
+          "Name": "加热效果",
           "Type": 2
         },
         {
-          "Description": "Normalized confidence from 0.0 through 1.0 in the heating-effect estimate.",
-          "Name": "Heating confidence",
+          "Description": "热效应估计中从 0.0 到 1.0 的标准化置信度。",
+          "Name": "供暖信心",
           "Type": 3
         },
         {
-          "Description": "Predicted room temperature drop in degrees Celsius per hour of source thermostat cooling. It is absent until sufficient identifiable evidence exists.",
-          "Name": "Cooling effect",
+          "Description": "Predicted room temperature drop in degrees Celsius per hour of source thermostat cooling.在存在足够的可识别证据之前，它是不存在的。",
+          "Name": "降温效果",
           "Type": 4
         },
         {
-          "Description": "Normalized confidence from 0.0 through 1.0 in the cooling-effect estimate.",
-          "Name": "Cooling confidence",
+          "Description": "冷却效果估计中从 0.0 到 1.0 的标准化置信度。",
+          "Name": "冷却信心",
           "Type": 5
         },
         {
-          "Description": "The UTC time of the latest accepted observation for either mode. It is absent before the first accepted observation.",
-          "Name": "Learned at",
+          "Description": "任一模式最新接受的观测值的 UTC 时间。在第一次接受观察之前它是不存在的。",
+          "Name": "学习于",
           "Type": 6
         }
       ],
       "Name": "BuildingHvacCrossZoneInfluenceV1"
     },
     {
-      "Description": "Optionally use energy prices, occupancy, windows, meters, or equipment data from another service.",
-      "DisplayName": "Additional building information",
+      "Description": "可以选择使用来自其他服务的能源价格、占用率、窗户、仪表或设备数据。",
+      "DisplayName": "附加建筑信息",
       "List": [
         {
-          "Description": "Optionally use energy prices, occupancy, windows, meters, or equipment data from another service.",
-          "Name": "Additional building information",
+          "Description": "可以选择使用来自其他服务的能源价格、占用率、窗户、仪表或设备数据。",
+          "Name": "附加建筑信息",
           "Type": 0
         },
         {
-          "Description": "Choose where the optional building information comes from.",
-          "Name": "Information service",
+          "Description": "选择可选建筑信息的来源。",
+          "Name": "信息服务",
           "Type": 1
         }
       ],
       "Name": "BuildingHvacExternalFeatureClientV1"
     },
     {
-      "Description": "Explains why the optional operational-data stream cannot currently provide a complete snapshot.",
-      "DisplayName": "External feature input error",
+      "Description": "解释为什么可选的操作数据流当前无法提供完整的快照。",
+      "DisplayName": "外部特征输入错误",
       "List": [
         {
-          "Description": "Explains why the optional operational-data stream cannot currently provide a complete snapshot.",
+          "Description": "解释为什么可选的操作数据流当前无法提供完整的快照。",
           "Enum": [
             {
-              "Description": "The provider cannot currently query its upstream utility, equipment, or building-management source.",
-              "Name": "Temporarily unavailable",
+              "Description": "提供商当前无法查询其上游公用事业、设备或建筑管理源。",
+              "Name": "暂时不可用",
               "Type": 1
             },
             {
-              "Description": "The upstream response could not be validated without guessing.",
-              "Name": "Invalid source data",
+              "Description": "如果不猜测，则无法验证上游响应。",
+              "Name": "源数据无效",
               "Type": 2
             }
           ],
-          "Name": "External feature input error",
+          "Name": "外部特征输入错误",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacExternalFeatureInputErrorV1"
     },
     {
-      "Description": "Supplies one time-bounded numeric value for an existing machine-learning column. The input cannot add a new model column or override a value observed directly by this controller. It is intended for utility schedules, central equipment telemetry, occupancy and window state, local calendar context, thermostat PI demand, delivered thermal energy, and metered building energy.",
-      "DisplayName": "External feature input",
+      "Description": "为现有机器学习列提供一个有时间限制的数值。输入无法添加新模型列或覆盖此控制器直接观察到的值。它用于公用事业时间表、中央设备遥测、占用和窗口状态、本地日历背景、恒温器 PI 需求、输送热能和计量建筑能源。",
+      "DisplayName": "外部特征输入",
       "List": [
         {
-          "Description": "Supplies one time-bounded numeric value for an existing machine-learning column. The input cannot add a new model column or override a value observed directly by this controller. It is intended for utility schedules, central equipment telemetry, occupancy and window state, local calendar context, thermostat PI demand, delivered thermal energy, and metered building energy.",
-          "Name": "External feature input",
+          "Description": "为现有机器学习列提供一个有时间限制的数值。输入无法添加新模型列或覆盖此控制器直接观察到的值。它用于公用事业时间表、中央设备遥测、占用和窗口状态、本地日历背景、恒温器 PI 需求、输送热能和计量建筑能源。",
+          "Name": "外部特征输入",
           "Type": 0
         },
         {
-          "Description": "Exact stable name from the controller's machine-learning manifest, such as `utility.current_price_per_kilowatt_hour` or `equipment.central.current.electric_power_kilowatts`. Unknown names are rejected rather than silently creating a different model shape.",
-          "Name": "Feature name",
+          "Description": "控制器机器学习清单中的确切稳定名称，例如 `utility.current_price_per_kilowatt_hour` 或 `equipment.central.current.electric_power_kilowatts`。未知的名字会被拒绝，而不是默默地创建一个不同的模型形状。",
+          "Name": "特征名称",
           "Type": 1
         },
         {
-          "Description": "UTC timestamp represented by this value.",
-          "Name": "Observed at",
+          "Description": "UTC 该值表示的时间戳。",
+          "Name": "观察于",
           "Type": 2
         },
         {
-          "Description": "Exclusive UTC freshness deadline. Expired values remain persistently recoverable but are passed to XGBoost as missing.",
-          "Name": "Valid until",
+          "Description": "独家 UTC 新鲜度截止日期。过期值仍然可以恢复，但会作为缺失传递给 XGBoost。",
+          "Name": "有效截止时间",
           "Type": 3
         },
         {
-          "Description": "Finite value in the unit stated by `feature_name`. A semantic zero must be sent as zero; omit an unavailable feature from the snapshot.",
-          "Name": "Value",
+          "Description": "有限值以 `feature_name` 指定的单位表示。语义零必须作为零发送；从快照中省略不可用的功能。",
+          "Name": "结果",
           "Type": 4
         }
       ],
       "Name": "BuildingHvacExternalFeatureInputV1"
     },
     {
-      "Description": "Defines a full-snapshot one-shot and subscription contract for optional utility, equipment, occupancy, calendar, and metering inputs. The endpoint operation distinguishes a one-shot read from a subscription.",
-      "DisplayName": "Building HVAC external-feature protocol",
+      "Description": "为可选公用事业、设备、占用、日历和计量输入定义完整快照一次性和订阅合同。端点操作区分一次性读取和订阅。",
+      "DisplayName": "构建 HVAC 外部功能协议",
       "List": [
         {
-          "Description": "Defines a full-snapshot one-shot and subscription contract for optional utility, equipment, occupancy, calendar, and metering inputs. The endpoint operation distinguishes a one-shot read from a subscription.",
-          "Name": "Building HVAC external-feature protocol",
+          "Description": "为可选公用事业、设备、占用、日历和计量输入定义完整快照一次性和订阅合同。端点操作区分一次性读取和订阅。",
+          "Name": "构建 HVAC 外部功能协议",
           "Type": 0
         },
         {
-          "Description": "Reads the current snapshot or starts a subscription.",
-          "Name": "Get external features",
+          "Description": "读取当前快照或启动订阅。",
+          "Name": "获取外部特征",
           "Type": 1
         },
         {
-          "Description": "Correlated complete snapshot response. Subscription clients restart their timeout after this response, later updates, and PeerAlive.",
-          "Name": "External features",
+          "Description": "相关的完整快照响应。订阅客户端在此响应、稍后更新和 PeerAlive 后重新启动超时。",
+          "Name": "外部特征",
           "Type": 2
         },
         {
-          "Description": "Nonzero maximum seconds before a subscription client retries another external-feature request after silence.",
-          "Name": "Maximum wait interval",
+          "Description": "订阅客户端在静默后重试另一个外部功能请求之前的非零最大秒数。",
+          "Name": "最大等待间隔",
           "Type": 3
         },
         {
-          "Description": "Complete current optional-input replacement.",
-          "Name": "Snapshot",
+          "Description": "完成当前可选输入的替换。",
+          "Name": "快照",
           "Type": 4
         },
         {
-          "Description": "Complete replacement after an accepted change; no-change liveness uses PeerAlive.",
-          "Name": "External feature update",
+          "Description": "接受变更后完成更换；无变化活性使用 PeerAlive。",
+          "Name": "外部功能更新",
           "Type": 5
         },
         {
-          "Description": "Complete current optional-input replacement.",
-          "Name": "Snapshot",
+          "Description": "完成当前可选输入的替换。",
+          "Name": "快照",
           "Type": 6
         },
         {
-          "Description": "Correlated typed error. The previous persistent snapshot remains intact.",
-          "Name": "External feature error",
+          "Description": "相关的类型错误。之前的持久快照保持不变。",
+          "Name": "外部特征错误",
           "Type": 7
         },
         {
-          "Description": "Provider or validation failure.",
-          "Name": "Error",
+          "Description": "提供者或验证失败。",
+          "Name": "错误",
           "Type": 8
         },
         {
-          "Description": "Nonzero delay before retrying.",
-          "Name": "Retry after",
+          "Description": "重试之前的非零延迟。",
+          "Name": "之后重试",
           "Type": 9
         }
       ],
       "Name": "BuildingHvacExternalFeatureProtocol"
     },
     {
-      "Description": "Carries the complete currently known optional operational inputs. Values are sorted by feature name. `retrieved_at` advances for a changed replacement; no-change liveness uses PeerAlive. Invalid, older, or conflicting reports leave the last valid independently persisted snapshot unchanged.",
-      "DisplayName": "External feature snapshot",
+      "Description": "承载完整的当前已知的可选操作输入。值按功能名称排序。 `retrieved_at` 预付款更换更换；无变化活性使用 PeerAlive。无效、较旧或冲突的报告会使最后一个有效的独立持久快照保持不变。",
+      "DisplayName": "外部功能快照",
       "List": [
         {
-          "Description": "Carries the complete currently known optional operational inputs. Values are sorted by feature name. `retrieved_at` advances for a changed replacement; no-change liveness uses PeerAlive. Invalid, older, or conflicting reports leave the last valid independently persisted snapshot unchanged.",
-          "Name": "External feature snapshot",
+          "Description": "承载完整的当前已知的可选操作输入。值按功能名称排序。 `retrieved_at` 预付款更换更换；无变化活性使用 PeerAlive。无效、较旧或冲突的报告会使最后一个有效的独立持久快照保持不变。",
+          "Name": "外部功能快照",
           "Type": 0
         },
         {
-          "Description": "UTC time when the provider assembled and validated this complete replacement snapshot. A changed replacement must use a newer value.",
-          "Name": "Retrieved at",
+          "Description": "UTC 提供者组装并验证此完整替换快照的时间。更改后的替换必须使用更新的值。",
+          "Name": "获取时间",
           "Type": 1
         },
         {
-          "Description": "Complete sorted set of optional numeric inputs.",
-          "Name": "Inputs",
+          "Description": "可选数字输入的完整排序集。",
+          "Name": "输入",
           "Type": 2
         },
         {
-          "Description": "One time-bounded value for an existing machine-learning column.",
-          "Name": "External feature input",
+          "Description": "现有机器学习列的一个有时间限制的值。",
+          "Name": "外部特征输入",
           "Type": 3
         }
       ],
       "Name": "BuildingHvacExternalFeatureSnapshotV1"
     },
     {
-      "Description": "Caches one accepted reading from a standard Matter Humidity Sensor logical device.",
-      "DisplayName": "Humidity reading",
+      "Description": "缓存来自标准 Matter 湿度传感器逻辑设备的已接受读数。",
+      "DisplayName": "湿度读数",
       "List": [
         {
-          "Description": "Caches one accepted reading from a standard Matter Humidity Sensor logical device.",
-          "Name": "Humidity reading",
+          "Description": "缓存来自标准 Matter 湿度传感器逻辑设备的已接受读数。",
+          "Name": "湿度读数",
           "Type": 0
         },
         {
-          "Description": "The UTC time represented by the Matter humidity report.",
-          "Name": "Observed at",
+          "Description": "Matter 湿度报告表示的 UTC 时间。",
+          "Name": "观察于",
           "Type": 1
         },
         {
-          "Description": "The exclusive UTC deadline after which the controller treats this reading as stale.",
-          "Name": "Valid until",
+          "Description": "独占的 UTC 截止日期，在此之后控制器会将此读数视为过时。",
+          "Name": "有效截止时间",
           "Type": 2
         },
         {
-          "Description": "Measured relative humidity as a percentage.",
-          "Name": "Relative humidity",
+          "Description": "以百分比形式测量的相对湿度。",
+          "Name": "相对湿度",
           "Type": 3
         }
       ],
       "Name": "BuildingHvacHumidityReadingV1"
     },
     {
-      "Description": "Exposes independently fresh readings from one configured indoor Matter sensor station. Temperature identifies the station; optional humidity and Air Quality Sensor logical devices may report on different schedules.",
-      "DisplayName": "Indoor sensor state",
+      "Description": "从一个配置的室内 Matter 传感器站独立公开最新读数。温度识别站；可选的湿度和空气质量传感器逻辑设备可能会按不同的时间表进行报告。",
+      "DisplayName": "室内传感器状态",
       "List": [
         {
-          "Description": "Exposes independently fresh readings from one configured indoor Matter sensor station. Temperature identifies the station; optional humidity and Air Quality Sensor logical devices may report on different schedules.",
-          "Name": "Indoor sensor state",
+          "Description": "从一个配置的室内 Matter 传感器站独立公开最新读数。温度识别站；可选的湿度和空气质量传感器逻辑设备可能会按不同的时间表进行报告。",
+          "Name": "室内传感器状态",
           "Type": 0
         },
         {
-          "Description": "The station's required Matter Temperature Sensor logical device.",
-          "Name": "Temperature sensor",
+          "Description": "站所需的 Matter 温度传感器逻辑设备。",
+          "Name": "温度传感器",
           "Type": 1
         },
         {
-          "Description": "The last accepted reading from `temperature_sensor`.",
-          "Name": "Temperature",
+          "Description": "最后接受的读数来自 `temperature_sensor`。",
+          "Name": "温度",
           "Type": 2
         },
         {
-          "Description": "The optional Matter Humidity Sensor logical device paired with this station.",
-          "Name": "Humidity sensor",
+          "Description": "与该站配对的可选 Matter 湿度传感器逻辑设备。",
+          "Name": "湿度传感器",
           "Type": 3
         },
         {
-          "Description": "The last accepted reading from `humidity_sensor`.",
-          "Name": "Relative humidity",
+          "Description": "最后接受的读数来自 `humidity_sensor`。",
+          "Name": "相对湿度",
           "Type": 4
         },
         {
-          "Description": "The optional Matter Air Quality Sensor logical device paired with this station.",
-          "Name": "Air quality sensor",
+          "Description": "与该站配对的可选 Matter 空气质量传感器逻辑设备。",
+          "Name": "空气质量传感器",
           "Type": 5
         },
         {
-          "Description": "The last accepted overall classification and runtime-discovered concentration measurements from `air_quality_sensor`.",
-          "Name": "Air quality",
+          "Description": "最后接受的整体分类和运行时发现的浓度测量来自 `air_quality_sensor`。",
+          "Name": "空气质量",
           "Type": 6
         }
       ],
       "Name": "BuildingHvacIndoorSensorStateV1"
     },
     {
-      "Description": "Choose the sensors at one place in the room. Temperature is required; humidity and air quality are optional.",
-      "DisplayName": "Indoor sensor group",
+      "Description": "选择房间内某一位置的传感器。需要温度；湿度和空气质量是可选的。",
+      "DisplayName": "室内传感器组",
       "List": [
         {
-          "Description": "Choose the sensors at one place in the room. Temperature is required; humidity and air quality are optional.",
-          "Name": "Indoor sensor group",
+          "Description": "选择房间内某一位置的传感器。需要温度；湿度和空气质量是可选的。",
+          "Name": "室内传感器组",
           "Type": 0
         },
         {
-          "Description": "Choose the temperature sensor at this place in the room.",
-          "Name": "Temperature sensor",
+          "Description": "选择房间内这个位置的温度传感器。",
+          "Name": "温度传感器",
           "Type": 1
         },
         {
-          "Description": "Optionally choose a humidity sensor at the same place.",
-          "Name": "Humidity sensor",
+          "Description": "可选择在同一位置选择湿度传感器。",
+          "Name": "湿度传感器",
           "NullText": "不使用湿度传感器",
           "Type": 2
         },
         {
-          "Description": "Optionally choose an air quality sensor at the same place.",
-          "Name": "Air quality sensor",
+          "Description": "可选择在同一地点选择空气质量传感器。",
+          "Name": "空气质量传感器",
           "NullText": "不使用空气质量传感器",
           "Type": 3
         }
@@ -731,403 +731,403 @@
       "Name": "BuildingHvacIndoorSensorV1"
     },
     {
-      "Description": "Exposes the independently available sections of the optional outdoor Matter station. `None` for this whole value means no station is configured; a present state with a missing section means that section is unavailable or has no accepted reading.",
-      "DisplayName": "Local outdoor sensor state",
+      "Description": "显示可选室外 Matter 站的独立可用部分。 `None` 对于该整个值表示没有配置站；缺少部分的当前状态意味着该部分不可用或没有被接受的阅读。",
+      "DisplayName": "本地室外传感器状态",
       "List": [
         {
-          "Description": "Exposes the independently available sections of the optional outdoor Matter station. `None` for this whole value means no station is configured; a present state with a missing section means that section is unavailable or has no accepted reading.",
-          "Name": "Local outdoor sensor state",
+          "Description": "显示可选室外 Matter 站的独立可用部分。 `None` 对于该整个值表示没有配置站；缺少部分的当前状态意味着该部分不可用或没有被接受的阅读。",
+          "Name": "本地室外传感器状态",
           "Type": 0
         },
         {
-          "Description": "Last accepted reading from the station's required temperature sensor.",
-          "Name": "Temperature",
+          "Description": "最后接受的来自该站所需温度传感器的读数。",
+          "Name": "温度",
           "Type": 1
         },
         {
-          "Description": "Last accepted reading from the station's optional humidity sensor.",
-          "Name": "Relative humidity",
+          "Description": "最后接受的来自工作站可选湿度传感器的读数。",
+          "Name": "相对湿度",
           "Type": 2
         },
         {
-          "Description": "Last accepted reading from the station's optional Air Quality Sensor and the concentration clusters it supports at runtime.",
-          "Name": "Air quality",
+          "Description": "最后接受的读数来自该站的可选空气质量传感器及其在运行时支持的浓度集群。",
+          "Name": "空气质量",
           "Type": 3
         }
       ],
       "Name": "BuildingHvacLocalOutdoorSensorStateV1"
     },
     {
-      "Description": "Stores one ordered observation without repeating thousands of feature-name strings in every indexed record. The corresponding full ordered names are regenerated from configuration and checked against `manifest_sha256` before a sample can be selected or trained.",
-      "DisplayName": "Compact machine-learning feature vector",
+      "Description": "存储一个有序的观察结果，而不在每个索引记录中重复数千个特征名称字符串。在选择或训练样本之前，会从配置中重新生成相应的完整排序名称，并根据 `manifest_sha256` 检查。",
+      "DisplayName": "紧凑的机器学习特征向量",
       "List": [
         {
-          "Description": "Stores one ordered observation without repeating thousands of feature-name strings in every indexed record. The corresponding full ordered names are regenerated from configuration and checked against `manifest_sha256` before a sample can be selected or trained.",
-          "Name": "Compact machine-learning feature vector",
+          "Description": "存储一个有序的观察结果，而不在每个索引记录中重复数千个特征名称字符串。在选择或训练样本之前，会从配置中重新生成相应的完整排序名称，并根据 `manifest_sha256` 检查。",
+          "Name": "紧凑的机器学习特征向量",
           "Type": 0
         },
         {
-          "Description": "Thirty-two deterministic checksum bytes over the feature-schema version and ordered names, including each name length so concatenation cannot create ambiguity.",
-          "Name": "Manifest SHA-256",
+          "Description": "功能架构版本和有序名称上的 32 个确定性校验和字节，包括每个名称长度，因此串联不会产生歧义。",
+          "Name": "清单 SHA-256",
           "Type": 1
         },
         {
-          "Description": "Total number of columns, including omitted missing columns.",
-          "Name": "Feature count",
+          "Description": "列总数，包括省略的缺失列。",
+          "Name": "特征数",
           "Type": 2
         },
         {
-          "Description": "Sorted sparse values. A missing column has no entry; a meaningful zero has an entry whose value is zero.",
-          "Name": "Present values",
+          "Description": "已排序的稀疏值。缺失的列没有条目；有意义的零有一个值为零的条目。",
+          "Name": "现值",
           "Type": 3
         },
         {
-          "Description": "One present finite value at its manifest column.",
-          "Name": "Indexed feature",
+          "Description": "其清单列中存在有限值。",
+          "Name": "索引特征",
           "Type": 4
         }
       ],
       "Name": "BuildingHvacMachineLearningFeatureVectorV1"
     },
     {
-      "Description": "Stores one present value from a compact sparse observation. Missing columns are omitted; semantic zeros remain present entries.",
-      "DisplayName": "Indexed machine-learning feature",
+      "Description": "存储来自紧凑稀疏观测的一个当前值。缺失的列被省略；语义零仍然存在的条目。",
+      "DisplayName": "索引机器学习功能",
       "List": [
         {
-          "Description": "Stores one present value from a compact sparse observation. Missing columns are omitted; semantic zeros remain present entries.",
-          "Name": "Indexed machine-learning feature",
+          "Description": "存储来自紧凑稀疏观测的一个当前值。缺失的列被省略；语义零仍然存在的条目。",
+          "Name": "索引机器学习功能",
           "Type": 0
         },
         {
-          "Description": "Zero-based position in the manifest named by the containing vector.",
-          "Name": "Column index",
+          "Description": "清单中由包含向量命名的从零开始的位置。",
+          "Name": "栏目索引",
           "Type": 1
         },
         {
-          "Description": "Finite present value. Missing values have no indexed entry.",
-          "Name": "Value",
+          "Description": "有限现值。缺失值没有索引条目。",
+          "Name": "结果",
           "Type": 2
         }
       ],
       "Name": "BuildingHvacMachineLearningIndexedFeatureV1"
     },
     {
-      "Description": "Complete bounded set of independently promoted thermal models.",
-      "DisplayName": "Persisted model set",
+      "Description": "独立推广的热模型的完整有界集。",
+      "DisplayName": "持久模型集",
       "List": [
         {
-          "Description": "Complete bounded set of independently promoted thermal models.",
-          "Name": "Persisted model set",
+          "Description": "独立推广的热模型的完整有界集。",
+          "Name": "持久模型集",
           "Type": 0
         },
         {
-          "Description": "Stable room identity used as the persistent database key.",
-          "Name": "Room endpoint",
+          "Description": "稳定的房间标识用作持久数据库密钥。",
+          "Name": "房间端点",
           "Type": 1
         },
         {
-          "Description": "At most one active and one rollback model for each horizon.",
-          "Name": "Model slots",
+          "Description": "每个范围最多有一个活动模型和一个回滚模型。",
+          "Name": "型号插槽",
           "Type": 2
         },
         {
-          "Description": "One independently validated thermal horizon.",
-          "Name": "Model slot",
+          "Description": "一个独立验证的热层。",
+          "Name": "型号槽位",
           "Type": 3
         }
       ],
       "Name": "BuildingHvacMachineLearningModelSetV1"
     },
     {
-      "Description": "Keeps one active model and one immediate rollback artifact for a prediction horizon. The previous model is never used unless explicitly restored.",
-      "DisplayName": "Persisted model slot",
+      "Description": "在预测范围内保留一个活动模型和一个立即回滚工件。 The previous model is never used unless explicitly restored.",
+      "DisplayName": "持久化模型槽",
       "List": [
         {
-          "Description": "Keeps one active model and one immediate rollback artifact for a prediction horizon. The previous model is never used unless explicitly restored.",
-          "Name": "Persisted model slot",
+          "Description": "在预测范围内保留一个活动模型和一个立即回滚工件。 The previous model is never used unless explicitly restored.",
+          "Name": "持久化模型槽",
           "Type": 0
         },
         {
-          "Description": "Unique model target represented by this slot.",
-          "Name": "Prediction horizon",
+          "Description": "此槽代表的唯一模型目标。",
+          "Name": "预测范围",
           "Type": 1
         },
         {
-          "Description": "Model permitted to produce bounded supervisory predictions.",
-          "Name": "Active model",
+          "Description": "模型允许产生有限的监督预测。",
+          "Name": "当前启用的模型",
           "Type": 2
         },
         {
-          "Description": "Last superseded accepted model retained for rollback.",
-          "Name": "Previous model",
+          "Description": "最后被取代的接受模型保留用于回滚。",
+          "Name": "以前的型号",
           "Type": 3
         }
       ],
       "Name": "BuildingHvacMachineLearningModelSlotV1"
     },
     {
-      "Description": "Self-describing accepted model artifact. The UBJSON bytes are loaded only after the manifest, validation evidence, feature order, and checksum pass.",
-      "DisplayName": "Persisted XGBoost thermal model",
+      "Description": "自描述可接受的模型工件。仅在清单、验证证据、功能顺序和校验和通过后才加载 UBJSON 字节。",
+      "DisplayName": "保留 XGBoost 热模型",
       "List": [
         {
-          "Description": "Self-describing accepted model artifact. The UBJSON bytes are loaded only after the manifest, validation evidence, feature order, and checksum pass.",
-          "Name": "Persisted XGBoost thermal model",
+          "Description": "自描述可接受的模型工件。仅在清单、验证证据、功能顺序和校验和通过后才加载 UBJSON 字节。",
+          "Name": "保留 XGBoost 热模型",
           "Type": 0
         },
         {
-          "Description": "Stable room identity whose thermal behavior this model learned.",
-          "Name": "Room endpoint",
+          "Description": "该模型学习了稳定的房间身份，其热行为。",
+          "Name": "房间端点",
           "Type": 1
         },
         {
-          "Description": "Thermal target represented by this model.",
-          "Name": "Prediction horizon",
+          "Description": "该模型代表的热目标。",
+          "Name": "预测范围",
           "Type": 2
         },
         {
-          "Description": "Exact feature-vector contract used for training.",
-          "Name": "Feature schema version",
+          "Description": "用于训练的精确特征向量契约。",
+          "Name": "功能架构版本",
           "Type": 3
         },
         {
-          "Description": "Human- and AI-readable manifest matching both the XGBoost model metadata and numeric column order. Trees split on indexes after training.",
-          "Name": "Ordered feature names",
+          "Description": "人类和人工智能可读的清单与 XGBoost 模型元数据和数字列顺序相匹配。 Trees split on indexes after training.",
+          "Name": "有序的功能名称",
           "Type": 4
         },
         {
-          "Description": "One stable feature identifier in model-column order.",
-          "Name": "Feature name",
+          "Description": "模型列顺序中的一种稳定特征标识符。",
+          "Name": "特征名称",
           "Type": 5
         },
         {
-          "Description": "Bundled native XGBoost version that produced the UBJSON artifact.",
-          "Name": "XGBoost version",
+          "Description": "生成 UBJSON 工件的捆绑本机 XGBoost 版本。",
+          "Name": "XGBoost 版本",
           "Type": 6
         },
         {
-          "Description": "UTC timestamp when candidate fitting and validation completed.",
-          "Name": "Trained at",
+          "Description": "UTC 候选拟合和验证完成时的时间戳。",
+          "Name": "受训于",
           "Type": 7
         },
         {
-          "Description": "Earliest feature timestamp included in candidate fitting.",
-          "Name": "Training range start",
+          "Description": "候选拟合中包含最早的特征时间戳。",
+          "Name": "训练场开始",
           "Type": 8
         },
         {
-          "Description": "Latest feature timestamp included in candidate fitting.",
-          "Name": "Training range end",
+          "Description": "候选拟合中包含最新的特征时间戳。",
+          "Name": "训练范围结束",
           "Type": 9
         },
         {
-          "Description": "Number of shallow trees fitted by the bounded training policy.",
-          "Name": "Boost rounds",
+          "Description": "由有界训练策略拟合的浅树数量。",
+          "Name": "助推轮",
           "Type": 10
         },
         {
-          "Description": "Maximum depth allowed by the bounded training policy.",
-          "Name": "Maximum tree depth",
+          "Description": "有界训练策略允许的最大深度。",
+          "Name": "最大树深度",
           "Type": 11
         },
         {
-          "Description": "XGBoost shrinkage used during fitting.",
-          "Name": "Learning rate",
+          "Description": "XGBoost 装配期间使用的收缩率。",
+          "Name": "学习率",
           "Type": 12
         },
         {
-          "Description": "Time-forward promotion evidence for this artifact.",
-          "Name": "Validation",
+          "Description": "该神器的远期促销证据。",
+          "Name": "验证",
           "Type": 13
         },
         {
-          "Description": "Thirty-two checksum bytes over `model_ubjson`, checked before loading.",
-          "Name": "Model SHA-256",
+          "Description": "`model_ubjson` 上有 32 个校验和字节，在加载前检查。",
+          "Name": "型号SHA-256",
           "Type": 14
         },
         {
-          "Description": "Bounded XGBoost model bytes. They are application data, not executable code, and are never interpreted until the manifest and checksum pass.",
-          "Name": "Model UBJSON",
+          "Description": "有界 XGBoost 模型字节。它们是应用程序数据，而不是可执行代码，并且在清单和校验和通过之前不会被解释。",
+          "Name": "型号UBJSON",
           "Type": 15
         }
       ],
       "Name": "BuildingHvacMachineLearningModelV1"
     },
     {
-      "Description": "One indexed room observation and the temperature changes later measured at each supported horizon. It is written only after at least one target becomes known; missing targets remain available for later completion.",
-      "DisplayName": "Machine-learning training sample",
+      "Description": "一个索引的房间观察和随后在每个支持的地平线测量的温度变化。仅在至少一个目标已知后才写入；缺失的目标仍可供稍后完成。",
+      "DisplayName": "机器学习训练样本",
       "List": [
         {
-          "Description": "One indexed room observation and the temperature changes later measured at each supported horizon. It is written only after at least one target becomes known; missing targets remain available for later completion.",
-          "Name": "Machine-learning training sample",
+          "Description": "一个索引的房间观察和随后在每个支持的地平线测量的温度变化。仅在至少一个目标已知后才写入；缺失的目标仍可供稍后完成。",
+          "Name": "机器学习训练样本",
           "Type": 0
         },
         {
-          "Description": "UTC timestamp of the feature observation and ordered sample key.",
-          "Name": "Observed at",
+          "Description": "UTC 特征观察和有序样本键的时间戳。",
+          "Name": "观察于",
           "Type": 1
         },
         {
-          "Description": "Stable room identity used to reject a sample read from the wrong indexed room history.",
-          "Name": "Room endpoint",
+          "Description": "稳定的房间标识用于拒绝从错误索引的房间历史记录中读取的样本。",
+          "Name": "房间端点",
           "Type": 2
         },
         {
-          "Description": "Compact sparse thermal feature values at `observed_at`. The manifest hash must match the full ordered names regenerated for this building.",
-          "Name": "Features",
+          "Description": "`observed_at` 处的紧凑稀疏热特征值。清单哈希必须与为此建筑物重新生成的完整有序名称匹配。",
+          "Name": "特点",
           "Type": 3
         },
         {
-          "Description": "Fused room temperature after 15 minutes minus the observed temperature.",
-          "Name": "Fifteen-minute temperature change",
+          "Description": "15 分钟后融合室温减去观察到的温度。",
+          "Name": "十五分钟温度变化",
           "Type": 4
         },
         {
-          "Description": "Fused room temperature after 30 minutes minus the observed temperature.",
-          "Name": "Thirty-minute temperature change",
+          "Description": "30 分钟后融合室温减去观察到的温度。",
+          "Name": "三十分钟温度变化",
           "Type": 5
         },
         {
-          "Description": "Fused room temperature after 60 minutes minus the observed temperature.",
-          "Name": "Sixty-minute temperature change",
+          "Description": "60 分钟后融合室温减去观察到的温度。",
+          "Name": "六十分钟温度变化",
           "Type": 6
         }
       ],
       "Name": "BuildingHvacMachineLearningSampleV1"
     },
     {
-      "Description": "Time-forward validation evidence used to decide whether a model may replace the deterministic fallback or an older accepted model.",
-      "DisplayName": "Machine-learning validation metrics",
+      "Description": "时间向前验证证据用于决定模型是否可以取代确定性后备模型或旧的公认模型。",
+      "DisplayName": "机器学习验证指标",
       "List": [
         {
-          "Description": "Time-forward validation evidence used to decide whether a model may replace the deterministic fallback or an older accepted model.",
-          "Name": "Machine-learning validation metrics",
+          "Description": "时间向前验证证据用于决定模型是否可以取代确定性后备模型或旧的公认模型。",
+          "Name": "机器学习验证指标",
           "Type": 0
         },
         {
-          "Description": "Number of older ordered samples used to fit the candidate.",
-          "Name": "Training samples",
+          "Description": "用于拟合候选者的旧有序样本数。",
+          "Name": "训练样本",
           "Type": 1
         },
         {
-          "Description": "Number of newest ordered samples held out from fitting.",
-          "Name": "Validation samples",
+          "Description": "无法安装的最新订购样品的数量。",
+          "Name": "验证样品",
           "Type": 2
         },
         {
-          "Description": "Root mean square temperature-change error in degrees Celsius on the time-forward holdout.",
-          "Name": "Candidate RMSE",
+          "Description": "时间向前保持时的均方根温度变化误差（以摄氏度为单位）。",
+          "Name": "候选人 RMSE",
           "Type": 3
         },
         {
-          "Description": "Root mean square error of predicting no temperature change on the same holdout.",
-          "Name": "Baseline RMSE",
+          "Description": "预测相同保持条件下温度没有变化的均方根误差。",
+          "Name": "基线 RMSE",
           "Type": 4
         },
         {
-          "Description": "Fractional RMSE reduction relative to the deterministic baseline.",
-          "Name": "Improvement",
+          "Description": "相对于确定性基线的 RMSE 减少分数。",
+          "Name": "改进",
           "Type": 5
         }
       ],
       "Name": "BuildingHvacMachineLearningValidationV1"
     },
     {
-      "Description": "Stores sufficient statistics for one continuously learned scalar relationship. The controller decays old weight in completed half-life steps, then adds each accepted observation without retaining an unbounded raw history.",
-      "DisplayName": "Online regression state",
+      "Description": "为一种持续学习的标量关系存储足够的统计数据。控制器在完成的半衰期步骤中衰减旧重量，然后添加每个接受的观察结果，而不保留无限的原始历史。",
+      "DisplayName": "在线回归状态",
       "List": [
         {
-          "Description": "Stores sufficient statistics for one continuously learned scalar relationship. The controller decays old weight in completed half-life steps, then adds each accepted observation without retaining an unbounded raw history.",
-          "Name": "Online regression state",
+          "Description": "为一种持续学习的标量关系存储足够的统计数据。控制器在完成的半衰期步骤中衰减旧重量，然后添加每个接受的观察结果，而不保留无限的原始历史。",
+          "Name": "在线回归状态",
           "Type": 0
         },
         {
-          "Description": "The UTC time of the latest accepted observation. It is absent for an empty learner.",
-          "Name": "Updated at",
+          "Description": "最近接受的观测的 UTC 时间。对于空虚的学习者来说，它是不存在的。",
+          "Name": "更新时间",
           "Type": 1
         },
         {
-          "Description": "The lifetime number of accepted observations before forgetting weights.",
-          "Name": "Accepted observations",
+          "Description": "在忘记权重之前接受的观测值的终生数量。",
+          "Name": "接受的意见",
           "Type": 2
         },
         {
-          "Description": "The quality-weighted observation count after age-based forgetting.",
-          "Name": "Effective sample weight",
+          "Description": "基于年龄的遗忘后的质量加权观察计数。",
+          "Name": "有效样品重量",
           "Type": 3
         },
         {
-          "Description": "The decayed sum of quality weight multiplied by squared model input.",
-          "Name": "Weighted input squared sum",
+          "Description": "质量权重的衰减总和乘以模型输入的平方。",
+          "Name": "加权输入平方和",
           "Type": 4
         },
         {
-          "Description": "The decayed sum of quality weight multiplied by model input and observed output.",
-          "Name": "Weighted input-output sum",
+          "Description": "质量权重的衰减总和乘以模型输入和观察到的输出。",
+          "Name": "加权输入输出总和",
           "Type": 5
         },
         {
-          "Description": "The decayed sum of quality weight multiplied by squared observed output.",
-          "Name": "Weighted output squared sum",
+          "Description": "质量权重的衰减总和乘以观察到的输出的平方。",
+          "Name": "加权输出平方和",
           "Type": 6
         }
       ],
       "Name": "BuildingHvacOnlineRegressionStateV1"
     },
     {
-      "Description": "Contains psychrometric values derived from one fresh, internally consistent building-HVAC current-weather section. These values support sensible and latent load calculations without persisting redundant weather fields.",
-      "DisplayName": "Outdoor air analytics",
+      "Description": "包含源自一栋新的、内部一致的建筑 -HVAC 当前天气部分的湿度值。这些值支持显热和潜在负荷计算，而无需持续冗余的天气场。",
+      "DisplayName": "室外空气分析",
       "List": [
         {
-          "Description": "Contains psychrometric values derived from one fresh, internally consistent building-HVAC current-weather section. These values support sensible and latent load calculations without persisting redundant weather fields.",
-          "Name": "Outdoor air analytics",
+          "Description": "包含源自一栋新的、内部一致的建筑 -HVAC 当前天气部分的湿度值。这些值支持显热和潜在负荷计算，而无需持续冗余的天气场。",
+          "Name": "室外空气分析",
           "Type": 0
         },
         {
-          "Description": "The provider time represented by the source current conditions.",
-          "Name": "Weather valid time",
+          "Description": "由源当前条件表示的提供者时间。",
+          "Name": "天气有效时间",
           "Type": 1
         },
         {
-          "Description": "Kilograms of water vapor per kilogram of dry air, derived from dew point and surface pressure.",
-          "Name": "Humidity ratio",
+          "Description": "每千克干燥空气的水蒸气千克数，由露点和表面压力得出。",
+          "Name": "湿度比",
           "Type": 2
         },
         {
-          "Description": "Approximate kilojoules per kilogram of dry air, derived from dry-bulb temperature and humidity ratio.",
-          "Name": "Moist-air enthalpy",
+          "Description": "根据干球温度和湿度比得出每千克干燥空气的近似千焦耳数。",
+          "Name": "湿空气热函",
           "Type": 3
         },
         {
-          "Description": "Approximate thermodynamic wet-bulb temperature in degrees Celsius, solved from pressure and the derived humidity ratio.",
-          "Name": "Wet-bulb temperature",
+          "Description": "近似热力学湿球温度（摄氏度），由压力和导出的湿度比求解。",
+          "Name": "湿球温度",
           "Type": 4
         }
       ],
       "Name": "BuildingHvacOutdoorAirAnalyticsV1"
     },
     {
-      "Description": "Optionally use sensors at one representative outdoor location. Temperature is required; humidity and air quality are optional.",
-      "DisplayName": "Outdoor sensor group",
+      "Description": "可选择在一个有代表性的室外位置使用传感器。需要温度；湿度和空气质量是可选的。",
+      "DisplayName": "室外传感器组",
       "List": [
         {
-          "Description": "Optionally use sensors at one representative outdoor location. Temperature is required; humidity and air quality are optional.",
-          "Name": "Outdoor sensor group",
+          "Description": "可选择在一个有代表性的室外位置使用传感器。需要温度；湿度和空气质量是可选的。",
+          "Name": "室外传感器组",
           "Type": 0
         },
         {
-          "Description": "Choose a shaded sensor that measures the outdoor air, away from exhaust and equipment heat.",
-          "Name": "Outdoor temperature sensor",
+          "Description": "选择一个遮蔽传感器来测量室外空气，远离废气和设备热量。",
+          "Name": "室外温度传感器",
           "Type": 1
         },
         {
-          "Description": "Optionally choose a humidity sensor at the same outdoor location.",
-          "Name": "Outdoor humidity sensor",
+          "Description": "可选择在同一室外位置选择湿度传感器。",
+          "Name": "室外湿度传感器",
           "NullText": "不使用室外湿度传感器",
           "Type": 2
         },
         {
-          "Description": "Optionally choose an air quality sensor at the same outdoor location.",
-          "Name": "Outdoor air quality sensor",
+          "Description": "可选择在同一室外位置选择空气质量传感器。",
+          "Name": "室外空气质量传感器",
           "NullText": "不使用室外空气质量传感器",
           "Type": 3
         }
@@ -1135,323 +1135,323 @@
       "Name": "BuildingHvacOutdoorSensorV1"
     },
     {
-      "Description": "Stores separate continuously learned heating and cooling sufficient statistics for one directional source-thermostat to affected-room edge.",
-      "DisplayName": "Persisted cross-zone learner",
+      "Description": "存储单独的连续学习的加热和冷却足够的统计数据，用于从一个定向源恒温器到受影响的房间边缘。",
+      "DisplayName": "坚持跨区域学习者",
       "List": [
         {
-          "Description": "Stores separate continuously learned heating and cooling sufficient statistics for one directional source-thermostat to affected-room edge.",
-          "Name": "Persisted cross-zone learner",
+          "Description": "存储单独的连续学习的加热和冷却足够的统计数据，用于从一个定向源恒温器到受影响的房间边缘。",
+          "Name": "坚持跨区域学习者",
           "Type": 0
         },
         {
-          "Description": "The other Matter thermostat whose calls may influence this room.",
-          "Name": "Source thermostat",
+          "Description": "另一个 Matter 恒温器的调用可能会影响这个房间。",
+          "Name": "源温控器",
           "Type": 1
         },
         {
-          "Description": "Learns positive residual room-temperature rise per source heating runtime hour.",
-          "Name": "Heating learner",
+          "Description": "了解每个热源加热运行时间小时的正残余室温上升。",
+          "Name": "供暖学习者",
           "Type": 2
         },
         {
-          "Description": "Learns positive residual room-temperature drop per source cooling runtime hour.",
-          "Name": "Cooling learner",
+          "Description": "了解每个源冷却运行时间小时的剩余室温正下降。",
+          "Name": "冷却学习者",
           "Type": 3
         }
       ],
       "Name": "BuildingHvacPersistedCrossZoneLearnerV1"
     },
     {
-      "Description": "Retains one bounded, time-aggregated room condition period so statistics and thermal-response calculations can continue after a restart without treating a last-known instantaneous sensor value as current.",
-      "DisplayName": "Persisted room condition period",
+      "Description": "保留一个有界的、时间聚合的房间条件周期，因此统计数据和热响应计算可以在重新启动后继续，而无需将最后已知的瞬时传感器值视为当前值。",
+      "DisplayName": "房间状况持续时间",
       "List": [
         {
-          "Description": "Retains one bounded, time-aggregated room condition period so statistics and thermal-response calculations can continue after a restart without treating a last-known instantaneous sensor value as current.",
-          "Name": "Persisted room condition period",
+          "Description": "保留一个有界的、时间聚合的房间条件周期，因此统计数据和热响应计算可以在重新启动后继续，而无需将最后已知的瞬时传感器值视为当前值。",
+          "Name": "房间状况持续时间",
           "Type": 0
         },
         {
-          "Description": "The inclusive UTC start of this aggregated condition period.",
-          "Name": "Start time",
+          "Description": "此聚合条件期间的包含 UTC 的开始。",
+          "Name": "开始时间",
           "Type": 1
         },
         {
-          "Description": "The nonzero length of the period in seconds.",
-          "Name": "Duration",
+          "Description": "周期的非零长度（以秒为单位）。",
+          "Name": "持续时间",
           "Type": 2
         },
         {
-          "Description": "The time-weighted room temperature in degrees Celsius. It is absent for a period with no trustworthy room-temperature coverage.",
-          "Name": "Room temperature",
+          "Description": "以摄氏度为单位的时间加权室温。它会在没有可靠的室温覆盖的一段时间内消失。",
+          "Name": "室温",
           "Type": 3
         },
         {
-          "Description": "The time-weighted room relative humidity percentage. It is absent for a period with no trustworthy humidity coverage.",
-          "Name": "Room relative humidity",
+          "Description": "时间加权的房间相对湿度百分比。它会消失一段时间，没有可靠的湿度覆盖。",
+          "Name": "房间相对湿度",
           "Type": 4
         },
         {
-          "Description": "The dominant thermostat activity observed during this period.",
-          "Name": "HVAC activity",
+          "Description": "在此期间观察到的主要恒温器活动。",
+          "Name": "HVAC 活动",
           "Type": 5
         },
         {
-          "Description": "The time-weighted effective heating setpoint in degrees Celsius. It is absent when the room contributed no heating target.",
-          "Name": "Effective heating setpoint",
+          "Description": "以摄氏度为单位的时间加权有效加热设定点。当房间没有供暖目标时，它不存在。",
+          "Name": "有效加热设定值",
           "Type": 6
         },
         {
-          "Description": "The time-weighted effective cooling setpoint in degrees Celsius. It is absent when the room contributed no cooling target.",
-          "Name": "Effective cooling setpoint",
+          "Description": "以摄氏度为单位的时间加权有效冷却设定点。当房间没有提供冷却目标时，它不存在。",
+          "Name": "有效冷却设定值",
           "Type": 7
         },
         {
-          "Description": "The time-aligned cached outdoor dry-bulb temperature in degrees Celsius. It is absent when no weather period covered this room period.",
-          "Name": "Outdoor dry-bulb temperature",
+          "Description": "时间对齐的缓存室外干球温度（以摄氏度为单位）。当没有天气周期覆盖该房间期间时，它不存在。",
+          "Name": "室外干球温度",
           "Type": 8
         }
       ],
       "Name": "BuildingHvacPersistedRoomConditionPeriodV1"
     },
     {
-      "Description": "Stores one room condition's debounce, reminder, recovery, and last qualifying temperature evidence. Current sensor truth remains in the independently persisted sensor record.",
-      "DisplayName": "Persisted urgent-condition tracker",
+      "Description": "存储一个房间条件的反跳、提醒、恢复和最后合格的温度证据。当前传感器的真实情况保留在独立保存的传感器记录中。",
+      "DisplayName": "已保存的紧急状况跟踪记录",
       "List": [
         {
-          "Description": "Stores one room condition's debounce, reminder, recovery, and last qualifying temperature evidence. Current sensor truth remains in the independently persisted sensor record.",
-          "Name": "Persisted urgent-condition tracker",
+          "Description": "存储一个房间条件的反跳、提醒、恢复和最后合格的温度证据。当前传感器的真实情况保留在独立保存的传感器记录中。",
+          "Name": "已保存的紧急状况跟踪记录",
           "Type": 0
         },
         {
-          "Description": "The unique condition tracked by this room record.",
-          "Name": "Condition",
+          "Description": "该房间记录跟踪的独特状况。",
+          "Name": "条件",
           "Type": 1
         },
         {
-          "Description": "Whether the condition is awaiting activation, active, or awaiting confirmed recovery.",
-          "Name": "Tracking phase",
+          "Description": "该状况是否正在等待激活、活动或等待确认恢复。",
+          "Name": "跟踪阶段",
           "Type": 2
         },
         {
-          "Description": "The UTC time at which evidence first continuously qualified for this occurrence.",
-          "Name": "Condition started at",
+          "Description": "证据首次连续证明此事件发生的 UTC 时间。",
+          "Name": "条件开始于",
           "Type": 3
         },
         {
-          "Description": "The UTC time at which the current tracking phase began.",
-          "Name": "Phase started at",
+          "Description": "当前跟踪阶段开始的 UTC 时间。",
+          "Name": "阶段开始于",
           "Type": 4
         },
         {
-          "Description": "The UTC time represented by the latest fresh evidence applied to this tracker.",
-          "Name": "Updated at",
+          "Description": "UTC 时间由应用于该跟踪器的最新证据表示。",
+          "Name": "更新时间",
           "Type": 5
         },
         {
-          "Description": "The latest fresh room temperature associated with this condition. It is absent only while temperature control is unavailable. Retaining it lets a restart preserve the last confirmed evidence without treating it as a new current sensor reading.",
-          "Name": "Last qualifying temperature",
+          "Description": "与此情况相关的最新新鲜室温。仅当温度控制不可用时它才不存在。保留它可以让重新启动保留最后确认的证据，而不将其视为新的当前传感器读数。",
+          "Name": "最近一次满足条件的温度",
           "Type": 6
         },
         {
-          "Description": "The UTC time when this occurrence was most recently submitted to the notification framework. It is absent before activation.",
-          "Name": "Last notification time",
+          "Description": "最近将此事件提交给通知框架的 UTC 时间。 It is absent before activation.",
+          "Name": "最后通知时间",
           "Type": 7
         }
       ],
       "Name": "BuildingHvacPersistedUrgentConditionV1"
     },
     {
-      "Description": "Defines every database record written by the controller. Room records use the configured room endpoint as their stable key. Local outdoor sensor and weather records are singleton sections. No record contains subscription cursors, peer state, or transaction identifiers.",
-      "DisplayName": "Building climate persistent data",
+      "Description": "定义控制器写入的每条数据库记录。房间记录使用配置的房间端点作为其稳定密钥。本地室外传感器和天气记录是单例部分。没有记录包含订阅游标、对等状态或事务标识符。",
+      "DisplayName": "建立气候持久数据",
       "List": [
         {
-          "Description": "Defines every database record written by the controller. Room records use the configured room endpoint as their stable key. Local outdoor sensor and weather records are singleton sections. No record contains subscription cursors, peer state, or transaction identifiers.",
-          "Name": "Building climate persistent data",
+          "Description": "定义控制器写入的每条数据库记录。房间记录使用配置的房间端点作为其稳定密钥。本地室外传感器和天气记录是单例部分。没有记录包含订阅游标、对等状态或事务标识符。",
+          "Name": "建立气候持久数据",
           "Type": 0
         },
         {
-          "Description": "Stores the last accepted writable room intent and its optimistic concurrency revision. It is written before publishing accepted runtime data.",
-          "Name": "Room control",
+          "Description": "存储最后接受的可写房间意图及其乐观并发修订。它是在发布接受的运行时数据之前编写的。",
+          "Name": "房间控制",
           "Type": 1
         },
         {
-          "Description": "The persisted room-control revision.",
-          "Name": "Control revision",
+          "Description": "持续的房间控制修订。",
+          "Name": "控制修订",
           "Type": 2
         },
         {
-          "Description": "The complete last accepted writable room intent.",
-          "Name": "Room control",
+          "Description": "最后接受的完整可写房间意图。",
+          "Name": "房间控制",
           "Type": 3
         },
         {
-          "Description": "Stores the latest bounded room comfort and data-availability statistics and its recent condition periods so a restart does not silently reset the visible collection window or short-term thermal context.",
-          "Name": "Room statistics",
+          "Description": "存储最新的有限房间舒适度和数据可用性统计数据及其最近的条件周期，因此重新启动不会默默地重置可见收集窗口或短期热环境。",
+          "Name": "房间统计",
           "Type": 4
         },
         {
-          "Description": "The complete persisted statistics collection window.",
-          "Name": "Room statistics",
+          "Description": "完整的持久统计收集窗口。",
+          "Name": "房间统计",
           "Type": 5
         },
         {
-          "Description": "Ordered, non-overlapping periods covering at most the most recent day. Missing sensor or weather coverage remains explicit inside each period.",
-          "Name": "Recent room conditions",
+          "Description": "最多涵盖最近一天的有序、不重叠的时间段。每个时期内丢失的传感器或天气覆盖仍然很明显。",
+          "Name": "最近的房间状况",
           "Type": 6
         },
         {
-          "Description": "One aggregated indoor, setpoint, activity, and outdoor condition period.",
-          "Name": "Room condition period",
+          "Description": "一个汇总的室内、设定点、活动和室外条件时段。",
+          "Name": "房况期限",
           "Type": 7
         },
         {
-          "Description": "Stores continuous cross-zone learning sufficient statistics for one affected room. Persist this record after each accepted learning update before exposing the newly derived influence.",
-          "Name": "Room learning",
+          "Description": "存储一个受影响房间的连续跨区域学习足够的统计数据。在每次接受的学习更新之后，在暴露新产生的影响之前，保留此记录。",
+          "Name": "房间学习",
           "Type": 8
         },
         {
-          "Description": "The complete bounded source-zone influence learner for this room.",
-          "Name": "Room learning state",
+          "Description": "该房间的完整有界源区影响学习器。",
+          "Name": "房间学习状态",
           "Type": 9
         },
         {
-          "Description": "Stores the independently last accepted readings for each configured indoor sensor station. The record is keyed by room endpoint; stale data remains historical context and is not treated as current after restart.",
-          "Name": "Room sensor state",
+          "Description": "独立存储每个配置的室内传感器站的最后接受的读数。记录由房间端点键入；过时的数据保留历史上下文，并且在重新启动后不会被视为当前数据。",
+          "Name": "房间传感器状态",
           "Type": 10
         },
         {
-          "Description": "The bounded sensor-station list in configuration order. A missing optional reading does not erase another valid station capability.",
-          "Name": "Indoor sensor states",
+          "Description": "按配置顺序排列的有界传感器站列表。丢失的可选读数不会删除另一个有效的站功能。",
+          "Name": "室内传感器状态",
           "Type": 11
         },
         {
-          "Description": "Last accepted temperature, humidity, and air-quality sections for one station.",
-          "Name": "Indoor sensor state",
+          "Description": "最后接受的一个站点的温度、湿度和空气质量部分。",
+          "Name": "室内传感器状态",
           "Type": 12
         },
         {
-          "Description": "Stores the last valid reading from the configured local outdoor temperature sensor independently from weather and other station sections. A failed or invalid Matter report leaves this record unchanged.",
-          "Name": "Local outdoor temperature",
+          "Description": "存储来自配置的本地室外温度传感器的最后有效读数，独立于天气和其他站点部分。失败或无效的 Matter 报告使该记录保持不变。",
+          "Name": "当地室外温度",
           "Type": 13
         },
         {
-          "Description": "The accepted temperature value and its freshness deadline.",
-          "Name": "Local outdoor temperature",
+          "Description": "可接受的温度值及其保鲜期限。",
+          "Name": "当地室外温度",
           "Type": 14
         },
         {
-          "Description": "Stores the last valid reading from the optional local outdoor humidity sensor independently. Absence of this record means no reading is available and does not clear temperature or air quality.",
-          "Name": "Local outdoor humidity",
+          "Description": "独立存储可选本地室外湿度传感器的最后有效读数。没有此记录意味着没有可用的读数，并且无法明确温度或空气质量。",
+          "Name": "当地室外湿度",
           "Type": 15
         },
         {
-          "Description": "The accepted relative-humidity value and its freshness deadline.",
-          "Name": "Local outdoor humidity",
+          "Description": "公认的相对湿度值及其新鲜期限。",
+          "Name": "当地室外湿度",
           "Type": 16
         },
         {
-          "Description": "Stores the last valid overall air-quality classification and supported concentration readings from the optional Matter Air Quality Sensor. Missing or stale values remain unknown, not safe.",
-          "Name": "Local outdoor air quality",
+          "Description": "存储最后有效的整体空气质量分类和可选 Matter 空气质量传感器支持的浓度读数。丢失或过时的值仍然未知，不安全。",
+          "Name": "当地室外空气质量",
           "Type": 17
         },
         {
-          "Description": "The accepted bounded air-quality reading and its freshness deadline.",
-          "Name": "Local outdoor air quality",
+          "Description": "公认的有界空气质量读数及其新鲜度期限。",
+          "Name": "当地室外空气质量",
           "Type": 18
         },
         {
-          "Description": "Stores the last accepted building-HVAC physical weather history section. A failed refresh leaves this record unchanged.",
-          "Name": "Weather history",
+          "Description": "存储最后接受的建筑物-HVAC物理天气历史部分。刷新失败会使该记录保持不变。",
+          "Name": "天气历史",
           "Type": 19
         },
         {
-          "Description": "Recent outdoor physical conditions used for load-model context.",
-          "Name": "Weather history",
+          "Description": "用于负载模型上下文的最近的室外物理条件。",
+          "Name": "天气历史",
           "Type": 20
         },
         {
-          "Description": "Stores the last accepted building-HVAC current physical weather section. Stale data remains available but is not evidence that outdoor-air or economizer operation is safe.",
-          "Name": "Current weather",
+          "Description": "存储最后接受的建筑物-HVAC当前物理天气部分。过时的数据仍然可用，但并不能证明室外空气或节能器运行是安全的。",
+          "Name": "当前天气",
           "Type": 21
         },
         {
-          "Description": "The last accepted current outdoor physical conditions.",
-          "Name": "Current weather",
+          "Description": "最后接受当前户外身体状况。",
+          "Name": "当前天气",
           "Type": 22
         },
         {
-          "Description": "Stores the last accepted building-HVAC physical forecast section for restart-time preheating and precooling calculations.",
-          "Name": "Weather forecast",
+          "Description": "存储最后接受的建筑-HVAC物理预测部分，用于重新启动时预热和预冷计算。",
+          "Name": "天气预报",
           "Type": 23
         },
         {
-          "Description": "The last accepted outdoor physical forecast.",
-          "Name": "Weather forecast",
+          "Description": "最后接受的室外物理预报。",
+          "Name": "天气预报",
           "Type": 24
         },
         {
-          "Description": "Stores the last accepted modeled outdoor-air-quality section separately from physical weather. Missing or stale model data remains unknown, not safe.",
-          "Name": "Outdoor air quality",
+          "Description": "将最后接受的模拟室外空气质量部分与物理天气分开存储。丢失或过时的模型数据仍然未知，不安全。",
+          "Name": "室外空气质量",
           "Type": 25
         },
         {
-          "Description": "The last accepted modeled outdoor-air-quality periods.",
-          "Name": "Outdoor air quality",
+          "Description": "最后接受的模拟室外空气质量时段。",
+          "Name": "室外空气质量",
           "Type": 26
         },
         {
-          "Description": "Stores the last complete valid optional operational-input snapshot independently from Matter and weather data. Expiration makes individual values missing for inference but does not delete recoverable evidence.",
-          "Name": "External feature inputs",
+          "Description": "独立于 Matter 和天气数据存储最后一个完整的有效可选操作输入快照。过期会使推理中的单个值丢失，但不会删除可恢复的证据。",
+          "Name": "外部特征输入",
           "Type": 27
         },
         {
-          "Description": "Utility, equipment, occupancy, local-calendar, demand, and metering inputs accepted from the configured optional endpoint.",
-          "Name": "External feature snapshot",
+          "Description": "从配置的可选端点接受公用设施、设备、占用、本地日历、需求和计量输入。",
+          "Name": "外部功能快照",
           "Type": 28
         },
         {
-          "Description": "Stores bounded activation, reminder, and recovery state for one room. Persist each state transition before sending its notification so a restart does not reset confirmation intervals or create an avoidable duplicate-warning burst.",
-          "Name": "Room urgent notification state",
+          "Description": "存储一个房间的有界激活、提醒和恢复状态。在发送通知之前保留每个状态转换，以便重新启动不会重置确认间隔或创建可避免的重复警告突发。",
+          "Name": "房间紧急通知状态",
           "Type": 29
         },
         {
-          "Description": "At most one tracker exists for each condition. An absent tracker means that condition is inactive with no pending transition.",
-          "Name": "Urgent-condition trackers",
+          "Description": "每种情况最多存在一个跟踪器。缺少跟踪器意味着条件处于非活动状态，没有待处理的转换。",
+          "Name": "紧急情况追踪器",
           "Type": 30
         },
         {
-          "Description": "One condition's persisted debounce and last-notification state.",
-          "Name": "Urgent-condition tracker",
+          "Description": "一种情况是持续的反跳和最后通知状态。",
+          "Name": "紧急情况追踪器",
           "Type": 31
         },
         {
-          "Description": "Stores every accepted thermal model together with one rollback artifact per horizon. A candidate is persisted here before it is activated on the XGBoost worker.",
-          "Name": "Machine-learning models",
+          "Description": "将每个接受的热模型与每个范围的一个回滚工件存储在一起。在 XGBoost 工作线程上激活候选者之前，它会被保留在这里。",
+          "Name": "机器学习模型",
           "Type": 32
         },
         {
-          "Description": "Complete bounded active and rollback model state.",
-          "Name": "Model set",
+          "Description": "完整的有界活动和回滚模型状态。",
+          "Name": "模型组",
           "Type": 33
         },
         {
-          "Description": "One record in a room-keyed indexed history. Its database index is `sample.observed_at`; the value repeats the timestamp and stable room endpoint so a mismatched or corrupt record can be rejected. The controller retains 400 days, then selects bounded recent and stratified seasonal, outdoor-weather, and equipment-state evidence for training.",
-          "Name": "Machine-learning sample",
+          "Description": "房间键控历史记录中的一条记录。其数据库索引为`sample.observed_at`；该值重复时间戳和稳定房间端点，因此可以拒绝不匹配或损坏的记录。控制器保留 400 天，然后选择有界的近期分层季节性、户外天气和设备状态证据进行训练。",
+          "Name": "机器学习示例",
           "Type": 34
         },
         {
-          "Description": "Validated features and any temperature-change labels that have become available for this observation.",
-          "Name": "Training sample",
+          "Description": "已验证的功能和任何可用于此观察的温度变化标签。",
+          "Name": "训练样本",
           "Type": 35
         },
         {
           "Description": "",
-          "Name": "Atomic active and rollback model references",
+          "Name": "原子主动和回滚模型参考",
           "Type": 36
         },
         {
           "Description": "",
-          "Name": "slots",
+          "Name": "插槽",
           "Type": 37
         },
         {
@@ -1461,965 +1461,965 @@
         },
         {
           "Description": "",
-          "Name": "Immutable portion of one encoded model artifact",
+          "Name": "一个编码模型工件的不可变部分",
           "Type": 39
         },
         {
           "Description": "",
-          "Name": "bytes",
+          "Name": "字节",
           "Type": 40
         }
       ],
       "Name": "BuildingHvacPersistentData"
     },
     {
-      "Description": "Describes the observed or inferred current activity affecting one room.",
-      "DisplayName": "Room HVAC activity",
+      "Description": "描述影响一个房间的观察到或推断的当前活动。",
+      "DisplayName": "房间暖通空调运行状态",
       "List": [
         {
-          "Description": "Describes the observed or inferred current activity affecting one room.",
+          "Description": "描述影响一个房间的观察到或推断的当前活动。",
           "Enum": [
             {
-              "Description": "The associated thermostat has not reported a trustworthy running state.",
-              "Name": "Unknown activity",
+              "Description": "关联的恒温器尚未报告值得信赖的运行状态。",
+              "Name": "未知活动",
               "Type": 1
             },
             {
-              "Description": "The associated thermostat reports no active heating or cooling.",
-              "Name": "Idle",
+              "Description": "相关恒温器报告没有主动加热或冷却。",
+              "Name": "空闲",
               "Type": 2
             },
             {
-              "Description": "The associated thermostat reports active heating.",
-              "Name": "Heating",
+              "Description": "相关恒温器报告主动加热。",
+              "Name": "供暖",
               "Type": 3
             },
             {
-              "Description": "The associated thermostat reports active cooling.",
-              "Name": "Cooling",
+              "Description": "相关恒温器报告主动冷却。",
+              "Name": "冷却",
               "Type": 4
             },
             {
-              "Description": "The associated thermostat reports fan operation without active heating or cooling.",
-              "Name": "Fan only",
+              "Description": "相关恒温器报告风扇运行情况，而无需主动加热或冷却。",
+              "Name": "仅风扇",
               "Type": 5
             }
           ],
-          "Name": "Room HVAC activity",
+          "Name": "房间暖通空调运行状态",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacRoomActivityV1"
     },
     {
-      "Description": "Explains why a room-control replacement was not accepted.",
-      "DisplayName": "Room control error",
+      "Description": "解释为什么不接受房间控制更换。",
+      "DisplayName": "房间控制错误",
       "List": [
         {
-          "Description": "Explains why a room-control replacement was not accepted.",
+          "Description": "解释为什么不接受房间控制更换。",
           "Enum": [
             {
-              "Description": "Another client changed the room after the supplied expected revision.",
-              "Name": "Revision conflict",
+              "Description": "另一位客户在提供预期的修改后更换了房间。",
+              "Name": "修订冲突",
               "Type": 1
             },
             {
-              "Description": "The heating target is not lower than the cooling target or a temperature value is not finite.",
-              "Name": "Invalid temperature band",
+              "Description": "加热目标不低于冷却目标或者温度值不有限。",
+              "Name": "温度带无效",
               "Type": 2
             },
             {
-              "Description": "The comfort-or-savings value is not finite or lies outside -1.0 through 1.0.",
-              "Name": "Invalid normalized preference",
+              "Description": "舒适或节省值不是有限的，或者位于 -1.0 到 1.0 之间。",
+              "Name": "标准化偏好无效",
               "Type": 3
             },
             {
-              "Description": "The associated physical thermostat cannot support the requested heating or cooling mode.",
-              "Name": "Unsupported operating preference",
+              "Description": "关联的物理恒温器无法支持请求的加热或冷却模式。",
+              "Name": "不支持的操作首选项",
               "Type": 4
             },
             {
-              "Description": "Required persistent or thermostat state is temporarily unavailable.",
-              "Name": "Temporarily unavailable",
+              "Description": "所需的持久或恒温器状态暂时不可用。",
+              "Name": "暂时不可用",
               "Type": 5
             }
           ],
-          "Name": "Room control error",
+          "Name": "房间控制错误",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacRoomControlErrorV1"
     },
     {
-      "Description": "Contains the writable user intent for one room. The controller validates it against the associated thermostat's reported limits and shared-system constraints before changing a physical setpoint.",
-      "DisplayName": "Room control",
+      "Description": "包含一个房间的可写用户意图。在更改物理设定点之前，控制器会根据相关恒温器报告的限制和共享系统约束对其进行验证。",
+      "DisplayName": "房间控制",
       "List": [
         {
-          "Description": "Contains the writable user intent for one room. The controller validates it against the associated thermostat's reported limits and shared-system constraints before changing a physical setpoint.",
-          "Name": "Room control",
+          "Description": "包含一个房间的可写用户意图。在更改物理设定点之前，控制器会根据相关恒温器报告的限制和共享系统约束对其进行验证。",
+          "Name": "房间控制",
           "Type": 0
         },
         {
-          "Description": "The heating and cooling demand modes this room may contribute.",
-          "Name": "Operating preference",
+          "Description": "该房间可能贡献的供暖和制冷需求模式。",
+          "Name": "操作偏好",
           "Type": 1
         },
         {
-          "Description": "The lowest preferred room temperature in degrees Celsius. It must be lower than `preferred_cooling_temperature_celsius`.",
-          "Name": "Preferred heating temperature",
+          "Description": "首选的最低室温（摄氏度）。它必须低于 `preferred_cooling_temperature_celsius`。",
+          "Name": "优选加热温度",
           "Type": 2
         },
         {
-          "Description": "The highest preferred room temperature in degrees Celsius. It must be higher than `preferred_heating_temperature_celsius`.",
-          "Name": "Preferred cooling temperature",
+          "Description": "首选的最高室温（摄氏度）。它必须高于 `preferred_heating_temperature_celsius`。",
+          "Name": "优选冷却温度",
           "Type": 3
         },
         {
-          "Description": "A normalized room preference from -1.0 for stronger energy-cost optimization, through 0.0 for balanced operation, to 1.0 for stronger comfort optimization. Hard safety and temperature limits are unchanged.",
-          "Name": "Comfort or savings",
+          "Description": "标准化的房间偏好，从 -1.0 进行更强的能源成本优化，到 0.0 进行平衡操作，再到 1.0 进行更强的舒适度优化。硬安全和温度限制保持不变。",
+          "Name": "舒适或节省",
           "Type": 4
         }
       ],
       "Name": "BuildingHvacRoomControlV1"
     },
     {
-      "Description": "Summarizes whether the controller has enough recent Matter reports to calculate and safely apply supervisory room setpoints.",
-      "DisplayName": "Room data quality",
+      "Description": "总结控制器是否有足够的最新 Matter 报告来计算和安全应用监控室设定点。",
+      "DisplayName": "房间数据质量",
       "List": [
         {
-          "Description": "Summarizes whether the controller has enough recent Matter reports to calculate and safely apply supervisory room setpoints.",
+          "Description": "总结控制器是否有足够的最新 Matter 报告来计算和安全应用监控室设定点。",
           "Enum": [
             {
-              "Description": "Required thermostat and temperature data are fresh.",
-              "Name": "Ready",
+              "Description": "所需的恒温器和温度数据是最新的。",
+              "Name": "准备好",
               "Type": 1
             },
             {
-              "Description": "The room remains observable through a fallback source, but one or more configured devices are stale or unavailable.",
-              "Name": "Degraded",
+              "Description": "房间仍然可以通过后备源观察，但一个或多个配置的设备已过时或不可用。",
+              "Name": "降级",
               "Type": 2
             },
             {
-              "Description": "No trustworthy current room temperature or associated thermostat state is available, so the controller must not apply optimized setpoints.",
-              "Name": "Unavailable",
+              "Description": "没有可靠的当前室温或相关恒温器状态可用，因此控制器不得应用优化设定点。",
+              "Name": "不可用",
               "Type": 3
             }
           ],
-          "Name": "Room data quality",
+          "Name": "房间数据质量",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacRoomDataQualityV1"
     },
     {
-      "Description": "Persists bounded continuous-learning state for one affected room. The record is keyed by that room's stable endpoint; each list item is one directional influence from another thermostat-zone.",
-      "DisplayName": "Room learning state",
+      "Description": "一个受影响的房间保持有限的持续学习状态。该记录由该房间的稳定端点作为密钥；每个列表项都是来自另一个恒温器区域的一个方向影响。",
+      "DisplayName": "房间学习状态",
       "List": [
         {
-          "Description": "Persists bounded continuous-learning state for one affected room. The record is keyed by that room's stable endpoint; each list item is one directional influence from another thermostat-zone.",
-          "Name": "Room learning state",
+          "Description": "一个受影响的房间保持有限的持续学习状态。该记录由该房间的稳定端点作为密钥；每个列表项都是来自另一个恒温器区域的一个方向影响。",
+          "Name": "房间学习状态",
           "Type": 0
         },
         {
-          "Description": "Learns natural room-temperature movement toward outdoor temperature from periods in which every thermostat-zone is inactive.",
-          "Name": "Passive outdoor coupling learner",
+          "Description": "从每个恒温器区域不活动的时期学习室温向室外温度的自然变化。",
+          "Name": "无源户外耦合学习器",
           "Type": 1
         },
         {
-          "Description": "One learner for each other configured thermostat-zone. At most one edge exists for a source thermostat.",
-          "Name": "Cross-zone learners",
+          "Description": "一名学习者为彼此配置恒温器区域。源恒温器至多存在一条边缘。",
+          "Name": "跨区域学习者",
           "Type": 2
         },
         {
-          "Description": "Separate heating and cooling online regression state for one source.",
-          "Name": "Cross-zone learner",
+          "Description": "一个源单独加热和冷却在线回归状态。",
+          "Name": "跨区域学习者",
           "Type": 3
         }
       ],
       "Name": "BuildingHvacRoomLearningStateV1"
     },
     {
-      "Description": "Read-only model state and latest predictions exposed with room data.",
-      "DisplayName": "Room machine-learning state",
+      "Description": "通过房间数据公开的只读模型状态和最新预测。",
+      "DisplayName": "房间机器学习状态",
       "List": [
         {
-          "Description": "Read-only model state and latest predictions exposed with room data.",
-          "Name": "Room machine-learning state",
+          "Description": "通过房间数据公开的只读模型状态和最新预测。",
+          "Name": "房间机器学习状态",
           "Type": 0
         },
         {
-          "Description": "At most one current prediction for each supported horizon.",
-          "Name": "Latest predictions",
+          "Description": "每个受支持的范围最多有一个当前预测。",
+          "Name": "最新预测",
           "Type": 1
         },
         {
-          "Description": "One bounded XGBoost result or explicit deterministic fallback.",
-          "Name": "Thermal prediction",
+          "Description": "一个有界 XGBoost 结果或显式确定性回退。",
+          "Name": "热预测",
           "Type": 2
         }
       ],
       "Name": "BuildingHvacRoomMachineLearningV1"
     },
     {
-      "Description": "Contains read-only current room measurements, sensor availability, physical thermostat association, and the effective setpoints chosen after arbitration with other rooms sharing that thermostat.",
-      "DisplayName": "Room observed state",
+      "Description": "包含只读的当前房间测量值、传感器可用性、物理恒温器关联以及与共享该恒温器的其他房间仲裁后选择的有效设定点。",
+      "DisplayName": "房间观察状态",
       "List": [
         {
-          "Description": "Contains read-only current room measurements, sensor availability, physical thermostat association, and the effective setpoints chosen after arbitration with other rooms sharing that thermostat.",
-          "Name": "Room observed state",
+          "Description": "包含只读的当前房间测量值、传感器可用性、物理恒温器关联以及与共享该恒温器的其他房间仲裁后选择的有效设定点。",
+          "Name": "房间观察状态",
           "Type": 0
         },
         {
-          "Description": "Whether current room state is ready, degraded, or unavailable.",
-          "Name": "Data quality",
+          "Description": "当前房间状态是否就绪、降级或不可用。",
+          "Name": "数据质量",
           "Type": 1
         },
         {
-          "Description": "The UTC time represented by the latest accepted room state. It is absent until wall-clock time and trustworthy device reports are both available.",
-          "Name": "Observed at",
+          "Description": "最新接受的房间状态表示的 UTC 时间。在挂钟时间和可靠的设备报告都可用之前，它才会消失。",
+          "Name": "观察于",
           "Type": 2
         },
         {
-          "Description": "The robust fused room temperature in degrees Celsius. It is absent when no configured temperature sensor has a fresh valid value.",
-          "Name": "Room temperature",
+          "Description": "稳定的熔融室温（以摄氏度为单位）。当配置的温度传感器没有新的有效值时，它不存在。",
+          "Name": "室温",
           "Type": 3
         },
         {
-          "Description": "The robust fused room relative humidity as a percentage. It is absent when no configured humidity sensor has a fresh valid value.",
-          "Name": "Room relative humidity",
+          "Description": "稳定的熔断室相对湿度（以百分比表示）。当配置的湿度传感器没有新的有效值时，该值不存在。",
+          "Name": "房间相对湿度",
           "Type": 4
         },
         {
-          "Description": "The heating setpoint in degrees Celsius currently requested from the shared physical thermostat after room arbitration. It is absent before the thermostat is ready or when the room requests no heating demand.",
-          "Name": "Effective heating setpoint",
+          "Description": "当前在房间仲裁后从共享物理恒温器请求的供暖设定点（以摄氏度为单位）。在恒温器准备就绪之前或房间没有供暖需求时，它不存在。",
+          "Name": "有效加热设定值",
           "Type": 5
         },
         {
-          "Description": "The cooling setpoint in degrees Celsius currently requested from the shared physical thermostat after room arbitration. It is absent before the thermostat is ready or when the room requests no cooling demand.",
-          "Name": "Effective cooling setpoint",
+          "Description": "当前在房间仲裁后从共享物理恒温器请求的冷却设定点（以摄氏度为单位）。在恒温器准备就绪之前或当房间不需要制冷需求时，它不存在。",
+          "Name": "有效冷却设定值",
           "Type": 6
         },
         {
-          "Description": "The current heating, cooling, fan, idle, or unknown activity reported by the associated physical thermostat.",
-          "Name": "HVAC activity",
+          "Description": "相关物理恒温器报告的当前加热、冷却、风扇、空闲或未知活动。",
+          "Name": "HVAC 活动",
           "Type": 7
         },
         {
-          "Description": "The configured Matter Thermostat logical device that serves this room.",
-          "Name": "Physical thermostat",
+          "Description": "为该房间提供服务的已配置 Matter 恒温器逻辑设备。",
+          "Name": "物理恒温器",
           "Type": 8
         },
         {
-          "Description": "Current independently available readings for every configured sensor station in this room. This is the runtime query surface for station-level PM2.5, carbon dioxide, and other supported air measurements.",
-          "Name": "Indoor sensor states",
+          "Description": "该房间中每个配置的传感器站的当前独立可用读数。这是站级 PM2.5、二氧化碳和其他支持的空气测量的运行时查询界面。",
+          "Name": "室内传感器状态",
           "Type": 9
         },
         {
-          "Description": "One required temperature sensor and its optional humidity and air-quality capabilities.",
-          "Name": "Indoor sensor state",
+          "Description": "一个必需的温度传感器及其可选的湿度和空气质量功能。",
+          "Name": "室内传感器状态",
           "Type": 10
         },
         {
-          "Description": "The number of configured room temperature sensors currently contributing trustworthy values.",
-          "Name": "Fresh temperature sensors",
+          "Description": "当前配置的提供可信值的室温传感器的数量。",
+          "Name": "新鲜温度传感器",
           "Type": 11
         },
         {
-          "Description": "The total number of Matter Temperature Sensor logical devices configured for this room.",
-          "Name": "Configured temperature sensors",
+          "Description": "为此房间配置的 Matter 温度传感器逻辑设备的总数。",
+          "Name": "配置温度传感器",
           "Type": 12
         },
         {
-          "Description": "The number of configured room humidity sensors currently contributing trustworthy values.",
-          "Name": "Fresh humidity sensors",
+          "Description": "当前配置的提供可信值的房间湿度传感器的数量。",
+          "Name": "新鲜湿度传感器",
           "Type": 13
         },
         {
-          "Description": "The total number of Matter Humidity Sensor logical devices configured for this room.",
-          "Name": "Configured humidity sensors",
+          "Description": "为此房间配置的 Matter 湿度传感器逻辑设备的总数。",
+          "Name": "配置湿度传感器",
           "Type": 14
         }
       ],
       "Name": "BuildingHvacRoomObservedStateV1"
     },
     {
-      "Description": "Describes the heating and cooling demand a user permits for one room. The physical thermostat remains responsible for equipment protection and for enforcing capabilities it actually supports.",
-      "DisplayName": "Room operating preference",
+      "Description": "描述用户允许一个房间的供暖和制冷需求。物理恒温器仍然负责设备保护和执行其实际支持的功能。",
+      "DisplayName": "房间操作偏好",
       "List": [
         {
-          "Description": "Describes the heating and cooling demand a user permits for one room. The physical thermostat remains responsible for equipment protection and for enforcing capabilities it actually supports.",
+          "Description": "描述用户允许一个房间的供暖和制冷需求。物理恒温器仍然负责设备保护和执行其实际支持的功能。",
           "Enum": [
             {
-              "Description": "The room may request heating or cooling to remain inside its preferred temperature band.",
-              "Name": "Automatic heating and cooling",
+              "Description": "房间可能需要加热或冷却以保持在其首选温度范围内。",
+              "Name": "自动加热和冷却",
               "Type": 1
             },
             {
-              "Description": "The room may request heating but does not request cooling.",
-              "Name": "Heating only",
+              "Description": "房间可能需要供暖，但不要求制冷。",
+              "Name": "仅供暖",
               "Type": 2
             },
             {
-              "Description": "The room may request cooling but does not request heating.",
-              "Name": "Cooling only",
+              "Description": "房间可能需要制冷，但不要求供暖。",
+              "Name": "仅制冷",
               "Type": 3
             },
             {
-              "Description": "The room contributes no heating or cooling demand. This does not command shared physical HVAC equipment off when another room still needs it.",
-              "Name": "No room demand",
+              "Description": "该房间没有供暖或制冷需求。当另一个房间仍然需要共享物理 HVAC 设备时，这不会命令关闭它。",
+              "Name": "没有房间需求",
               "Type": 4
             }
           ],
-          "Name": "Room operating preference",
+          "Name": "房间操作偏好",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacRoomOperatingPreferenceV1"
     },
     {
-      "Description": "Contains the read-only effective room targets calculated for one future period.",
-      "DisplayName": "Room plan period",
+      "Description": "包含为未来一个时期计算的只读有效房间目标。",
+      "DisplayName": "房间计划期间",
       "List": [
         {
-          "Description": "Contains the read-only effective room targets calculated for one future period.",
-          "Name": "Room plan period",
+          "Description": "包含为未来一个时期计算的只读有效房间目标。",
+          "Name": "房间计划期间",
           "Type": 0
         },
         {
-          "Description": "The inclusive UTC time at which this calculated period begins.",
-          "Name": "Start time",
+          "Description": "此计算期间开始的包含 UTC 时间。",
+          "Name": "开始时间",
           "Type": 1
         },
         {
-          "Description": "The length of the calculated period in seconds.",
-          "Name": "Duration",
+          "Description": "计算的时间段长度（以秒为单位）。",
+          "Name": "持续时间",
           "Type": 2
         },
         {
-          "Description": "The effective heating setpoint in degrees Celsius for the period. It is absent when this room contributes no heating demand.",
-          "Name": "Heating setpoint",
+          "Description": "该期间的有效加热设定点（以摄氏度为单位）。当该房间没有供暖需求时，它不存在。",
+          "Name": "供暖设定值",
           "Type": 3
         },
         {
-          "Description": "The effective cooling setpoint in degrees Celsius for the period. It is absent when this room contributes no cooling demand.",
-          "Name": "Cooling setpoint",
+          "Description": "该期间的有效冷却设定点（以摄氏度为单位）。当该房间不提供冷却需求时，它不存在。",
+          "Name": "冷却设定值",
           "Type": 4
         },
         {
-          "Description": "The principal reason these effective targets differ from or preserve the room's writable comfort intent.",
-          "Name": "Plan reason",
+          "Description": "这些有效目标不同于或保留房间的可写舒适意图的主要原因。",
+          "Name": "计划原因",
           "Type": 5
         }
       ],
       "Name": "BuildingHvacRoomPlanPeriodV1"
     },
     {
-      "Description": "Explains the principal reason for one calculated room schedule period.",
-      "DisplayName": "Room plan reason",
+      "Description": "解释计算房间计划周期的主要原因。",
+      "DisplayName": "房间布局原因",
       "List": [
         {
-          "Description": "Explains the principal reason for one calculated room schedule period.",
+          "Description": "解释计算房间计划周期的主要原因。",
           "Enum": [
             {
-              "Description": "The period follows the room's writable comfort intent.",
-              "Name": "Room comfort",
+              "Description": "该时期遵循房间的可写舒适意图。",
+              "Name": "房间舒适度",
               "Type": 1
             },
             {
-              "Description": "The controller shifts heating or cooling ahead of forecast outdoor load.",
-              "Name": "Weather preconditioning",
+              "Description": "控制器在预测室外负载之前切换供暖或制冷。",
+              "Name": "天气预处理",
               "Type": 2
             },
             {
-              "Description": "The controller shifts conditioning into a lower-cost utility period.",
-              "Name": "Low-cost preconditioning",
+              "Description": "控制器将调节转移到成本较低的公用事业周期。",
+              "Name": "低成本预处理",
               "Type": 3
             },
             {
-              "Description": "The controller reduces discretionary conditioning during a higher-cost utility period without crossing hard comfort limits.",
-              "Name": "High-cost reduction",
+              "Description": "该控制器在成本较高的公用事业期间减少了随意调节，而不会超出硬舒适度限制。",
+              "Name": "高成本降低",
               "Type": 4
             },
             {
-              "Description": "Multiple rooms sharing one thermostat require one reconciled physical setpoint.",
-              "Name": "Shared thermostat arbitration",
+              "Description": "共享一个恒温器的多个房间需要一个协调的物理设定点。",
+              "Name": "共享恒温器仲裁",
               "Type": 5
             },
             {
-              "Description": "Missing or stale optimization inputs require conservative local operation.",
-              "Name": "Degraded fallback",
+              "Description": "丢失或过时的优化输入需要保守的本地操作。",
+              "Name": "降级回退",
               "Type": 6
             }
           ],
-          "Name": "Room plan reason",
+          "Name": "房间布局原因",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacRoomPlanReasonV1"
     },
     {
-      "Description": "Contains the current read-only calculated schedule for one room. It exposes user-visible decisions without claiming that rooms sharing one physical thermostat can be actuated independently.",
-      "DisplayName": "Room plan",
+      "Description": "包含一个房间的当前只读计算时间表。它公开了用户可见的决策，但没有声称共享一个物理恒温器的房间可以独立启动。",
+      "DisplayName": "房间平面图",
       "List": [
         {
-          "Description": "Contains the current read-only calculated schedule for one room. It exposes user-visible decisions without claiming that rooms sharing one physical thermostat can be actuated independently.",
-          "Name": "Room plan",
+          "Description": "包含一个房间的当前只读计算时间表。它公开了用户可见的决策，但没有声称共享一个物理恒温器的房间可以独立启动。",
+          "Name": "房间平面图",
           "Type": 0
         },
         {
-          "Description": "Canonical formatted-text bytes containing a package-local resource key and typed Libertas Message Arguments summarizing the calculated periods, setpoints, and principal reasons. It is a derived presentation of `periods`; clients performing calculations must use the structured fields below. Do not Base64-wrap this byte array.",
-          "Name": "Formatted schedule",
+          "Description": "规范格式化文本字节，包含包本地资源密钥和键入的 Libertas 消息参数，总结了计算的周期、设定点和主要原因。它是 `periods` 的派生表示；执行计算的客户端必须使用下面的结构化字段。不要对该字节数组进行 Base64 换行。",
+          "Name": "格式化时间表",
           "Type": 1
         },
         {
-          "Description": "The UTC time when the controller produced this complete plan.",
-          "Name": "Calculated at",
+          "Description": "控制器生成完整计划的 UTC 时间。",
+          "Name": "计算时间",
           "Type": 2
         },
         {
-          "Description": "The exclusive UTC deadline after which the plan must be recalculated.",
-          "Name": "Valid until",
+          "Description": "唯一的 UTC 截止日期，之后必须重新计算计划。",
+          "Name": "有效截止时间",
           "Type": 3
         },
         {
-          "Description": "Ordered, non-overlapping future periods covering no more than 24 hours.",
-          "Name": "Plan periods",
+          "Description": "有序的、不重叠的未来周期，覆盖时间不超过 24 小时。",
+          "Name": "计划期间",
           "Type": 4
         },
         {
-          "Description": "One calculated room target period and its reason.",
-          "Name": "Plan period",
+          "Description": "一、计算房间目标期及其原因。",
+          "Name": "计划期间",
           "Type": 5
         }
       ],
       "Name": "BuildingHvacRoomPlanV1"
     },
     {
-      "Description": "Defines every externally visible runtime request, response, and subscription report for one room. The configured endpoint identifies the room, so messages never carry a reorder-sensitive room-array index.",
-      "DisplayName": "Building HVAC room protocol",
+      "Description": "定义一个房间的每个外部可见的运行时请求、响应和订阅报告。配置的端点标识房间，因此消息永远不会携带重新排序敏感的房间数组索引。",
+      "DisplayName": "大楼HVAC房间协议",
       "List": [
         {
-          "Description": "Defines every externally visible runtime request, response, and subscription report for one room. The configured endpoint identifies the room, so messages never carry a reorder-sensitive room-array index.",
-          "Name": "Building HVAC room protocol",
+          "Description": "定义一个房间的每个外部可见的运行时请求、响应和订阅报告。配置的端点标识房间，因此消息永远不会携带重新排序敏感的房间数组索引。",
+          "Name": "大楼HVAC房间协议",
           "Type": 0
         },
         {
-          "Description": "Reads the current room runtime or starts a subscription. The endpoint operation selects one-shot or subscription behavior.",
-          "Name": "Get room",
+          "Description": "读取当前房间运行状态或启动订阅。端点操作选择一次性或订阅行为。",
+          "Name": "获取房间状态",
           "Type": 1
         },
         {
-          "Description": "Atomically replaces all writable room intent when `expected_revision` still matches the server's current room revision. Its accepted or rejected acknowledgement leaves the current room data installed; an accepted change is published separately as authoritative room data.",
-          "Name": "Replace room control",
+          "Description": "当 `expected_revision` 仍然与服务器的当前房间修订版匹配时，以原子方式替换所有可写房间意图。其接受或拒绝的确认会留下安装的当前房间数据；接受的更改将作为权威房间数据单独发布。",
+          "Name": "替换房间控制设置",
           "Type": 2
         },
         {
-          "Description": "The revision from the last fully received room runtime. A mismatch rejects the write without changing persistent data.",
-          "Name": "Expected revision",
+          "Description": "上次完全接收的房间运行状态的修订版。不匹配会拒绝写入而不更改持久数据。",
+          "Name": "预期修订号",
           "Type": 3
         },
         {
-          "Description": "The complete replacement writable intent.",
-          "Name": "Room control",
+          "Description": "完整的替换可写意图。",
+          "Name": "房间控制",
           "Type": 4
         },
         {
-          "Description": "Carries the complete authoritative room runtime. It is returned for a room request and reported to subscribers after a visible change. An accepted control replacement publishes this data before its correlated acknowledgement. No-change liveness uses PeerAlive instead of repeating UI-visible data.",
-          "Name": "Room data",
+          "Description": "承载完整权威的房间运行状态。它会针对房间请求而返回，并在发生可见更改后报告给订阅者。接受的控制替换会在其相关确认之前发布此数据。无变化活性使用 PeerAlive，而不是重复 UI 可见数据。",
+          "Name": "房间数据",
           "Type": 5
         },
         {
-          "Description": "Canonical formatted-text bytes containing a package-local resource key and typed Libertas Message Arguments for current comfort, HVAC activity, noteworthy air measurements, and the next schedule change. It is a derived view only; clients and control logic must use the structured fields in this message. Do not Base64-wrap this byte array.",
-          "Name": "Formatted room status",
+          "Description": "规范格式化文本字节包含包本地资源密钥和键入的 Libertas 消息参数，用于当前舒适度、HVAC 活动、值得注意的空气测量值和下一个计划更改。这只是一个派生视图；客户端和控制逻辑必须使用此消息中的结构化字段。不要对该字节数组进行 Base64 换行。",
+          "Name": "格式化房间状态",
           "Type": 6
         },
         {
-          "Description": "The maximum number of seconds a subscribed client waits after this response, report, or PeerAlive before requesting the room again. The server sends changed data or PeerAlive first. One-shot clients ignore it.",
-          "Name": "Maximum wait interval",
+          "Description": "订阅客户端在此响应、报告或 PeerAlive 后再次请求房间之前等待的最大秒数。服务器先发送改变的数据或者PeerAlive。一次性客户会忽略它。",
+          "Name": "最大等待间隔",
           "Type": 7
         },
         {
-          "Description": "The monotonically increasing revision of accepted writable room control. Sensor-only changes do not create avoidable write conflicts.",
-          "Name": "Control revision",
+          "Description": "接受的可写房间控制的单调递增修订。仅传感器的更改不会产生可避免的写入冲突。",
+          "Name": "控制修订",
           "Type": 8
         },
         {
-          "Description": "The complete current writable user intent for this room.",
-          "Name": "Room control",
+          "Description": "该房间当前完整的可写用户意图。",
+          "Name": "房间控制",
           "Type": 9
         },
         {
-          "Description": "Current read-only sensor, thermostat, and effective-setpoint state.",
-          "Name": "Observed state",
+          "Description": "当前只读传感器、恒温器和有效设定点状态。",
+          "Name": "观察状态",
           "Type": 10
         },
         {
-          "Description": "Confirmed time-sensitive HVAC warnings for this room. The structured list remains authoritative even though activation, reminders, and recovery are also delivered as localized notifications. These are supervisory HVAC warnings, not life-safety alarms.",
-          "Name": "Active urgent conditions",
+          "Description": "已确认该房间的时效性 HVAC 警告。即使激活、提醒和恢复也作为本地化通知传递，结构化列表仍然具有权威性。这些是监督 HVAC 警告，而不是生命安全警报。",
+          "Name": "活跃的紧急情况",
           "Type": 11
         },
         {
-          "Description": "One confirmed condition and its latest evidence and delivery time.",
-          "Name": "Active urgent condition",
+          "Description": "一项已确认的情况及其最新证据和交货时间。",
+          "Name": "活跃紧急状况",
           "Type": 12
         },
         {
-          "Description": "Independently available current readings from the optional local Matter outdoor station. The same read-only building-level state is included on every room endpoint so a runtime room query can discover PM2.5, carbon dioxide, and other supported measurements.",
-          "Name": "Local outdoor sensor state",
+          "Description": "从可选的本地 Matter 室外站独立获取当前读数。每个房间端点上都包含相同的只读建筑级状态，因此运行时房间查询可以发现 PM2.5、二氧化碳和其他支持的测量值。",
+          "Name": "本地室外传感器状态",
           "Type": 13
         },
         {
-          "Description": "Psychrometric humidity ratio, moist-air enthalpy, and wet-bulb temperature derived from fresh current weather. It is absent when current weather is stale or internally inconsistent.",
-          "Name": "Outdoor air analytics",
+          "Description": "来自当前新鲜天气的湿气湿度比、湿空气热函和湿球温度。当当前天气不稳定或内部不一致时，它就不存在。",
+          "Name": "室外空气分析",
           "Type": 14
         },
         {
-          "Description": "Read-only statistics when at least one valid collection window has been completed or is in progress.",
-          "Name": "Room statistics",
+          "Description": "当至少一个有效收集窗口已完成或正在进行时的只读统计信息。",
+          "Name": "房间统计",
           "Type": 15
         },
         {
-          "Description": "Learned fraction per hour by which the room naturally moves toward outdoor temperature while all thermostat-zones are inactive. It is absent until sufficient clean passive periods have been observed.",
-          "Name": "Passive outdoor coupling",
+          "Description": "了解在所有恒温器区域均处于非活动状态时房间自然向室外温度移动的每小时分数。在观察到足够的干净被动时间之前，它不会出现。",
+          "Name": "室外无源耦合",
           "Type": 16
         },
         {
-          "Description": "Normalized confidence from 0.0 through 1.0 in the passive outdoor coupling estimate.",
-          "Name": "Passive model confidence",
+          "Description": "被动室外耦合估计中从 0.0 到 1.0 的归一化置信度。",
+          "Name": "被动模型置信度",
           "Type": 17
         },
         {
-          "Description": "Learned effects from other thermostat-zones on this room while its own zone is inactive. The controller uses these estimates to avoid over-conditioning an ostensibly off room.",
-          "Name": "Cross-zone influences",
+          "Description": "当该房间自己的区域处于非活动状态时，该房间的其他恒温器区域会产生影响。控制器使用这些估计值来避免对表面上关闭的房间进行过度调节。",
+          "Name": "跨区域影响",
           "Type": 18
         },
         {
-          "Description": "One directional source-thermostat to affected-room estimate.",
-          "Name": "Cross-zone influence",
+          "Description": "一种定向源恒温器到受影响房间的估计。",
+          "Name": "跨区域影响力",
           "Type": 19
         },
         {
-          "Description": "Read-only bounded near-term room temperature changes. Each result names XGBoost or deterministic fallback as its source. These values inform planning but never replace thermostat, deadband, explicit `Off`, urgent-condition, or life-safety constraints.",
-          "Name": "Machine-learning predictions",
+          "Description": "只读有限制的近期室温变化。每个结果都将 XGBoost 或确定性回退命名为其源。这些值可为规划提供信息，但绝不能取代恒温器、死区、显式 `Off`、紧急情况或生命安全约束。",
+          "Name": "机器学习预测",
           "Type": 20
         },
         {
-          "Description": "The read-only room schedule when the optimizer has sufficient data to calculate one.",
-          "Name": "Calculated plan",
+          "Description": "当优化器有足够的数据来计算时的只读房间时间表。",
+          "Name": "计算计划",
           "Type": 21
         },
         {
-          "Description": "Rejects a control replacement without changing persistent or runtime state. This error is presented without replacing the current room data, and the current revision and control let a client reconcile before retrying.",
-          "Name": "Room control rejected",
+          "Description": "拒绝控件替换而不更改持久状态或运行时状态。此错误是在不替换当前房间数据的情况下出现的，并且当前的修订和控制允许客户端在重试之前进行协调。",
+          "Name": "房间控制更改被拒绝",
           "Type": 22
         },
         {
-          "Description": "Canonical formatted-text bytes containing the package-local resource key and typed Libertas Message Arguments that explain the rejection and safe next action. It is derived from `error` and the current structured control state and is not Base64-wrapped.",
-          "Name": "Formatted rejection",
+          "Description": "规范格式化文本字节包含包本地资源密钥和键入的 Libertas 消息参数，用于解释拒绝和安全的下一步操作。它源自 `error` 和当前的结构化控制状态，并且不是 Base64 包装的。",
+          "Name": "格式化拒绝",
           "Type": 23
         },
         {
-          "Description": "The reason the complete control replacement was rejected.",
-          "Name": "Error",
+          "Description": "完全控制更换被拒绝的原因。",
+          "Name": "错误",
           "Type": 24
         },
         {
-          "Description": "The unchanged current control revision.",
-          "Name": "Current control revision",
+          "Description": "当前控制版本不变。",
+          "Name": "当前控制修订",
           "Type": 25
         },
         {
-          "Description": "The unchanged current writable intent.",
-          "Name": "Current room control",
+          "Description": "未更改的当前可写意图。",
+          "Name": "当前房间控制",
           "Type": 26
         },
         {
-          "Description": "Confirms that the complete room control was persisted and applied. This acknowledgement does not replace the authoritative room data published immediately before it.",
-          "Name": "Room control accepted",
+          "Description": "确认完整的房间控制已持续并应用。此确认并不能取代之前发布的权威房间数据。",
+          "Name": "房间控制更改已接受",
           "Type": 27
         },
         {
-          "Description": "The new control revision assigned to the accepted replacement.",
-          "Name": "Accepted control revision",
+          "Description": "分配给已接受替换的新控制修订版。",
+          "Name": "已接受的控制修订号",
           "Type": 28
         }
       ],
       "Name": "BuildingHvacRoomProtocol"
     },
     {
-      "Description": "Contains read-only comfort and sensor-availability statistics for one room over a documented half-open collection window. Shared equipment runtime and energy are not attributed to individual rooms without an explicit metering model.",
-      "DisplayName": "Room statistics",
+      "Description": "包含一个房间在记录的半开收集窗口上的只读舒适度和传感器可用性统计数据。如果没有明确的计量模型，共享设备的运行时间和能源不会归属于各个房间。",
+      "DisplayName": "房间统计",
       "List": [
         {
-          "Description": "Contains read-only comfort and sensor-availability statistics for one room over a documented half-open collection window. Shared equipment runtime and energy are not attributed to individual rooms without an explicit metering model.",
-          "Name": "Room statistics",
+          "Description": "包含一个房间在记录的半开收集窗口上的只读舒适度和传感器可用性统计数据。如果没有明确的计量模型，共享设备的运行时间和能源不会归属于各个房间。",
+          "Name": "房间统计",
           "Type": 0
         },
         {
-          "Description": "The inclusive UTC start of the statistics collection window.",
-          "Name": "Window start",
+          "Description": "统计信息收集窗口的包含 UTC 开头。",
+          "Name": "窗口启动",
           "Type": 1
         },
         {
-          "Description": "The exclusive UTC end of the statistics collection window.",
-          "Name": "Window end",
+          "Description": "统计收集窗口的独占 UTC 结尾。",
+          "Name": "窗端",
           "Type": 2
         },
         {
-          "Description": "The number of accepted fused room-temperature samples in the window.",
-          "Name": "Temperature samples",
+          "Description": "窗口中接受的熔融室温样品的数量。",
+          "Name": "温度样品",
           "Type": 3
         },
         {
-          "Description": "The lowest accepted fused room temperature in degrees Celsius.",
-          "Name": "Minimum temperature",
+          "Description": "可接受的最低熔融室温（以摄氏度为单位）。",
+          "Name": "最低温度",
           "Type": 4
         },
         {
-          "Description": "The time-weighted mean accepted fused room temperature in degrees Celsius.",
-          "Name": "Mean temperature",
+          "Description": "接受的熔融室温的时间加权平均值（以摄氏度为单位）。",
+          "Name": "平均温度",
           "Type": 5
         },
         {
-          "Description": "The highest accepted fused room temperature in degrees Celsius.",
-          "Name": "Maximum temperature",
+          "Description": "可接受的最高熔融室温（摄氏度）。",
+          "Name": "最高温度",
           "Type": 6
         },
         {
-          "Description": "The number of seconds in the window for which a trustworthy fused room temperature was available.",
-          "Name": "Temperature data availability",
+          "Description": "窗口中可获得可靠的熔融室温的秒数。",
+          "Name": "温度数据可用性",
           "Type": 7
         },
         {
-          "Description": "Accumulated temperature deficit below the active preferred heating target, in degree-minutes Celsius.",
-          "Name": "Below-heating comfort",
+          "Description": "低于主动首选加热目标的累积温度不足（以摄氏度为单位）。",
+          "Name": "地暖舒适度",
           "Type": 8
         },
         {
-          "Description": "Accumulated temperature excess above the active preferred cooling target, in degree-minutes Celsius.",
-          "Name": "Above-cooling comfort",
+          "Description": "超过主动首选冷却目标的累积温度（以摄氏度-分钟为单位）。",
+          "Name": "上方凉爽舒适",
           "Type": 9
         },
         {
-          "Description": "The number of accepted fused room-humidity samples in the window.",
-          "Name": "Humidity samples",
+          "Description": "窗口中可接受的融合室内湿度样本的数量。",
+          "Name": "湿度样品",
           "Type": 10
         },
         {
-          "Description": "The time-weighted mean accepted fused room relative humidity percentage. It is absent when the room has no humidity samples in the window.",
-          "Name": "Mean relative humidity",
+          "Description": "时间加权平均接受的熔融房间相对湿度百分比。当房间的窗户上没有湿度样本时，它不存在。",
+          "Name": "平均相对湿度",
           "Type": 11
         },
         {
-          "Description": "The number of seconds in the window during which the associated thermostat reported active heating. Shared equipment time is descriptive and is not an allocation of energy consumption to this room.",
-          "Name": "Heating activity",
+          "Description": "相关恒温器报告主动加热的窗口内的秒数。共享设备时间是描述性的，并不是该房间的能源消耗分配。",
+          "Name": "加热活动",
           "Type": 12
         },
         {
-          "Description": "The number of seconds in the window during which the associated thermostat reported active cooling. Shared equipment time is descriptive and is not an allocation of energy consumption to this room.",
-          "Name": "Cooling activity",
+          "Description": "相关恒温器报告主动冷却的窗口内的秒数。共享设备时间是描述性的，并不是该房间的能源消耗分配。",
+          "Name": "冷却活动",
           "Type": 13
         },
         {
-          "Description": "The number of seconds in the window during which the associated thermostat reported fan operation without heating or cooling.",
-          "Name": "Fan-only activity",
+          "Description": "相关恒温器在没有加热或冷却的情况下报告风扇运行的窗口中的秒数。",
+          "Name": "仅限粉丝活动",
           "Type": 14
         }
       ],
       "Name": "BuildingHvacRoomStatisticsV1"
     },
     {
-      "Description": "Add a room people can recognize and choose where its climate controls appear.",
-      "DisplayName": "Room",
+      "Description": "添加一个人们可以识别并选择其气候控制装置出现位置的房间。",
+      "DisplayName": "房间",
       "List": [
         {
-          "Description": "Add a room people can recognize and choose where its climate controls appear.",
-          "Name": "Room",
+          "Description": "添加一个人们可以识别并选择其气候控制装置出现位置的房间。",
+          "Name": "房间",
           "Type": 0
         },
         {
-          "Description": "Enter a unique, recognizable name such as Living Room or Main Bedroom.",
-          "Name": "Room name",
+          "Description": "输入一个独特的、可识别的名称，例如客厅或主卧室。",
+          "Name": "房间名称",
           "Type": 1
         },
         {
-          "Description": "Choose where this room's comfort settings, conditions, and schedule will be available.",
-          "Name": "Room controls",
+          "Description": "选择该房间的舒适设置、条件和时间表可用的位置。",
+          "Name": "房间控制",
           "Type": 2
         }
       ],
       "Name": "BuildingHvacRoomV1"
     },
     {
-      "Description": "Caches one accepted reading from a standard Matter Temperature Sensor logical device.",
-      "DisplayName": "Temperature reading",
+      "Description": "缓存来自标准 Matter 温度传感器逻辑设备的一个接受的读数。",
+      "DisplayName": "温度读数",
       "List": [
         {
-          "Description": "Caches one accepted reading from a standard Matter Temperature Sensor logical device.",
-          "Name": "Temperature reading",
+          "Description": "缓存来自标准 Matter 温度传感器逻辑设备的一个接受的读数。",
+          "Name": "温度读数",
           "Type": 0
         },
         {
-          "Description": "The UTC time represented by the Matter temperature report.",
-          "Name": "Observed at",
+          "Description": "Matter 温度报告表示的 UTC 时间。",
+          "Name": "观察于",
           "Type": 1
         },
         {
-          "Description": "The exclusive UTC deadline after which the controller treats this reading as stale.",
-          "Name": "Valid until",
+          "Description": "独占的 UTC 截止日期，在此之后控制器会将此读数视为过时。",
+          "Name": "有效截止时间",
           "Type": 2
         },
         {
-          "Description": "Measured air temperature in degrees Celsius.",
-          "Name": "Temperature",
+          "Description": "测量的气温（以摄氏度为单位）。",
+          "Name": "温度",
           "Type": 3
         }
       ],
       "Name": "BuildingHvacTemperatureReadingV1"
     },
     {
-      "Description": "Selects one independently trained room-temperature-change model. Separate models avoid silently combining targets with different error distributions.",
-      "DisplayName": "Thermal prediction horizon",
+      "Description": "选择一种独立训练的室温变化模型。单独的模型避免默默地组合具有不同误差分布的目标。",
+      "DisplayName": "热预测范围",
       "List": [
         {
-          "Description": "Selects one independently trained room-temperature-change model. Separate models avoid silently combining targets with different error distributions.",
+          "Description": "选择一种独立训练的室温变化模型。单独的模型避免默默地组合具有不同误差分布的目标。",
           "Enum": [
             {
-              "Description": "Predicts room temperature movement during the next control period.",
-              "Name": "Fifteen minutes",
+              "Description": "预测下一个控制周期内的室温变化。",
+              "Name": "十五分钟",
               "Type": 1
             },
             {
-              "Description": "Predicts near-term movement across two control periods.",
-              "Name": "Thirty minutes",
+              "Description": "预测两个控制期的近期走势。",
+              "Name": "三十分钟",
               "Type": 2
             },
             {
-              "Description": "Predicts the one-hour response used for preconditioning decisions.",
-              "Name": "Sixty minutes",
+              "Description": "预测用于预处理决策的一小时响应。",
+              "Name": "六十分钟",
               "Type": 3
             }
           ],
-          "Name": "Thermal prediction horizon",
+          "Name": "热预测范围",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacThermalPredictionHorizonV1"
     },
     {
-      "Description": "Makes deterministic fallback explicit rather than presenting it as a learned result.",
-      "DisplayName": "Thermal prediction source",
+      "Description": "使确定性回退变得明确，而不是将其呈现为学习结果。",
+      "DisplayName": "热预测源",
       "List": [
         {
-          "Description": "Makes deterministic fallback explicit rather than presenting it as a learned result.",
+          "Description": "使确定性回退变得明确，而不是将其呈现为学习结果。",
           "Enum": [
             {
-              "Description": "Prediction came from the currently accepted bounded model.",
+              "Description": "预测来自当前接受的有界模型。",
               "Name": "XGBoost",
               "Type": 1
             },
             {
-              "Description": "No validated model or usable output existed, so the controller assumes no additional near-term temperature movement.",
-              "Name": "Deterministic fallback",
+              "Description": "不存在经过验证的模型或可用的输出，因此控制器假设近期没有额外的温度变化。",
+              "Name": "确定性回退",
               "Type": 2
             }
           ],
-          "Name": "Thermal prediction source",
+          "Name": "热预测源",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacThermalPredictionSourceV1"
     },
     {
-      "Description": "One bounded read-only near-term prediction used as an input to deterministic planning and shared-thermostat arbitration.",
-      "DisplayName": "Room thermal prediction",
+      "Description": "一种有界只读近期预测，用作确定性规划和共享恒温器仲裁的输入。",
+      "DisplayName": "房间热预测",
       "List": [
         {
-          "Description": "One bounded read-only near-term prediction used as an input to deterministic planning and shared-thermostat arbitration.",
-          "Name": "Room thermal prediction",
+          "Description": "一种有界只读近期预测，用作确定性规划和共享恒温器仲裁的输入。",
+          "Name": "房间热预测",
           "Type": 0
         },
         {
-          "Description": "Future interval represented by the temperature change.",
-          "Name": "Prediction horizon",
+          "Description": "由温度变化表示的未来区间。",
+          "Name": "预测范围",
           "Type": 1
         },
         {
-          "Description": "Degrees Celsius relative to current room temperature. Positive values predict warming and negative values predict cooling.",
-          "Name": "Predicted temperature change",
+          "Description": "相对于当前室温的摄氏度。正值预测变暖，负值预测变冷。",
+          "Name": "预测温度变化",
           "Type": 2
         },
         {
-          "Description": "Whether the value came from XGBoost or deterministic fallback.",
-          "Name": "Prediction source",
+          "Description": "该值是来自 XGBoost 还是确定性回退。",
+          "Name": "预测来源",
           "Type": 3
         },
         {
-          "Description": "Training timestamp of the active model, absent for fallback.",
-          "Name": "Model trained at",
+          "Description": "活动模型的训练时间戳，没有回退。",
+          "Name": "模型训练于",
           "Type": 4
         }
       ],
       "Name": "BuildingHvacThermalPredictionV1"
     },
     {
-      "Description": "Choose a room and the indoor sensors used to keep it comfortable.",
-      "DisplayName": "Room served by this thermostat",
+      "Description": "选择一个房间和用于保持舒适的室内传感器。",
+      "DisplayName": "由该恒温器提供服务的房间",
       "List": [
         {
-          "Description": "Choose a room and the indoor sensors used to keep it comfortable.",
-          "Name": "Room served by this thermostat",
+          "Description": "选择一个房间和用于保持舒适的室内传感器。",
+          "Name": "由该恒温器提供服务的房间",
           "Type": 0
         },
         {
-          "Description": "Choose one of the rooms added above.",
-          "Name": "Room",
+          "Description": "选择上面添加的房间之一。",
+          "Name": "房间",
           "Type": 1
         },
         {
-          "Description": "Add at least one place in this room where temperature is measured. You can also add humidity and air quality sensors at each place.",
-          "Name": "Indoor sensor groups",
+          "Description": "在该房间中至少添加一个测量温度的地方。您还可以在每个地方添加湿度和空气质量传感器。",
+          "Name": "室内传感器组",
           "Type": 2
         },
         {
-          "Description": "Sensors located together at one place in this room.",
-          "Name": "Indoor sensor group",
+          "Description": "传感器集中位于该房间的一处。",
+          "Name": "室内传感器组",
           "Type": 3
         }
       ],
       "Name": "BuildingHvacThermostatRoomV1"
     },
     {
-      "Description": "Choose a thermostat and all the rooms it serves.",
-      "DisplayName": "Thermostat",
+      "Description": "选择一个恒温器及其服务的所有房间。",
+      "DisplayName": "恒温器",
       "List": [
         {
-          "Description": "Choose a thermostat and all the rooms it serves.",
-          "Name": "Thermostat",
+          "Description": "选择一个恒温器及其服务的所有房间。",
+          "Name": "恒温器",
           "Type": 0
         },
         {
-          "Description": "Choose the thermostat to control.",
-          "Name": "Thermostat",
+          "Description": "选择要控制的恒温器。",
+          "Name": "恒温器",
           "Type": 1
         },
         {
-          "Description": "Add every room controlled by this thermostat. Each room must be assigned to exactly one thermostat.",
-          "Name": "Rooms served",
+          "Description": "添加由该恒温器控制的每个房间。每个房间必须恰好分配一个恒温器。",
+          "Name": "服务客房",
           "Type": 2
         },
         {
-          "Description": "One room and the sensors used for it.",
-          "Name": "Room",
+          "Description": "一间房间及其所用的传感器。",
+          "Name": "房间",
           "Type": 3
         }
       ],
       "Name": "BuildingHvacThermostatV1"
     },
     {
-      "Description": "Persists activation and recovery debounce across application restarts so a restart neither immediately clears a warning nor creates a burst of duplicate notifications.",
-      "DisplayName": "Urgent-condition tracking phase",
+      "Description": "在应用程序重新启动时保持激活和恢复反跳，因此重新启动既不会立即清除警告，也不会创建大量重复通知。",
+      "DisplayName": "紧急情况跟踪阶段",
       "List": [
         {
-          "Description": "Persists activation and recovery debounce across application restarts so a restart neither immediately clears a warning nor creates a burst of duplicate notifications.",
+          "Description": "在应用程序重新启动时保持激活和恢复反跳，因此重新启动既不会立即清除警告，也不会创建大量重复通知。",
           "Enum": [
             {
-              "Description": "The condition currently qualifies but has not yet remained continuous for its activation-confirmation interval.",
-              "Name": "Activation pending",
+              "Description": "该条件当前符合条件，但尚未在其激活确认间隔内保持连续。",
+              "Name": "等待激活",
               "Type": 1
             },
             {
-              "Description": "The condition is confirmed and its urgent warning remains active.",
-              "Name": "Active",
+              "Description": "该情况已得到确认，紧急警告仍然有效。",
+              "Name": "启用",
               "Type": 2
             },
             {
-              "Description": "Fresh evidence crossed the recovery hysteresis boundary, but the recovery-confirmation interval has not yet completed.",
-              "Name": "Recovery pending",
+              "Description": "新的证据跨越了复苏滞后边界，但复苏确认区间尚未完成。",
+              "Name": "恢复待定",
               "Type": 3
             }
           ],
-          "Name": "Urgent-condition tracking phase",
+          "Name": "紧急情况跟踪阶段",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacUrgentConditionPhaseV1"
     },
     {
-      "Description": "Identifies time-sensitive supervisory conditions that warrant direct user attention. These warnings help protect comfort, equipment, and property; they are not certified smoke, fire, carbon-monoxide, medical, or other life-safety alarms.",
-      "DisplayName": "Urgent HVAC condition",
+      "Description": "识别需要用户直接关注的时间敏感的监管条件。这些警告有助于保护舒适、设备和财产；它们不是经过认证的烟雾、火灾、一氧化碳、医疗或其他生命安全警报器。",
+      "DisplayName": "紧急 HVAC 情况",
       "List": [
         {
-          "Description": "Identifies time-sensitive supervisory conditions that warrant direct user attention. These warnings help protect comfort, equipment, and property; they are not certified smoke, fire, carbon-monoxide, medical, or other life-safety alarms.",
+          "Description": "识别需要用户直接关注的时间敏感的监管条件。这些警告有助于保护舒适、设备和财产；它们不是经过认证的烟雾、火灾、一氧化碳、医疗或其他生命安全警报器。",
           "Enum": [
             {
-              "Description": "Fresh room temperature remained at or below 5 degrees Celsius for at least five minutes.",
-              "Name": "Freeze risk",
+              "Description": "新鲜室温保持在 5 摄氏度或以下至少五分钟。",
+              "Name": "冻结风险",
               "Type": 1
             },
             {
-              "Description": "Fresh room temperature remained at or above 35 degrees Celsius for at least five minutes.",
-              "Name": "Excessive heat",
+              "Description": "新鲜室温保持在 35 摄氏度或以上至少五分钟。",
+              "Name": "过热",
               "Type": 2
             },
             {
-              "Description": "Trustworthy room temperature or associated thermostat state remained unavailable for at least ten minutes.",
-              "Name": "Temperature control unavailable",
+              "Description": "可靠的室温或相关的恒温器状态在至少十分钟内仍然不可用。",
+              "Name": "无法控制温度",
               "Type": 3
             },
             {
-              "Description": "A room at or below 15 degrees Celsius had at least 80 percent fresh temperature and heating-runtime coverage for one hour but warmed by less than 0.5 degrees Celsius.",
-              "Name": "Heating not recovering",
+              "Description": "温度等于或低于 15 摄氏度的房间在 1 小时内具有至少 80% 的新鲜温度和供暖运行时间覆盖率，但升温幅度不到 0.5 摄氏度。",
+              "Name": "暖气未恢复",
               "Type": 4
             },
             {
-              "Description": "A room at or above 30 degrees Celsius had at least 80 percent fresh temperature and cooling-runtime coverage for one hour but cooled by less than 0.5 degrees Celsius.",
-              "Name": "Cooling not recovering",
+              "Description": "温度在 30 摄氏度或以上的房间在一小时内具有至少 80% 的新鲜温度和冷却运行时间覆盖率，但降温幅度不到 0.5 摄氏度。",
+              "Name": "冷却未恢复",
               "Type": 5
             }
           ],
-          "Name": "Urgent HVAC condition",
+          "Name": "紧急 HVAC 情况",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacUrgentConditionV1"
     },
     {
-      "Description": "Maps an application-specific urgency decision to the Libertas notification framework. Severity describes delivery priority and does not turn a supervisory HVAC warning into a certified life-safety alarm.",
-      "DisplayName": "Urgent HVAC notification severity",
+      "Description": "将特定于应用程序的紧急决策映射到 Libertas 通知框架。严重性描述了交付优先级，并且不会将监督 HVAC 警告转变为经过认证的生命安全警报。",
+      "DisplayName": "紧急 HVAC 通知严重性",
       "List": [
         {
-          "Description": "Maps an application-specific urgency decision to the Libertas notification framework. Severity describes delivery priority and does not turn a supervisory HVAC warning into a certified life-safety alarm.",
+          "Description": "将特定于应用程序的紧急决策映射到 Libertas 通知框架。严重性描述了交付优先级，并且不会将监督 HVAC 警告转变为经过认证的生命安全警报。",
           "Enum": [
             {
-              "Description": "Requires prompt attention because temperature supervision or HVAC recovery appears unavailable.",
-              "Name": "High",
+              "Description": "需要立即引起注意，因为温度监控或 HVAC 恢复似乎不可用。",
+              "Name": "最高价",
               "Type": 1
             },
             {
-              "Description": "Requires immediate attention because a confirmed room temperature can damage property or threaten occupant comfort.",
-              "Name": "Severe",
+              "Description": "需要立即引起注意，因为确认的室温可能会损坏财产或威胁居住者的舒适度。",
+              "Name": "严重",
               "Type": 2
             }
           ],
-          "Name": "Urgent HVAC notification severity",
+          "Name": "紧急 HVAC 通知严重性",
           "Type": 0
         }
       ],
       "Name": "BuildingHvacUrgentNotificationSeverityV1"
     },
     {
-      "Description": "Choose the local weather information used to plan heating and cooling.",
-      "DisplayName": "Weather service",
+      "Description": "选择用于计划供暖和制冷的当地天气信息。",
+      "DisplayName": "天气服务",
       "List": [
         {
-          "Description": "Choose the local weather information used to plan heating and cooling.",
-          "Name": "Weather service",
+          "Description": "选择用于计划供暖和制冷的当地天气信息。",
+          "Name": "天气服务",
           "Type": 0
         },
         {
-          "Description": "Choose where current conditions, forecasts, and outdoor air quality come from.",
-          "Name": "Weather service",
+          "Description": "选择当前状况、预测和室外空气质量的来源。",
+          "Name": "天气服务",
           "Type": 1
         }
       ],
@@ -2427,51 +2427,51 @@
     },
     {
       "Description": "",
-      "DisplayName": "Building-wide cached inputs",
+      "DisplayName": "建筑物范围内的缓存输入",
       "List": [
         {
           "Description": "",
-          "Name": "Building-wide cached inputs",
+          "Name": "建筑物范围内的缓存输入",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "OutdoorTemperature",
+          "Name": "室外温度",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "OutdoorHumidity",
+          "Name": "室外湿度",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "OutdoorAirQuality",
+          "Name": "室外空气质量",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "WeatherHistory",
+          "Name": "天气历史",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "WeatherCurrent",
+          "Name": "天气当前",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "WeatherForecast",
+          "Name": "天气预报",
           "Type": 6
         },
         {
           "Description": "",
-          "Name": "ProviderAirQuality",
+          "Name": "供应商空气质量",
           "Type": 7
         },
         {
           "Description": "",
-          "Name": "ExternalFeatures",
+          "Name": "外部特征",
           "Type": 8
         }
       ],
@@ -2479,51 +2479,51 @@
     },
     {
       "Description": "",
-      "DisplayName": "Climate persistence keys",
+      "DisplayName": "气候持久性关键",
       "List": [
         {
           "Description": "",
-          "Name": "Climate persistence keys",
+          "Name": "气候持久性关键",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Building",
+          "Name": "建筑",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "记录",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "Room",
+          "Name": "房间",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "终点",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "记录",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Models",
+          "Name": "型号",
           "Type": 6
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "终点",
           "Type": 7
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "记录",
           "Type": 8
         }
       ],
@@ -2531,31 +2531,31 @@
     },
     {
       "Description": "",
-      "DisplayName": "Model manifest and immutable artifact parts",
+      "DisplayName": "模型清单和不可变工件部分",
       "List": [
         {
           "Description": "",
-          "Name": "Model manifest and immutable artifact parts",
+          "Name": "模型清单和不可变工件部分",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Manifest",
+          "Name": "清单",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "Part",
+          "Name": "部分",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "digest",
+          "Name": "摘要",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "part",
+          "Name": "部分",
           "Type": 4
         }
       ],
@@ -2563,21 +2563,21 @@
     },
     {
       "Description": "",
-      "DisplayName": "Reference to a complete, checksummed model artifact",
+      "DisplayName": "参考完整的、校验和的模型工件",
       "List": [
         {
           "Description": "",
-          "Name": "Reference to a complete, checksummed model artifact",
+          "Name": "参考完整的、校验和的模型工件",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "digest",
+          "Name": "摘要",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "byte_length",
+          "Name": "字节长度",
           "Type": 2
         }
       ],
@@ -2585,46 +2585,46 @@
     },
     {
       "Description": "",
-      "DisplayName": "Room state and training history",
+      "DisplayName": "房间状态和训练历史",
       "List": [
         {
           "Description": "",
-          "Name": "Room state and training history",
+          "Name": "房间状态和训练历史",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Control",
+          "Name": "控制",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "Statistics",
+          "Name": "统计数据",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "Learning",
+          "Name": "学习",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "Sensors",
+          "Name": "传感器",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "Urgent",
+          "Name": "紧急",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Sample",
+          "Name": "样品",
           "Type": 6
         },
         {
           "Description": "",
-          "Name": "index",
+          "Name": "指数",
           "Type": 7
         }
       ],
@@ -2632,21 +2632,21 @@
     },
     {
       "Description": "",
-      "DisplayName": "Independently promoted model with its immediate rollback artifact",
+      "DisplayName": "独立推广模型，立即回滚神器",
       "List": [
         {
           "Description": "",
-          "Name": "Independently promoted model with its immediate rollback artifact",
+          "Name": "独立推广模型，立即回滚神器",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "active",
+          "Name": "活跃的",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "previous",
+          "Name": "上一个",
           "Type": 2
         }
       ],

@@ -1,8 +1,8 @@
 {
   "Entries": {
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"GetWeatherV1\"/\"after_cursor\"/property/\"Description\"": {
-      "Current": "sha256:05c60cd82dc2d2e7f685aa02336be46b980c002c15a8176c9e3e47711a66bf45",
-      "Target": "客户端最后一个完整且原子应用的游标。`None` 请求初始的受范围限制快照。服务器会比较两个字段；\n只有当响应游标同时具有更新的纪元时间戳时，较小的序列值才表示发生了重置。"
+      "Current": "sha256:4db2fda1f725bf3a732f47d5ddc90a2caa9b70a848bd7cafdf4de1e657fc564a",
+      "Target": "最后一个游标由客户端完全且原子地应用。 `None` 请求初始范围限制快照。服务器比较两个字段；较低的序列表示仅当响应游标也具有较新的纪元时间戳时才重置。"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"GetWeatherV1\"/\"after_cursor\"/property/\"Name\"": {
       "Current": "sha256:892672668f70834bf42b683124fc5994d3836e755a44e0c61faf74fc1b406b46",
@@ -57,8 +57,8 @@
       "Target": "包含当前状况"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"GetWeatherV1\"/property/\"Description\"": {
-      "Current": "sha256:e021ba6610063bfb22694a95a68a4200ae00f6ce6803990f8cda1a42510a103f",
-      "Target": "执行一次性增量读取，或开始或恢复一个增量订阅。具体行为由 Libertas 端点操作选择，并不编码在\n此消息中。服务器会在可能时重放 `after_cursor` 之后保留的更改，否则返回受范围限制的缓存快照。"
+      "Current": "sha256:2b53b60e71005d2fa9e83afd618a733c1953b4dac7a426a8712dd366b608f851",
+      "Target": "执行一次性增量读取或启动或恢复增量订阅。 Libertas端点操作选择行为；它没有编码在此消息中。如果可能，服务器会重放 `after_cursor` 之后保留的更改，或返回范围有限的缓存快照。"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"GetWeatherV1\"/property/\"Name\"": {
       "Current": "sha256:67ffe5e2c2f5b8befe2b9a3950de38adfd330afda841c077de41ef7947f7fb86",
@@ -73,16 +73,16 @@
       "Target": "增量报告"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"WeatherIncrementV1\"/property/\"Description\"": {
-      "Current": "sha256:215c86178ef41a11586d655d42e854728bd904a19b01ab96a9c71c0e11604302",
-      "Target": "仅在成功天气请求之后报告状态更改。游标不匹配或范围不连续时需要再次发起订阅请求；客户端不得\n部分应用该报告。有效报告或 PeerAlive 会重新启动恢复响应的等待计时器；PeerAlive 永远不会进入\n此数据架构，也不会改变游标。"
+      "Current": "sha256:cefd9021043000bf016cc22dea672478428decf73972252c9326d0c8c5e0dfc1",
+      "Target": "仅报告天气请求成功后的状态变化。游标不匹配或不连续范围需要另一个订阅请求；客户不得部分应用该报告。有效的报告或PeerAlive重新启动恢复响应的等待计时器； PeerAlive 永远不会进入此数据模式或更改游标。"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"WeatherIncrementV1\"/property/\"Name\"": {
       "Current": "sha256:51ec777f9bbb390cc5da514d5a70cd5708301270f15043bd75fb5fffcf07209f",
       "Target": "喷灌天气增量"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"WeatherRecoveryV1\"/\"maximum_wait_interval_seconds\"/property/\"Description\"": {
-      "Current": "sha256:d2c8c731d5b1940651a3551dd47b2b2dad217fdf2ec231ccfc6ae40d32219895",
-      "Target": "订阅客户端在成功恢复、增量报告或 PeerAlive 后等待的最大秒数。服务器会在此之前发送发生变化的\n数据或 PeerAlive。一次性客户端忽略这个必需且非零的值。"
+      "Current": "sha256:7b32246540940ed38fdd38ca9aea52576742c5a0c891c12351e6cf7c7835573b",
+      "Target": "成功恢复、增量报告或 PeerAlive 后订阅客户端等待的最大秒数。服务器先发送改变的数据或者PeerAlive。一次性客户端会忽略这一必需的非零值。"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"WeatherRecoveryV1\"/\"maximum_wait_interval_seconds\"/property/\"Name\"": {
       "Current": "sha256:476328d207b7a0b3daab0aaa1e2559cb370d7fb7ad8addc228d6f590a6ab8ecf",
@@ -97,24 +97,24 @@
       "Target": "恢复结果"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"WeatherRecoveryV1\"/property/\"Description\"": {
-      "Current": "sha256:5d0a5560cb10f8cfb7359421f9b63603e8fd1b85c6c334f1ea5158fd91465c8b",
-      "Target": "使用重放的更改、重置快照或可恢复错误响应天气请求。每个响应都会提供最大等待间隔。\n订阅客户端在成功重放或重置后使用该值；一次性客户端忽略它。发生错误后，恢复错误和重试延迟\n具有优先权。"
+      "Current": "sha256:3c21aa13c2a22a5f0ced03435df7235b2bd445fd36d01aee567b1edb8c82fbfc",
+      "Target": "通过重播更改、重置快照或可恢复错误来响应天气请求。每个响应都提供最大等待间隔。订阅客户端在成功重播或重置后使用它；一次性客户端会忽略它。发生错误后，恢复错误和重试延迟优先。"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"WeatherRecoveryV1\"/property/\"Name\"": {
       "Current": "sha256:02909760707ae9c55782e843fb4d379be280c2f4be1cab7cf17cea00193c0966",
       "Target": "喷灌天气恢复"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/property/\"Description\"": {
-      "Current": "sha256:69127f6600660079577dcf336f020ba08d22b0033ed9d3a99684654c9fec03fd",
-      "Target": "定义用于请求或订阅喷灌天气的有类型 Libertas 端点事务。响应分别公开可独立使用的历史、当前和\n预报部分，因此某一部分中断不会隐藏仍可使用的缓存数据。Libertas 端点状态契约会拒绝格式错误的\nAvro 以及用于错误消息角色的值；这些传输错误不是恢复变体。"
+      "Current": "sha256:bde8e3c3ac19aa08659d5b5e52fc549d85e2df9cca428e274d372f3d2b11dc23",
+      "Target": "定义用于请求或订阅洒水器天气的类型化 Libertas 端点事务。响应公开独立可用的历史记录、当前和预测部分，因此中断不会隐藏可用的缓存数据。 Libertas 端点状态合约拒绝格式错误的 Avro 和错误消息角色中使用的值；这些传输错误不是恢复变体。"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/property/\"Name\"": {
       "Current": "sha256:43d1e97273f98de17cf428b2f3f543c4a31c79fe3508251491b363b5aa6059f1",
       "Target": "喷灌天气协议"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/property/\"Description\"": {
-      "Current": "sha256:6fbd7e01adf9f6e1bf62517006e48c99cc11a8223f772ad4f2041b55f08395ea",
-      "Target": "定义用于请求或订阅喷灌天气的有类型 Libertas 端点事务。响应分别公开可独立使用的历史、当前和\n预报部分，因此某一部分中断不会隐藏仍可使用的缓存数据。Libertas 端点状态契约会拒绝格式错误的\nAvro 以及用于错误消息角色的值；这些传输错误不是恢复变体。"
+      "Current": "sha256:2bcc5b74cbc3c364e95831964c483814147c9ffd8d6c11d34d5e15217883c93d",
+      "Target": "定义用于请求或订阅洒水器天气的类型化 Libertas 端点事务。响应公开独立可用的历史记录、当前和预测部分，因此中断不会隐藏可用的缓存数据。 Libertas 端点状态合约拒绝格式错误的 Avro 和错误消息角色中使用的值；这些传输错误不是恢复变体。"
     },
     "type/\"\"/\"SprinklerWeatherProtocol\"/property/\"DisplayName\"": {
       "Current": "sha256:7993651e5e241a80dd496a585652da92ac96010bf59906b1f42a4e20a09ab9de",
@@ -122,5 +122,41 @@
     }
   },
   "Reviewed": {},
-  "Translated": {}
+  "Translated": {
+    "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"GetWeatherV1\"/\"after_cursor\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:4db2fda1f725bf3a732f47d5ddc90a2caa9b70a848bd7cafdf4de1e657fc564a"
+    },
+    "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"GetWeatherV1\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:2b53b60e71005d2fa9e83afd618a733c1953b4dac7a426a8712dd366b608f851"
+    },
+    "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"WeatherIncrementV1\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:cefd9021043000bf016cc22dea672478428decf73972252c9326d0c8c5e0dfc1"
+    },
+    "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"WeatherRecoveryV1\"/\"maximum_wait_interval_seconds\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:7b32246540940ed38fdd38ca9aea52576742c5a0c891c12351e6cf7c7835573b"
+    },
+    "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/\"WeatherRecoveryV1\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:3c21aa13c2a22a5f0ced03435df7235b2bd445fd36d01aee567b1edb8c82fbfc"
+    },
+    "type/\"\"/\"SprinklerWeatherProtocol\"/\"SprinklerWeatherProtocol\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:bde8e3c3ac19aa08659d5b5e52fc549d85e2df9cca428e274d372f3d2b11dc23"
+    },
+    "type/\"\"/\"SprinklerWeatherProtocol\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:2bcc5b74cbc3c364e95831964c483814147c9ffd8d6c11d34d5e15217883c93d"
+    }
+  }
 }

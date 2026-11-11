@@ -1,5 +1,5 @@
 {
-  "Description": "定義針對 Libertas 應用程式所做決策而設計的天氣資料。灑水器結構描述會將中樞提供的場地位置，與近期歷史、目前狀況及預報資料分開保存。每個天氣區段都有不同的重新整理間隔，並可各自成功或失敗。執行階段快照可能包含任意區段組合。應用程式會分別保存每個成功取得的區段，並在天氣資料重新整理失敗時保留較舊的區段。增量訂閱使用紀元時間戳記與序號游標，讓用戶端能區分伺服器游標重設與過時或順序錯亂的資料、重播保留的變更，或從快取資料復原選定的時間範圍。建築 HVAC 結構描述僅提供熱負載預測、熱泵運作、節能器決策及受控室外空氣通風所需的室外輸入資料。由於天氣與室外空氣品質區段使用不同的提供者，且資料時效特性不同，因此兩者會維持獨立。本機設備與生命安全控制系統必須繼續使用自身的感測器；快取的網際網路天氣資料是監督控制輸入，而非安全訊號。",
+  "Description": "定義根據 Libertas 應用程式所做的決策所客製化的天氣資料。\n灑水模式將其 Hub 提供的站點位置與最近的歷史記錄、當前狀況和預測資料分開保存。每個天氣部分都有不同的刷新間隔，並且可能獨立成功或失敗。運行時快照可以包含任意部分的組合。應用程式單獨保留每個成功的部分，並在天氣資料刷新失敗時保留較舊的部分。增量訂閱使用紀元時間戳記和序列遊標，因此用戶端可以區分伺服器遊標重設與過時或無序資料、重播保留的變更或從快取資料恢復選定的時間範圍。\n建築 HVAC 模式僅提供熱負荷預測、熱泵運轉、節能器決策和受控室外空氣通風所需的室外輸入。它使天氣和室外空氣品質部分保持獨立，因為它們具有不同的提供者和新鮮度行為。本地設備和生命安全控制裝置必須繼續使用自己的感測器；快取的網路天氣是監督輸入，而不是安全訊號。",
   "DisplayName": "Libertas 天氣",
   "DocumentVersion": "0.0.2",
   "List": [],
@@ -16,28 +16,28 @@
           "Type": 0
         },
         {
-          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
-          "Name": "Retrieved at",
+          "Description": "檢索、驗證和接受此完整目前狀況部分的日期和時間。",
+          "Name": "擷取時間",
           "Type": 1
         },
         {
-          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
-          "Name": "Valid until",
+          "Description": "獨家新鮮度截止日期。此時或之後，快取的值不得授權節能器運作或需要已知當前條件的其他與天氣相關的最佳化。",
+          "Name": "有效期限",
           "Type": 2
         },
         {
-          "Description": "The provider-supplied date and time represented by these current conditions.",
-          "Name": "Valid at",
+          "Description": "這些目前條件代表的提供者提供的日期和時間。",
+          "Name": "有效時間",
           "Type": 3
         },
         {
-          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
-          "Name": "Observation interval",
+          "Description": "以累積降水量表示的回溯間隔（以秒為單位）。當前天氣通常使用 900 秒的間隔。",
+          "Name": "觀測間隔",
           "Type": 4
         },
         {
-          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
-          "Name": "Outdoor conditions",
+          "Description": "用於監督 HVAC 控制的最新建模溫度、濕度、壓力、風、降水和太陽能輸入。",
+          "Name": "室外狀況",
           "Type": 5
         }
       ],
@@ -127,73 +127,73 @@
           "Type": 0
         },
         {
-          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
-          "Name": "Dry-bulb temperature",
+          "Description": "距地面兩公尺的室外空氣溫度（攝氏度）。",
+          "Name": "乾球溫度",
           "Type": 1
         },
         {
-          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
-          "Name": "Dew-point temperature",
+          "Description": "距地面兩公尺處的室外露點溫度（攝氏度）。與壓力一起，它支援濕度比、熱函、濕球、冷凝風險和潛在負荷計算。",
+          "Name": "露點溫度",
           "Type": 2
         },
         {
-          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
-          "Name": "Relative humidity",
+          "Description": "距地面兩公尺處的室外相對濕度，以 0 到 100 之間的整數百分比表示。此提供者值支援顯示和驗證；濕度計算應使用一組一致的輸入，而不是混合不同的冗餘值。",
+          "Name": "相對濕度",
           "Type": 3
         },
         {
-          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
-          "Name": "Surface pressure",
+          "Description": "建築物標高處的大氣壓力（以百帕斯卡為單位）。濕度計算使用的是表面壓力，而不是降低到海平面的壓力。",
+          "Name": "表面壓力",
           "Type": 4
         },
         {
-          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
-          "Name": "Wind speed",
+          "Description": "距地面 10 公尺處的持續室外風速（以公尺每秒為單位）。建築模型可以使用它來估計滲透和壓力驅動的室外空氣負荷。",
+          "Name": "風速",
           "Type": 5
         },
         {
-          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
-          "Name": "Wind gust",
+          "Description": "距地面 10 公尺處的室外陣風峰值（公尺每秒）。它支援對暴露的阻尼器和設備的保守控制。",
+          "Name": "陣風",
           "Type": 6
         },
         {
-          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
-          "Name": "Wind direction",
+          "Description": "風從正北方順時針方向起源的方向（以度為單位）。零和360都代表北。只有當建築模型知道立面方向時，方向才有用。",
+          "Name": "風向",
           "Type": 7
         },
         {
-          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
-          "Name": "Precipitation",
+          "Description": "包含區間內累積的總液態水噹量（以毫米為單位）。",
+          "Name": "降水量",
           "Type": 8
         },
         {
-          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
-          "Name": "Precipitation kind",
+          "Description": "在收容間隔期間影響暴露的 HVAC 設備的液體或冷凍沉澱相。",
+          "Name": "降水類",
           "Type": 9
         },
         {
-          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
-          "Name": "Solar elevation",
+          "Description": "在所表示的觀測時間，太陽中心相對於天文地平線的幾何高度（以度為單位）。負值使太陽位於地平線以下。使用包含目前記錄的 `valid_at` 或包含歷史或預測期間的中點以及建築工地座標來計算該值。",
+          "Name": "太陽高度角",
           "Type": 10
         },
         {
-          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
-          "Name": "Solar azimuth",
+          "Description": "在同一表示的觀測時間，太陽中心的方向（以度為單位）從正北方順時針旋轉。 HVAC 機器學習消費者將此循環角度轉換為正弦和餘弦，而不是將原始度值解釋為序數。",
+          "Name": "太陽方位角",
           "Type": 11
         },
         {
-          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
-          "Name": "Global horizontal irradiance",
+          "Description": "入射到水平表面上的直接和漫射太陽能總功率（瓦特/平方米）。這是整個建築的主要太陽能增益輸入。",
+          "Name": "全域水平輻照度",
           "Type": 12
         },
         {
-          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
-          "Name": "Direct normal irradiance",
+          "Description": "直接入射到垂直於太陽的表面的太陽能功率，單位為瓦特/平方公尺。定向立面和著色模型可以使用該值。",
+          "Name": "直接法向輻照度",
           "Type": 13
         },
         {
-          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
-          "Name": "Diffuse horizontal irradiance",
+          "Description": "漫射天空太陽能入射到水平表面上的功率（瓦特/平方米）。定向立面和著色模型可以使用此值和直接法向輻照度。",
+          "Name": "漫射水平輻照度",
           "Type": 14
         }
       ],
@@ -253,158 +253,158 @@
           "Type": 0
         },
         {
-          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
-          "Name": "Upsert historical periods",
+          "Description": "成功刷新歷史記錄後，插入或取代已完成的期間 `starts_at`。",
+          "Name": "更新插入歷史時期",
           "Type": 1
         },
         {
-          "Description": "The retrieval and validation time for the updated history section.",
-          "Name": "Retrieved at",
+          "Description": "更新歷史記錄部分的檢索和驗證時間。",
+          "Name": "擷取時間",
           "Type": 2
         },
         {
-          "Description": "The new exclusive freshness deadline for the history section.",
-          "Name": "Valid until",
+          "Description": "歷史區段新的資料新鮮度期限，不包含該截止時點。",
+          "Name": "有效期限",
           "Type": 3
         },
         {
-          "Description": "Periods to insert or replace, ordered from oldest to newest.",
-          "Name": "Historical periods",
+          "Description": "要插入或替換的期間，按從最舊到最新的順序排列。",
+          "Name": "歷史時段",
           "Type": 4
         },
         {
-          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
-          "Name": "Historical period",
+          "Description": "由 `starts_at` 鍵入的一個完整的室外條件週期。",
+          "Name": "歷史時段",
           "Type": 5
         },
         {
-          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove historical periods",
+          "Description": "刪除開始時間落在提供的半開範圍內的歷史時段。",
+          "Name": "移除歷史時段",
           "Type": 6
         },
         {
-          "Description": "The half-open range of historical period start times to remove.",
-          "Name": "Time range",
+          "Description": "要移除的歷史時段開始時間半開範圍。",
+          "Name": "時間範圍",
           "Type": 7
         },
         {
-          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
-          "Name": "Replace current conditions",
+          "Description": "成功檢索、驗證和持久化後取代完整的當前條件部分。",
+          "Name": "取代目前狀況",
           "Type": 8
         },
         {
-          "Description": "The complete newly accepted current-condition section.",
-          "Name": "Current conditions",
+          "Description": "完整的新接受的現狀部分。",
+          "Name": "目前狀況",
           "Type": 9
         },
         {
-          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
-          "Name": "Upsert forecast periods",
+          "Description": "成功預測刷新後，用 `starts_at` 插入或取代未來期間。",
+          "Name": "新增或更新預報時段",
           "Type": 10
         },
         {
-          "Description": "The retrieval and validation time for the updated forecast section.",
-          "Name": "Retrieved at",
+          "Description": "更新的預測部分的檢索和驗證時間。",
+          "Name": "擷取時間",
           "Type": 11
         },
         {
-          "Description": "The new exclusive freshness deadline for the forecast section.",
-          "Name": "Valid until",
+          "Description": "預報區段新的資料新鮮度期限，不包含該截止時點。",
+          "Name": "有效期限",
           "Type": 12
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Forecast periods",
+          "Description": "要插入或取代的時段，依時間由早至晚排列。",
+          "Name": "預報時段",
           "Type": 13
         },
         {
-          "Description": "One future outdoor-condition period keyed by `starts_at`.",
-          "Name": "Forecast period",
+          "Description": "由 `starts_at` 鍵入的未來戶外條件時期。",
+          "Name": "預報時段",
           "Type": 14
         },
         {
-          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove forecast periods",
+          "Description": "刪除開始時間落在提供的半開範圍內的預測期間。",
+          "Name": "移除預報時段",
           "Type": 15
         },
         {
-          "Description": "The half-open range of forecast period start times to remove.",
-          "Name": "Time range",
+          "Description": "要移除之預報時段開始時間的半開區間。",
+          "Name": "時間範圍",
           "Type": 16
         },
         {
-          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
-          "Name": "Upsert outdoor-air-quality periods",
+          "Description": "成功更新空氣品質後，以 `starts_at` 插入或取代污染物週期。",
+          "Name": "更新室外空氣品質時段",
           "Type": 17
         },
         {
-          "Description": "The retrieval and validation time for the updated air-quality section.",
-          "Name": "Retrieved at",
+          "Description": "更新後的空氣品質部分的檢索和驗證時間。",
+          "Name": "擷取時間",
           "Type": 18
         },
         {
-          "Description": "The new exclusive freshness deadline for the air-quality section.",
-          "Name": "Valid until",
+          "Description": "空氣品質部分的新的獨家新鮮度截止日期。",
+          "Name": "有效期限",
           "Type": 19
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Air-quality periods",
+          "Description": "要插入或取代的時段，依時間由早至晚排列。",
+          "Name": "空氣品質時段",
           "Type": 20
         },
         {
-          "Description": "One modeled pollutant period keyed by `starts_at`.",
-          "Name": "Air-quality period",
+          "Description": "由 `starts_at` 鍵入的一個建模污染物週期。",
+          "Name": "空氣品質時段",
           "Type": 21
         },
         {
-          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove outdoor-air-quality periods",
+          "Description": "刪除開始時間在提供的半開範圍內的污染物時段。",
+          "Name": "刪除室外空氣品質時段",
           "Type": 22
         },
         {
-          "Description": "The half-open range of air-quality period start times to remove.",
-          "Name": "Time range",
+          "Description": "半開範圍的空氣品質時段開始時間去除。",
+          "Name": "時間範圍",
           "Type": 23
         },
         {
-          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
-          "Name": "Clear weather section",
+          "Description": "僅在其快取值被證明無效後才清除一個部分。單獨的供應商、網路或刷新故障不能清除某個部分。",
+          "Name": "清除氣象區段",
           "Type": 24
         },
         {
-          "Description": "The independently cached section to clear.",
-          "Name": "Weather section",
+          "Description": "要清除的獨立快取區段。",
+          "Name": "氣象區段",
           "Type": 25
         },
         {
-          "Description": "Replaces the complete historical section after a successful refresh.",
-          "Name": "Replace history",
+          "Description": "成功刷新後替換完整的歷史部分。",
+          "Name": "替換歷史記錄",
           "Type": 26
         },
         {
-          "Description": "The complete newly accepted history section.",
-          "Name": "History",
+          "Description": "完整的新接受的歷史部分。",
+          "Name": "歷史記錄",
           "Type": 27
         },
         {
-          "Description": "Replaces the complete forecast section after a successful refresh.",
-          "Name": "Replace forecast",
+          "Description": "成功刷新後替換完整的預測部分。",
+          "Name": "取代預報",
           "Type": 28
         },
         {
-          "Description": "The complete newly accepted forecast section.",
-          "Name": "Forecast",
+          "Description": "新接受的完整預報區段。",
+          "Name": "預報",
           "Type": 29
         },
         {
-          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
-          "Name": "Replace outdoor air quality",
+          "Description": "成功刷新後替換完整的建模污染物部分。",
+          "Name": "取代室外空氣質量",
           "Type": 30
         },
         {
-          "Description": "The complete newly accepted outdoor-air-quality section.",
-          "Name": "Outdoor air quality",
+          "Description": "完整的新接受的室外空氣品質部分。",
+          "Name": "室外空氣品質",
           "Type": 31
         }
       ],
@@ -681,66 +681,66 @@
           "Type": 0
         },
         {
-          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
-          "Name": "Get building HVAC weather",
+          "Description": "執行一次性增量讀取或啟動或恢復訂閱。如果可能，伺服器會重播 `after_cursor` 之後保留的更改，或傳回限制在請求的後備範圍內的獨立快取部分。",
+          "Name": "取得建築物 HVAC 天氣",
           "Type": 1
         },
         {
-          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
-          "Name": "Resume cursor",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "Description": "最後一個遊標由客戶端完全且原子地應用。 `None` 請求初始快照。",
+          "Name": "繼續游標",
+          "NullText": "從新的快照開始",
+          "SetText": "之後恢復",
           "Type": 2
         },
         {
-          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
-          "Name": "Historical recovery range",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "Description": "當不可能重播時要包含的半開放歷史範圍。 `None` 從重設快照排除歷史記錄。",
+          "Name": "歷史復原範圍",
+          "NullText": "無歷史記錄",
+          "SetText": "包括歷史記錄",
           "Type": 3
         },
         {
-          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
-          "Name": "Include current conditions",
+          "Description": "重置快照是否應包含快取的目前室外條件。",
+          "Name": "包含目前狀況",
           "Type": 4
         },
         {
-          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
-          "Name": "Forecast recovery range",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "Description": "當無法重播時包含的半開放實體天氣預報範圍。 `None` 不包含預測資料。",
+          "Name": "預報復原範圍",
+          "NullText": "無預測",
+          "SetText": "包括預測",
           "Type": 5
         },
         {
-          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
-          "Name": "Outdoor-air-quality recovery range",
-          "NullText": "No outdoor air quality",
-          "SetText": "Include outdoor air quality for",
+          "Description": "當無法重播時要包含的半開放污染物時段範圍。 `None` 不包括模擬的室外空氣品質。",
+          "Name": "室外空氣品質恢復範圍",
+          "NullText": "室外空氣品質不行",
+          "SetText": "包括室外空氣品質",
           "Type": 6
         },
         {
-          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
-          "Name": "Building HVAC weather recovery",
+          "Description": "透過重播、重置快照或鍵入的錯誤來回應每個有效的獲取請求。訂閱用戶端在成功恢復、稍後的資料報告和 PeerAlive 後重新啟動逾時。",
+          "Name": "建築物 HVAC 天氣復原",
           "Type": 7
         },
         {
-          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
-          "Name": "Maximum wait interval",
+          "Description": "訂閱客戶端在使用最後一個遊標重試之前等待的最大秒數。伺服器先發送改變的資料或PeerAlive。一次性客戶端會忽略這必要的非零值。",
+          "Name": "最長等待間隔",
           "Type": 8
         },
         {
-          "Description": "The replay, reset snapshot, or typed error result.",
-          "Name": "Recovery",
+          "Description": "重播、重置快照或鍵入的錯誤結果。",
+          "Name": "復原",
           "Type": 9
         },
         {
-          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
-          "Name": "Building HVAC weather increment",
+          "Description": "報告訂閱成功恢復後的變更。客戶端應用完整的連續範圍或不應用其中任何一個。",
+          "Name": "建築 HVAC 天氣增量",
           "Type": 10
         },
         {
-          "Description": "The ordered, atomic cursor range and its weather changes.",
-          "Name": "Incremental report",
+          "Description": "有序的原子遊標範圍及其天氣變化。",
+          "Name": "增量報告",
           "Type": 11
         }
       ],
@@ -790,48 +790,48 @@
           "Type": 0
         },
         {
-          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
-          "Name": "Replayed changes",
+          "Description": "繼續串流，並在提供的遊標之後保留每個保留的變更。空報告意味著客戶陷入困境。",
+          "Name": "重播的變更",
           "Type": 1
         },
         {
-          "Description": "The contiguous retained change range beginning at the request cursor.",
-          "Name": "Incremental report",
+          "Description": "從請求遊標開始的連續保留變更範圍。",
+          "Name": "增量報告",
           "Type": 2
         },
         {
-          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
-          "Name": "Reset with snapshot",
+          "Description": "當無法重播或未提供遊標時，從獨立快取的部分建立狀態。",
+          "Name": "使用快照重置",
           "Type": 3
         },
         {
-          "Description": "The reason the response contains a snapshot rather than replay.",
-          "Name": "Reset reason",
+          "Description": "回應包含快照而不是重播的原因。",
+          "Name": "重設原因",
           "Type": 4
         },
         {
-          "Description": "The cursor representing the returned snapshot.",
-          "Name": "Current cursor",
+          "Description": "代表傳回之快照的游標。",
+          "Name": "目前游標",
           "Type": 5
         },
         {
-          "Description": "The available cached sections constrained by requested ranges.",
-          "Name": "Weather snapshot",
+          "Description": "可用的快取部分受請求的範圍限制。",
+          "Name": "天氣快照",
           "Type": 6
         },
         {
-          "Description": "Rejects the request without changing client cursor or cached weather.",
-          "Name": "Recovery error",
+          "Description": "拒絕請求而不更改客戶端遊標或快取的天氣。",
+          "Name": "復原錯誤",
           "Type": 7
         },
         {
-          "Description": "The reason recovery could not be completed.",
-          "Name": "Error",
+          "Description": "無法完成復原的原因。",
+          "Name": "錯誤",
           "Type": 8
         },
         {
-          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
-          "Name": "Retry delay",
+          "Description": "建議重試前幾秒鐘。 `None` 表示請求必須更改才能重試成功。",
+          "Name": "重試延遲",
           "Type": 9
         }
       ],
@@ -1398,27 +1398,27 @@
       "Name": "SprinklerWeatherIncrementalReportV1"
     },
     {
-      "Description": "Records for one endpoint share a transaction and scan prefix.",
-      "DisplayName": "Saved weather keys",
+      "Description": "一個端點的記錄共享事務和掃描前綴。",
+      "DisplayName": "儲存的天氣鍵",
       "List": [
         {
-          "Description": "Records for one endpoint share a transaction and scan prefix.",
-          "Name": "Saved weather keys",
+          "Description": "一個端點的記錄共享事務和掃描前綴。",
+          "Name": "儲存的天氣鍵",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Weather belonging to one service endpoint",
+          "Name": "屬於一個服務端點的天氣",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "終點",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "記錄",
           "Type": 3
         }
       ],
@@ -1525,15 +1525,15 @@
         {
           "Description": "用戶端最後完整且以不可分割方式套用的游標。`None` 會要求初始的範圍受限快照。伺服器會比較這兩個欄位；只有在回應游標亦具有較新的紀元時間戳記時，較低的序號才表示發生重設。",
           "Name": "繼續游標",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "NullText": "從新的快照開始",
+          "SetText": "之後恢復",
           "Type": 2
         },
         {
           "Description": "無法重播時要納入之歷史期間開始時間的左閉右開範圍。`None` 會從重設快照中排除歷史資料。",
           "Name": "歷史復原範圍",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "NullText": "無歷史記錄",
+          "SetText": "包括歷史記錄",
           "Type": 3
         },
         {
@@ -1544,8 +1544,8 @@
         {
           "Description": "無法重播時要納入之預報期間開始時間的左閉右開範圍。`None` 會從重設快照中排除預報資料。",
           "Name": "預報復原範圍",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "NullText": "無預測",
+          "SetText": "包括預測",
           "Type": 5
         },
         {
@@ -1578,41 +1578,41 @@
     },
     {
       "Description": "",
-      "DisplayName": "Saved weather record identity",
+      "DisplayName": "已保存的天氣記錄身份",
       "List": [
         {
           "Description": "",
-          "Name": "Saved weather record identity",
+          "Name": "已保存的天氣記錄身份",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Location",
+          "Name": "位置",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "HistoryMetadata",
+          "Name": "歷史元數據",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "HistoryPeriod",
+          "Name": "歷史時期",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "starts_at",
+          "Name": "開始於",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "Current",
+          "Name": "目前",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Forecast",
+          "Name": "預報",
           "Type": 6
         }
       ],

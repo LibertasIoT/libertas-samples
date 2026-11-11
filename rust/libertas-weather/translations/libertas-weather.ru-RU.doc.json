@@ -1,5 +1,5 @@
 {
-  "Description": "Определяет данные о погоде, адаптированные для принятия решений приложениями Libertas. Схема системы полива хранит предоставленное концентратором местоположение объекта отдельно от недавней истории, текущих условий и данных прогноза. Каждый раздел данных о погоде имеет собственный интервал обновления, и его обновление может завершиться успешно или с ошибкой независимо от других разделов. Снимки состояния во время выполнения могут содержать любое сочетание разделов. Приложения сохраняют каждый успешно полученный раздел отдельно и оставляют более старые версии разделов, если обновить данные о погоде не удаётся. Инкрементальные подписки используют курсоры, состоящие из временной метки эпохи и порядкового номера, чтобы клиенты могли отличить сброс серверного курсора от устаревших или поступивших не по порядку данных, повторно получить сохранённые изменения или восстановить выбранные временные диапазоны из кэшированных данных. Схема ОВК здания предоставляет только те наружные параметры, которые необходимы для прогнозирования тепловой нагрузки, работы теплового насоса, принятия решений экономайзером и регулируемой вентиляции наружным воздухом. Данные о погоде и качестве наружного воздуха хранятся в независимых разделах, поскольку они поступают от разных поставщиков и имеют разные характеристики актуальности. Локальное оборудование и системы безопасности жизнедеятельности должны продолжать использовать собственные датчики; кэшированные данные о погоде из интернета являются входными данными для диспетчерского управления, а не сигналом безопасности.",
+  "Description": "Определяет данные о погоде, адаптированные к решениям, принимаемым приложениями Libertas.\nСхема спринклера сохраняет местоположение, предоставленное Hub, отдельно от недавней истории, текущих условий и прогнозных данных. Каждый раздел погоды имеет разный интервал обновления и может выполняться или не работать независимо. Снимки времени выполнения могут содержать любую комбинацию разделов. Приложения сохраняют каждый успешный раздел отдельно и сохраняют старые разделы в случае сбоя обновления данных о погоде. В добавочных подписках используются курсоры временных меток и последовательности эпох, поэтому клиенты могут отличать сброс курсора сервера от устаревших или неупорядоченных данных, воспроизводить сохраненные изменения или восстанавливать выбранные диапазоны времени из кэшированных данных.\nСхема HVAC здания обеспечивает только наружные входы, необходимые для прогнозирования тепловой нагрузки, работы теплового насоса, принятия решений по экономайзеру и контролируемой вентиляции наружного воздуха. Разделы о погоде и качестве наружного воздуха остаются независимыми, поскольку у них разные поставщики и режимы свежести. Местное оборудование и средства управления безопасностью жизни должны продолжать использовать собственные датчики; кэшированная информация о погоде в Интернете является контрольным входным сигналом, а не сигналом безопасности.",
   "DisplayName": "Погода Libertas",
   "DocumentVersion": "0.0.2",
   "List": [],
@@ -16,28 +16,28 @@
           "Type": 0
         },
         {
-          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
-          "Name": "Retrieved at",
+          "Description": "Дата и время, когда этот полный раздел текущего состояния был получен, проверен и принят.",
+          "Name": "Получено в",
           "Type": 1
         },
         {
-          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
-          "Name": "Valid until",
+          "Description": "Эксклюзивный срок свежести. В этот момент или после него кэшированные значения не должны разрешать работу экономайзера или другие зависящие от погоды оптимизации, требующие известных текущих условий.",
+          "Name": "Действительно до",
           "Type": 2
         },
         {
-          "Description": "The provider-supplied date and time represented by these current conditions.",
-          "Name": "Valid at",
+          "Description": "Дата и время, предоставленные поставщиком, представленные этими текущими условиями.",
+          "Name": "Время актуальности данных",
           "Type": 3
         },
         {
-          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
-          "Name": "Observation interval",
+          "Description": "Обратный интервал в секундах, представленный накопленными осадками. Текущая погода обычно использует 900-секундный интервал.",
+          "Name": "Интервал наблюдения",
           "Type": 4
         },
         {
-          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
-          "Name": "Outdoor conditions",
+          "Description": "Новейшие модели температуры, влажности, давления, ветра, осадков и солнечной энергии для диспетчерского управления HVAC.",
+          "Name": "Наружные условия",
           "Type": 5
         }
       ],
@@ -127,73 +127,73 @@
           "Type": 0
         },
         {
-          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
-          "Name": "Dry-bulb temperature",
+          "Description": "Температура наружного воздуха на высоте двух метров над землей в градусах Цельсия.",
+          "Name": "Температура по сухому термометру",
           "Type": 1
         },
         {
-          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
-          "Name": "Dew-point temperature",
+          "Description": "Температура точки росы на открытом воздухе на высоте двух метров над землей в градусах Цельсия. Вместе с давлением это поддерживает расчеты влажности, энтальпии, смоченного термометра, риска конденсации и скрытой нагрузки.",
+          "Name": "Температура точки росы",
           "Type": 2
         },
         {
-          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
-          "Name": "Relative humidity",
+          "Description": "Относительная влажность наружного воздуха на высоте двух метров над землей в виде целого процента от 0 до 100. Это значение поставщика поддерживает отображение и проверку; В психрометрических расчетах следует использовать один согласованный входной набор, а не смешивать несогласующиеся избыточные значения.",
+          "Name": "Относительная влажность",
           "Type": 3
         },
         {
-          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
-          "Name": "Surface pressure",
+          "Description": "Атмосферное давление на высоте здания в гектопаскалях. Для психрометрических расчетов используется приземное давление, а не давление, приведенное к уровню моря.",
+          "Name": "Давление на поверхность",
           "Type": 4
         },
         {
-          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
-          "Name": "Wind speed",
+          "Description": "Устойчивая скорость ветра на открытом воздухе на высоте 10 метров над землей в метрах в секунду. Модель здания может использовать его для оценки инфильтрации и нагрузки наружного воздуха, вызванной давлением.",
+          "Name": "Скорость ветра",
           "Type": 5
         },
         {
-          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
-          "Name": "Wind gust",
+          "Description": "Пиковый порыв ветра на открытом воздухе на высоте 10 метров над землей в метрах в секунду. Он поддерживает консервативный контроль открытых заслонок и оборудования.",
+          "Name": "Порыв ветра",
           "Type": 6
         },
         {
-          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
-          "Name": "Wind direction",
+          "Description": "Направление ветра в градусах по часовой стрелке от истинного севера. Ноль и 360 представляют север. Направление полезно только в том случае, если модель здания знает ориентацию фасада.",
+          "Name": "Направление ветра",
           "Type": 7
         },
         {
-          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
-          "Name": "Precipitation",
+          "Description": "Суммарный жидкий водный эквивалент, накопленный по вмещающему интервалу, в миллиметрах.",
+          "Name": "Осадки",
           "Type": 8
         },
         {
-          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
-          "Name": "Precipitation kind",
+          "Description": "Фаза жидких или замороженных осадков, влияющая на открытое оборудование HVAC в течение интервала сдерживания.",
+          "Name": "Вид осадков",
           "Type": 9
         },
         {
-          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
-          "Name": "Solar elevation",
+          "Description": "Геометрическая высота центра Солнца в градусах над астрономическим горизонтом в представленное время наблюдения. Отрицательные значения помещают солнце ниже горизонта. Для расчета этого значения используйте `valid_at` содержащей текущей записи или среднюю точку содержащейся истории или периода прогноза вместе с координатами строительной площадки.",
+          "Name": "Солнечная высота",
           "Type": 10
         },
         {
-          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
-          "Name": "Solar azimuth",
+          "Description": "Направление центра Солнца в градусах по часовой стрелке от истинного севера в то же время, что и время наблюдения. HVAC потребители машинного обучения преобразуют этот циклический угол в синус и косинус вместо того, чтобы интерпретировать необработанное значение градуса как порядковый номер.",
+          "Name": "Солнечный азимут",
           "Type": 11
         },
         {
-          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
-          "Name": "Global horizontal irradiance",
+          "Description": "Суммарная прямая и рассеянная солнечная энергия, падающая на горизонтальную поверхность, в ваттах на квадратный метр. Это основной источник солнечной энергии для всего здания.",
+          "Name": "Глобальное горизонтальное излучение",
           "Type": 12
         },
         {
-          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
-          "Name": "Direct normal irradiance",
+          "Description": "Прямая солнечная энергия, падающая на поверхность, перпендикулярную Солнцу, в ваттах на квадратный метр. Это значение может использоваться в моделях ориентированного фасада и затенения.",
+          "Name": "Прямое нормальное излучение",
           "Type": 13
         },
         {
-          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
-          "Name": "Diffuse horizontal irradiance",
+          "Description": "Солнечная энергия рассеянного неба, падающая на горизонтальную поверхность, в ваттах на квадратный метр. В моделях ориентированного фасада и затенения это значение может использоваться при прямом нормальном освещении.",
+          "Name": "Диффузное горизонтальное излучение",
           "Type": 14
         }
       ],
@@ -253,158 +253,158 @@
           "Type": 0
         },
         {
-          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
-          "Name": "Upsert historical periods",
+          "Description": "Вставляет или заменяет завершенные периоды на `starts_at` после успешного обновления истории.",
+          "Name": "Upsert исторические периоды",
           "Type": 1
         },
         {
-          "Description": "The retrieval and validation time for the updated history section.",
-          "Name": "Retrieved at",
+          "Description": "Время получения и проверки обновленного раздела истории.",
+          "Name": "Получено в",
           "Type": 2
         },
         {
-          "Description": "The new exclusive freshness deadline for the history section.",
-          "Name": "Valid until",
+          "Description": "Новый момент окончания срока актуальности раздела истории, не входящий в этот срок.",
+          "Name": "Действительно до",
           "Type": 3
         },
         {
-          "Description": "Periods to insert or replace, ordered from oldest to newest.",
-          "Name": "Historical periods",
+          "Description": "Периоды для вставки или замены в порядке убывания от самого старого к самому новому.",
+          "Name": "Исторические периоды",
           "Type": 4
         },
         {
-          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
-          "Name": "Historical period",
+          "Description": "Один завершенный период нахождения на открытом воздухе, кодируемый `starts_at`.",
+          "Name": "Исторический период",
           "Type": 5
         },
         {
-          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove historical periods",
+          "Description": "Удаляет исторические периоды, время начала которых попадает в указанный полуоткрытый диапазон.",
+          "Name": "Удалить исторические периоды",
           "Type": 6
         },
         {
-          "Description": "The half-open range of historical period start times to remove.",
-          "Name": "Time range",
+          "Description": "Полуоткрытый диапазон времени начала исторических периодов, которые необходимо удалить.",
+          "Name": "Диапазон времени",
           "Type": 7
         },
         {
-          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
-          "Name": "Replace current conditions",
+          "Description": "Заменяет весь раздел текущего состояния после успешного извлечения, проверки и сохранения.",
+          "Name": "Заменить текущие условия",
           "Type": 8
         },
         {
-          "Description": "The complete newly accepted current-condition section.",
-          "Name": "Current conditions",
+          "Description": "Полный недавно принятый раздел текущего состояния.",
+          "Name": "Текущие условия",
           "Type": 9
         },
         {
-          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
-          "Name": "Upsert forecast periods",
+          "Description": "Вставляет или заменяет будущие периоды на `starts_at` после успешного обновления прогноза.",
+          "Name": "Добавить или обновить прогнозные периоды",
           "Type": 10
         },
         {
-          "Description": "The retrieval and validation time for the updated forecast section.",
-          "Name": "Retrieved at",
+          "Description": "Время получения и проверки обновленного раздела прогноза.",
+          "Name": "Получено в",
           "Type": 11
         },
         {
-          "Description": "The new exclusive freshness deadline for the forecast section.",
-          "Name": "Valid until",
+          "Description": "Новый момент окончания срока актуальности раздела прогноза, не входящий в этот срок.",
+          "Name": "Действительно до",
           "Type": 12
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Forecast periods",
+          "Description": "Периоды для вставки или замены, упорядоченные от самого раннего к самому позднему.",
+          "Name": "Периоды прогноза",
           "Type": 13
         },
         {
-          "Description": "One future outdoor-condition period keyed by `starts_at`.",
-          "Name": "Forecast period",
+          "Description": "Один будущий период на открытом воздухе, кодируемый `starts_at`.",
+          "Name": "Период прогноза",
           "Type": 14
         },
         {
-          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove forecast periods",
+          "Description": "Удаляет периоды прогноза, время начала которых попадает в указанный полуоткрытый диапазон.",
+          "Name": "Удалить периоды прогноза",
           "Type": 15
         },
         {
-          "Description": "The half-open range of forecast period start times to remove.",
-          "Name": "Time range",
+          "Description": "Полуинтервал времени начала периодов прогноза, подлежащих удалению.",
+          "Name": "Диапазон времени",
           "Type": 16
         },
         {
-          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
-          "Name": "Upsert outdoor-air-quality periods",
+          "Description": "Вставляет или заменяет периоды загрязнения на `starts_at` после успешного обновления качества воздуха.",
+          "Name": "Upsert периоды качества наружного воздуха",
           "Type": 17
         },
         {
-          "Description": "The retrieval and validation time for the updated air-quality section.",
-          "Name": "Retrieved at",
+          "Description": "Время получения и проверки обновленного раздела о качестве воздуха.",
+          "Name": "Получено в",
           "Type": 18
         },
         {
-          "Description": "The new exclusive freshness deadline for the air-quality section.",
-          "Name": "Valid until",
+          "Description": "Новый эксклюзивный срок свежести для раздела качества воздуха.",
+          "Name": "Действительно до",
           "Type": 19
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Air-quality periods",
+          "Description": "Периоды для вставки или замены, упорядоченные от самого раннего к самому позднему.",
+          "Name": "Периоды качества воздуха",
           "Type": 20
         },
         {
-          "Description": "One modeled pollutant period keyed by `starts_at`.",
-          "Name": "Air-quality period",
+          "Description": "Один смоделированный период загрязнения, обозначенный `starts_at`.",
+          "Name": "Период качества воздуха",
           "Type": 21
         },
         {
-          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove outdoor-air-quality periods",
+          "Description": "Удаляет периоды загрязнения, время начала которых находится в пределах предоставленного полуоткрытого диапазона.",
+          "Name": "Удалить периоды плохого качества наружного воздуха",
           "Type": 22
         },
         {
-          "Description": "The half-open range of air-quality period start times to remove.",
-          "Name": "Time range",
+          "Description": "Полуоткрытый диапазон времени начала периода качества воздуха, который нужно удалить.",
+          "Name": "Диапазон времени",
           "Type": 23
         },
         {
-          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
-          "Name": "Clear weather section",
+          "Description": "Очищает один раздел только после того, как его кэшированное значение окажется недействительным. Сбой провайдера, Интернета или обновления сам по себе не должен очищать раздел.",
+          "Name": "Очистить раздел погоды",
           "Type": 24
         },
         {
-          "Description": "The independently cached section to clear.",
-          "Name": "Weather section",
+          "Description": "Независимо кэшируемый раздел, подлежащий очистке.",
+          "Name": "Раздел погоды",
           "Type": 25
         },
         {
-          "Description": "Replaces the complete historical section after a successful refresh.",
-          "Name": "Replace history",
+          "Description": "Заменяет весь исторический раздел после успешного обновления.",
+          "Name": "Заменить историю",
           "Type": 26
         },
         {
-          "Description": "The complete newly accepted history section.",
-          "Name": "History",
+          "Description": "Полный недавно принятый раздел истории.",
+          "Name": "История",
           "Type": 27
         },
         {
-          "Description": "Replaces the complete forecast section after a successful refresh.",
-          "Name": "Replace forecast",
+          "Description": "Заменяет весь раздел прогноза после успешного обновления.",
+          "Name": "Заменить прогноз",
           "Type": 28
         },
         {
-          "Description": "The complete newly accepted forecast section.",
-          "Name": "Forecast",
+          "Description": "Весь новый принятый раздел прогноза.",
+          "Name": "Прогноз",
           "Type": 29
         },
         {
-          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
-          "Name": "Replace outdoor air quality",
+          "Description": "Заменяет весь смоделированный раздел загрязнителей после успешного обновления.",
+          "Name": "Замените качество наружного воздуха",
           "Type": 30
         },
         {
-          "Description": "The complete newly accepted outdoor-air-quality section.",
-          "Name": "Outdoor air quality",
+          "Description": "Полностью новая секция качества наружного воздуха.",
+          "Name": "Качество наружного воздуха",
           "Type": 31
         }
       ],
@@ -681,66 +681,66 @@
           "Type": 0
         },
         {
-          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
-          "Name": "Get building HVAC weather",
+          "Description": "Выполняет однократное инкрементное чтение или запускает или возобновляет подписку. Сервер воспроизводит сохраненные изменения после `after_cursor`, если это возможно, или возвращает независимо кэшированные разделы, ограниченные запрошенными резервными диапазонами.",
+          "Name": "Получить информацию о погоде для здания HVAC",
           "Type": 1
         },
         {
-          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
-          "Name": "Resume cursor",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "Description": "Последний курсор полностью и атомарно применяется клиентом. `None` запрашивает первоначальный снимок.",
+          "Name": "Курсор возобновления",
+          "NullText": "Начните с нового снимка",
+          "SetText": "Возобновить после",
           "Type": 2
         },
         {
-          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
-          "Name": "Historical recovery range",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "Description": "Полуоткрытый исторический диапазон, который следует включить, когда повторное воспроизведение невозможно. `None` исключает историю из снимка сброса.",
+          "Name": "Диапазон восстановления истории",
+          "NullText": "Нет истории",
+          "SetText": "Включить историю",
           "Type": 3
         },
         {
-          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
-          "Name": "Include current conditions",
+          "Description": "Должен ли снимок сброса включать кэшированные текущие наружные условия.",
+          "Name": "Включить текущие условия",
           "Type": 4
         },
         {
-          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
-          "Name": "Forecast recovery range",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "Description": "Полуоткрытый диапазон прогноза физической погоды, который следует включить, когда воспроизведение невозможно. `None` исключает данные прогноза.",
+          "Name": "Диапазон восстановления прогноза",
+          "NullText": "Нет прогноза",
+          "SetText": "Включить прогноз на",
           "Type": 5
         },
         {
-          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
-          "Name": "Outdoor-air-quality recovery range",
-          "NullText": "No outdoor air quality",
-          "SetText": "Include outdoor air quality for",
+          "Description": "Диапазон полуоткрытого периода загрязнения, который следует включить, если воспроизведение невозможно. `None` исключает моделируемое качество наружного воздуха.",
+          "Name": "Диапазон восстановления качества наружного воздуха",
+          "NullText": "Нет качества наружного воздуха",
+          "SetText": "Включите качество наружного воздуха для",
           "Type": 6
         },
         {
-          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
-          "Name": "Building HVAC weather recovery",
+          "Description": "Отвечает на каждый действительный запрос на получение повтором, моментальным снимком сброса или типизированной ошибкой. Клиенты по подписке перезапускают тайм-аут после успешного восстановления, последующих отчетов о данных и PeerAlive.",
+          "Name": "Восстановление погодных данных ОВК здания",
           "Type": 7
         },
         {
-          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
-          "Name": "Maximum wait interval",
+          "Description": "Максимальное количество секунд, в течение которых клиент подписки ожидает повторной попытки с последним курсором. Сервер сначала отправляет измененные данные или PeerAlive. Одноразовый клиент игнорирует это обязательное ненулевое значение.",
+          "Name": "Максимальный интервал ожидания",
           "Type": 8
         },
         {
-          "Description": "The replay, reset snapshot, or typed error result.",
-          "Name": "Recovery",
+          "Description": "Результат воспроизведения, сброса моментального снимка или типизированной ошибки.",
+          "Name": "Восстановление",
           "Type": 9
         },
         {
-          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
-          "Name": "Building HVAC weather increment",
+          "Description": "Сообщает об изменениях после успешного восстановления подписки. Клиент применяет весь непрерывный диапазон или не применяет ничего из него.",
+          "Name": "Построение HVAC приращения погоды",
           "Type": 10
         },
         {
-          "Description": "The ordered, atomic cursor range and its weather changes.",
-          "Name": "Incremental report",
+          "Description": "Упорядоченный, атомарный диапазон курсора и его изменения погоды.",
+          "Name": "Инкрементальный отчёт",
           "Type": 11
         }
       ],
@@ -790,48 +790,48 @@
           "Type": 0
         },
         {
-          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
-          "Name": "Replayed changes",
+          "Description": "Продолжает поток с каждым сохраненным изменением после указанного курсора. Пустой отчет означает, что клиент попал в ловушку.",
+          "Name": "Повторно воспроизведённые изменения",
           "Type": 1
         },
         {
-          "Description": "The contiguous retained change range beginning at the request cursor.",
-          "Name": "Incremental report",
+          "Description": "Непрерывный сохраняемый диапазон изменений, начиная с курсора запроса.",
+          "Name": "Инкрементальный отчёт",
           "Type": 2
         },
         {
-          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
-          "Name": "Reset with snapshot",
+          "Description": "Устанавливает состояние из независимо кэшированных разделов, когда воспроизведение невозможно или курсор не указан.",
+          "Name": "Сброс со снимком",
           "Type": 3
         },
         {
-          "Description": "The reason the response contains a snapshot rather than replay.",
-          "Name": "Reset reason",
+          "Description": "Причина, по которой ответ содержит снимок, а не воспроизведение.",
+          "Name": "Причина сброса",
           "Type": 4
         },
         {
-          "Description": "The cursor representing the returned snapshot.",
-          "Name": "Current cursor",
+          "Description": "Курсор, соответствующий возвращённому снимку.",
+          "Name": "Текущий курсор",
           "Type": 5
         },
         {
-          "Description": "The available cached sections constrained by requested ranges.",
-          "Name": "Weather snapshot",
+          "Description": "Доступные кэшированные разделы ограничены запрошенными диапазонами.",
+          "Name": "Снимок погодных данных",
           "Type": 6
         },
         {
-          "Description": "Rejects the request without changing client cursor or cached weather.",
-          "Name": "Recovery error",
+          "Description": "Отклоняет запрос без изменения курсора клиента или кэшированной погоды.",
+          "Name": "Ошибка восстановления",
           "Type": 7
         },
         {
-          "Description": "The reason recovery could not be completed.",
-          "Name": "Error",
+          "Description": "Причина, по которой не удалось завершить восстановление.",
+          "Name": "Ошибка",
           "Type": 8
         },
         {
-          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
-          "Name": "Retry delay",
+          "Description": "Рекомендуемое количество секунд до повторной попытки. `None` означает, что запрос должен измениться, прежде чем повторная попытка окажется успешной.",
+          "Name": "Задержка повторной попытки",
           "Type": 9
         }
       ],
@@ -1398,27 +1398,27 @@
       "Name": "SprinklerWeatherIncrementalReportV1"
     },
     {
-      "Description": "Records for one endpoint share a transaction and scan prefix.",
-      "DisplayName": "Saved weather keys",
+      "Description": "Записи для одной конечной точки имеют общую транзакцию и префикс сканирования.",
+      "DisplayName": "Сохраненные ключи погоды",
       "List": [
         {
-          "Description": "Records for one endpoint share a transaction and scan prefix.",
-          "Name": "Saved weather keys",
+          "Description": "Записи для одной конечной точки имеют общую транзакцию и префикс сканирования.",
+          "Name": "Сохраненные ключи погоды",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Weather belonging to one service endpoint",
+          "Name": "Погода принадлежит одной конечной точке службы",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "конечная точка",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "запись",
           "Type": 3
         }
       ],
@@ -1525,15 +1525,15 @@
         {
           "Description": "Последний курсор, полностью и атомарно применённый клиентом. `None` запрашивает исходный снимок с ограниченным диапазоном. Сервер сравнивает оба поля; меньшее значение последовательности указывает на сброс только в том случае, если курсор ответа также содержит более новую временную метку эпохи.",
           "Name": "Курсор возобновления",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "NullText": "Начните с нового снимка",
+          "SetText": "Возобновить после",
           "Type": 2
         },
         {
           "Description": "Полуоткрытый диапазон времени начала исторических периодов, включаемых при невозможности повторного воспроизведения. `None` исключает историю из снимка сброса.",
           "Name": "Диапазон восстановления истории",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "NullText": "Нет истории",
+          "SetText": "Включить историю",
           "Type": 3
         },
         {
@@ -1544,8 +1544,8 @@
         {
           "Description": "Полуоткрытый диапазон времени начала прогнозных периодов, включаемых при невозможности повторного воспроизведения. `None` исключает данные прогноза из снимка сброса.",
           "Name": "Диапазон восстановления прогноза",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "NullText": "Нет прогноза",
+          "SetText": "Включить прогноз на",
           "Type": 5
         },
         {
@@ -1578,41 +1578,41 @@
     },
     {
       "Description": "",
-      "DisplayName": "Saved weather record identity",
+      "DisplayName": "Идентификатор сохраненной записи погоды",
       "List": [
         {
           "Description": "",
-          "Name": "Saved weather record identity",
+          "Name": "Идентификатор сохраненной записи погоды",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Location",
+          "Name": "Местоположение",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "HistoryMetadata",
+          "Name": "ИсторияМетаданные",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "HistoryPeriod",
+          "Name": "ИсторияПериод",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "starts_at",
+          "Name": "начинается_в",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "Current",
+          "Name": "Текущий",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Forecast",
+          "Name": "Прогноз",
           "Type": 6
         }
       ],

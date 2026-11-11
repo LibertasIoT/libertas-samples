@@ -1,5 +1,5 @@
 {
-  "Description": "Libertas अनुप्रयोगों द्वारा लिए जाने वाले निर्णयों के अनुरूप मौसम डेटा को परिभाषित करता है। स्प्रिंकलर स्कीमा, हब द्वारा प्रदान किए गए अपने स्थल स्थान को हाल के इतिहास, वर्तमान परिस्थितियों और पूर्वानुमान डेटा से अलग संग्रहीत करता है। प्रत्येक मौसम अनुभाग का रीफ़्रेश अंतराल अलग होता है और वह स्वतंत्र रूप से सफल या विफल हो सकता है। रनटाइम स्नैपशॉट में अनुभागों का कोई भी संयोजन हो सकता है। अनुप्रयोग प्रत्येक सफल अनुभाग को अलग से संग्रहीत करते हैं और मौसम-डेटा रीफ़्रेश विफल होने पर पुराने अनुभागों को बनाए रखते हैं। वृद्धिशील सदस्यताएँ युग-टाइमस्टैम्प-और-अनुक्रम कर्सर का उपयोग करती हैं, ताकि क्लाइंट सर्वर कर्सर रीसेट को पुराने या क्रम से बाहर डेटा से अलग पहचान सकें, बनाए रखे गए परिवर्तनों को फिर से चला सकें या कैश किए गए डेटा से चयनित समय-सीमाएँ पुनर्प्राप्त कर सकें। बिल्डिंग-HVAC स्कीमा केवल वे बाहरी इनपुट प्रदान करता है जिनकी तापीय भार के पूर्वानुमान, हीट-पंप संचालन, इकॉनमाइज़र निर्णयों और नियंत्रित बाहरी-वायु वेंटिलेशन के लिए आवश्यकता होती है। यह मौसम और बाहरी-वायु-गुणवत्ता अनुभागों को स्वतंत्र रखता है, क्योंकि उनके प्रदाता और ताज़गी संबंधी व्यवहार अलग-अलग हैं। स्थानीय उपकरण और जीवन-सुरक्षा नियंत्रणों को अपने स्वयं के सेंसरों का उपयोग जारी रखना चाहिए; कैश किया गया इंटरनेट मौसम पर्यवेक्षी इनपुट है, सुरक्षा संकेत नहीं।",
+  "Description": "Libertas अनुप्रयोगों द्वारा लिए गए निर्णयों के अनुरूप मौसम डेटा को परिभाषित करता है।\nस्प्रिंकलर स्कीमा अपने हब-प्रदत्त साइट स्थान को हाल के इतिहास, वर्तमान स्थितियों और पूर्वानुमान डेटा से अलग बनाए रखती है। प्रत्येक मौसम अनुभाग में एक अलग ताज़ा अंतराल होता है और स्वतंत्र रूप से सफल या विफल हो सकता है। रनटाइम स्नैपशॉट में अनुभागों का कोई भी संयोजन हो सकता है। एप्लिकेशन प्रत्येक सफल अनुभाग को अलग से बनाए रखते हैं और मौसम-डेटा रिफ्रेश विफल होने पर पुराने अनुभागों को बनाए रखते हैं। वृद्धिशील सदस्यताएँ युग-टाइमस्टैम्प-और-अनुक्रम कर्सर का उपयोग करती हैं ताकि ग्राहक पुराने या आउट-ऑफ-ऑर्डर डेटा से सर्वर कर्सर रीसेट को अलग कर सकें, बनाए गए परिवर्तनों को दोबारा चला सकें, या कैश्ड डेटा से चयनित समय सीमा को पुनर्प्राप्त कर सकें।\nबिल्डिंग-एचवीएसी स्कीमा केवल थर्मल लोड भविष्यवाणी, हीट-पंप संचालन, अर्थशास्त्री निर्णय और नियंत्रित आउटडोर-वायु वेंटिलेशन के लिए आवश्यक बाहरी इनपुट की आपूर्ति करती है। यह मौसम और बाहरी-वायु-गुणवत्ता अनुभागों को स्वतंत्र रखता है क्योंकि उनके प्रदाता और ताज़गी व्यवहार अलग-अलग होते हैं। स्थानीय उपकरण और जीवन-सुरक्षा नियंत्रणों को अपने स्वयं के सेंसर का उपयोग जारी रखना चाहिए; कैश्ड इंटरनेट मौसम पर्यवेक्षी इनपुट है, सुरक्षा संकेत नहीं।",
   "DisplayName": "Libertas मौसम",
   "DocumentVersion": "0.0.2",
   "List": [],
@@ -16,28 +16,28 @@
           "Type": 0
         },
         {
-          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
-          "Name": "Retrieved at",
+          "Description": "वह दिनांक और समय जब इस पूर्ण वर्तमान-स्थिति अनुभाग को पुनः प्राप्त, मान्य और स्वीकृत किया गया था।",
+          "Name": "पर पुनर्प्राप्त किया गया",
           "Type": 1
         },
         {
-          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
-          "Name": "Valid until",
+          "Description": "विशिष्ट ताजगी की समय सीमा। इस समय या उसके बाद, कैश्ड मानों को इकोनोमाइज़र ऑपरेशन या अन्य मौसम-निर्भर अनुकूलन को अधिकृत नहीं करना चाहिए जिनके लिए ज्ञात वर्तमान स्थितियों की आवश्यकता होती है।",
+          "Name": "तक मान्य",
           "Type": 2
         },
         {
-          "Description": "The provider-supplied date and time represented by these current conditions.",
-          "Name": "Valid at",
+          "Description": "प्रदाता द्वारा प्रदत्त दिनांक और समय इन वर्तमान स्थितियों द्वारा दर्शाया गया है।",
+          "Name": "के समय मान्य",
           "Type": 3
         },
         {
-          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
-          "Name": "Observation interval",
+          "Description": "सेकंड में पीछे की ओर दिखने वाला अंतराल संचित वर्षा द्वारा दर्शाया गया है। वर्तमान मौसम सामान्यतः 900-सेकंड के अंतराल का उपयोग करता है।",
+          "Name": "प्रेक्षण अंतराल",
           "Type": 4
         },
         {
-          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
-          "Name": "Outdoor conditions",
+          "Description": "पर्यवेक्षी HVAC नियंत्रण के लिए नवीनतम मॉडल तापमान, नमी, दबाव, हवा, वर्षा और सौर इनपुट।",
+          "Name": "बाहरी परिस्थितियां",
           "Type": 5
         }
       ],
@@ -127,73 +127,73 @@
           "Type": 0
         },
         {
-          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
-          "Name": "Dry-bulb temperature",
+          "Description": "बाहरी हवा का तापमान ज़मीन से दो मीटर ऊपर डिग्री सेल्सियस में।",
+          "Name": "शुष्क-बल्ब तापमान",
           "Type": 1
         },
         {
-          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
-          "Name": "Dew-point temperature",
+          "Description": "बाहरी ओस-बिंदु तापमान ज़मीन से दो मीटर ऊपर डिग्री सेल्सियस में। दबाव के साथ, यह आर्द्रता-अनुपात, एन्थैल्पी, गीला-बल्ब, संक्षेपण-जोखिम और अव्यक्त-भार गणना का समर्थन करता है।",
+          "Name": "ओसांक तापमान",
           "Type": 2
         },
         {
-          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
-          "Name": "Relative humidity",
+          "Description": "0 से 100 तक पूर्णांक प्रतिशत के रूप में जमीन से दो मीटर ऊपर बाहरी सापेक्ष आर्द्रता। यह प्रदाता मूल्य प्रदर्शन और सत्यापन का समर्थन करता है; साइकोमेट्रिक गणनाओं में असहमत अनावश्यक मूल्यों को मिलाने के बजाय एक सुसंगत इनपुट सेट का उपयोग करना चाहिए।",
+          "Name": "सापेक्ष आर्द्रता",
           "Type": 3
         },
         {
-          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
-          "Name": "Surface pressure",
+          "Description": "भवन की ऊंचाई पर वायुमंडलीय दबाव हेक्टोपास्कल में। साइकोमेट्रिक गणना के लिए समुद्र तल तक कम किए गए दबाव के बजाय सतह के दबाव का उपयोग किया जाता है।",
+          "Name": "सतही दबाव",
           "Type": 4
         },
         {
-          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
-          "Name": "Wind speed",
+          "Description": "मीटर प्रति सेकंड में जमीन से 10 मीटर ऊपर निरंतर बाहरी हवा की गति। एक बिल्डिंग मॉडल इसका उपयोग घुसपैठ और दबाव-संचालित बाहरी-वायु भार का अनुमान लगाने के लिए कर सकता है।",
+          "Name": "हवा की गति",
           "Type": 5
         },
         {
-          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
-          "Name": "Wind gust",
+          "Description": "ज़मीन से 10 मीटर ऊपर अधिकतम बाहरी हवा का झोंका मीटर प्रति सेकंड में। यह खुले डैम्पर्स और उपकरणों के रूढ़िवादी नियंत्रण का समर्थन करता है।",
+          "Name": "हवा का झोंका",
           "Type": 6
         },
         {
-          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
-          "Name": "Wind direction",
+          "Description": "वह दिशा जहां से हवा वास्तविक उत्तर से दक्षिणावर्त डिग्री में उत्पन्न होती है। शून्य और 360 दोनों उत्तर दिशा का प्रतिनिधित्व करते हैं। दिशा तभी उपयोगी होती है जब भवन मॉडल अग्रभाग अभिविन्यास जानता हो।",
+          "Name": "हवा की दिशा",
           "Type": 7
         },
         {
-          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
-          "Name": "Precipitation",
+          "Description": "युक्त अंतराल पर संचित कुल तरल जल समतुल्य, मिलीमीटर में।",
+          "Name": "वर्षण",
           "Type": 8
         },
         {
-          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
-          "Name": "Precipitation kind",
+          "Description": "युक्त अंतराल के दौरान उजागर HVAC उपकरण को प्रभावित करने वाला तरल या जमे हुए वर्षा चरण।",
+          "Name": "वर्षा प्रकार",
           "Type": 9
         },
         {
-          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
-          "Name": "Solar elevation",
+          "Description": "निरूपित अवलोकन समय पर खगोलीय क्षितिज से ऊपर डिग्री में सूर्य के केंद्र की ज्यामितीय ऊंचाई। नकारात्मक मान सूर्य को क्षितिज के नीचे रखते हैं। इस मान की गणना करने के लिए निर्माण स्थल के निर्देशांक के साथ मौजूदा रिकॉर्ड के `valid_at` या मौजूदा इतिहास या पूर्वानुमान अवधि के मध्यबिंदु का उपयोग करें।",
+          "Name": "सौर उन्नयन",
           "Type": 10
         },
         {
-          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
-          "Name": "Solar azimuth",
+          "Description": "वास्तविक उत्तर से दक्षिणावर्त दिशा में सूर्य के केंद्र की दिशा उसी अवलोकन समय को दर्शाती है। HVAC मशीन-लर्निंग उपभोक्ता कच्चे डिग्री मान को क्रमिक के रूप में व्याख्या करने के बजाय इस चक्रीय कोण को साइन और कोसाइन में परिवर्तित करते हैं।",
+          "Name": "सौर अज़ीमुथ",
           "Type": 11
         },
         {
-          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
-          "Name": "Global horizontal irradiance",
+          "Description": "क्षैतिज सतह पर आपतित कुल प्रत्यक्ष और विसरित सौर ऊर्जा वाट प्रति वर्ग मीटर में। यह प्राथमिक संपूर्ण-निर्माण सौर-लाभ इनपुट है।",
+          "Name": "वैश्विक क्षैतिज विकिरण",
           "Type": 12
         },
         {
-          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
-          "Name": "Direct normal irradiance",
+          "Description": "सूर्य के सामान्य सतह पर आपतित प्रत्यक्ष सौर ऊर्जा, वाट प्रति वर्ग मीटर में। उन्मुख अग्रभाग और छायांकन मॉडल इस मान का उपयोग कर सकते हैं।",
+          "Name": "प्रत्यक्ष सामान्य विकिरण",
           "Type": 13
         },
         {
-          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
-          "Name": "Diffuse horizontal irradiance",
+          "Description": "प्रति वर्ग मीटर वाट में क्षैतिज सतह पर आपतित विसरित-आकाश सौर ऊर्जा। उन्मुख अग्रभाग और छायांकन मॉडल इस मान का उपयोग प्रत्यक्ष सामान्य विकिरण के साथ कर सकते हैं।",
+          "Name": "फैलाना क्षैतिज विकिरण",
           "Type": 14
         }
       ],
@@ -253,158 +253,158 @@
           "Type": 0
         },
         {
-          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
-          "Name": "Upsert historical periods",
+          "Description": "सफल इतिहास ताज़ा करने के बाद पूर्ण अवधियों को `starts_at` द्वारा सम्मिलित या प्रतिस्थापित करता है।",
+          "Name": "अप्सर्ट ऐतिहासिक काल",
           "Type": 1
         },
         {
-          "Description": "The retrieval and validation time for the updated history section.",
-          "Name": "Retrieved at",
+          "Description": "अद्यतन इतिहास अनुभाग के लिए पुनर्प्राप्ति और सत्यापन समय।",
+          "Name": "पर पुनर्प्राप्त किया गया",
           "Type": 2
         },
         {
-          "Description": "The new exclusive freshness deadline for the history section.",
-          "Name": "Valid until",
+          "Description": "इतिहास अनुभाग की नवीनता के लिए नई अपवर्जी समय-सीमा।",
+          "Name": "तक मान्य",
           "Type": 3
         },
         {
-          "Description": "Periods to insert or replace, ordered from oldest to newest.",
-          "Name": "Historical periods",
+          "Description": "सम्मिलित करने या बदलने की अवधि, सबसे पुराने से नवीनतम तक क्रमबद्ध।",
+          "Name": "ऐतिहासिक अवधियाँ",
           "Type": 4
         },
         {
-          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
-          "Name": "Historical period",
+          "Description": "`starts_at` द्वारा कुंजीबद्ध एक पूर्ण आउटडोर-स्थिति अवधि।",
+          "Name": "ऐतिहासिक अवधि",
           "Type": 5
         },
         {
-          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove historical periods",
+          "Description": "उन ऐतिहासिक अवधियों को हटा देता है जिनका प्रारंभ समय आपूर्ति की गई आधी-खुली सीमा के अंतर्गत आता है।",
+          "Name": "ऐतिहासिक अवधियाँ हटाएँ",
           "Type": 6
         },
         {
-          "Description": "The half-open range of historical period start times to remove.",
-          "Name": "Time range",
+          "Description": "हटाई जाने वाली ऐतिहासिक अवधियों के प्रारंभ समय की अर्ध-खुली सीमा।",
+          "Name": "समय-सीमा",
           "Type": 7
         },
         {
-          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
-          "Name": "Replace current conditions",
+          "Description": "सफल पुनर्प्राप्ति, सत्यापन और दृढ़ता के बाद संपूर्ण वर्तमान-स्थिति अनुभाग को बदल देता है।",
+          "Name": "वर्तमान स्थितियाँ बदलें",
           "Type": 8
         },
         {
-          "Description": "The complete newly accepted current-condition section.",
-          "Name": "Current conditions",
+          "Description": "संपूर्ण नव स्वीकृत वर्तमान-स्थिति अनुभाग।",
+          "Name": "वर्तमान स्थितियाँ",
           "Type": 9
         },
         {
-          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
-          "Name": "Upsert forecast periods",
+          "Description": "एक सफल पूर्वानुमान ताज़ा होने के बाद भविष्य की अवधियों को `starts_at` द्वारा सम्मिलित या प्रतिस्थापित करता है।",
+          "Name": "पूर्वानुमान अवधियाँ सम्मिलित या अद्यतन करें",
           "Type": 10
         },
         {
-          "Description": "The retrieval and validation time for the updated forecast section.",
-          "Name": "Retrieved at",
+          "Description": "अद्यतन पूर्वानुमान अनुभाग के लिए पुनर्प्राप्ति और सत्यापन समय।",
+          "Name": "पर पुनर्प्राप्त किया गया",
           "Type": 11
         },
         {
-          "Description": "The new exclusive freshness deadline for the forecast section.",
-          "Name": "Valid until",
+          "Description": "पूर्वानुमान अनुभाग की नवीनता के लिए नई अपवर्जी समय-सीमा।",
+          "Name": "तक मान्य",
           "Type": 12
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Forecast periods",
+          "Description": "सम्मिलित या प्रतिस्थापित की जाने वाली अवधियाँ, सबसे पहले वाली से सबसे बाद वाली के क्रम में।",
+          "Name": "पूर्वानुमान अवधि",
           "Type": 13
         },
         {
-          "Description": "One future outdoor-condition period keyed by `starts_at`.",
-          "Name": "Forecast period",
+          "Description": "एक भविष्य की आउटडोर-स्थिति अवधि `starts_at` द्वारा कुंजीबद्ध।",
+          "Name": "पूर्वानुमान अवधि",
           "Type": 14
         },
         {
-          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove forecast periods",
+          "Description": "उन पूर्वानुमान अवधियों को हटा देता है जिनका प्रारंभ समय आपूर्ति की गई आधी-खुली सीमा के अंतर्गत आता है।",
+          "Name": "पूर्वानुमान अवधियाँ हटाएँ",
           "Type": 15
         },
         {
-          "Description": "The half-open range of forecast period start times to remove.",
-          "Name": "Time range",
+          "Description": "हटाए जाने वाले पूर्वानुमान अवधि आरंभ समयों की अर्ध-खुली सीमा।",
+          "Name": "समय-सीमा",
           "Type": 16
         },
         {
-          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
-          "Name": "Upsert outdoor-air-quality periods",
+          "Description": "सफल वायु-गुणवत्ता ताज़ा होने के बाद प्रदूषक अवधियों को `starts_at` तक सम्मिलित या प्रतिस्थापित करता है।",
+          "Name": "आउटडोर-वायु-गुणवत्ता अवधि को बढ़ाएँ",
           "Type": 17
         },
         {
-          "Description": "The retrieval and validation time for the updated air-quality section.",
-          "Name": "Retrieved at",
+          "Description": "अद्यतन वायु-गुणवत्ता अनुभाग के लिए पुनर्प्राप्ति और सत्यापन समय।",
+          "Name": "पर पुनर्प्राप्त किया गया",
           "Type": 18
         },
         {
-          "Description": "The new exclusive freshness deadline for the air-quality section.",
-          "Name": "Valid until",
+          "Description": "वायु-गुणवत्ता अनुभाग के लिए नई विशिष्ट ताजगी की समय सीमा।",
+          "Name": "तक मान्य",
           "Type": 19
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Air-quality periods",
+          "Description": "सम्मिलित या प्रतिस्थापित की जाने वाली अवधियाँ, सबसे पहले वाली से सबसे बाद वाली के क्रम में।",
+          "Name": "वायु-गुणवत्ता अवधियाँ",
           "Type": 20
         },
         {
-          "Description": "One modeled pollutant period keyed by `starts_at`.",
-          "Name": "Air-quality period",
+          "Description": "एक मॉडल प्रदूषक अवधि `starts_at` द्वारा कुंजीबद्ध।",
+          "Name": "वायु-गुणवत्ता अवधि",
           "Type": 21
         },
         {
-          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove outdoor-air-quality periods",
+          "Description": "प्रदूषक अवधियों को हटाता है जिनका प्रारंभ समय आपूर्ति की गई आधी-खुली सीमा के भीतर आता है।",
+          "Name": "बाहरी-वायु-गुणवत्ता अवधि हटाएँ",
           "Type": 22
         },
         {
-          "Description": "The half-open range of air-quality period start times to remove.",
-          "Name": "Time range",
+          "Description": "वायु-गुणवत्ता अवधि की आधी-खुली सीमा को हटाने के लिए प्रारंभ समय।",
+          "Name": "समय-सीमा",
           "Type": 23
         },
         {
-          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
-          "Name": "Clear weather section",
+          "Description": "किसी अनुभाग को उसके कैश्ड मान के अमान्य साबित होने के बाद ही साफ़ किया जाता है। किसी प्रदाता, इंटरनेट या रिफ्रेश विफलता के कारण ही किसी अनुभाग को साफ़ नहीं किया जा सकता।",
+          "Name": "मौसम अनुभाग साफ़ करें",
           "Type": 24
         },
         {
-          "Description": "The independently cached section to clear.",
-          "Name": "Weather section",
+          "Description": "स्वतंत्र रूप से कैश किया गया वह अनुभाग जिसे साफ़ करना है।",
+          "Name": "मौसम अनुभाग",
           "Type": 25
         },
         {
-          "Description": "Replaces the complete historical section after a successful refresh.",
-          "Name": "Replace history",
+          "Description": "सफल रिफ्रेश के बाद संपूर्ण ऐतिहासिक खंड को बदल देता है।",
+          "Name": "इतिहास बदलें",
           "Type": 26
         },
         {
-          "Description": "The complete newly accepted history section.",
-          "Name": "History",
+          "Description": "संपूर्ण नव स्वीकृत इतिहास अनुभाग।",
+          "Name": "इतिहास",
           "Type": 27
         },
         {
-          "Description": "Replaces the complete forecast section after a successful refresh.",
-          "Name": "Replace forecast",
+          "Description": "सफल रिफ्रेश के बाद संपूर्ण पूर्वानुमान अनुभाग को बदल देता है।",
+          "Name": "पूर्वानुमान प्रतिस्थापित करें",
           "Type": 28
         },
         {
-          "Description": "The complete newly accepted forecast section.",
-          "Name": "Forecast",
+          "Description": "नया स्वीकृत संपूर्ण पूर्वानुमान अनुभाग।",
+          "Name": "पूर्वानुमान",
           "Type": 29
         },
         {
-          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
-          "Name": "Replace outdoor air quality",
+          "Description": "सफल रिफ्रेश के बाद संपूर्ण मॉडल किए गए प्रदूषक अनुभाग को बदल देता है।",
+          "Name": "बाहरी वायु गुणवत्ता बदलें",
           "Type": 30
         },
         {
-          "Description": "The complete newly accepted outdoor-air-quality section.",
-          "Name": "Outdoor air quality",
+          "Description": "संपूर्ण नव स्वीकृत आउटडोर-वायु-गुणवत्ता अनुभाग।",
+          "Name": "बाहरी वायु गुणवत्ता",
           "Type": 31
         }
       ],
@@ -681,66 +681,66 @@
           "Type": 0
         },
         {
-          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
-          "Name": "Get building HVAC weather",
+          "Description": "एक-शॉट वृद्धिशील रीडिंग निष्पादित करता है या सदस्यता शुरू या फिर से शुरू करता है। जब संभव हो तो सर्वर `after_cursor` के बाद बनाए गए परिवर्तनों को दोहराता है या अनुरोधित फ़ॉलबैक श्रेणियों तक सीमित स्वतंत्र रूप से कैश किए गए अनुभागों को लौटाता है।",
+          "Name": "भवन प्राप्त करें HVAC मौसम",
           "Type": 1
         },
         {
-          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
-          "Name": "Resume cursor",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "Description": "अंतिम कर्सर पूरी तरह से और परमाणु रूप से क्लाइंट द्वारा लागू किया गया। `None` प्रारंभिक स्नैपशॉट का अनुरोध करता है।",
+          "Name": "पुनरारंभ कर्सर",
+          "NullText": "एक ताज़ा स्नैपशॉट से शुरुआत करें",
+          "SetText": "इसके बाद फिर से शुरू करें",
           "Type": 2
         },
         {
-          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
-          "Name": "Historical recovery range",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "Description": "जब दोबारा खेलना असंभव हो तो शामिल की जाने वाली आधी-खुली ऐतिहासिक श्रृंखला। `None` रीसेट स्नैपशॉट से इतिहास को बाहर कर देता है।",
+          "Name": "ऐतिहासिक पुनर्प्राप्ति सीमा",
+          "NullText": "कोई इतिहास नहीं",
+          "SetText": "के लिए इतिहास शामिल करें",
           "Type": 3
         },
         {
-          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
-          "Name": "Include current conditions",
+          "Description": "क्या रीसेट स्नैपशॉट में कैश्ड वर्तमान आउटडोर स्थितियाँ शामिल होनी चाहिए।",
+          "Name": "वर्तमान स्थितियाँ शामिल करें",
           "Type": 4
         },
         {
-          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
-          "Name": "Forecast recovery range",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "Description": "आधी-खुली भौतिक-मौसम पूर्वानुमान सीमा में तब शामिल किया जाता है जब दोबारा खेलना असंभव हो। `None` पूर्वानुमान डेटा शामिल नहीं है।",
+          "Name": "पूर्वानुमान पुनर्प्राप्ति सीमा",
+          "NullText": "कोई पूर्वानुमान नहीं",
+          "SetText": "के लिए पूर्वानुमान शामिल करें",
           "Type": 5
         },
         {
-          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
-          "Name": "Outdoor-air-quality recovery range",
-          "NullText": "No outdoor air quality",
-          "SetText": "Include outdoor air quality for",
+          "Description": "आधे खुले प्रदूषक अवधि की सीमा को तब शामिल किया जाना चाहिए जब दोबारा खेलना असंभव हो। `None` में मॉडल की गई बाहरी वायु गुणवत्ता शामिल नहीं है।",
+          "Name": "आउटडोर-वायु-गुणवत्ता पुनर्प्राप्ति रेंज",
+          "NullText": "कोई बाहरी वायु गुणवत्ता नहीं",
+          "SetText": "के लिए बाहरी वायु गुणवत्ता को शामिल करें",
           "Type": 6
         },
         {
-          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
-          "Name": "Building HVAC weather recovery",
+          "Description": "प्रत्येक वैध प्राप्त अनुरोध का रिप्ले, रीसेट स्नैपशॉट या टाइप की गई त्रुटि के साथ जवाब देता है। सफल पुनर्प्राप्ति, बाद में डेटा रिपोर्ट और पीयरअलाइव के बाद सदस्यता क्लाइंट अपना टाइमआउट पुनः आरंभ करते हैं।",
+          "Name": "भवन HVAC मौसम पुनर्प्राप्ति",
           "Type": 7
         },
         {
-          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
-          "Name": "Maximum wait interval",
+          "Description": "अधिकतम सेकंड जो एक सदस्यता ग्राहक अपने अंतिम कर्सर के साथ पुनः प्रयास करने से पहले प्रतीक्षा करता है। सर्वर पहले परिवर्तित डेटा या PeerAlive भेजता है। एक-शॉट क्लाइंट इस आवश्यक, गैर-शून्य मान को अनदेखा कर देता है।",
+          "Name": "अधिकतम प्रतीक्षा अंतराल",
           "Type": 8
         },
         {
-          "Description": "The replay, reset snapshot, or typed error result.",
-          "Name": "Recovery",
+          "Description": "रीप्ले, रीसेट स्नैपशॉट, या टाइप किया गया त्रुटि परिणाम।",
+          "Name": "पुनर्प्राप्ति",
           "Type": 9
         },
         {
-          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
-          "Name": "Building HVAC weather increment",
+          "Description": "सफल सदस्यता पुनर्प्राप्ति के बाद रिपोर्ट में परिवर्तन होता है। एक ग्राहक पूरी सन्निहित सीमा लागू करता है या इसमें से कुछ भी लागू नहीं करता है।",
+          "Name": "बिल्डिंग HVAC मौसम वृद्धि",
           "Type": 10
         },
         {
-          "Description": "The ordered, atomic cursor range and its weather changes.",
-          "Name": "Incremental report",
+          "Description": "क्रमबद्ध, परमाणु कर्सर रेंज और उसका मौसम बदलता है।",
+          "Name": "वृद्धिशील रिपोर्ट",
           "Type": 11
         }
       ],
@@ -790,48 +790,48 @@
           "Type": 0
         },
         {
-          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
-          "Name": "Replayed changes",
+          "Description": "आपूर्ति किए गए कर्सर के बाद प्रत्येक बनाए गए परिवर्तन के साथ स्ट्रीम जारी रखता है। एक खाली रिपोर्ट का मतलब है कि ग्राहक फंस गया है।",
+          "Name": "रीप्ले किए गए परिवर्तन",
           "Type": 1
         },
         {
-          "Description": "The contiguous retained change range beginning at the request cursor.",
-          "Name": "Incremental report",
+          "Description": "अनुरोध कर्सर से शुरू होने वाली सन्निहित परिवर्तन सीमा।",
+          "Name": "वृद्धिशील रिपोर्ट",
           "Type": 2
         },
         {
-          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
-          "Name": "Reset with snapshot",
+          "Description": "जब दोबारा खेलना असंभव हो या कोई कर्सर प्रदान नहीं किया गया हो तो स्वतंत्र रूप से कैश्ड अनुभागों से स्थिति स्थापित करता है।",
+          "Name": "स्नैपशॉट के साथ रीसेट करें",
           "Type": 3
         },
         {
-          "Description": "The reason the response contains a snapshot rather than replay.",
-          "Name": "Reset reason",
+          "Description": "इसका कारण यह है कि प्रतिक्रिया में रीप्ले के बजाय स्नैपशॉट शामिल है।",
+          "Name": "रीसेट का कारण",
           "Type": 4
         },
         {
-          "Description": "The cursor representing the returned snapshot.",
-          "Name": "Current cursor",
+          "Description": "लौटाए गए स्नैपशॉट को दर्शाने वाला कर्सर।",
+          "Name": "वर्तमान कर्सर",
           "Type": 5
         },
         {
-          "Description": "The available cached sections constrained by requested ranges.",
-          "Name": "Weather snapshot",
+          "Description": "उपलब्ध कैश्ड अनुभाग अनुरोधित श्रेणियों द्वारा बाधित हैं।",
+          "Name": "मौसम स्नैपशॉट",
           "Type": 6
         },
         {
-          "Description": "Rejects the request without changing client cursor or cached weather.",
-          "Name": "Recovery error",
+          "Description": "क्लाइंट कर्सर या कैश्ड मौसम को बदले बिना अनुरोध को अस्वीकार कर देता है।",
+          "Name": "पुनर्प्राप्ति त्रुटि",
           "Type": 7
         },
         {
-          "Description": "The reason recovery could not be completed.",
-          "Name": "Error",
+          "Description": "पुनर्प्राप्ति पूरी न हो पाने का कारण।",
+          "Name": "त्रुटि",
           "Type": 8
         },
         {
-          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
-          "Name": "Retry delay",
+          "Description": "पुनः प्रयास करने से पहले कुछ सेकंड का सुझाव दिया गया। `None` का अर्थ है कि पुनः प्रयास सफल होने से पहले अनुरोध को बदलना होगा।",
+          "Name": "पुनः प्रयास में देरी",
           "Type": 9
         }
       ],
@@ -1398,27 +1398,27 @@
       "Name": "SprinklerWeatherIncrementalReportV1"
     },
     {
-      "Description": "Records for one endpoint share a transaction and scan prefix.",
-      "DisplayName": "Saved weather keys",
+      "Description": "एक समापन बिंदु के रिकॉर्ड एक लेनदेन और स्कैन उपसर्ग साझा करते हैं।",
+      "DisplayName": "मौसम कुंजियाँ सहेजी गईं",
       "List": [
         {
-          "Description": "Records for one endpoint share a transaction and scan prefix.",
-          "Name": "Saved weather keys",
+          "Description": "एक समापन बिंदु के रिकॉर्ड एक लेनदेन और स्कैन उपसर्ग साझा करते हैं।",
+          "Name": "मौसम कुंजियाँ सहेजी गईं",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Weather belonging to one service endpoint",
+          "Name": "एक सेवा समापन बिंदु से संबंधित मौसम",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "समापनबिंदु",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "रिकार्ड",
           "Type": 3
         }
       ],
@@ -1525,15 +1525,15 @@
         {
           "Description": "क्लाइंट द्वारा पूर्णतः और परमाण्विक रूप से लागू किया गया अंतिम कर्सर। `None` प्रारंभिक सीमा-निर्धारित स्नैपशॉट का अनुरोध करता है। सर्वर दोनों फ़ील्ड की तुलना करता है; निम्नतर अनुक्रम केवल तभी रीसेट दर्शाता है जब प्रतिक्रिया कर्सर का युग टाइमस्टैम्प भी अधिक नया हो।",
           "Name": "पुनरारंभ कर्सर",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "NullText": "एक ताज़ा स्नैपशॉट से शुरुआत करें",
+          "SetText": "इसके बाद फिर से शुरू करें",
           "Type": 2
         },
         {
           "Description": "रीप्ले असंभव होने पर शामिल किए जाने वाले ऐतिहासिक अवधियों के आरंभ समयों की अर्ध-खुली सीमा। `None` रीसेट स्नैपशॉट से इतिहास को बाहर रखता है।",
           "Name": "ऐतिहासिक पुनर्प्राप्ति सीमा",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "NullText": "कोई इतिहास नहीं",
+          "SetText": "के लिए इतिहास शामिल करें",
           "Type": 3
         },
         {
@@ -1544,8 +1544,8 @@
         {
           "Description": "रीप्ले असंभव होने पर शामिल किए जाने वाले पूर्वानुमान अवधियों के आरंभ समयों की अर्ध-खुली सीमा। `None` रीसेट स्नैपशॉट से पूर्वानुमान डेटा को बाहर रखता है।",
           "Name": "पूर्वानुमान पुनर्प्राप्ति सीमा",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "NullText": "कोई पूर्वानुमान नहीं",
+          "SetText": "के लिए पूर्वानुमान शामिल करें",
           "Type": 5
         },
         {
@@ -1578,41 +1578,41 @@
     },
     {
       "Description": "",
-      "DisplayName": "Saved weather record identity",
+      "DisplayName": "मौसम रिकॉर्ड पहचान सहेजी गई",
       "List": [
         {
           "Description": "",
-          "Name": "Saved weather record identity",
+          "Name": "मौसम रिकॉर्ड पहचान सहेजी गई",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Location",
+          "Name": "स्थान",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "HistoryMetadata",
+          "Name": "इतिहास मेटाडेटा",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "HistoryPeriod",
+          "Name": "इतिहासकाल",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "starts_at",
+          "Name": "प्रारंभ_पर",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "Current",
+          "Name": "वर्तमान",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Forecast",
+          "Name": "पूर्वानुमान",
           "Type": 6
         }
       ],

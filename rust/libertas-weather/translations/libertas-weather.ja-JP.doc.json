@@ -1,5 +1,5 @@
 {
-  "Description": "Libertas アプリケーションによる意思決定に適した気象データを定義します。スプリンクラーのスキーマは、ハブから提供された設置場所を、直近の履歴、現在の状況、予報データとは別に永続化します。各気象セクションの更新間隔は異なり、それぞれ独立して成功または失敗する可能性があります。実行時のスナップショットには、任意の組み合わせのセクションが含まれる場合があります。アプリケーションは、正常に取得できた各セクションを個別に永続化し、気象データの更新に失敗した場合は以前のセクションを保持します。増分サブスクリプションでは、エポックタイムスタンプとシーケンスから成るカーソルを使用するため、クライアントはサーバーによるカーソルのリセットを古いデータや順序の入れ替わったデータと区別し、保持されている変更を再生したり、キャッシュデータから指定した時間範囲を復元したりできます。建物HVACのスキーマは、熱負荷予測、ヒートポンプ運転、エコノマイザーの判断、および制御された外気換気に必要な屋外入力のみを提供します。気象セクションと屋外空気質セクションではプロバイダーと鮮度の特性が異なるため、両者を独立して保持します。現場の機器制御と人命安全制御では、引き続き専用のセンサーを使用する必要があります。キャッシュされたインターネット気象データは監視制御用の入力であり、安全信号ではありません。",
+  "Description": "Libertas アプリケーションによって行われた決定に合わせて調整された気象データを定義します。\nスプリンクラー スキーマは、ハブが提供するサイトの場所を、最近の履歴、現在の状況、予測データとは別に保持します。各天気セクションには異なる更新間隔があり、個別に成功または失敗する可能性があります。実行時スナップショットには、セクションを任意に組み合わせて含めることができます。アプリケーションは成功した各セクションを個別に保持し、気象データの更新が失敗した場合は古いセクションを保持します。増分サブスクリプションでは、エポック タイムスタンプとシーケンス カーソルを使用するため、クライアントはサーバー カーソルのリセットと古いデータまたは順序が乱れたデータを区別したり、保持された変更を再生したり、キャッシュされたデータから選択した時間範囲を回復したりできます。\n建物 HVAC スキーマは、熱負荷予測、ヒート ポンプ動作、エコノマイザーの決定、および制御された外気換気に必要な屋外入力のみを提供します。プロバイダーと鮮度の動作が異なるため、天候と屋外空気品質セクションを独立させます。ローカル機器と人命安全制御は、独自のセンサーを引き続き使用する必要があります。キャッシュされたインターネット天気は監視入力であり、安全信号ではありません。",
   "DisplayName": "Libertas 天気情報",
   "DocumentVersion": "0.0.2",
   "List": [],
@@ -16,28 +16,28 @@
           "Type": 0
         },
         {
-          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
-          "Name": "Retrieved at",
+          "Description": "この完全な現状セクションが取得、検証、および受け入れられた日時。",
+          "Name": "取得日時",
           "Type": 1
         },
         {
-          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
-          "Name": "Valid until",
+          "Description": "独占的な鮮度期限。この時点以降、キャッシュされた値は、既知の現在の条件を必要とするエコノマイザー操作やその他の天候に依存する最適化を許可してはなりません。",
+          "Name": "有効期限",
           "Type": 2
         },
         {
-          "Description": "The provider-supplied date and time represented by these current conditions.",
-          "Name": "Valid at",
+          "Description": "これらの現在の条件によって表される、プロバイダーが提供する日付と時刻。",
+          "Name": "基準日時",
           "Type": 3
         },
         {
-          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
-          "Name": "Observation interval",
+          "Description": "累積降水量によって表される秒単位の逆向きの間隔。現在の天気は通常、900 秒間隔を使用します。",
+          "Name": "観測区間",
           "Type": 4
         },
         {
-          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
-          "Name": "Outdoor conditions",
+          "Description": "HVAC 監視制御用の最新モデル化された温度、湿度、圧力、風、降水量、太陽入力。",
+          "Name": "屋外条件",
           "Type": 5
         }
       ],
@@ -127,73 +127,73 @@
           "Type": 0
         },
         {
-          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
-          "Name": "Dry-bulb temperature",
+          "Description": "地上 2 メートルの外気温 (摂氏)。",
+          "Name": "乾球温度",
           "Type": 1
         },
         {
-          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
-          "Name": "Dew-point temperature",
+          "Description": "地上 2 メートルにおける屋外の露点温度 (摂氏)。圧力とともに、湿度比、エンタルピー、湿球、結露のリスク、および潜荷重の計算をサポートします。",
+          "Name": "露点温度",
           "Type": 2
         },
         {
-          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
-          "Name": "Relative humidity",
+          "Description": "地上 2 メートルにおける屋外の相対湿度を 0 ～ 100 の整数パーセンテージで表します。このプロバイダー値は表示と検証をサポートします。乾湿量計算では、異なる冗長な値を混合するのではなく、一貫した 1 つの入力セットを使用する必要があります。",
+          "Name": "相対湿度",
           "Type": 3
         },
         {
-          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
-          "Name": "Surface pressure",
+          "Description": "建物の高度における大気圧 (ヘクトパスカル)。乾湿量の計算には、海面まで減圧された圧力ではなく、表面圧力が使用されます。",
+          "Name": "面圧",
           "Type": 4
         },
         {
-          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
-          "Name": "Wind speed",
+          "Description": "地上 10 メートルにおける屋外の持続風速 (メートル/秒)。建築モデルでは、これを使用して浸透と圧力による外気負荷を推定できます。",
+          "Name": "風速",
           "Type": 5
         },
         {
-          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
-          "Name": "Wind gust",
+          "Description": "屋外の最大突風は地上 10 メートルで、メートル/秒単位で表します。露出したダンパーや機器の保守的な制御をサポートします。",
+          "Name": "最大瞬間風速",
           "Type": 6
         },
         {
-          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
-          "Name": "Wind direction",
+          "Description": "真北から時計回りに風が吹く方向。 0 と 360 はどちらも北を表します。方向は、建物モデルがファサードの方向を知っている場合にのみ役立ちます。",
+          "Name": "風向き",
           "Type": 7
         },
         {
-          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
-          "Name": "Precipitation",
+          "Description": "収容間隔中に蓄積された液体水当量の合計 (ミリメートル単位)。",
+          "Name": "降水量",
           "Type": 8
         },
         {
-          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
-          "Name": "Precipitation kind",
+          "Description": "液体または凍結した沈殿相は、収容期間中に露出した HVAC 機器に影響を与えます。",
+          "Name": "降水の種類",
           "Type": 9
         },
         {
-          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
-          "Name": "Solar elevation",
+          "Description": "表された観測時刻における、天文地平線からの太陽の中心の幾何学的高度 (度単位)。負の値を指定すると、太陽が地平線の下に配置されます。この値を計算するには、含まれる現在のレコードの `valid_at`、または含まれる履歴または予測期間の中点を建築現場の座標とともに使用します。",
+          "Name": "太陽高度",
           "Type": 10
         },
         {
-          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
-          "Name": "Solar azimuth",
+          "Description": "同じ観測時刻における太陽の中心の方向を真北から時計回りに度単位で表したもの。 HVAC 機械学習コンシューマーは、生の度数値を序数として解釈するのではなく、この周期角度をサインとコサインに変換します。",
+          "Name": "太陽の方位角",
           "Type": 11
         },
         {
-          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
-          "Name": "Global horizontal irradiance",
+          "Description": "水平面に入射する直接太陽光発電と拡散太陽光発電の合計 (ワット/平方メートル)。これは建物全体の主要な太陽光発電入射量です。",
+          "Name": "全球水平放射照度",
           "Type": 12
         },
         {
-          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
-          "Name": "Direct normal irradiance",
+          "Description": "太陽に垂直な表面に入射する直接太陽光発電 (ワット/平方メートル)。方向性のあるファサードおよびシェーディング モデルでは、この値が使用される場合があります。",
+          "Name": "直接通常放射照度",
           "Type": 13
         },
         {
-          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
-          "Name": "Diffuse horizontal irradiance",
+          "Description": "水平面に入射する拡散天太陽光発電 (ワット/平方メートル)。方向性のあるファサードおよびシェーディング モデルは、直接法線放射照度でこの値を使用する場合があります。",
+          "Name": "拡散水平放射照度",
           "Type": 14
         }
       ],
@@ -253,158 +253,158 @@
           "Type": 0
         },
         {
-          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
-          "Name": "Upsert historical periods",
+          "Description": "履歴の更新が成功した後、完了した期間を `starts_at` で挿入または置換します。",
+          "Name": "歴史的期間のアップサート",
           "Type": 1
         },
         {
-          "Description": "The retrieval and validation time for the updated history section.",
-          "Name": "Retrieved at",
+          "Description": "更新された履歴セクションの取得および検証時間。",
+          "Name": "取得日時",
           "Type": 2
         },
         {
-          "Description": "The new exclusive freshness deadline for the history section.",
-          "Name": "Valid until",
+          "Description": "履歴セクションが最新とみなされる新しい期限（期限時刻は含まない）。",
+          "Name": "有効期限",
           "Type": 3
         },
         {
-          "Description": "Periods to insert or replace, ordered from oldest to newest.",
-          "Name": "Historical periods",
+          "Description": "挿入または置換する期間。古いものから新しいものの順に並べられます。",
+          "Name": "履歴期間",
           "Type": 4
         },
         {
-          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
-          "Name": "Historical period",
+          "Description": "`starts_at` をキーとする 1 つの完了した屋外条件期間。",
+          "Name": "履歴期間",
           "Type": 5
         },
         {
-          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove historical periods",
+          "Description": "開始時間が指定された半開範囲内にある過去の期間を削除します。",
+          "Name": "履歴期間を削除",
           "Type": 6
         },
         {
-          "Description": "The half-open range of historical period start times to remove.",
-          "Name": "Time range",
+          "Description": "削除する履歴期間の開始時刻の半開範囲です。",
+          "Name": "時間範囲",
           "Type": 7
         },
         {
-          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
-          "Name": "Replace current conditions",
+          "Description": "取得、検証、永続化が成功した後、現在の条件セクション全体を置き換えます。",
+          "Name": "現在の気象状況を置換",
           "Type": 8
         },
         {
-          "Description": "The complete newly accepted current-condition section.",
-          "Name": "Current conditions",
+          "Description": "新しく受け入れられた完全な現状セクション。",
+          "Name": "現状",
           "Type": 9
         },
         {
-          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
-          "Name": "Upsert forecast periods",
+          "Description": "予測の更新が成功した後、将来の期間を `starts_at` で挿入または置換します。",
+          "Name": "予報期間をアップサート",
           "Type": 10
         },
         {
-          "Description": "The retrieval and validation time for the updated forecast section.",
-          "Name": "Retrieved at",
+          "Description": "更新された予測セクションの取得と検証にかかる時間。",
+          "Name": "取得日時",
           "Type": 11
         },
         {
-          "Description": "The new exclusive freshness deadline for the forecast section.",
-          "Name": "Valid until",
+          "Description": "予報セクションが最新とみなされる新しい期限（期限時刻は含まない）。",
+          "Name": "有効期限",
           "Type": 12
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Forecast periods",
+          "Description": "挿入または置換する期間。早いものから順に並びます。",
+          "Name": "予測期間",
           "Type": 13
         },
         {
-          "Description": "One future outdoor-condition period keyed by `starts_at`.",
-          "Name": "Forecast period",
+          "Description": "`starts_at` によってキー設定された将来の屋外条件期間の 1 つ。",
+          "Name": "予報期間",
           "Type": 14
         },
         {
-          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove forecast periods",
+          "Description": "開始時間が指定された半開範囲内にある予測期間を削除します。",
+          "Name": "予報期間を削除",
           "Type": 15
         },
         {
-          "Description": "The half-open range of forecast period start times to remove.",
-          "Name": "Time range",
+          "Description": "削除する予報期間の開始時刻を示す半開区間。",
+          "Name": "時間範囲",
           "Type": 16
         },
         {
-          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
-          "Name": "Upsert outdoor-air-quality periods",
+          "Description": "大気質の更新が成功した後、汚染物質の期間を `starts_at` で挿入または置換します。",
+          "Name": "屋外空気品質期間のアップサート",
           "Type": 17
         },
         {
-          "Description": "The retrieval and validation time for the updated air-quality section.",
-          "Name": "Retrieved at",
+          "Description": "更新された大気品質セクションの取得および検証時間。",
+          "Name": "取得日時",
           "Type": 18
         },
         {
-          "Description": "The new exclusive freshness deadline for the air-quality section.",
-          "Name": "Valid until",
+          "Description": "大気品質セクションの新しい独占的な鮮度期限。",
+          "Name": "有効期限",
           "Type": 19
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Air-quality periods",
+          "Description": "挿入または置換する期間。早いものから順に並びます。",
+          "Name": "空気質期間",
           "Type": 20
         },
         {
-          "Description": "One modeled pollutant period keyed by `starts_at`.",
-          "Name": "Air-quality period",
+          "Description": "`starts_at` をキーとする 1 つのモデル化された汚染期間。",
+          "Name": "空気質期間",
           "Type": 21
         },
         {
-          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove outdoor-air-quality periods",
+          "Description": "開始時間が指定された半開範囲内にある汚染期間を削除します。",
+          "Name": "屋外の空気の質の期間を削除する",
           "Type": 22
         },
         {
-          "Description": "The half-open range of air-quality period start times to remove.",
-          "Name": "Time range",
+          "Description": "削除する大気質期間の開始時刻の半開範囲。",
+          "Name": "時間範囲",
           "Type": 23
         },
         {
-          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
-          "Name": "Clear weather section",
+          "Description": "キャッシュされた値が無効であることが証明された場合にのみ、1 つのセクションをクリアします。プロバイダー、インターネット、または更新の失敗だけでセクションをクリアしてはなりません。",
+          "Name": "気象セクションを消去",
           "Type": 24
         },
         {
-          "Description": "The independently cached section to clear.",
-          "Name": "Weather section",
+          "Description": "消去する、個別にキャッシュされたセクション。",
+          "Name": "気象セクション",
           "Type": 25
         },
         {
-          "Description": "Replaces the complete historical section after a successful refresh.",
-          "Name": "Replace history",
+          "Description": "更新が成功した後、完全な履歴セクションを置き換えます。",
+          "Name": "履歴を置き換える",
           "Type": 26
         },
         {
-          "Description": "The complete newly accepted history section.",
-          "Name": "History",
+          "Description": "新しく受け入れられた完全な歴史セクション。",
+          "Name": "履歴",
           "Type": 27
         },
         {
-          "Description": "Replaces the complete forecast section after a successful refresh.",
-          "Name": "Replace forecast",
+          "Description": "更新が成功した後、完全な予測セクションを置き換えます。",
+          "Name": "予報を置換",
           "Type": 28
         },
         {
-          "Description": "The complete newly accepted forecast section.",
-          "Name": "Forecast",
+          "Description": "新たに受け入れられた完全な予報セクション。",
+          "Name": "予報",
           "Type": 29
         },
         {
-          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
-          "Name": "Replace outdoor air quality",
+          "Description": "更新が成功した後、完全なモデル化された汚染物質セクションを置き換えます。",
+          "Name": "屋外の空気の質を変える",
           "Type": 30
         },
         {
-          "Description": "The complete newly accepted outdoor-air-quality section.",
-          "Name": "Outdoor air quality",
+          "Description": "新しく受け入れられた完全な屋外空気品質セクション。",
+          "Name": "屋外空気質",
           "Type": 31
         }
       ],
@@ -681,66 +681,66 @@
           "Type": 0
         },
         {
-          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
-          "Name": "Get building HVAC weather",
+          "Description": "ワンショット増分読み取りを実行するか、サブスクリプションを開始または再開します。サーバーは、可能であれば `after_cursor` 以降に保持された変更を再生するか、要求されたフォールバック範囲に制限された個別にキャッシュされたセクションを返します。",
+          "Name": "HVAC の天気を取得する",
           "Type": 1
         },
         {
-          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
-          "Name": "Resume cursor",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "Description": "クライアントによって完全かつアトミックに適用される最後のカーソル。 `None` は初期スナップショットを要求します。",
+          "Name": "再開カーソル",
+          "NullText": "新しいスナップショットから開始する",
+          "SetText": "後に再開",
           "Type": 2
         },
         {
-          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
-          "Name": "Historical recovery range",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "Description": "リプレイが不可能な場合に含める、半オープンの履歴範囲。 `None` は、リセット スナップショットから履歴を除外します。",
+          "Name": "履歴復旧範囲",
+          "NullText": "履歴なし",
+          "SetText": "履歴を含める",
           "Type": 3
         },
         {
-          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
-          "Name": "Include current conditions",
+          "Description": "リセットされたスナップショットに、キャッシュされた現在の屋外条件を含める必要があるかどうか。",
+          "Name": "現在の気象条件を含める",
           "Type": 4
         },
         {
-          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
-          "Name": "Forecast recovery range",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "Description": "リプレイが不可能な場合に含める半オープン物理天気予報範囲。 `None` には予測データが含まれません。",
+          "Name": "予報復旧範囲",
+          "NullText": "予報なし",
+          "SetText": "～の予測を含める",
           "Type": 5
         },
         {
-          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
-          "Name": "Outdoor-air-quality recovery range",
-          "NullText": "No outdoor air quality",
-          "SetText": "Include outdoor air quality for",
+          "Description": "リプレイが不可能な場合に含める半開汚染期間の範囲。 `None` では、モデル化された屋外の空気の質は除外されます。",
+          "Name": "外気品質回復範囲",
+          "NullText": "屋外の空気の質が良くない",
+          "SetText": "屋外の空気の質を含める",
           "Type": 6
         },
         {
-          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
-          "Name": "Building HVAC weather recovery",
+          "Description": "すべての有効な取得リクエストに、リプレイ、リセット スナップショット、または入力されたエラーで応答します。サブスクリプション クライアントは、正常な回復、その後のデータ レポート、および PeerAlive 後にタイムアウトを再開します。",
+          "Name": "建物HVAC気象復旧",
           "Type": 7
         },
         {
-          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
-          "Name": "Maximum wait interval",
+          "Description": "サブスクリプション クライアントが最後のカーソルで再試行するまでに待機する最大秒数。サーバーは変更されたデータまたは PeerAlive を最初に送信します。ワンショット クライアントは、この必須のゼロ以外の値を無視します。",
+          "Name": "最大待機間隔",
           "Type": 8
         },
         {
-          "Description": "The replay, reset snapshot, or typed error result.",
-          "Name": "Recovery",
+          "Description": "再生、スナップショットのリセット、または入力されたエラーの結果。",
+          "Name": "復旧",
           "Type": 9
         },
         {
-          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
-          "Name": "Building HVAC weather increment",
+          "Description": "サブスクリプションの回復が成功した後の変更をレポートします。クライアントは完全な連続範囲を適用するか、まったく適用しません。",
+          "Name": "建物 HVAC の天候増分",
           "Type": 10
         },
         {
-          "Description": "The ordered, atomic cursor range and its weather changes.",
-          "Name": "Incremental report",
+          "Description": "順序付けられたアトミックなカーソル範囲とその天候の変化。",
+          "Name": "増分レポート",
           "Type": 11
         }
       ],
@@ -790,48 +790,48 @@
           "Type": 0
         },
         {
-          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
-          "Name": "Replayed changes",
+          "Description": "指定されたカーソルの後に保持されたすべての変更でストリームを継続します。空のレポートは、クライアントが追いつかれていることを意味します。",
+          "Name": "リプレイされた変更",
           "Type": 1
         },
         {
-          "Description": "The contiguous retained change range beginning at the request cursor.",
-          "Name": "Incremental report",
+          "Description": "リクエストカーソルから始まる連続した保持された変更範囲。",
+          "Name": "増分レポート",
           "Type": 2
         },
         {
-          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
-          "Name": "Reset with snapshot",
+          "Description": "再生が不可能な場合、またはカーソルが指定されなかった場合に、独立してキャッシュされたセクションから状態を確立します。",
+          "Name": "スナップショットでリセット",
           "Type": 3
         },
         {
-          "Description": "The reason the response contains a snapshot rather than replay.",
-          "Name": "Reset reason",
+          "Description": "応答にリプレイではなくスナップショットが含まれる理由。",
+          "Name": "リセット理由",
           "Type": 4
         },
         {
-          "Description": "The cursor representing the returned snapshot.",
-          "Name": "Current cursor",
+          "Description": "返されたスナップショットを表すカーソルです。",
+          "Name": "現在のカーソル",
           "Type": 5
         },
         {
-          "Description": "The available cached sections constrained by requested ranges.",
-          "Name": "Weather snapshot",
+          "Description": "要求された範囲によって制限された、使用可能なキャッシュされたセクション。",
+          "Name": "気象スナップショット",
           "Type": 6
         },
         {
-          "Description": "Rejects the request without changing client cursor or cached weather.",
-          "Name": "Recovery error",
+          "Description": "クライアント カーソルやキャッシュされた天気を変更せずにリクエストを拒否します。",
+          "Name": "復旧エラー",
           "Type": 7
         },
         {
-          "Description": "The reason recovery could not be completed.",
-          "Name": "Error",
+          "Description": "復旧を完了できなかった理由です。",
+          "Name": "エラー",
           "Type": 8
         },
         {
-          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
-          "Name": "Retry delay",
+          "Description": "再試行するまでの推奨秒数。 `None` は、再試行が成功する前にリクエストを変更する必要があることを意味します。",
+          "Name": "再試行までの遅延",
           "Type": 9
         }
       ],
@@ -1398,27 +1398,27 @@
       "Name": "SprinklerWeatherIncrementalReportV1"
     },
     {
-      "Description": "Records for one endpoint share a transaction and scan prefix.",
-      "DisplayName": "Saved weather keys",
+      "Description": "1 つのエンドポイントのレコードは、トランザクションとスキャン プレフィックスを共有します。",
+      "DisplayName": "保存された天気キー",
       "List": [
         {
-          "Description": "Records for one endpoint share a transaction and scan prefix.",
-          "Name": "Saved weather keys",
+          "Description": "1 つのエンドポイントのレコードは、トランザクションとスキャン プレフィックスを共有します。",
+          "Name": "保存された天気キー",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Weather belonging to one service endpoint",
+          "Name": "1 つのサービス エンドポイントに属する天気",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "エンドポイント",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "記録する",
           "Type": 3
         }
       ],
@@ -1525,15 +1525,15 @@
         {
           "Description": "クライアントが完全かつアトミックに適用した最後のカーソルです。`None`は、範囲が制限された初期スナップショットを要求します。サーバーは両方のフィールドを比較します。シーケンスが小さい場合、応答カーソルのエポックタイムスタンプもより新しいときに限り、リセットを示します。",
           "Name": "再開カーソル",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "NullText": "新しいスナップショットから開始する",
+          "SetText": "後に再開",
           "Type": 2
         },
         {
           "Description": "リプレイが不可能な場合に含める、履歴期間の開始時刻の半開区間です。`None`の場合、リセットスナップショットから履歴を除外します。",
           "Name": "履歴復旧範囲",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "NullText": "履歴なし",
+          "SetText": "履歴を含める",
           "Type": 3
         },
         {
@@ -1544,8 +1544,8 @@
         {
           "Description": "リプレイが不可能な場合に含める、予報期間の開始時刻の半開区間です。`None`の場合、リセットスナップショットから予報データを除外します。",
           "Name": "予報復旧範囲",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "NullText": "予報なし",
+          "SetText": "～の予測を含める",
           "Type": 5
         },
         {
@@ -1578,41 +1578,41 @@
     },
     {
       "Description": "",
-      "DisplayName": "Saved weather record identity",
+      "DisplayName": "保存された気象記録の ID",
       "List": [
         {
           "Description": "",
-          "Name": "Saved weather record identity",
+          "Name": "保存された気象記録の ID",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Location",
+          "Name": "場所",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "HistoryMetadata",
+          "Name": "履歴メタデータ",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "HistoryPeriod",
+          "Name": "歴史時代",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "starts_at",
+          "Name": "開始時刻",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "Current",
+          "Name": "現在",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Forecast",
+          "Name": "予報",
           "Type": 6
         }
       ],

@@ -1,32 +1,32 @@
 {
   "Entries": {
     "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"epoch_timestamp\"/property/\"Description\"": {
-      "Current": "sha256:e9828370c353d9e79654e95061b06f2388dc6b9e9400558cef2b1fac2f18f58e",
-      "Target": "由服务器分配、用于标识游标代次的日期和时间。该单一字段既是流纪元，也是有序时间戳；不存在\n单独的不透明纪元。正常推进序列时该值保持不变。当服务器丢失其临时游标或重放日志时，它会\n分配一个严格晚于之前值的纪元时间戳，并将 `sequence` 重新从零开始。客户端首次观察到的重置后\n序列值可能已经大于零。此时间戳描述的是游标状态，而不是天气数值的观测时间。"
+      "Current": "sha256:c3fc86e5780865393d3d05a490627175ad565efa9aa4e58038575b24581033ab",
+      "Target": "服务器分配的标识游标生成的日期和时间。这个单个字段既是流纪元又是有序时间戳；不存在单独的不透明时代。在正常序列推进期间它保持不变。当服务器丢失其瞬态游标或重播日志时，它会分配一个比前一个严格更新的纪元时间戳，并再次从零开始 `sequence` 。客户端可以首先观察稍后的复位后序列而不是零。该时间戳描述的是光标状态，而不是天气值的观测时间。"
     },
     "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"epoch_timestamp\"/property/\"Name\"": {
       "Current": "sha256:bb9e368d0e1f0707da9e241f40b75f8c078f274c3b25cebe1216f53d7ccec127",
       "Target": "纪元时间戳"
     },
     "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"sequence\"/property/\"Description\"": {
-      "Current": "sha256:16caff7fe3fc71c3f64f0a2520e526c9ae06bd74aeb9c08c5bba5f9d01c47b98",
-      "Target": "标识最新应用的状态更改。服务器对每个接受的天气更改将该值递增一次。当临时服务器游标重置时，\n该值重置为零，之后的更改继续递增；游标重置不会清除历史、当前或预报天气数据。"
+      "Current": "sha256:82f1378c75c45cfd6cc88b0fd17506b34d14925087e6270ca28f616f210a2617",
+      "Target": "标识最新应用的状态更改。服务器每次接受的天气变化都会增加该值一次。当临时服务器光标重置时，它会将此值重置为零，然后为以后的更改增加该值；重置不会清除历史、当前或预测天气数据。"
     },
     "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"sequence\"/property/\"Name\"": {
       "Current": "sha256:bd520af066a2edfbf109e11a9cf98f78132a8ed1f0c9c97f53e54114062a03ee",
       "Target": "序列"
     },
     "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/property/\"Description\"": {
-      "Current": "sha256:538e1264f190ab030f4b1e505c19fff462412c3d03f4fd6464ef961efa53ba8c",
-      "Target": "标识增量喷灌天气流中一个已应用的状态。客户端会比较两个字段，不得仅凭较小的序列值就将其\n解释为服务器重置。"
+      "Current": "sha256:2ffc97ea46e117225bb6477524a23a7ff3124eb8b18e2044005dc8e41644ba86",
+      "Target": "识别增量喷水器天气流中的一种应用状态。客户端比较这两个字段，并且不得将较小的序列单独解释为服务器重置。"
     },
     "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/property/\"Name\"": {
       "Current": "sha256:baf3ea3be2dccfaab8eccda5de69b32b68bc6b51687a7052c8444f219efa0ea8",
       "Target": "喷灌天气游标"
     },
     "type/\"\"/\"SprinklerWeatherCursorV1\"/property/\"Description\"": {
-      "Current": "sha256:93cc1db1cd022e36e0885f64af1e1e42d303d48335a4ae3d2f7d2429091e95d4",
-      "Target": "标识增量喷灌天气流中一个已应用的状态。客户端会比较两个字段，不得仅凭较小的序列值就将其\n解释为服务器重置。"
+      "Current": "sha256:381c9f809035e71bf45f6d0a5c15f5c351806b92de26f62600695f13841dae55",
+      "Target": "识别增量喷水器天气流中的一种应用状态。客户端比较这两个字段，并且不得将较小的序列单独解释为服务器重置。"
     },
     "type/\"\"/\"SprinklerWeatherCursorV1\"/property/\"DisplayName\"": {
       "Current": "sha256:417637db55fa84744954d4214aa1331c95115ade89f099d3c765ed0a8ddaef41",
@@ -34,5 +34,26 @@
     }
   },
   "Reviewed": {},
-  "Translated": {}
+  "Translated": {
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"epoch_timestamp\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:c3fc86e5780865393d3d05a490627175ad565efa9aa4e58038575b24581033ab"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"sequence\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:82f1378c75c45cfd6cc88b0fd17506b34d14925087e6270ca28f616f210a2617"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:2ffc97ea46e117225bb6477524a23a7ff3124eb8b18e2044005dc8e41644ba86"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:381c9f809035e71bf45f6d0a5c15f5c351806b92de26f62600695f13841dae55"
+    }
+  }
 }

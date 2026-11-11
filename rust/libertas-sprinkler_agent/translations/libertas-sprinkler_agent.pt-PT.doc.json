@@ -1,10 +1,10 @@
 {
-  "Description": "Rega cada parte do jardim apenas quando precisa de água. Escolha o que cresce em cada área, como é regada e quaisquer períodos em que a rega deve ser interrompida. A Rega inteligente utiliza a chuva recente, as condições meteorológicas atuais e a previsão para escolher uma hora e quantidade de rega seguras. Também contabiliza a rega manual, continua a funcionar durante pequenas interrupções da Internet e lembra-o de preparar o sistema para temperaturas negativas.",
+  "Description": "Rega cada parte do quintal apenas quando necessita de água.\nEscolha o que cresce em cada área, como será regado e os momentos em que a rega deve ser interrompida. O Smart Sprinkler utiliza a chuva recente, o clima atual e a previsão para escolher um horário e uma quantidade de rega seguros. Também conta a rega manual, continua a funcionar durante pequenas interrupções na Internet e lembra-o de preparar o sistema para climas gelados.",
   "DisplayName": "Rega inteligente",
   "DocumentVersion": "0.0.2",
   "List": [
     {
-      "DefaultText": "Smart sprinkler",
+      "DefaultText": "Aspersor inteligente",
       "Description": "Rega cada relvado, jardim ou área plantada de acordo com as respetivas plantas, método de rega, chuva recente, previsão meteorológica e ajustes selecionados pelo utilizador. O utilizador escolhe a fonte meteorológica, onde estarão disponíveis os controlos e relatórios das áreas, os destinatários dos lembretes e, para cada área, a válvula, o tipo de planta e o método de rega. O utilizador pode alterar manualmente, a qualquer momento, a percentagem de rega e os períodos sem rega de cada área, ou preparar todo o sistema para o inverno e reativá-lo. O sistema de rega agenda e opera automaticamente cada válvula tendo em conta chuva, precipitação prevista, vento, temperaturas negativas, necessidades das plantas e períodos sem rega, e utiliza estimativas guardadas durante pequenas interrupções do serviço meteorológico. O sistema de rega mostra o estado atual, a estimativa de água, o estado da válvula e o próximo plano de rega de cada área. O sistema de rega fornece gráficos de balanço hídrico, utilização diária de água e meteorologia registada e prevista, e envia lembretes às pessoas selecionadas antes de temperaturas negativas.\nRegisto de alterações: variantes de protocolo atualizadas.",
       "DisplayName": "Rega inteligente",
       "List": [
@@ -44,8 +44,8 @@
   ],
   "Locale": "pt-PT",
   "StringResources": {
-    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
-    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Estado de limpeza do histórico de rega para {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Estado de limpeza diária do histórico de avarias para {0}.",
     "SPRINKLER_DAILY_REPORT_V1": "Balanço hídrico diário guardado de {0}.",
     "SPRINKLER_INVALID_NO_WATERING_PERIODS": "Utilize no máximo 64 períodos sem rega, cada um com um início válido e uma duração superior a zero.",
     "SPRINKLER_INVALID_WATERING_PERCENT": "A quantidade de água deve estar entre 20% e 200%, em incrementos de 10%.",
@@ -55,15 +55,15 @@
     "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "Histórico meteorológico detalhado guardado para relatórios de rega em {0}.",
     "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "Observações meteorológicas atuais guardadas para relatórios de rega em {0}.",
     "SPRINKLER_SITE_LOCATION_V1": "Localização guardada utilizada para a meteorologia da rega em {0}.",
-    "SPRINKLER_UI_CHANGE_DATES": "Change dates",
-    "SPRINKLER_UI_SYSTEM_ACTIVE": "System active",
-    "SPRINKLER_UI_VALVE": "Valve",
-    "SPRINKLER_UI_WATERING_PLAN": "Watering plan",
-    "SPRINKLER_UI_WATER_BALANCE": "Water balance",
+    "SPRINKLER_UI_CHANGE_DATES": "Alterar datas",
+    "SPRINKLER_UI_SYSTEM_ACTIVE": "Sistema ativo",
+    "SPRINKLER_UI_VALVE": "Válvula",
+    "SPRINKLER_UI_WATERING_PLAN": "Plano de rega",
+    "SPRINKLER_UI_WATER_BALANCE": "Balanço hídrico",
     "SPRINKLER_WATERING_ACTIVITIES_V1": "Histórico de rega guardado de {0}.",
     "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "Atividade de rega atual de {0}.",
     "SPRINKLER_WATERING_MODE_V1": "Modo de rega guardado de {0}.",
-    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
+    "SPRINKLER_WATERING_RESTART_V1": "Reinício da rega contabilizando {0}.",
     "SPRINKLER_WATER_EVENTS_V1": "Chuva e rega recentes guardadas de {0}.",
     "SPRINKLER_WATER_USAGE_RAIN_LANE": "Chuva",
     "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
@@ -162,22 +162,22 @@
       "Name": "SprinklerDailyReportV1"
     },
     {
-      "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
-      "DisplayName": "Daily water use",
+      "Description": "Mostra a chuva e a rega por data, mantendo visíveis as zonas secas ou ociosas.",
+      "DisplayName": "Uso diário de água",
       "List": [
         {
-          "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
-          "Name": "Daily water use",
+          "Description": "Mostra a chuva e a rega por data, mantendo visíveis as zonas secas ou ociosas.",
+          "Name": "Uso diário de água",
           "Type": 0
         },
         {
-          "Description": "Recorded and planned water amounts.",
-          "Name": "Rain and watering",
+          "Description": "Quantidades de água registadas e planeadas.",
+          "Name": "Chuva e rega",
           "Type": 1
         },
         {
-          "Description": "Areas with no rain or watering during the selected dates.",
-          "Name": "Areas with no recorded water",
+          "Description": "Áreas sem chuva ou rega nas datas selecionadas.",
+          "Name": "Áreas sem água registada",
           "Type": 2
         }
       ],
@@ -273,13 +273,13 @@
           "Type": 16
         },
         {
-          "Description": "Its generation is bound only by explicit provider site messages.",
-          "Name": "Report weather archive state V2",
+          "Description": "A sua geração é apenas ligada por mensagens explícitas do site do fornecedor.",
+          "Name": "Reportar estado do ficheiro meteorológico V2",
           "Type": 17
         },
         {
-          "Description": "Active indefinitely retained provider-site generation.",
-          "Name": "Archive state",
+          "Description": "Geração ativa de site do fornecedor retido indefinidamente.",
+          "Name": "Estado do ficheiro",
           "Type": 18
         },
         {
@@ -293,43 +293,43 @@
           "Type": 20
         },
         {
-          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
-          "Name": "Watering restart accounting",
+          "Description": "Arquiva indefinidamente uma observação completa do fornecedor aceite.",
+          "Name": "Reportar período meteorológico V2",
           "Type": 21
         },
         {
-          "Description": "Present while shutdown or restart accounting needs reconciliation.",
-          "Name": "Checkpoint",
+          "Description": "Temperatura, humidade, chuva, ET, vento e rajadas durante um período completo do fornecedor.",
+          "Name": "Período climático",
           "Type": 22
         },
         {
-          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
-          "Name": "Watering history cleanup",
+          "Description": "Arquiva um intervalo ET substituto exato indefinidamente.",
+          "Name": "Lacuna climática modelada",
           "Type": 23
         },
         {
-          "Description": "True after the archive has been scanned and duplicate removals verified.",
-          "Name": "Completed",
+          "Description": "Intervalo exato com fonte imutável e proveniência da taxa.",
+          "Name": "Lacuna modelada",
           "Type": 24
         },
         {
-          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
-          "Name": "Watering history cleanup",
+          "Description": "Regista a conclusão da tentativa única de limpeza duplicada de uma válvula.",
+          "Name": "Limpeza do histórico de rega",
           "Type": 25
         },
         {
-          "Description": "True after the archive has been scanned and duplicate removals verified.",
-          "Name": "Completed",
+          "Description": "Verdadeiro após o ficheiro ter sido verificado e as remoções duplicadas verificadas.",
+          "Name": "Concluída",
           "Type": 26
         },
         {
-          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
-          "Name": "Watering restart accounting",
+          "Description": "Um ponto de verificação oficial por válvula, libertado após a reconciliação ter sido persistida e verificada.",
+          "Name": "Rega reiniciar contabilidade",
           "Type": 27
         },
         {
-          "Description": "Present while shutdown or restart accounting needs reconciliation.",
-          "Name": "Checkpoint",
+          "Description": "Presente durante o encerramento ou reinicialização da contabilidade necessita de reconciliação.",
+          "Name": "Ponto de verificação",
           "Type": 28
         }
       ],
@@ -479,41 +479,41 @@
     },
     {
       "Description": "",
-      "DisplayName": "Saved sprinkler identities",
+      "DisplayName": "Identidades de sprinklers guardadas",
       "List": [
         {
           "Description": "",
-          "Name": "Saved sprinkler identities",
+          "Name": "Identidades de sprinklers guardadas",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "System settings and weather archives",
+          "Name": "Definições do sistema e ficheiros meteorológicos",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "ponto final",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "gravar",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "One valve's settings, accounting and reports",
+          "Name": "Configurações, contabilização e relatórios de uma válvula",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "valve",
+          "Name": "válvula",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "gravar",
           "Type": 6
         }
       ],
@@ -606,44 +606,44 @@
       "Name": "SprinklerPlantTypeV1"
     },
     {
-      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
-      "DisplayName": "Available report range",
+      "Description": "Os atuais limites de data inclusivos para um tipo de gráfico de sprinklers. O intervalo não é maior do que o gráfico pode devolver numa resposta.",
+      "DisplayName": "Intervalo de relatórios disponíveis",
       "List": [
         {
-          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
-          "Name": "Available report range",
+          "Description": "Os atuais limites de data inclusivos para um tipo de gráfico de sprinklers. O intervalo não é maior do que o gráfico pode devolver numa resposta.",
+          "Name": "Intervalo de relatórios disponíveis",
           "Type": 0
         },
         {
-          "Description": "Earliest currently selectable date after applying this chart's maximum range length.",
-          "Name": "Earliest date",
+          "Description": "Data mais antiga atualmente selecionável após a aplicação do comprimento máximo do intervalo deste gráfico.",
+          "Name": "Data mais antiga",
           "Type": 1
         },
         {
-          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts.",
-          "Name": "Latest date",
+          "Description": "Última data atualmente selecionável. Isto inclui datas de previsão para gráficos que suportam previsões.",
+          "Name": "Última data",
           "Type": 2
         }
       ],
       "Name": "SprinklerReportAvailableRangeV1"
     },
     {
-      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
-      "DisplayName": "Effective report range",
+      "Description": "As datas inclusivas do calendário realmente utilizadas para gerar um relatório de sprinklers.",
+      "DisplayName": "Faixa de relatório eficaz",
       "List": [
         {
-          "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
-          "Name": "Effective report range",
+          "Description": "As datas inclusivas do calendário realmente utilizadas para gerar um relatório de sprinklers.",
+          "Name": "Faixa de relatório eficaz",
           "Type": 0
         },
         {
-          "Description": "First calendar date included in the generated report.",
-          "Name": "First date",
+          "Description": "Primeira data do calendário incluída no relatório gerado.",
+          "Name": "Primeiro encontro",
           "Type": 1
         },
         {
-          "Description": "Last calendar date included in the generated report.",
-          "Name": "Last date",
+          "Description": "Última data do calendário incluída no relatório gerado.",
+          "Name": "Última data",
           "Type": 2
         }
       ],
@@ -688,18 +688,18 @@
           "Type": 2
         },
         {
-          "Description": "Water-balance chart for the effective report range.",
-          "Name": "Chart",
+          "Description": "Gráfico do balanço hídrico para o intervalo efetivo do relatório.",
+          "Name": "Gráfico",
           "Type": 3
         },
         {
-          "Description": "Inclusive dates actually used to generate this response.",
-          "Name": "Effective range",
+          "Description": "Datas inclusivas realmente utilizadas para gerar esta resposta.",
+          "Name": "Alcance efetivo",
           "Type": 4
         },
         {
-          "Description": "Current date-picker limits and defaults for the next request.",
-          "Name": "Available range",
+          "Description": "Limites e normas atuais do seletor de data para o próximo pedido.",
+          "Name": "Gama disponível",
           "Type": 5
         },
         {
@@ -713,18 +713,18 @@
           "Type": 7
         },
         {
-          "Description": "Water-use chart for the effective report range.",
-          "Name": "Chart",
+          "Description": "Gráfico de utilização de água para o intervalo efetivo do relatório.",
+          "Name": "Gráfico",
           "Type": 8
         },
         {
-          "Description": "Inclusive dates actually used to generate this response.",
-          "Name": "Effective range",
+          "Description": "Datas inclusivas realmente utilizadas para gerar esta resposta.",
+          "Name": "Alcance efetivo",
           "Type": 9
         },
         {
-          "Description": "Current date-picker limits and defaults for the next request.",
-          "Name": "Available range",
+          "Description": "Limites e normas atuais do seletor de data para o próximo pedido.",
+          "Name": "Gama disponível",
           "Type": 10
         },
         {
@@ -738,40 +738,40 @@
           "Type": 12
         },
         {
-          "Description": "Weather chart for the effective report range.",
-          "Name": "Chart",
+          "Description": "Gráfico meteorológico para o intervalo efetivo do relatório.",
+          "Name": "Gráfico",
           "Type": 13
         },
         {
-          "Description": "Inclusive dates actually used to generate this response.",
-          "Name": "Effective range",
+          "Description": "Datas inclusivas realmente utilizadas para gerar esta resposta.",
+          "Name": "Alcance efetivo",
           "Type": 14
         },
         {
-          "Description": "Current date-picker limits and defaults for the next request.",
-          "Name": "Available range",
+          "Description": "Limites e normas atuais do seletor de data para o próximo pedido.",
+          "Name": "Gama disponível",
           "Type": 15
         }
       ],
       "Name": "SprinklerReportProtocol"
     },
     {
-      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
-      "DisplayName": "Report date range",
+      "Description": "Seleciona as datas inclusivas do calendário a incluir num relatório de sprinklers.",
+      "DisplayName": "Período do relatório",
       "List": [
         {
-          "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
-          "Name": "Report date range",
+          "Description": "Seleciona as datas inclusivas do calendário a incluir num relatório de sprinklers.",
+          "Name": "Período do relatório",
           "Type": 0
         },
         {
-          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range.",
-          "Name": "First date",
+          "Description": "Opcional. Inicialmente utiliza a data mais antiga no intervalo de tamanho máximo atual do gráfico.",
+          "Name": "Primeiro encontro",
           "Type": 1
         },
         {
-          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable.",
-          "Name": "Last date",
+          "Description": "Opcional. Inicialmente utiliza a última data atual suportada pelo gráfico, incluindo o seu horizonte de previsão quando aplicável.",
+          "Name": "Última data",
           "Type": 2
         }
       ],
@@ -800,37 +800,37 @@
       "Name": "SprinklerReportWeatherArchiveStateV2"
     },
     {
-      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
-      "DisplayName": "Restart accounting checkpoint",
+      "Description": "Preserva uma execução observada e o seu intervalo cronometrado restante durante o encerramento da aplicação. Um relatório da válvula reconcilia o intervalo após a reinicialização.",
+      "DisplayName": "Reiniciar ponto de verificação contabilístico",
       "List": [
         {
-          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
-          "Name": "Restart accounting checkpoint",
+          "Description": "Preserva uma execução observada e o seu intervalo cronometrado restante durante o encerramento da aplicação. Um relatório da válvula reconcilia o intervalo após a reinicialização.",
+          "Name": "Reiniciar ponto de verificação contabilístico",
           "Type": 0
         },
         {
-          "Description": "Authoritative lifecycle snapshot at the checkpoint.",
-          "Name": "Activity",
+          "Description": "Instantâneo oficial do ciclo de vida no ponto de controlo.",
+          "Name": "Atividade",
           "Type": 1
         },
         {
-          "Description": "Exclusive end of the already accounted valve-open interval.",
-          "Name": "Accounted through",
+          "Description": "Fim exclusivo do intervalo de válvula aberta já contabilizado.",
+          "Name": "Contabilizado através",
           "Type": 2
         },
         {
-          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted.",
-          "Name": "Ledger segment",
+          "Description": "Último segmento de rega, incluindo qualquer prefixo fundido anteriormente. Uma duração zero reserva o seu índice antes de ser contabilizado o primeiro segundo completo.",
+          "Name": "Segmento contabilístico",
           "Type": 3
         },
         {
-          "Description": "Expected end of an automatic timed run; manual runs have no known end.",
-          "Name": "Expected finish",
+          "Description": "Fim esperado de uma execução cronometrada automática; as execuções manuais não têm fim conhecido.",
+          "Name": "Final esperado",
           "Type": 4
         },
         {
-          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour.",
-          "Name": "Delivery rate",
+          "Description": "Taxa de entrega do aspersor no corte, em milímetros por hora.",
+          "Name": "Taxa de entrega",
           "Type": 5
         }
       ],
@@ -1028,44 +1028,44 @@
       "Name": "SprinklerTimeSlotV1"
     },
     {
-      "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
-      "DisplayName": "Valve problems",
+      "Description": "Problemas que uma válvula de rega Matter pode reportar ao mesmo tempo. Uma seleção vazia significa que a válvula não reportou qualquer problema.",
+      "DisplayName": "Problemas da válvula",
       "List": [
         {
-          "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+          "Description": "Problemas que uma válvula de rega Matter pode reportar ao mesmo tempo. Uma seleção vazia significa que a válvula não reportou qualquer problema.",
           "Enum": [
             {
-              "Description": "The valve reported a problem without a more specific classification.",
-              "Name": "General problem",
+              "Description": "A válvula reportou problema sem classificação mais específica.",
+              "Name": "Problema geral",
               "Type": 1
             },
             {
-              "Description": "The valve cannot move because it is blocked.",
-              "Name": "Blocked",
+              "Description": "A válvula não se pode mover porque está bloqueada.",
+              "Name": "Bloqueado",
               "Type": 2
             },
             {
-              "Description": "The valve detected an unexpected water leak.",
-              "Name": "Leak detected",
+              "Description": "A válvula detetou uma fuga inesperada de água.",
+              "Name": "Vazamento detectado",
               "Type": 3
             },
             {
-              "Description": "The controller cannot detect a connected valve.",
-              "Name": "Not connected",
+              "Description": "O controlador não consegue detetar uma válvula ligada.",
+              "Name": "Não conectado",
               "Type": 4
             },
             {
-              "Description": "The valve or its wiring has a short circuit.",
-              "Name": "Short circuit",
+              "Description": "A válvula ou a sua cablagem está em curto-circuito.",
+              "Name": "Curto-circuito",
               "Type": 5
             },
             {
-              "Description": "The valve exceeded the available electrical current.",
-              "Name": "Too much current",
+              "Description": "A válvula excedeu a corrente elétrica disponível.",
+              "Name": "Muita corrente",
               "Type": 6
             }
           ],
-          "Name": "Valve problems",
+          "Name": "Problemas da válvula",
           "Type": 0
         }
       ],
@@ -1478,7 +1478,7 @@
             },
             {
               "Description": "A válvula foi aberta fora da Rega inteligente.",
-              "Name": "Manual",
+              "Name": "Manuais",
               "Type": 2
             },
             {
@@ -1630,8 +1630,8 @@
               "Type": 16
             },
             {
-              "Description": "The valve was observed closed before its timed run was due to finish.",
-              "Name": "Stopped early",
+              "Description": "A válvula foi observada fechada antes de terminar o seu funcionamento temporizado.",
+              "Name": "Parou cedo",
               "Type": 17
             }
           ],
@@ -1685,13 +1685,13 @@
           "Type": 0
         },
         {
-          "Description": "Shared rain and per-area irrigation during the selected dates.",
-          "Name": "Summary",
+          "Description": "Chuva partilhada e rega por área durante as datas selecionadas.",
+          "Name": "Resumo",
           "Type": 1
         },
         {
-          "Description": "Rain and watering amounts by local calendar date.",
-          "Name": "Daily details",
+          "Description": "Quantidades de chuva e rega por data do calendário local.",
+          "Name": "Detalhes diários",
           "Type": 2
         }
       ],
@@ -1801,12 +1801,12 @@
       "Name": "SprinklerWaterUsageRowV1"
     },
     {
-      "Description": "Shows shared rain and irrigation for every area together on one chart.",
-      "DisplayName": "Water-use summary",
+      "Description": "Mostra a chuva e a rega partilhadas para todas as áreas juntas num gráfico.",
+      "DisplayName": "Resumo do uso da água",
       "List": [
         {
-          "Description": "Shows shared rain and irrigation for every area together on one chart.",
-          "Name": "Water-use summary",
+          "Description": "Mostra a chuva e a rega partilhadas para todas as áreas juntas num gráfico.",
+          "Name": "Resumo do uso da água",
           "Type": 0
         },
         {
@@ -1818,42 +1818,42 @@
       "Name": "SprinklerWaterUsageSummaryChartV1"
     },
     {
-      "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
-      "DisplayName": "Water-use summary item",
+      "Description": "Uma contribuição registada ou planeada para a chuva partilhada ou para o total de irrigação de uma área.",
+      "DisplayName": "Item de resumo do uso de água",
       "List": [
         {
-          "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
-          "Name": "Water-use summary item",
+          "Description": "Uma contribuição registada ou planeada para a chuva partilhada ou para o total de irrigação de uma área.",
+          "Name": "Item de resumo do uso de água",
           "Type": 0
         },
         {
-          "Description": "Millimeter scale for comparing rain and irrigation.",
-          "Name": "Water amount",
+          "Description": "Escala milimétrica para comparar a chuva e a rega.",
+          "Name": "Quantidade de água",
           "Type": 1
         },
         {
-          "Description": "Where this contribution ends in its stacked total.",
-          "Name": "Amount end",
+          "Description": "Onde esta contribuição termina no seu total acumulado.",
+          "Name": "Fim do valor",
           "Type": 2
         },
         {
-          "Description": "Total rain or irrigation represented by this part of the bar.",
-          "Name": "Amount",
+          "Description": "Chuva total ou rega representada por esta parte da barra.",
+          "Name": "Quantidade",
           "Type": 3
         },
         {
-          "Description": "Recorded rain, forecast rain, actual watering, or scheduled watering.",
-          "Name": "Water source",
+          "Description": "Chuva registada, previsão de chuva, rega real ou rega programada.",
+          "Name": "Fonte de água",
           "Type": 4
         },
         {
-          "Description": "Keeps shared rain first, followed by every configured area.",
-          "Name": "Lane",
+          "Description": "Mantém primeiro a chuva partilhada, seguida de todas as áreas configuradas.",
+          "Name": "Grupo de comparação",
           "Type": 5
         },
         {
-          "Description": "Shows Rain or the configured area's name on the summary axis.",
-          "Name": "Rain or area",
+          "Description": "Mostra Chuva ou o nome da área configurada no eixo de resumo.",
+          "Name": "Chuva ou área",
           "Type": 6
         }
       ],
@@ -2154,24 +2154,24 @@
       "Name": "SprinklerZoneAdvancedStateV1"
     },
     {
-      "Description": "Explains why a requested sprinkler setting was not changed.",
-      "DisplayName": "Configuration error",
+      "Description": "Explica por que razão uma configuração de sprinklers solicitada não foi alterada.",
+      "DisplayName": "Erro de configuração",
       "List": [
         {
-          "Description": "Explains why a requested sprinkler setting was not changed.",
+          "Description": "Explica por que razão uma configuração de sprinklers solicitada não foi alterada.",
           "Enum": [
             {
-              "Description": "The percentage was outside the supported range or step.",
-              "Name": "Invalid water amount",
+              "Description": "A percentagem estava fora do intervalo ou passo suportado.",
+              "Name": "Quantidade de água inválida",
               "Type": 1
             },
             {
-              "Description": "The replacement contained too many periods or an invalid interval.",
-              "Name": "Invalid no-watering periods",
+              "Description": "A substituição continha demasiados pontos ou um intervalo inválido.",
+              "Name": "Períodos sem rega inválidos",
               "Type": 2
             }
           ],
-          "Name": "Configuration error",
+          "Name": "Erro de configuração",
           "Type": 0
         }
       ],
@@ -2192,18 +2192,18 @@
           "Type": 1
         },
         {
-          "Description": "Times when watering must be paused.",
-          "Name": "No-watering periods",
+          "Description": "Momentos em que a rega deve ser pausada.",
+          "Name": "Períodos sem rega",
           "Type": 2
         },
         {
-          "Description": "One period when this area must not be watered.",
-          "Name": "No-watering period",
+          "Description": "Um período em que esta área não deve ser regada.",
+          "Name": "Período sem rega",
           "Type": 3
         },
         {
-          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
-          "Name": "Active",
+          "Description": "Ative a rega automática. Desligue-o após preparar o sistema para o inverno.",
+          "Name": "Ativo",
           "Type": 4
         }
       ],
@@ -2301,58 +2301,58 @@
           "Type": 9
         },
         {
-          "Description": "Use more or less water than the recommended amount.",
-          "Name": "Change water amount",
+          "Description": "Utilize mais ou menos água do que a quantidade recomendada.",
+          "Name": "Alterar quantidade de água",
           "Type": 10
         },
         {
-          "Description": "Use 100% for the recommended amount, a lower value for less water, or a higher value for more water.",
-          "Name": "Water amount",
+          "Description": "Utilize 100% para a quantidade recomendada, um valor inferior para menos água ou um valor superior para mais água.",
+          "Name": "Quantidade de água",
           "Type": 11
         },
         {
-          "Description": "Replace the times when this area must not be watered.",
-          "Name": "Change no-watering periods",
+          "Description": "Substitua os horários em que esta área não deve ser regada.",
+          "Name": "Alterar os períodos sem rega",
           "Type": 12
         },
         {
-          "Description": "The complete list of times when watering must be paused.",
-          "Name": "No-watering periods",
+          "Description": "A lista completa dos horários em que a rega deve ser pausada.",
+          "Name": "Períodos sem rega",
           "Type": 13
         },
         {
-          "Description": "One period when this area must not be watered.",
-          "Name": "No-watering period",
+          "Description": "Um período em que esta área não deve ser regada.",
+          "Name": "Período sem rega",
           "Type": 14
         },
         {
-          "Description": "Turn automatic watering on or off.",
-          "Name": "Change active state",
+          "Description": "Ative ou desative a rega automática.",
+          "Name": "Alterar estado ativo",
           "Type": 15
         },
         {
-          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
-          "Name": "Active",
+          "Description": "Ative a rega automática. Desligue-o após preparar o sistema para o inverno.",
+          "Name": "Ativo",
           "Type": 16
         },
         {
-          "Description": "Confirms that a requested setting was persisted and applied. The current subscribed configuration remains installed.",
-          "Name": "Change accepted",
+          "Description": "Confirma que uma configuração solicitada foi mantida e aplicada. A configuração subscrita atual permanece instalada.",
+          "Name": "Alteração aceite",
           "Type": 17
         },
         {
-          "Description": "Explains why a requested setting was not changed while preserving the current subscribed configuration for correction and retry.",
-          "Name": "Change rejected",
+          "Description": "Explica por que razão uma configuração solicitada não foi alterada, preservando a configuração atual inscrita para correção e nova tentativa.",
+          "Name": "Alteração rejeitada",
           "Type": 18
         },
         {
-          "Description": "A localized explanation of the invalid setting.",
-          "Name": "Error message",
+          "Description": "Uma explicação localizada da configuração inválida.",
+          "Name": "Mensagem de erro",
           "Type": 19
         },
         {
-          "Description": "The reason the setting was rejected.",
-          "Name": "Error",
+          "Description": "O motivo pelo qual a configuração foi rejeitada.",
+          "Name": "Erro",
           "Type": 20
         }
       ],
@@ -2424,61 +2424,61 @@
     },
     {
       "Description": "",
-      "DisplayName": "System record identity",
+      "DisplayName": "Identidade do registo do sistema",
       "List": [
         {
           "Description": "",
-          "Name": "System record identity",
+          "Name": "Identidade do registo do sistema",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "ArchiveState",
+          "Name": "Estado do ficheiro",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "Location",
+          "Name": "Localização",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "WateringMode",
+          "Name": "Modo de rega",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "WinterizationReminder",
+          "Name": "Lembrete de preparação para o inverno",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "WeatherHistory",
+          "Name": "Histórico meteorológico",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "generation",
+          "Name": "geração",
           "Type": 6
         },
         {
           "Description": "",
-          "Name": "index",
+          "Name": "índice",
           "Type": 7
         },
         {
           "Description": "",
-          "Name": "WeatherObservation",
+          "Name": "Observação Meteorológica",
           "Type": 8
         },
         {
           "Description": "",
-          "Name": "generation",
+          "Name": "geração",
           "Type": 9
         },
         {
           "Description": "",
-          "Name": "index",
+          "Name": "índice",
           "Type": 10
         }
       ],
@@ -2486,66 +2486,66 @@
     },
     {
       "Description": "",
-      "DisplayName": "Valve record identity",
+      "DisplayName": "Identidade do registo da válvula",
       "List": [
         {
           "Description": "",
-          "Name": "Valve record identity",
+          "Name": "Identidade do registo da válvula",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Memory",
+          "Name": "Memória",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "ActivityState",
+          "Name": "Estado de Atividade",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "Restart",
+          "Name": "Reiniciar",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "WaterEvent",
+          "Name": "Evento Aquático",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "index",
+          "Name": "índice",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Activity",
+          "Name": "Atividade",
           "Type": 6
         },
         {
           "Description": "",
-          "Name": "index",
+          "Name": "índice",
           "Type": 7
         },
         {
           "Description": "",
-          "Name": "DailyReport",
+          "Name": "Relatório Diário",
           "Type": 8
         },
         {
           "Description": "",
-          "Name": "index",
+          "Name": "índice",
           "Type": 9
         },
         {
           "Description": "",
-          "Name": "ModeledWeatherGap",
+          "Name": "ModeladoWeatherGap",
           "Type": 10
         },
         {
           "Description": "",
-          "Name": "index",
+          "Name": "índice",
           "Type": 11
         }
       ],

@@ -9,8 +9,8 @@
       "Target": "天气更改"
     },
     "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"changes\"/property/\"Description\"": {
-      "Current": "sha256:ef73180b83170f46079f68cf5be1a0e2ae877a0787299b5b2fe9fb36c897a5f9",
-      "Target": "要原子应用的有序更改。每个项目使序列精确递增一；空列表表示已经追上最新状态的恢复结果，\n既不会推进游标，也不用于周期性存活检测。"
+      "Current": "sha256:6c14ae3f2414be0f70f300b1f4268b97aa8fd0344a6a379bf07b59d789a0dab9",
+      "Target": "以原子方式应用的有序更改。每一项将序列向前推进一位；空列表是追赶式恢复，不会推进游标或充当周期性活动。"
     },
     "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"changes\"/property/\"Name\"": {
       "Current": "sha256:905f6564cca806cb842a5b0eff75463695e35e6b2f7470657c6c68a0b62e88f9",
@@ -25,24 +25,24 @@
       "Target": "起始游标"
     },
     "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"through_cursor\"/property/\"Description\"": {
-      "Current": "sha256:ea1865a7ea9a4bb87d6120a1e720d154b7d8b748dfabf724340a799d54e01539",
-      "Target": "应用该报告中的每个更改后到达的包含式上界游标。它必须与 `from_cursor` 保持相同的纪元时间戳。\n服务器游标重置绝不会通过增量报告传递；这种情况要求完整重置。"
+      "Current": "sha256:3637d9a17cad9988b5971405b62e17e95956cae29c5181e40d2c72d92e9bc862",
+      "Target": "应用此报告中的每个更改后，到达包含的上部光标。它必须保留与 `from_cursor` 相同的纪元时间戳。服务器光标重置永远不会作为增量报告进行；它需要完全重置。"
     },
     "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"through_cursor\"/property/\"Name\"": {
       "Current": "sha256:64f580896edbb0009ce83ae73e4e5a80f37659bb99384d3b7bc0b9390fffa311",
       "Target": "截止游标"
     },
     "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"Description\"": {
-      "Current": "sha256:852b87ddf782a6ab7df266e275f220e8b40a804e3323f15fe2b31eec37a59b95",
-      "Target": "携带一个有序且原子的天气更改范围。只有当客户端存储的游标等于 `from_cursor` 时才应用该报告，\n随后存储 `through_cursor`。空报告表示恢复时已经追上最新状态；周期性无更改存活检测使用 PeerAlive。"
+      "Current": "sha256:be87c478abaafd48fd9de3742476f98d8bf54af88a58ba4ec78da8d7fc523b23",
+      "Target": "携带有序的原子范围的天气变化。仅当客户端存储的游标等于 `from_cursor` 时，客户端才会应用报告，然后存储 `through_cursor`。空报告是追赶的恢复结果；周期性无变化活性使用 PeerAlive。"
     },
     "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"Name\"": {
       "Current": "sha256:9a1dd38118805f74f23596b1eef35c5f83701518a9de7ec251e324d8594c31be",
       "Target": "喷灌天气增量报告"
     },
     "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"Description\"": {
-      "Current": "sha256:b376833e78ed92dcf0a52c3667afc2233c1436bcf16f0966d83d3888197cd0b9",
-      "Target": "携带一个有序且原子的天气更改范围。只有当客户端存储的游标等于 `from_cursor` 时才应用该报告，\n随后存储 `through_cursor`。空报告表示恢复时已经追上最新状态；周期性无更改存活检测使用 PeerAlive。"
+      "Current": "sha256:6595eb75d38f0988966446ad1dbd231f8e72ab19c3b0ee019a2811f5564a01b1",
+      "Target": "携带有序的原子范围的天气变化。仅当客户端存储的游标等于 `from_cursor` 时，客户端才会应用报告，然后存储 `through_cursor`。空报告是追赶的恢复结果；周期性无变化活性使用 PeerAlive。"
     },
     "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"DisplayName\"": {
       "Current": "sha256:40be7baf3c70e6298e99e149443a6f9f5678d018d1453271f6772e4f64e2933e",
@@ -50,5 +50,26 @@
     }
   },
   "Reviewed": {},
-  "Translated": {}
+  "Translated": {
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"changes\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:6c14ae3f2414be0f70f300b1f4268b97aa8fd0344a6a379bf07b59d789a0dab9"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"through_cursor\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:3637d9a17cad9988b5971405b62e17e95956cae29c5181e40d2c72d92e9bc862"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:be87c478abaafd48fd9de3742476f98d8bf54af88a58ba4ec78da8d7fc523b23"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.479Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:6595eb75d38f0988966446ad1dbd231f8e72ab19c3b0ee019a2811f5564a01b1"
+    }
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "Description": "Libertas uygulamalarının aldığı kararlara uyarlanmış hava durumu verilerini tanımlar. Yağmurlama sistemi şeması, Hub tarafından sağlanan tesis konumunu yakın geçmiş, mevcut koşullar ve tahmin verilerinden ayrı olarak kalıcı hâle getirir. Her hava durumu bölümünün yenileme aralığı farklıdır ve her bölüm bağımsız olarak başarılı veya başarısız olabilir. Çalışma zamanı anlık görüntüleri bölümlerin herhangi bir birleşimini içerebilir. Uygulamalar başarıyla alınan her bölümü ayrı ayrı kalıcı hâle getirir ve hava durumu verileri yenilenemediğinde eski bölümleri korur. Artımlı abonelikler, istemcilerin sunucu imleci sıfırlamasını eski veya sırasız verilerden ayırt edebilmesi, saklanan değişiklikleri yeniden oynatabilmesi ya da önbelleğe alınmış verilerden seçili zaman aralıklarını kurtarabilmesi için dönem zaman damgası ve sıra numarasından oluşan imleçler kullanır. Bina HVAC şeması yalnızca ısıl yük tahmini, ısı pompası işletimi, ekonomizör kararları ve kontrollü dış hava havalandırması için gereken dış ortam girdilerini sağlar. Hava durumu ve dış hava kalitesi bölümlerini, sağlayıcıları ve güncellik davranışları farklı olduğundan birbirinden bağımsız tutar. Yerel ekipman ve can güvenliği kontrolleri kendi sensörlerini kullanmaya devam etmelidir; önbelleğe alınmış internet hava durumu verileri bir üst denetim girdisidir, güvenlik sinyali değildir.",
+  "Description": "Libertas uygulamaları tarafından alınan kararlara göre uyarlanmış hava durumu verilerini tanımlar.\nSprinkler şeması, Hub tarafından sağlanan saha konumunu yakın geçmişten, mevcut koşullardan ve tahmin verilerinden ayrı olarak korur. Her hava durumu bölümünün farklı bir yenileme aralığı vardır ve bağımsız olarak başarılı veya başarısız olabilir. Çalışma zamanı anlık görüntüleri herhangi bir bölüm kombinasyonunu içerebilir. Uygulamalar her başarılı bölümü ayrı ayrı sürdürür ve hava durumu verileri yenilemesi başarısız olduğunda eski bölümleri korur. Artımlı abonelikler, dönem-zaman damgası ve sıra imleçlerini kullanır; böylece istemciler, sunucu imleci sıfırlamasını eski veya sıra dışı verilerden ayırt edebilir, tutulan değişiklikleri yeniden oynatabilir veya seçilen zaman aralıklarını önbelleğe alınmış verilerden kurtarabilir.\nBina-HVAC şeması yalnızca termal yük tahmini, ısı pompası çalışması, ekonomizer kararları ve kontrollü dış hava havalandırması için gereken dış mekan girişlerini sağlar. Farklı sağlayıcılara ve tazelik davranışlarına sahip oldukları için hava ve dış hava kalitesi bölümlerini bağımsız tutar. Yerel ekipman ve can güvenliği kontrolleri kendi sensörlerini kullanmaya devam etmelidir; Önbelleğe alınan internet hava durumu bir güvenlik sinyali değil, denetleyici bir girdidir.",
   "DisplayName": "Libertas Hava Durumu",
   "DocumentVersion": "0.0.2",
   "List": [],
@@ -16,28 +16,28 @@
           "Type": 0
         },
         {
-          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
-          "Name": "Retrieved at",
+          "Description": "Bu mevcut durum bölümünün tamamının alındığı, doğrulandığı ve kabul edildiği tarih ve saat.",
+          "Name": "Alınma zamanı",
           "Type": 1
         },
         {
-          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
-          "Name": "Valid until",
+          "Description": "Özel tazelik son tarihi. Bu süre zarfında veya sonrasında, önbelleğe alınan değerler, ekonomizör çalışmasına veya bilinen mevcut koşulları gerektiren diğer hava durumuna bağlı optimizasyonlara izin vermemelidir.",
+          "Name": "Şu tarihe kadar geçerlidir:",
           "Type": 2
         },
         {
-          "Description": "The provider-supplied date and time represented by these current conditions.",
-          "Name": "Valid at",
+          "Description": "Bu mevcut koşullarla temsil edilen, sağlayıcı tarafından sağlanan tarih ve saat.",
+          "Name": "Geçerlilik zamanı",
           "Type": 3
         },
         {
-          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
-          "Name": "Observation interval",
+          "Description": "Birikmiş yağışla temsil edilen saniye cinsinden geriye bakma aralığı. Mevcut hava durumu normalde 900 saniyelik bir aralık kullanır.",
+          "Name": "Gözlem aralığı",
           "Type": 4
         },
         {
-          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
-          "Name": "Outdoor conditions",
+          "Description": "Denetleyici HVAC kontrolü için en son modellenen sıcaklık, nem, basınç, rüzgar, yağış ve güneş girdileri.",
+          "Name": "Dış ortam koşulları",
           "Type": 5
         }
       ],
@@ -127,73 +127,73 @@
           "Type": 0
         },
         {
-          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
-          "Name": "Dry-bulb temperature",
+          "Description": "Yerden iki metre yüksekte santigrat derece cinsinden dış hava sıcaklığı.",
+          "Name": "Kuru termometre sıcaklığı",
           "Type": 1
         },
         {
-          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
-          "Name": "Dew-point temperature",
+          "Description": "Yerden iki metre yükseklikte santigrat derece cinsinden dış mekan çiğlenme noktası sıcaklığı. Bu, basınçla birlikte nem oranı, entalpi, yaş termometre, yoğuşma riski ve gizli yük hesaplamalarını destekler.",
+          "Name": "Çiy noktası sıcaklığı",
           "Type": 2
         },
         {
-          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
-          "Name": "Relative humidity",
+          "Description": "0'dan 100'e kadar tam sayı yüzdesi olarak yerden iki metre yükseklikte dış mekan bağıl nemi. Bu sağlayıcı değeri görüntüleme ve doğrulamayı destekler; psikrometrik hesaplamalar, birbiriyle çelişen gereksiz değerleri karıştırmak yerine tutarlı bir girdi seti kullanmalıdır.",
+          "Name": "Bağıl nem",
           "Type": 3
         },
         {
-          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
-          "Name": "Surface pressure",
+          "Description": "Hektopaskal cinsinden bina yüksekliğindeki atmosfer basıncı. Psikometrik hesaplamalar için deniz seviyesine indirgenmiş basınç yerine yüzey basıncı kullanılır.",
+          "Name": "Yüzey basıncı",
           "Type": 4
         },
         {
-          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
-          "Name": "Wind speed",
+          "Description": "Yerden 10 metre yükseklikte saniyede metre cinsinden sürekli dış rüzgar hızı. Bir bina modeli, sızıntıyı ve basınca bağlı dış hava yüklerini tahmin etmek için bunu kullanabilir.",
+          "Name": "Rüzgâr hızı",
           "Type": 5
         },
         {
-          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
-          "Name": "Wind gust",
+          "Description": "Açık hava rüzgârının yerden 10 metre yükseklikte, saniyede metre cinsinden zirve değeri. Açıkta kalan damperlerin ve ekipmanların muhafazakar kontrolünü destekler.",
+          "Name": "Rüzgar",
           "Type": 6
         },
         {
-          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
-          "Name": "Wind direction",
+          "Description": "Rüzgârın gerçek kuzeyden derece cinsinden saat yönünde geldiği yön. Sıfır ve 360 ​​derecenin her ikisi de kuzeyi temsil eder. Yön yalnızca bina modeli cephe yönelimini bildiğinde kullanışlıdır.",
+          "Name": "Rüzgar yönü",
           "Type": 7
         },
         {
-          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
-          "Name": "Precipitation",
+          "Description": "Milimetre cinsinden, kapsama aralığı boyunca biriken toplam sıvı su eşdeğeri.",
+          "Name": "Yağış",
           "Type": 8
         },
         {
-          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
-          "Name": "Precipitation kind",
+          "Description": "Muhafaza aralığı sırasında maruz kalan HVAC ekipmanı etkileyen sıvı veya donmuş yağış aşaması.",
+          "Name": "Yağış türü",
           "Type": 9
         },
         {
-          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
-          "Name": "Solar elevation",
+          "Description": "Temsil edilen gözlem zamanında güneşin merkezinin astronomik ufkun üzerinde derece cinsinden geometrik yüksekliği. Negatif değerler güneşi ufkun altına yerleştirir. Bu değeri hesaplamak için, içeren mevcut kaydın `valid_at` değerini veya içeren bir geçmişin veya tahmin döneminin orta noktasını inşaat alanı koordinatlarıyla birlikte kullanın.",
+          "Name": "Güneş yüksekliği",
           "Type": 10
         },
         {
-          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
-          "Name": "Solar azimuth",
+          "Description": "Aynı temsil edilen gözlem zamanında güneşin merkezinin gerçek kuzeyden saat yönünde derece cinsinden yönü. HVAC makine öğrenimi tüketicileri, ham derece değerini sıralı olarak yorumlamak yerine bu döngüsel açıyı sinüs ve kosinüse dönüştürür.",
+          "Name": "Güneş azimutu",
           "Type": 11
         },
         {
-          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
-          "Name": "Global horizontal irradiance",
+          "Description": "Metrekare başına watt cinsinden yatay bir yüzeydeki toplam doğrudan ve dağınık güneş enerjisi olayı. Bu, tüm binanın birincil güneş enerjisi kazanım girdisidir.",
+          "Name": "Küresel yatay ışınım",
           "Type": 12
         },
         {
-          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
-          "Name": "Direct normal irradiance",
+          "Description": "Metrekare başına watt cinsinden güneşe dik bir yüzeye doğrudan güneş enerjisi olayı. Yönlendirilmiş cephe ve gölgeleme modelleri bu değeri kullanabilir.",
+          "Name": "Doğrudan normal ışınım",
           "Type": 13
         },
         {
-          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
-          "Name": "Diffuse horizontal irradiance",
+          "Description": "Metrekare başına watt cinsinden yatay bir yüzeydeki dağınık gökyüzü güneş enerjisi olayı. Yönlendirilmiş cephe ve gölgeleme modelleri bu değeri doğrudan normal ışınımla kullanabilir.",
+          "Name": "Yaygın yatay ışınım",
           "Type": 14
         }
       ],
@@ -253,158 +253,158 @@
           "Type": 0
         },
         {
-          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
-          "Name": "Upsert historical periods",
+          "Description": "Başarılı bir geçmiş yenilemesinden sonra tamamlanan dönemleri `starts_at` ile ekler veya değiştirir.",
+          "Name": "Yukarı tarihsel dönemler",
           "Type": 1
         },
         {
-          "Description": "The retrieval and validation time for the updated history section.",
-          "Name": "Retrieved at",
+          "Description": "Güncellenen geçmiş bölümü için alma ve doğrulama süresi.",
+          "Name": "Alınma zamanı",
           "Type": 2
         },
         {
-          "Description": "The new exclusive freshness deadline for the history section.",
-          "Name": "Valid until",
+          "Description": "Geçmiş bölümünün güncel sayılacağı, kendisi hariç yeni son zaman.",
+          "Name": "Şu tarihe kadar geçerlidir:",
           "Type": 3
         },
         {
-          "Description": "Periods to insert or replace, ordered from oldest to newest.",
-          "Name": "Historical periods",
+          "Description": "Eklenecek veya değiştirilecek dönemler, en eskiden en yeniye doğru sıralanmıştır.",
+          "Name": "Geçmiş dönemler",
           "Type": 4
         },
         {
-          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
-          "Name": "Historical period",
+          "Description": "`starts_at` ile anahtarlanan tamamlanmış bir dış mekan koşulu periyodu.",
+          "Name": "Geçmiş dönemi",
           "Type": 5
         },
         {
-          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove historical periods",
+          "Description": "Başlangıç zamanları sağlanan yarı açık aralık dahilinde olan geçmiş dönemleri kaldırır.",
+          "Name": "Geçmiş dönemleri kaldır",
           "Type": 6
         },
         {
-          "Description": "The half-open range of historical period start times to remove.",
-          "Name": "Time range",
+          "Description": "Kaldırılacak geçmiş dönem başlangıç zamanlarının yarı açık aralığı.",
+          "Name": "Zaman aralığı",
           "Type": 7
         },
         {
-          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
-          "Name": "Replace current conditions",
+          "Description": "Başarılı bir alma, doğrulama ve kalıcılıktan sonra mevcut durum bölümünün tamamını değiştirir.",
+          "Name": "Mevcut koşulları değiştir",
           "Type": 8
         },
         {
-          "Description": "The complete newly accepted current-condition section.",
-          "Name": "Current conditions",
+          "Description": "Yeni kabul edilen mevcut durum bölümünün tamamı.",
+          "Name": "Mevcut koşullar",
           "Type": 9
         },
         {
-          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
-          "Name": "Upsert forecast periods",
+          "Description": "Başarılı bir tahmin yenilemesinden sonra gelecek dönemleri `starts_at` ile ekler veya değiştirir.",
+          "Name": "Tahmin dönemlerini ekle veya güncelle",
           "Type": 10
         },
         {
-          "Description": "The retrieval and validation time for the updated forecast section.",
-          "Name": "Retrieved at",
+          "Description": "Güncellenen tahmin bölümü için alma ve doğrulama süresi.",
+          "Name": "Alınma zamanı",
           "Type": 11
         },
         {
-          "Description": "The new exclusive freshness deadline for the forecast section.",
-          "Name": "Valid until",
+          "Description": "Tahmin bölümünün güncel sayılacağı, kendisi hariç yeni son zaman.",
+          "Name": "Şu tarihe kadar geçerlidir:",
           "Type": 12
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Forecast periods",
+          "Description": "En erkenden en geçe doğru sıralanmış, eklenecek veya değiştirilecek dönemler.",
+          "Name": "Tahmin dönemleri",
           "Type": 13
         },
         {
-          "Description": "One future outdoor-condition period keyed by `starts_at`.",
-          "Name": "Forecast period",
+          "Description": "`starts_at` ile anahtarlanan gelecekteki bir dış mekan koşulu dönemi.",
+          "Name": "Tahmin dönemi",
           "Type": 14
         },
         {
-          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove forecast periods",
+          "Description": "Başlangıç zamanları sağlanan yarı açık aralık dahilinde olan tahmin dönemlerini kaldırır.",
+          "Name": "Tahmin dönemlerini kaldır",
           "Type": 15
         },
         {
-          "Description": "The half-open range of forecast period start times to remove.",
-          "Name": "Time range",
+          "Description": "Kaldırılacak tahmin dönemi başlangıç zamanlarının yarı açık aralığı.",
+          "Name": "Zaman aralığı",
           "Type": 16
         },
         {
-          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
-          "Name": "Upsert outdoor-air-quality periods",
+          "Description": "Başarılı bir hava kalitesi yenilemesinden sonra kirletici madde dönemlerini `starts_at` ile ekler veya değiştirir.",
+          "Name": "Dış hava kalitesi dönemlerini yükseltin",
           "Type": 17
         },
         {
-          "Description": "The retrieval and validation time for the updated air-quality section.",
-          "Name": "Retrieved at",
+          "Description": "Güncellenen hava kalitesi bölümü için alma ve doğrulama süresi.",
+          "Name": "Alınma zamanı",
           "Type": 18
         },
         {
-          "Description": "The new exclusive freshness deadline for the air-quality section.",
-          "Name": "Valid until",
+          "Description": "Hava kalitesi bölümü için yeni özel tazelik son tarihi.",
+          "Name": "Şu tarihe kadar geçerlidir:",
           "Type": 19
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Air-quality periods",
+          "Description": "En erkenden en geçe doğru sıralanmış, eklenecek veya değiştirilecek dönemler.",
+          "Name": "Hava kalitesi dönemleri",
           "Type": 20
         },
         {
-          "Description": "One modeled pollutant period keyed by `starts_at`.",
-          "Name": "Air-quality period",
+          "Description": "`starts_at` ile anahtarlanmış bir modellenmiş kirletici madde dönemi.",
+          "Name": "Hava kalitesi dönemi",
           "Type": 21
         },
         {
-          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove outdoor-air-quality periods",
+          "Description": "Başlangıç zamanları sağlanan yarı açık aralığa giren kirletici dönemleri ortadan kaldırır.",
+          "Name": "Dış hava kalitesi dönemlerini kaldırın",
           "Type": 22
         },
         {
-          "Description": "The half-open range of air-quality period start times to remove.",
-          "Name": "Time range",
+          "Description": "Hava kalitesi periyodunun yarı açık aralığını kaldırma süreleri.",
+          "Name": "Zaman aralığı",
           "Type": 23
         },
         {
-          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
-          "Name": "Clear weather section",
+          "Description": "Yalnızca önbelleğe alınan değerinin geçersiz olduğu kanıtlandıktan sonra bir bölümü temizler. Bir sağlayıcı, internet veya yenileme hatası tek başına bir bölümü temizlememelidir.",
+          "Name": "Hava durumu bölümünü temizle",
           "Type": 24
         },
         {
-          "Description": "The independently cached section to clear.",
-          "Name": "Weather section",
+          "Description": "Bağımsız olarak önbelleğe alınan ve temizlenecek bölüm.",
+          "Name": "Hava durumu bölümü",
           "Type": 25
         },
         {
-          "Description": "Replaces the complete historical section after a successful refresh.",
-          "Name": "Replace history",
+          "Description": "Başarılı bir yenilemeden sonra geçmiş bölümün tamamını değiştirir.",
+          "Name": "Geçmişi değiştir",
           "Type": 26
         },
         {
-          "Description": "The complete newly accepted history section.",
-          "Name": "History",
+          "Description": "Yeni kabul edilen geçmiş bölümünün tamamı.",
+          "Name": "Geçmiş",
           "Type": 27
         },
         {
-          "Description": "Replaces the complete forecast section after a successful refresh.",
-          "Name": "Replace forecast",
+          "Description": "Başarılı bir yenilemeden sonra tahmin bölümünün tamamını değiştirir.",
+          "Name": "Tahmini değiştir",
           "Type": 28
         },
         {
-          "Description": "The complete newly accepted forecast section.",
-          "Name": "Forecast",
+          "Description": "Yeni kabul edilen tahmin bölümünün tamamı.",
+          "Name": "Tahmin",
           "Type": 29
         },
         {
-          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
-          "Name": "Replace outdoor air quality",
+          "Description": "Başarılı bir yenilemeden sonra modellenen kirletici madde bölümünün tamamını değiştirir.",
+          "Name": "Dış hava kalitesini değiştirin",
           "Type": 30
         },
         {
-          "Description": "The complete newly accepted outdoor-air-quality section.",
-          "Name": "Outdoor air quality",
+          "Description": "Yeni kabul edilen dış hava kalitesi bölümünün tamamı.",
+          "Name": "Dış ortam hava kalitesi",
           "Type": 31
         }
       ],
@@ -681,66 +681,66 @@
           "Type": 0
         },
         {
-          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
-          "Name": "Get building HVAC weather",
+          "Description": "Tek seferlik artımlı okuma gerçekleştirir veya bir aboneliği başlatır veya sürdürür. Sunucu, mümkün olduğunda `after_cursor` sonrasında tutulan değişiklikleri yeniden yürütür veya istenen geri dönüş aralıklarıyla sınırlandırılmış, bağımsız olarak önbelleğe alınmış bölümleri döndürür.",
+          "Name": "Binanın HVAC hava durumunu alın",
           "Type": 1
         },
         {
-          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
-          "Name": "Resume cursor",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "Description": "Son imleç istemci tarafından tamamen ve atomik olarak uygulandı. `None` ilk anlık görüntüyü ister.",
+          "Name": "Sürdürme imleci",
+          "NullText": "Yeni bir anlık görüntüden başlayın",
+          "SetText": "Şu tarihten sonra devam et:",
           "Type": 2
         },
         {
-          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
-          "Name": "Historical recovery range",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "Description": "Tekrar oynatmanın imkansız olduğu durumlarda dahil edilecek yarı açık geçmiş aralık. `None`, sıfırlama anlık görüntüsünün geçmişini hariç tutar.",
+          "Name": "Geçmiş kurtarma aralığı",
+          "NullText": "Geçmiş yok",
+          "SetText": "Geçmişi dahil et",
           "Type": 3
         },
         {
-          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
-          "Name": "Include current conditions",
+          "Description": "Sıfırlama anlık görüntüsünün önbelleğe alınmış mevcut dış mekan koşullarını içermesi gerekip gerekmediği.",
+          "Name": "Mevcut koşulları dahil et",
           "Type": 4
         },
         {
-          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
-          "Name": "Forecast recovery range",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "Description": "Tekrar oynatmanın imkansız olduğu durumlarda dahil edilecek yarı açık fiziksel hava tahmini aralığı. `None` tahmin verilerini hariç tutar.",
+          "Name": "Tahmin kurtarma aralığı",
+          "NullText": "Tahmin yok",
+          "SetText": "Tahmini dahil et",
           "Type": 5
         },
         {
-          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
-          "Name": "Outdoor-air-quality recovery range",
-          "NullText": "No outdoor air quality",
-          "SetText": "Include outdoor air quality for",
+          "Description": "Tekrar oynatmanın mümkün olmadığı durumlarda dahil edilecek yarı açık kirletici madde periyodu aralığı. `None` modellenen dış hava kalitesini kapsamaz.",
+          "Name": "Dış hava kalitesi iyileştirme aralığı",
+          "NullText": "Dış hava kalitesi yok",
+          "SetText": "Dış hava kalitesini dahil edin",
           "Type": 6
         },
         {
-          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
-          "Name": "Building HVAC weather recovery",
+          "Description": "Her geçerli alma isteğine yeniden oynatma, sıfırlama anlık görüntüsü veya yazılan bir hatayla yanıt verir. Abonelik istemcileri başarılı kurtarma, daha sonraki veri raporları ve PeerAlive sonrasında zaman aşımını yeniden başlatır.",
+          "Name": "Bina HVAC hava durumu kurtarma",
           "Type": 7
         },
         {
-          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
-          "Name": "Maximum wait interval",
+          "Description": "Abonelik istemcisinin son imleciyle yeniden denemeden önce bekleyeceği maksimum saniye. Sunucu önce değiştirilen verileri veya PeerAlive'ı gönderir. Tek seferlik bir istemci bu gerekli, sıfırdan farklı değeri yok sayar.",
+          "Name": "Azami bekleme süresi",
           "Type": 8
         },
         {
-          "Description": "The replay, reset snapshot, or typed error result.",
-          "Name": "Recovery",
+          "Description": "Tekrar oynatma, anlık görüntüyü sıfırlama veya yazılan hata sonucu.",
+          "Name": "Kurtarma",
           "Type": 9
         },
         {
-          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
-          "Name": "Building HVAC weather increment",
+          "Description": "Başarılı abonelik kurtarmanın ardından değişiklikleri raporlar. Bir istemci bitişik aralığın tamamını uygular veya hiçbirini uygulamaz.",
+          "Name": "Bina HVAC hava durumu artışı",
           "Type": 10
         },
         {
-          "Description": "The ordered, atomic cursor range and its weather changes.",
-          "Name": "Incremental report",
+          "Description": "Düzenli, atomik imleç aralığı ve hava durumu değişiklikleri.",
+          "Name": "Artımlı rapor",
           "Type": 11
         }
       ],
@@ -790,48 +790,48 @@
           "Type": 0
         },
         {
-          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
-          "Name": "Replayed changes",
+          "Description": "Sağlanan imleçten sonra, tutulan her değişiklikle akışı sürdürür. Boş bir rapor müşterinin yakalandığı anlamına gelir.",
+          "Name": "Yeniden oynatılan değişiklikler",
           "Type": 1
         },
         {
-          "Description": "The contiguous retained change range beginning at the request cursor.",
-          "Name": "Incremental report",
+          "Description": "İstek imlecinden başlayan bitişik tutulan değişiklik aralığı.",
+          "Name": "Artımlı rapor",
           "Type": 2
         },
         {
-          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
-          "Name": "Reset with snapshot",
+          "Description": "Yeniden oynatma imkansız olduğunda veya imleç sağlanmadığında, bağımsız olarak önbelleğe alınmış bölümlerden durumu oluşturur.",
+          "Name": "Anlık görüntüyle sıfırla",
           "Type": 3
         },
         {
-          "Description": "The reason the response contains a snapshot rather than replay.",
-          "Name": "Reset reason",
+          "Description": "Yanıtın tekrar yerine anlık görüntü içermesinin nedeni.",
+          "Name": "Sıfırlama nedeni",
           "Type": 4
         },
         {
-          "Description": "The cursor representing the returned snapshot.",
-          "Name": "Current cursor",
+          "Description": "Döndürülen anlık görüntüyü temsil eden imleç.",
+          "Name": "Geçerli imleç",
           "Type": 5
         },
         {
-          "Description": "The available cached sections constrained by requested ranges.",
-          "Name": "Weather snapshot",
+          "Description": "Kullanılabilir önbelleğe alınmış bölümler, istenen aralıklarla sınırlandırılmıştır.",
+          "Name": "Hava durumu anlık görüntüsü",
           "Type": 6
         },
         {
-          "Description": "Rejects the request without changing client cursor or cached weather.",
-          "Name": "Recovery error",
+          "Description": "İstemci imlecini veya önbelleğe alınmış hava durumunu değiştirmeden isteği reddeder.",
+          "Name": "Kurtarma hatası",
           "Type": 7
         },
         {
-          "Description": "The reason recovery could not be completed.",
-          "Name": "Error",
+          "Description": "Kurtarmanın tamamlanamama nedeni.",
+          "Name": "Hata",
           "Type": 8
         },
         {
-          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
-          "Name": "Retry delay",
+          "Description": "Yeniden denemeden saniyeler önce önerilir. `None`, yeniden denemenin başarılı olabilmesi için isteğin değişmesi gerektiği anlamına gelir.",
+          "Name": "Yeniden deneme gecikmesi",
           "Type": 9
         }
       ],
@@ -1398,27 +1398,27 @@
       "Name": "SprinklerWeatherIncrementalReportV1"
     },
     {
-      "Description": "Records for one endpoint share a transaction and scan prefix.",
-      "DisplayName": "Saved weather keys",
+      "Description": "Bir uç noktaya ilişkin kayıtlar bir işlemi paylaşır ve öneki tarar.",
+      "DisplayName": "Kaydedilen hava durumu tuşları",
       "List": [
         {
-          "Description": "Records for one endpoint share a transaction and scan prefix.",
-          "Name": "Saved weather keys",
+          "Description": "Bir uç noktaya ilişkin kayıtlar bir işlemi paylaşır ve öneki tarar.",
+          "Name": "Kaydedilen hava durumu tuşları",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Weather belonging to one service endpoint",
+          "Name": "Bir hizmet uç noktasına ait hava durumu",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "uç nokta",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "kayıt",
           "Type": 3
         }
       ],
@@ -1525,15 +1525,15 @@
         {
           "Description": "İstemci tarafından eksiksiz ve atomik olarak uygulanan son imleç. `None`, aralıkla sınırlandırılmış bir başlangıç anlık görüntüsü ister. Sunucu her iki alanı da karşılaştırır; daha düşük bir sıra numarası, yalnızca yanıt imlecinde daha yeni bir epok zaman damgası da varsa sıfırlamayı belirtir.",
           "Name": "Sürdürme imleci",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "NullText": "Yeni bir anlık görüntüden başlayın",
+          "SetText": "Şu tarihten sonra devam et:",
           "Type": 2
         },
         {
           "Description": "Yeniden yürütmenin olanaksız olduğu durumlarda dahil edilecek geçmiş dönem başlangıç zamanlarının yarı açık aralığı. `None`, geçmiş verilerini sıfırlama anlık görüntüsünün dışında bırakır.",
           "Name": "Geçmiş kurtarma aralığı",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "NullText": "Geçmiş yok",
+          "SetText": "Geçmişi dahil et",
           "Type": 3
         },
         {
@@ -1544,8 +1544,8 @@
         {
           "Description": "Yeniden yürütmenin olanaksız olduğu durumlarda dahil edilecek tahmin dönemi başlangıç zamanlarının yarı açık aralığı. `None`, tahmin verilerini sıfırlama anlık görüntüsünün dışında bırakır.",
           "Name": "Tahmin kurtarma aralığı",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "NullText": "Tahmin yok",
+          "SetText": "Tahmini dahil et",
           "Type": 5
         },
         {
@@ -1578,41 +1578,41 @@
     },
     {
       "Description": "",
-      "DisplayName": "Saved weather record identity",
+      "DisplayName": "Kaydedilen hava durumu kaydı kimliği",
       "List": [
         {
           "Description": "",
-          "Name": "Saved weather record identity",
+          "Name": "Kaydedilen hava durumu kaydı kimliği",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Location",
+          "Name": "Konum",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "HistoryMetadata",
+          "Name": "GeçmişMeta Veriler",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "HistoryPeriod",
+          "Name": "TarihDönem",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "starts_at",
+          "Name": "başlangıç_saati",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "Current",
+          "Name": "Mevcut",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Forecast",
+          "Name": "Tahmin",
           "Type": 6
         }
       ],

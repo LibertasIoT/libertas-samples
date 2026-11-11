@@ -1,5 +1,5 @@
 {
-  "Description": "Libertas 애플리케이션의 의사 결정에 맞춘 날씨 데이터를 정의합니다. 스프링클러 스키마는 허브에서 제공한 현장 위치를 최근 이력, 현재 상태 및 예보 데이터와 별도로 유지합니다. 각 날씨 섹션은 새로 고침 간격이 서로 다르며 독립적으로 성공하거나 실패할 수 있습니다. 런타임 스냅샷에는 섹션이 어떤 조합으로든 포함될 수 있습니다. 애플리케이션은 성공적으로 가져온 각 섹션을 별도로 유지하며 날씨 데이터 새로 고침에 실패하면 이전 섹션을 보존합니다. 증분 구독은 에포크 타임스탬프와 시퀀스로 구성된 커서를 사용하므로 클라이언트는 서버 커서 재설정을 오래되었거나 순서가 뒤바뀐 데이터와 구분하고, 보존된 변경 사항을 재생하거나, 캐시된 데이터에서 선택한 시간 범위를 복구할 수 있습니다. 건물 HVAC 스키마는 열부하 예측, 히트 펌프 운전, 이코노마이저 판단 및 제어된 외기 환기에 필요한 실외 입력만 제공합니다. 날씨 섹션과 실외 공기질 섹션은 공급자와 최신성 동작이 서로 다르므로 독립적으로 유지합니다. 현장 장비와 인명 안전 제어는 계속 자체 센서를 사용해야 합니다. 캐시된 인터넷 날씨는 상위 제어용 입력이지 안전 신호가 아닙니다.",
+  "Description": "Libertas 애플리케이션의 결정에 맞는 날씨 데이터를 정의합니다.\n스프링클러 스키마는 최근 기록, 현재 조건 및 예측 데이터와 별도로 허브 제공 사이트 위치를 유지합니다. 각 날씨 섹션은 새로 고침 간격이 다르며 독립적으로 성공하거나 실패할 수 있습니다. 런타임 스냅샷에는 섹션 조합이 포함될 수 있습니다. 애플리케이션은 성공한 각 섹션을 별도로 유지하고 날씨 데이터 새로 고침이 실패할 경우 이전 섹션을 유지합니다. 증분 구독은 에포크 타임스탬프 및 시퀀스 커서를 사용하므로 클라이언트는 오래되었거나 순서가 잘못된 데이터와 서버 커서 재설정을 구별하고, 유지된 변경 사항을 재생하거나, 캐시된 데이터에서 선택한 시간 범위를 복구할 수 있습니다.\n건물-HVAC 스키마는 열 부하 예측, 열 펌프 작동, 이코노마이저 결정 및 제어된 실외 공기 환기에 필요한 실외 입력만 제공합니다. 날씨 및 실외 공기 질 섹션은 제공자와 신선도 동작이 다르기 때문에 독립적으로 유지됩니다. 지역 장비와 생명 안전 통제 장치는 계속해서 자체 센서를 사용해야 합니다. 캐시된 인터넷 날씨는 안전 신호가 아니라 감독 입력입니다.",
   "DisplayName": "Libertas 날씨",
   "DocumentVersion": "0.0.2",
   "List": [],
@@ -16,28 +16,28 @@
           "Type": 0
         },
         {
-          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
-          "Name": "Retrieved at",
+          "Description": "이 전체 현재 조건 섹션이 검색되고, 검증되고, 승인된 날짜와 시간입니다.",
+          "Name": "검색 시간",
           "Type": 1
         },
         {
-          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
-          "Name": "Valid until",
+          "Description": "독점 신선도 마감일. 이 시점이나 그 이후에는 캐시된 값이 이코노마이저 작동이나 알려진 현재 조건이 필요한 기타 날씨에 따른 최적화를 승인해서는 안 됩니다.",
+          "Name": "유효 기한",
           "Type": 2
         },
         {
-          "Description": "The provider-supplied date and time represented by these current conditions.",
-          "Name": "Valid at",
+          "Description": "이러한 현재 조건으로 표시되는 공급자 제공 날짜 및 시간입니다.",
+          "Name": "유효 시각",
           "Type": 3
         },
         {
-          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
-          "Name": "Observation interval",
+          "Description": "누적 강수량으로 표시되는 역방향 간격(초)입니다. 현재 날씨는 일반적으로 900초 간격을 사용합니다.",
+          "Name": "관측 간격",
           "Type": 4
         },
         {
-          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
-          "Name": "Outdoor conditions",
+          "Description": "감독 HVAC 제어를 위한 최신 모델링된 온도, 습도, 압력, 바람, 강수량 및 태양열 입력입니다.",
+          "Name": "실외 조건",
           "Type": 5
         }
       ],
@@ -127,73 +127,73 @@
           "Type": 0
         },
         {
-          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
-          "Name": "Dry-bulb temperature",
+          "Description": "지상 2m의 실외 공기 온도(섭씨)입니다.",
+          "Name": "건구 온도",
           "Type": 1
         },
         {
-          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
-          "Name": "Dew-point temperature",
+          "Description": "지상 2m의 실외 이슬점 온도(섭씨)입니다. 압력과 함께 습도 비율, 엔탈피, 습구, 응결 위험 및 잠재 부하 계산을 지원합니다.",
+          "Name": "이슬점 온도",
           "Type": 2
         },
         {
-          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
-          "Name": "Relative humidity",
+          "Description": "0에서 100 사이의 정수 백분율로 표시되는 지상 2미터의 실외 상대 습도입니다. 이 공급자 값은 표시 및 검증을 지원합니다. 건습공구계 계산에서는 불일치하는 중복 값을 혼합하는 대신 일관된 하나의 입력 세트를 사용해야 합니다.",
+          "Name": "상대 습도",
           "Type": 3
         },
         {
-          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
-          "Name": "Surface pressure",
+          "Description": "건물 높이의 대기압(헥토파스칼)입니다. 해수면까지 감소된 압력 대신 표면 압력이 건습기 계산에 사용됩니다.",
+          "Name": "표면압력",
           "Type": 4
         },
         {
-          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
-          "Name": "Wind speed",
+          "Description": "지상 10미터 높이에서 지속되는 실외 풍속(초당 미터)입니다. 건물 모델은 이를 사용하여 침투 및 압력에 따른 실외 공기 부하를 추정할 수 있습니다.",
+          "Name": "풍속",
           "Type": 5
         },
         {
-          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
-          "Name": "Wind gust",
+          "Description": "초당 미터 단위로 지상 10미터 높이에서 최대 실외 돌풍이 발생합니다. 노출된 댐퍼 및 장비의 보수적인 제어를 지원합니다.",
+          "Name": "돌풍",
           "Type": 6
         },
         {
-          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
-          "Name": "Wind direction",
+          "Description": "바람이 진북에서 시계방향으로 불어오는 방향(도)입니다. 0과 360은 모두 북쪽을 나타냅니다. 방향은 건물 모델이 정면 방향을 알고 있는 경우에만 유용합니다.",
+          "Name": "풍향",
           "Type": 7
         },
         {
-          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
-          "Name": "Precipitation",
+          "Description": "담는 간격 동안 누적된 총 액체 물 등가량(밀리미터)입니다.",
+          "Name": "강수량",
           "Type": 8
         },
         {
-          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
-          "Name": "Precipitation kind",
+          "Description": "격리 기간 동안 노출된 HVAC 장비에 영향을 미치는 액체 또는 결빙 강수 단계.",
+          "Name": "강수량 종류",
           "Type": 9
         },
         {
-          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
-          "Name": "Solar elevation",
+          "Description": "표시된 관측 시간에 천문학적 지평선 위의 태양 중심의 기하학적 고도(도)입니다. 음수 값은 태양을 수평선 아래에 배치합니다. 이 값을 계산하려면 포함된 현재 기록의 `valid_at` 또는 포함된 내역 또는 예측 기간의 중간점을 건물 현장 좌표와 함께 사용하세요.",
+          "Name": "태양 고도",
           "Type": 10
         },
         {
-          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
-          "Name": "Solar azimuth",
+          "Description": "동일한 관측 시간에 진북에서 시계 방향으로 태양 중심의 방향(도)입니다. HVAC 기계 학습 소비자는 원시 각도 값을 서수로 해석하는 대신 이 순환 각도를 사인 및 코사인으로 변환합니다.",
+          "Name": "태양 방위각",
           "Type": 11
         },
         {
-          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
-          "Name": "Global horizontal irradiance",
+          "Description": "수평 표면에 입사되는 총 직접 및 확산 태양광 발전량(제곱미터당 와트)입니다. 이는 건물 전체의 주요 태양열 이득 입력입니다.",
+          "Name": "글로벌 수평 방사조도",
           "Type": 12
         },
         {
-          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
-          "Name": "Direct normal irradiance",
+          "Description": "태양에 수직인 표면에 입사되는 직접 태양광 발전량(제곱미터당 와트)입니다. 지향성 파사드 및 음영처리 모델은 이 값을 사용할 수 있습니다.",
+          "Name": "직접적인 정상적인 조사",
           "Type": 13
         },
         {
-          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
-          "Name": "Diffuse horizontal irradiance",
+          "Description": "수평 표면에 입사되는 확산형 태양광 발전(제곱미터당 와트)입니다. 지향성 파사드 및 셰이딩 모델은 직접 법선 조사와 함께 이 값을 사용할 수 있습니다.",
+          "Name": "수평 확산 조도",
           "Type": 14
         }
       ],
@@ -253,158 +253,158 @@
           "Type": 0
         },
         {
-          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
-          "Name": "Upsert historical periods",
+          "Description": "기록 새로 고침이 성공한 후 완료된 기간을 `starts_at`으로 삽입하거나 바꿉니다.",
+          "Name": "과거 기간 업데이트",
           "Type": 1
         },
         {
-          "Description": "The retrieval and validation time for the updated history section.",
-          "Name": "Retrieved at",
+          "Description": "업데이트된 기록 섹션의 검색 및 유효성 검사 시간입니다.",
+          "Name": "검색 시간",
           "Type": 2
         },
         {
-          "Description": "The new exclusive freshness deadline for the history section.",
-          "Name": "Valid until",
+          "Description": "이력 섹션이 최신 상태로 간주되는 새로운 배타적 기한입니다.",
+          "Name": "유효 기한",
           "Type": 3
         },
         {
-          "Description": "Periods to insert or replace, ordered from oldest to newest.",
-          "Name": "Historical periods",
+          "Description": "삽입하거나 교체할 기간은 가장 오래된 것부터 최신 것 순으로 정렬됩니다.",
+          "Name": "과거 기간",
           "Type": 4
         },
         {
-          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
-          "Name": "Historical period",
+          "Description": "`starts_at`으로 입력되는 하나의 완료된 실외 조건 기간입니다.",
+          "Name": "과거 기간",
           "Type": 5
         },
         {
-          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove historical periods",
+          "Description": "시작 시간이 제공된 반개방 범위 내에 속하는 과거 기간을 제거합니다.",
+          "Name": "과거 기간 제거",
           "Type": 6
         },
         {
-          "Description": "The half-open range of historical period start times to remove.",
-          "Name": "Time range",
+          "Description": "제거할 과거 기간 시작 시간의 반개구간입니다.",
+          "Name": "시간 범위",
           "Type": 7
         },
         {
-          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
-          "Name": "Replace current conditions",
+          "Description": "성공적인 검색, 유효성 검사 및 지속성 후에 전체 현재 조건 섹션을 대체합니다.",
+          "Name": "현재 상태 교체",
           "Type": 8
         },
         {
-          "Description": "The complete newly accepted current-condition section.",
-          "Name": "Current conditions",
+          "Description": "새로 승인된 현재 상태 섹션 전체입니다.",
+          "Name": "현재 상태",
           "Type": 9
         },
         {
-          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
-          "Name": "Upsert forecast periods",
+          "Description": "예측 새로 고침이 성공한 후 미래 기간을 `starts_at`으로 삽입하거나 바꿉니다.",
+          "Name": "예보 기간 업서트",
           "Type": 10
         },
         {
-          "Description": "The retrieval and validation time for the updated forecast section.",
-          "Name": "Retrieved at",
+          "Description": "업데이트된 예측 섹션의 검색 및 검증 시간입니다.",
+          "Name": "검색 시간",
           "Type": 11
         },
         {
-          "Description": "The new exclusive freshness deadline for the forecast section.",
-          "Name": "Valid until",
+          "Description": "예보 섹션이 최신 상태로 간주되는 새로운 배타적 기한입니다.",
+          "Name": "유효 기한",
           "Type": 12
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Forecast periods",
+          "Description": "삽입하거나 대체할 기간으로, 가장 이른 기간부터 가장 늦은 기간순으로 정렬됩니다.",
+          "Name": "예측 기간",
           "Type": 13
         },
         {
-          "Description": "One future outdoor-condition period keyed by `starts_at`.",
-          "Name": "Forecast period",
+          "Description": "`starts_at`으로 입력되는 향후 실외 조건 기간 1개입니다.",
+          "Name": "예보 기간",
           "Type": 14
         },
         {
-          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove forecast periods",
+          "Description": "시작 시간이 제공된 반개방 범위 내에 속하는 예측 기간을 제거합니다.",
+          "Name": "예보 기간 제거",
           "Type": 15
         },
         {
-          "Description": "The half-open range of forecast period start times to remove.",
-          "Name": "Time range",
+          "Description": "제거할 예보 기간의 시작 시각에 대한 반개구간입니다.",
+          "Name": "시간 범위",
           "Type": 16
         },
         {
-          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
-          "Name": "Upsert outdoor-air-quality periods",
+          "Description": "공기 질 새로 고침에 성공한 후 오염 물질 기간을 `starts_at`으로 삽입하거나 교체합니다.",
+          "Name": "실외 공기 질 향상 기간",
           "Type": 17
         },
         {
-          "Description": "The retrieval and validation time for the updated air-quality section.",
-          "Name": "Retrieved at",
+          "Description": "업데이트된 공기질 섹션의 검색 및 검증 시간입니다.",
+          "Name": "검색 시간",
           "Type": 18
         },
         {
-          "Description": "The new exclusive freshness deadline for the air-quality section.",
-          "Name": "Valid until",
+          "Description": "공기질 섹션에 대한 새로운 독점 신선도 기한입니다.",
+          "Name": "유효 기한",
           "Type": 19
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Air-quality periods",
+          "Description": "삽입하거나 대체할 기간으로, 가장 이른 기간부터 가장 늦은 기간순으로 정렬됩니다.",
+          "Name": "공기질 기간",
           "Type": 20
         },
         {
-          "Description": "One modeled pollutant period keyed by `starts_at`.",
-          "Name": "Air-quality period",
+          "Description": "`starts_at`으로 입력되는 하나의 모델링된 오염 물질 기간.",
+          "Name": "공기질 기간",
           "Type": 21
         },
         {
-          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove outdoor-air-quality periods",
+          "Description": "시작 시간이 제공된 반개방 범위 내에 속하는 오염 물질 기간을 제거합니다.",
+          "Name": "실외 공기질 기간을 제거하세요.",
           "Type": 22
         },
         {
-          "Description": "The half-open range of air-quality period start times to remove.",
-          "Name": "Time range",
+          "Description": "제거할 공기질 기간 시작 시간의 반개방 범위입니다.",
+          "Name": "시간 범위",
           "Type": 23
         },
         {
-          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
-          "Name": "Clear weather section",
+          "Description": "캐시된 값이 유효하지 않은 것으로 입증된 후에만 한 섹션을 지웁니다. 공급자, 인터넷 또는 새로 고침 실패만으로 섹션을 지워서는 안 됩니다.",
+          "Name": "기상 섹션 지우기",
           "Type": 24
         },
         {
-          "Description": "The independently cached section to clear.",
-          "Name": "Weather section",
+          "Description": "독립적으로 캐시되며 지울 대상인 섹션입니다.",
+          "Name": "기상 섹션",
           "Type": 25
         },
         {
-          "Description": "Replaces the complete historical section after a successful refresh.",
-          "Name": "Replace history",
+          "Description": "성공적으로 새로 고친 후 전체 기록 섹션을 바꿉니다.",
+          "Name": "기록 교체",
           "Type": 26
         },
         {
-          "Description": "The complete newly accepted history section.",
-          "Name": "History",
+          "Description": "새로 허용된 전체 역사 섹션입니다.",
+          "Name": "이력",
           "Type": 27
         },
         {
-          "Description": "Replaces the complete forecast section after a successful refresh.",
-          "Name": "Replace forecast",
+          "Description": "성공적으로 새로 고친 후 전체 예측 섹션을 대체합니다.",
+          "Name": "예보 대체",
           "Type": 28
         },
         {
-          "Description": "The complete newly accepted forecast section.",
-          "Name": "Forecast",
+          "Description": "새로 승인된 전체 예보 섹션입니다.",
+          "Name": "예보",
           "Type": 29
         },
         {
-          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
-          "Name": "Replace outdoor air quality",
+          "Description": "성공적인 새로 고침 후 전체 모델링된 오염 물질 섹션을 대체합니다.",
+          "Name": "실외 공기질 교체",
           "Type": 30
         },
         {
-          "Description": "The complete newly accepted outdoor-air-quality section.",
-          "Name": "Outdoor air quality",
+          "Description": "완전히 새롭게 수용된 실외 공기질 섹션입니다.",
+          "Name": "실외 공기질",
           "Type": 31
         }
       ],
@@ -681,66 +681,66 @@
           "Type": 0
         },
         {
-          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
-          "Name": "Get building HVAC weather",
+          "Description": "일회성 증분 읽기를 수행하거나 구독을 시작 또는 재개합니다. 서버는 가능한 경우 `after_cursor` 이후에 유지된 변경 사항을 재생하거나 요청된 대체 범위로 제한된 독립적으로 캐시된 섹션을 반환합니다.",
+          "Name": "건물 HVAC 날씨 확인",
           "Type": 1
         },
         {
-          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
-          "Name": "Resume cursor",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "Description": "클라이언트가 완전히 원자적으로 적용한 마지막 커서입니다. `None`은 초기 스냅샷을 요청합니다.",
+          "Name": "재개 커서",
+          "NullText": "새로운 스냅샷에서 시작",
+          "SetText": "다음 이후에 재개",
           "Type": 2
         },
         {
-          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
-          "Name": "Historical recovery range",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "Description": "재생이 불가능할 때 포함할 미완료 기록 범위입니다. `None`은 재설정 스냅샷에서 기록을 제외합니다.",
+          "Name": "이력 복구 범위",
+          "NullText": "기록 없음",
+          "SetText": "다음에 대한 기록 포함",
           "Type": 3
         },
         {
-          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
-          "Name": "Include current conditions",
+          "Description": "재설정된 스냅샷에 캐시된 현재 실외 조건이 포함되어야 하는지 여부입니다.",
+          "Name": "현재 상태 포함",
           "Type": 4
         },
         {
-          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
-          "Name": "Forecast recovery range",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "Description": "재생이 불가능할 때 포함하는 반 개방형 기상 예측 범위입니다. `None`은 예측 데이터를 제외합니다.",
+          "Name": "예보 복구 범위",
+          "NullText": "예측 없음",
+          "SetText": "다음에 대한 예측 포함",
           "Type": 5
         },
         {
-          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
-          "Name": "Outdoor-air-quality recovery range",
-          "NullText": "No outdoor air quality",
-          "SetText": "Include outdoor air quality for",
+          "Description": "재생이 불가능할 때 포함할 반개방 오염물질 기간 범위입니다. `None`은 모델링된 실외 공기질을 제외합니다.",
+          "Name": "실외 공기질 회복 범위",
+          "NullText": "실외 공기질 없음",
+          "SetText": "다음에 대한 실외 공기질을 포함합니다.",
           "Type": 6
         },
         {
-          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
-          "Name": "Building HVAC weather recovery",
+          "Description": "재생, 스냅샷 재설정 또는 입력된 오류를 통해 모든 유효한 가져오기 요청에 응답합니다. 구독 클라이언트는 성공적인 복구, 이후 데이터 보고 및 PeerAlive 후에 시간 초과를 다시 시작합니다.",
+          "Name": "건물 HVAC 기상 복구",
           "Type": 7
         },
         {
-          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
-          "Name": "Maximum wait interval",
+          "Description": "구독 클라이언트가 마지막 커서로 다시 시도하기 전에 대기하는 최대 시간(초)입니다. 서버는 변경된 데이터나 PeerAlive를 먼저 보냅니다. 원샷 클라이언트는 0이 아닌 필수 값을 무시합니다.",
+          "Name": "최대 대기 간격",
           "Type": 8
         },
         {
-          "Description": "The replay, reset snapshot, or typed error result.",
-          "Name": "Recovery",
+          "Description": "재생, 스냅샷 재설정 또는 입력된 오류 결과입니다.",
+          "Name": "복구",
           "Type": 9
         },
         {
-          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
-          "Name": "Building HVAC weather increment",
+          "Description": "성공적인 구독 복구 후 변경 사항을 보고합니다. 클라이언트는 전체 연속 범위를 적용하거나 아무것도 적용하지 않습니다.",
+          "Name": "건물 HVAC 날씨 증분",
           "Type": 10
         },
         {
-          "Description": "The ordered, atomic cursor range and its weather changes.",
-          "Name": "Incremental report",
+          "Description": "순서가 지정된 원자 커서 범위와 날씨가 변경됩니다.",
+          "Name": "증분 보고서",
           "Type": 11
         }
       ],
@@ -790,48 +790,48 @@
           "Type": 0
         },
         {
-          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
-          "Name": "Replayed changes",
+          "Description": "제공된 커서 이후에 유지된 모든 변경 사항으로 스트림을 계속합니다. 빈 보고서는 클라이언트가 따라잡았다는 것을 의미합니다.",
+          "Name": "재생된 변경 사항",
           "Type": 1
         },
         {
-          "Description": "The contiguous retained change range beginning at the request cursor.",
-          "Name": "Incremental report",
+          "Description": "요청 커서에서 시작하는 연속적으로 유지되는 변경 범위입니다.",
+          "Name": "증분 보고서",
           "Type": 2
         },
         {
-          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
-          "Name": "Reset with snapshot",
+          "Description": "재생이 불가능하거나 커서가 제공되지 않은 경우 독립적으로 캐시된 섹션에서 상태를 설정합니다.",
+          "Name": "스냅샷으로 재설정",
           "Type": 3
         },
         {
-          "Description": "The reason the response contains a snapshot rather than replay.",
-          "Name": "Reset reason",
+          "Description": "응답에 재생이 아닌 스냅샷이 포함된 이유입니다.",
+          "Name": "재설정 이유",
           "Type": 4
         },
         {
-          "Description": "The cursor representing the returned snapshot.",
-          "Name": "Current cursor",
+          "Description": "반환된 스냅샷을 나타내는 커서입니다.",
+          "Name": "현재 커서",
           "Type": 5
         },
         {
-          "Description": "The available cached sections constrained by requested ranges.",
-          "Name": "Weather snapshot",
+          "Description": "요청된 범위로 제한된 사용 가능한 캐시 섹션입니다.",
+          "Name": "기상 스냅샷",
           "Type": 6
         },
         {
-          "Description": "Rejects the request without changing client cursor or cached weather.",
-          "Name": "Recovery error",
+          "Description": "클라이언트 커서나 캐시된 날씨를 변경하지 않고 요청을 거부합니다.",
+          "Name": "복구 오류",
           "Type": 7
         },
         {
-          "Description": "The reason recovery could not be completed.",
-          "Name": "Error",
+          "Description": "복구를 완료할 수 없었던 이유입니다.",
+          "Name": "오류",
           "Type": 8
         },
         {
-          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
-          "Name": "Retry delay",
+          "Description": "재시도 전 권장 시간(초)입니다. `None`은 재시도가 성공하려면 요청을 변경해야 함을 의미합니다.",
+          "Name": "재시도 지연 시간",
           "Type": 9
         }
       ],
@@ -1398,27 +1398,27 @@
       "Name": "SprinklerWeatherIncrementalReportV1"
     },
     {
-      "Description": "Records for one endpoint share a transaction and scan prefix.",
-      "DisplayName": "Saved weather keys",
+      "Description": "한 엔드포인트의 레코드는 트랜잭션과 스캔 접두사를 공유합니다.",
+      "DisplayName": "저장된 날씨 키",
       "List": [
         {
-          "Description": "Records for one endpoint share a transaction and scan prefix.",
-          "Name": "Saved weather keys",
+          "Description": "한 엔드포인트의 레코드는 트랜잭션과 스캔 접두사를 공유합니다.",
+          "Name": "저장된 날씨 키",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Weather belonging to one service endpoint",
+          "Name": "하나의 서비스 엔드포인트에 속하는 날씨",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "끝점",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "기록",
           "Type": 3
         }
       ],
@@ -1525,15 +1525,15 @@
         {
           "Description": "클라이언트가 완전하고 원자적으로 적용한 마지막 커서입니다. `None`은 범위가 제한된 초기 스냅샷을 요청합니다. 서버는 두 필드를 모두 비교합니다. 더 낮은 시퀀스는 응답 커서의 에포크 타임스탬프도 더 최신인 경우에만 재설정을 나타냅니다.",
           "Name": "재개 커서",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "NullText": "새로운 스냅샷에서 시작",
+          "SetText": "다음 이후에 재개",
           "Type": 2
         },
         {
           "Description": "재생이 불가능할 때 포함할 이력 기간 시작 시간의 반개구간입니다. `None`은 재설정 스냅샷에서 이력을 제외합니다.",
           "Name": "이력 복구 범위",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "NullText": "기록 없음",
+          "SetText": "다음에 대한 기록 포함",
           "Type": 3
         },
         {
@@ -1544,8 +1544,8 @@
         {
           "Description": "재생이 불가능할 때 포함할 예보 기간 시작 시간의 반개구간입니다. `None`은 재설정 스냅샷에서 예보 데이터를 제외합니다.",
           "Name": "예보 복구 범위",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "NullText": "예측 없음",
+          "SetText": "다음에 대한 예측 포함",
           "Type": 5
         },
         {
@@ -1578,41 +1578,41 @@
     },
     {
       "Description": "",
-      "DisplayName": "Saved weather record identity",
+      "DisplayName": "저장된 기상 기록 신원",
       "List": [
         {
           "Description": "",
-          "Name": "Saved weather record identity",
+          "Name": "저장된 기상 기록 신원",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Location",
+          "Name": "위치",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "HistoryMetadata",
+          "Name": "기록메타데이터",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "HistoryPeriod",
+          "Name": "역사기간",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "starts_at",
+          "Name": "시작_시간",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "Current",
+          "Name": "현재",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Forecast",
+          "Name": "예보",
           "Type": 6
         }
       ],

@@ -1,5 +1,5 @@
 {
-  "Description": "Definieert weergegevens die zijn afgestemd op de beslissingen die Libertas-toepassingen nemen. Het beregeningsschema bewaart de door de Hub aangeleverde locatie afzonderlijk van de recente geschiedenis, de huidige omstandigheden en de prognosegegevens. Elke weersectie heeft een ander vernieuwingsinterval en kan onafhankelijk slagen of mislukken. Runtime-snapshots kunnen elke mogelijke combinatie van secties bevatten. Toepassingen bewaren elke succesvol opgehaalde sectie afzonderlijk en behouden oudere secties wanneer het vernieuwen van weergegevens mislukt. Incrementele abonnementen gebruiken cursors met een epochtijdstempel en volgnummer, zodat clients een reset van de servercursor kunnen onderscheiden van verouderde gegevens of gegevens die in de verkeerde volgorde zijn ontvangen, bewaarde wijzigingen opnieuw kunnen afspelen of geselecteerde tijdsperioden uit gecachete gegevens kunnen herstellen. Het schema voor gebouw-HVAC levert uitsluitend de buitengegevens die nodig zijn voor voorspelling van de thermische belasting, de werking van warmtepompen, economizerbeslissingen en geregelde ventilatie met buitenlucht. Het houdt de secties voor weer en buitenluchtkwaliteit gescheiden, omdat ze verschillende gegevensleveranciers en versheidseigenschappen hebben. Lokale apparatuur en levensveiligheidssystemen moeten hun eigen sensoren blijven gebruiken; gecachete weergegevens van internet dienen als toezichthoudende invoer en niet als veiligheidssignaal.",
+  "Description": "Definieert weergegevens die zijn afgestemd op de beslissingen die door Libertas-applicaties worden genomen.\nHet sprinklerschema bewaart de door de Hub geleverde locatie afzonderlijk van de recente geschiedenis, huidige omstandigheden en voorspellingsgegevens. Elke weersectie heeft een ander vernieuwingsinterval en kan afzonderlijk slagen of mislukken. Runtime-snapshots kunnen elke combinatie van secties bevatten. Toepassingen behouden elke succesvolle sectie afzonderlijk en behouden oudere secties wanneer het vernieuwen van weergegevens mislukt. Incrementele abonnementen maken gebruik van epoch-timestamp-and-sequence-cursors, zodat clients onderscheid kunnen maken tussen een servercursorreset en verouderde of niet in de juiste volgorde staande gegevens, bewaarde wijzigingen opnieuw kunnen afspelen of geselecteerde tijdsbereiken uit gegevens in de cache kunnen herstellen.\nHet gebouw-HVAC-schema levert alleen de externe inputs die nodig zijn voor de voorspelling van de thermische belasting, de werking van de warmtepomp, beslissingen over de economiser en gecontroleerde buitenluchtventilatie. Het houdt de secties voor weer en buitenluchtkwaliteit onafhankelijk omdat ze verschillende aanbieders en versheidsgedrag hebben. Lokale apparatuur en levensveiligheidscontroles moeten hun eigen sensoren blijven gebruiken; In de cache opgeslagen internetweer is toezichtinput en geen veiligheidssignaal.",
   "DisplayName": "Libertas Weer",
   "DocumentVersion": "0.0.2",
   "List": [],
@@ -16,28 +16,28 @@
           "Type": 0
         },
         {
-          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
-          "Name": "Retrieved at",
+          "Description": "De datum en tijd waarop deze volledige sectie met de huidige toestand is opgehaald, gevalideerd en geaccepteerd.",
+          "Name": "Opgehaald op",
           "Type": 1
         },
         {
-          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
-          "Name": "Valid until",
+          "Description": "De exclusieve versheidsdeadline. Op of na dit tijdstip mogen de in de cache opgeslagen waarden geen werking van de economizer of andere weersafhankelijke optimalisaties toestaan ​​waarvoor bekende huidige omstandigheden nodig zijn.",
+          "Name": "Geldig tot",
           "Type": 2
         },
         {
-          "Description": "The provider-supplied date and time represented by these current conditions.",
-          "Name": "Valid at",
+          "Description": "De door de aanbieder opgegeven datum en tijd die in deze huidige voorwaarden wordt weergegeven.",
+          "Name": "Geldig op",
           "Type": 3
         },
         {
-          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
-          "Name": "Observation interval",
+          "Description": "Het achterwaarts gerichte interval in seconden, weergegeven door de verzamelde neerslag. Het huidige weer gebruikt normaal gesproken een interval van 900 seconden.",
+          "Name": "Waarnemingsinterval",
           "Type": 4
         },
         {
-          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
-          "Name": "Outdoor conditions",
+          "Description": "De nieuwste gemodelleerde temperatuur-, vocht-, druk-, wind-, neerslag- en zonne-inputs voor toezichthoudende HVAC controle.",
+          "Name": "Buitenomstandigheden",
           "Type": 5
         }
       ],
@@ -127,73 +127,73 @@
           "Type": 0
         },
         {
-          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
-          "Name": "Dry-bulb temperature",
+          "Description": "Buitenluchttemperatuur op twee meter boven de grond in graden Celsius.",
+          "Name": "Drogeboltemperatuur",
           "Type": 1
         },
         {
-          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
-          "Name": "Dew-point temperature",
+          "Description": "Dauwpunttemperatuur buiten op twee meter boven de grond in graden Celsius. Samen met de druk ondersteunt dit berekeningen voor de vochtigheidsverhouding, enthalpie, natte bol, condensatierisico en latente belasting.",
+          "Name": "Dauwpunt temperatuur",
           "Type": 2
         },
         {
-          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
-          "Name": "Relative humidity",
+          "Description": "Relatieve vochtigheid buiten op twee meter boven de grond als een geheel percentage van 0 tot en met 100. Deze providerwaarde ondersteunt weergave en validatie; Psychrometrische berekeningen moeten één consistente invoerset gebruiken in plaats van tegenstrijdige overtollige waarden te combineren.",
+          "Name": "Relatieve luchtvochtigheid",
           "Type": 3
         },
         {
-          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
-          "Name": "Surface pressure",
+          "Description": "Atmosferische druk op de hoogte van het gebouw in hectopascal. Voor psychometrische berekeningen wordt oppervlaktedruk gebruikt, in plaats van druk teruggebracht tot zeeniveau.",
+          "Name": "Oppervlakte druk",
           "Type": 4
         },
         {
-          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
-          "Name": "Wind speed",
+          "Description": "Aanhoudende windsnelheid buiten op 10 meter boven de grond in meters per seconde. Een gebouwmodel kan het gebruiken om infiltratie en drukgedreven buitenluchtbelastingen te schatten.",
+          "Name": "Windsnelheid",
           "Type": 5
         },
         {
-          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
-          "Name": "Wind gust",
+          "Description": "Piekwindstoot buiten op 10 meter boven de grond in meters per seconde. Het ondersteunt conservatieve controle van blootgestelde dempers en apparatuur.",
+          "Name": "Windvlaag",
           "Type": 6
         },
         {
-          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
-          "Name": "Wind direction",
+          "Description": "Richting waar de wind vandaan komt, in graden met de klok mee vanuit het ware noorden. Nul en 360 vertegenwoordigen beide het noorden. Richting is alleen nuttig als het gebouwmodel de geveloriëntatie kent.",
+          "Name": "Windrichting",
           "Type": 7
         },
         {
-          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
-          "Name": "Precipitation",
+          "Description": "Totaal vloeibaar-waterequivalent verzameld over het opslaginterval, in millimeters.",
+          "Name": "Neerslag",
           "Type": 8
         },
         {
-          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
-          "Name": "Precipitation kind",
+          "Description": "De vloeibare of bevroren neerslagfase die van invloed is op blootgestelde HVAC-apparatuur tijdens het insluitingsinterval.",
+          "Name": "Soort neerslag",
           "Type": 9
         },
         {
-          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
-          "Name": "Solar elevation",
+          "Description": "Geometrische hoogte van het centrum van de zon in graden boven de astronomische horizon op het weergegeven observatietijdstip. Negatieve waarden plaatsen de zon onder de horizon. Gebruik de `valid_at` van het huidige record of het middelpunt van een bevattende geschiedenis of prognoseperiode samen met de coördinaten van de bouwplaats om deze waarde te berekenen.",
+          "Name": "Zonnehoogte",
           "Type": 10
         },
         {
-          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
-          "Name": "Solar azimuth",
+          "Description": "Richting van het centrum van de zon in graden met de klok mee vanaf het ware noorden op hetzelfde weergegeven observatietijdstip. HVAC consumenten die machine learning gebruiken, converteren deze cyclische hoek naar sinus en cosinus in plaats van de ruwe graadwaarde als ordinaal te interpreteren.",
+          "Name": "Zonne-azimut",
           "Type": 11
         },
         {
-          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
-          "Name": "Global horizontal irradiance",
+          "Description": "Totale directe en diffuse zonne-energie die op een horizontaal oppervlak valt, in watt per vierkante meter. Dit is de belangrijkste input voor zonne-energie voor het hele gebouw.",
+          "Name": "Mondiale horizontale bestraling",
           "Type": 12
         },
         {
-          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
-          "Name": "Direct normal irradiance",
+          "Description": "Directe zonne-energie die invalt op een oppervlak loodrecht op de zon, in watt per vierkante meter. Georiënteerde gevel- en zonweringmodellen kunnen deze waarde gebruiken.",
+          "Name": "Directe normale bestraling",
           "Type": 13
         },
         {
-          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
-          "Name": "Diffuse horizontal irradiance",
+          "Description": "Zonne-energie aan de diffuse lucht die op een horizontaal oppervlak valt, in watt per vierkante meter. Georiënteerde gevel- en zonweringmodellen kunnen deze waarde gebruiken bij directe normale instraling.",
+          "Name": "Diffuse horizontale bestraling",
           "Type": 14
         }
       ],
@@ -253,158 +253,158 @@
           "Type": 0
         },
         {
-          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
-          "Name": "Upsert historical periods",
+          "Description": "Voegt voltooide perioden in of vervangt deze door `starts_at` na een succesvolle geschiedenisvernieuwing.",
+          "Name": "Bovenste historische perioden",
           "Type": 1
         },
         {
-          "Description": "The retrieval and validation time for the updated history section.",
-          "Name": "Retrieved at",
+          "Description": "De ophaal- en validatietijd voor de bijgewerkte geschiedenissectie.",
+          "Name": "Opgehaald op",
           "Type": 2
         },
         {
-          "Description": "The new exclusive freshness deadline for the history section.",
-          "Name": "Valid until",
+          "Description": "De nieuwe exclusieve versheidsdeadline voor de geschiedenissectie.",
+          "Name": "Geldig tot",
           "Type": 3
         },
         {
-          "Description": "Periods to insert or replace, ordered from oldest to newest.",
-          "Name": "Historical periods",
+          "Description": "Perioden die moeten worden ingevoegd of vervangen, gerangschikt van oud naar nieuw.",
+          "Name": "Historische perioden",
           "Type": 4
         },
         {
-          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
-          "Name": "Historical period",
+          "Description": "Eén voltooide buitenconditieperiode ingetoetst door `starts_at`.",
+          "Name": "Historische periode",
           "Type": 5
         },
         {
-          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove historical periods",
+          "Description": "Verwijdert historische perioden waarvan de starttijden binnen het opgegeven halfopen bereik vallen.",
+          "Name": "Historische perioden verwijderen",
           "Type": 6
         },
         {
-          "Description": "The half-open range of historical period start times to remove.",
-          "Name": "Time range",
+          "Description": "Het halfopen bereik van begintijden van historische perioden die moeten worden verwijderd.",
+          "Name": "Tijdsbereik",
           "Type": 7
         },
         {
-          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
-          "Name": "Replace current conditions",
+          "Description": "Vervangt de volledige sectie met de huidige toestand na succesvol ophalen, valideren en persistentie.",
+          "Name": "Actuele omstandigheden vervangen",
           "Type": 8
         },
         {
-          "Description": "The complete newly accepted current-condition section.",
-          "Name": "Current conditions",
+          "Description": "Het volledige nieuw geaccepteerde gedeelte over de huidige toestand.",
+          "Name": "Huidige omstandigheden",
           "Type": 9
         },
         {
-          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
-          "Name": "Upsert forecast periods",
+          "Description": "Voegt toekomstige perioden in of vervangt deze door `starts_at` na een succesvolle vernieuwing van de prognose.",
+          "Name": "Prognoseperioden invoegen of bijwerken",
           "Type": 10
         },
         {
-          "Description": "The retrieval and validation time for the updated forecast section.",
-          "Name": "Retrieved at",
+          "Description": "De ophaal- en validatietijd voor de bijgewerkte prognosesectie.",
+          "Name": "Opgehaald op",
           "Type": 11
         },
         {
-          "Description": "The new exclusive freshness deadline for the forecast section.",
-          "Name": "Valid until",
+          "Description": "De nieuwe exclusieve versheidsdeadline voor de prognosesectie.",
+          "Name": "Geldig tot",
           "Type": 12
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Forecast periods",
+          "Description": "Perioden die moeten worden ingevoegd of vervangen, gerangschikt van de vroegste tot de laatste.",
+          "Name": "Prognoseperioden",
           "Type": 13
         },
         {
-          "Description": "One future outdoor-condition period keyed by `starts_at`.",
-          "Name": "Forecast period",
+          "Description": "Eén toekomstige buitenconditieperiode ingetoetst met `starts_at`.",
+          "Name": "Prognoseperiode",
           "Type": 14
         },
         {
-          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove forecast periods",
+          "Description": "Verwijdert prognoseperioden waarvan de starttijden binnen het opgegeven halfopen bereik vallen.",
+          "Name": "Prognoseperioden verwijderen",
           "Type": 15
         },
         {
-          "Description": "The half-open range of forecast period start times to remove.",
-          "Name": "Time range",
+          "Description": "Het halfopen bereik van begintijden van prognoseperioden die moeten worden verwijderd.",
+          "Name": "Tijdsbereik",
           "Type": 16
         },
         {
-          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
-          "Name": "Upsert outdoor-air-quality periods",
+          "Description": "Voegt vervuilende perioden in of vervangt deze met `starts_at` na een succesvolle verversing van de luchtkwaliteit.",
+          "Name": "Hogere perioden van buitenluchtkwaliteit",
           "Type": 17
         },
         {
-          "Description": "The retrieval and validation time for the updated air-quality section.",
-          "Name": "Retrieved at",
+          "Description": "De ophaal- en validatietijd voor de bijgewerkte luchtkwaliteitsectie.",
+          "Name": "Opgehaald op",
           "Type": 18
         },
         {
-          "Description": "The new exclusive freshness deadline for the air-quality section.",
-          "Name": "Valid until",
+          "Description": "De nieuwe exclusieve versheidsdeadline voor de afdeling luchtkwaliteit.",
+          "Name": "Geldig tot",
           "Type": 19
         },
         {
-          "Description": "Periods to insert or replace, ordered from earliest to latest.",
-          "Name": "Air-quality periods",
+          "Description": "Perioden die moeten worden ingevoegd of vervangen, gerangschikt van de vroegste tot de laatste.",
+          "Name": "Luchtkwaliteitsperioden",
           "Type": 20
         },
         {
-          "Description": "One modeled pollutant period keyed by `starts_at`.",
-          "Name": "Air-quality period",
+          "Description": "Eén gemodelleerde periode van verontreinigende stoffen ingetoetst met `starts_at`.",
+          "Name": "Luchtkwaliteitsperiode",
           "Type": 21
         },
         {
-          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
-          "Name": "Remove outdoor-air-quality periods",
+          "Description": "Verwijdert verontreinigende perioden waarvan de starttijden binnen het opgegeven halfopen bereik vallen.",
+          "Name": "Verwijder perioden met betrekking tot de buitenluchtkwaliteit",
           "Type": 22
         },
         {
-          "Description": "The half-open range of air-quality period start times to remove.",
-          "Name": "Time range",
+          "Description": "Het halfopen bereik van de starttijden van de luchtkwaliteitsperiode moet worden verwijderd.",
+          "Name": "Tijdsbereik",
           "Type": 23
         },
         {
-          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
-          "Name": "Clear weather section",
+          "Description": "Wist één sectie pas nadat is gebleken dat de in de cache opgeslagen waarde ongeldig is. Alleen een provider-, internet- of vernieuwingsfout mag een sectie niet wissen.",
+          "Name": "Weersectie wissen",
           "Type": 24
         },
         {
-          "Description": "The independently cached section to clear.",
-          "Name": "Weather section",
+          "Description": "De afzonderlijk in de cache opgeslagen sectie die moet worden gewist.",
+          "Name": "Weersectie",
           "Type": 25
         },
         {
-          "Description": "Replaces the complete historical section after a successful refresh.",
-          "Name": "Replace history",
+          "Description": "Vervangt de volledige historische sectie na een succesvolle vernieuwing.",
+          "Name": "Geschiedenis vervangen",
           "Type": 26
         },
         {
-          "Description": "The complete newly accepted history section.",
-          "Name": "History",
+          "Description": "De complete nieuw geaccepteerde geschiedenissectie.",
+          "Name": "Geschiedenis",
           "Type": 27
         },
         {
-          "Description": "Replaces the complete forecast section after a successful refresh.",
-          "Name": "Replace forecast",
+          "Description": "Vervangt de volledige prognosesectie na een succesvolle vernieuwing.",
+          "Name": "Prognose vervangen",
           "Type": 28
         },
         {
-          "Description": "The complete newly accepted forecast section.",
-          "Name": "Forecast",
+          "Description": "De volledige, nieuw geaccepteerde prognosesectie.",
+          "Name": "Voorspelling",
           "Type": 29
         },
         {
-          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
-          "Name": "Replace outdoor air quality",
+          "Description": "Vervangt de volledige sectie met gemodelleerde verontreinigende stoffen na een succesvolle vernieuwing.",
+          "Name": "Vervang de buitenluchtkwaliteit",
           "Type": 30
         },
         {
-          "Description": "The complete newly accepted outdoor-air-quality section.",
-          "Name": "Outdoor air quality",
+          "Description": "Het complete nieuw geaccepteerde onderdeel buitenluchtkwaliteit.",
+          "Name": "Kwaliteit van de buitenlucht",
           "Type": 31
         }
       ],
@@ -681,66 +681,66 @@
           "Type": 0
         },
         {
-          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
-          "Name": "Get building HVAC weather",
+          "Description": "Voert een eenmalige incrementele leesbewerking uit of start of hervat een abonnement. De server herhaalt bewaarde wijzigingen na `after_cursor` indien mogelijk, of retourneert onafhankelijk in de cache opgeslagen secties die beperkt zijn tot de gevraagde fallback-bereiken.",
+          "Name": "Haal het gebouw HVAC weer op",
           "Type": 1
         },
         {
-          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
-          "Name": "Resume cursor",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "Description": "De laatste cursor volledig en atomair toegepast door de klant. `None` vraagt ​​om een ​​eerste momentopname.",
+          "Name": "Hervattingscursor",
+          "NullText": "Begin met een nieuwe momentopname",
+          "SetText": "Hervat daarna",
           "Type": 2
         },
         {
-          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
-          "Name": "Historical recovery range",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "Description": "Het halfopen historische bereik dat moet worden opgenomen wanneer opnieuw afspelen onmogelijk is. `None` sluit de geschiedenis uit van een reset-momentopname.",
+          "Name": "Historisch herstelbereik",
+          "NullText": "Geen geschiedenis",
+          "SetText": "Inclusief geschiedenis voor",
           "Type": 3
         },
         {
-          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
-          "Name": "Include current conditions",
+          "Description": "Of een reset-snapshot de huidige buitenomstandigheden in de cache moet bevatten.",
+          "Name": "Actuele omstandigheden opnemen",
           "Type": 4
         },
         {
-          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
-          "Name": "Forecast recovery range",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "Description": "Het halfopen fysieke weersvoorspellingsbereik dat moet worden opgenomen wanneer herhaling onmogelijk is. `None` sluit prognosegegevens uit.",
+          "Name": "Herstelbereik voor verwachtingen",
+          "NullText": "Geen voorspelling",
+          "SetText": "Inclusief prognose voor",
           "Type": 5
         },
         {
-          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
-          "Name": "Outdoor-air-quality recovery range",
-          "NullText": "No outdoor air quality",
-          "SetText": "Include outdoor air quality for",
+          "Description": "Het halfopen periodebereik voor verontreinigende stoffen moet worden opgenomen wanneer herhaling onmogelijk is. `None` sluit de gemodelleerde buitenluchtkwaliteit uit.",
+          "Name": "Herstelbereik voor buitenluchtkwaliteit",
+          "NullText": "Geen buitenluchtkwaliteit",
+          "SetText": "Inclusief buitenluchtkwaliteit voor",
           "Type": 6
         },
         {
-          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
-          "Name": "Building HVAC weather recovery",
+          "Description": "Reageert op elk geldig get-verzoek met herhaling, een reset-snapshot of een getypte fout. Abonnementklanten herstarten hun time-out na succesvol herstel, latere gegevensrapporten en PeerAlive.",
+          "Name": "Herstel van gebouw-HVAC-weergegevens",
           "Type": 7
         },
         {
-          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
-          "Name": "Maximum wait interval",
+          "Description": "Maximale seconden dat een abonnementsclient wacht voordat hij het opnieuw probeert met de laatste cursor. De server verzendt gewijzigde gegevens eerst of PeerAlive. Een one-shot-client negeert deze vereiste, niet-nulwaarde.",
+          "Name": "Maximaal wachtinterval",
           "Type": 8
         },
         {
-          "Description": "The replay, reset snapshot, or typed error result.",
-          "Name": "Recovery",
+          "Description": "Het resultaat van de herhaling, reset-snapshot of getypte fout.",
+          "Name": "Herstel",
           "Type": 9
         },
         {
-          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
-          "Name": "Building HVAC weather increment",
+          "Description": "Rapporteert wijzigingen na succesvol abonnementsherstel. Een opdrachtgever past het volledige aaneengesloten bereik toe of past er niets van toe.",
+          "Name": "Bouw HVAC weerverhoging",
           "Type": 10
         },
         {
-          "Description": "The ordered, atomic cursor range and its weather changes.",
-          "Name": "Incremental report",
+          "Description": "Het geordende, atomaire cursorbereik en de weersveranderingen.",
+          "Name": "Incrementeel rapport",
           "Type": 11
         }
       ],
@@ -790,48 +790,48 @@
           "Type": 0
         },
         {
-          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
-          "Name": "Replayed changes",
+          "Description": "Vervolgt de stream met elke behouden wijziging na de opgegeven cursor. Een leeg rapport betekent dat de klant ingehaald wordt.",
+          "Name": "Opnieuw afgespeelde wijzigingen",
           "Type": 1
         },
         {
-          "Description": "The contiguous retained change range beginning at the request cursor.",
-          "Name": "Incremental report",
+          "Description": "Het aaneengesloten behouden wijzigingsbereik beginnend bij de verzoekcursor.",
+          "Name": "Incrementeel rapport",
           "Type": 2
         },
         {
-          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
-          "Name": "Reset with snapshot",
+          "Description": "Bepaalt de status van onafhankelijk in de cache opgeslagen secties wanneer opnieuw afspelen onmogelijk is of er geen cursor is opgegeven.",
+          "Name": "Resetten met momentopname",
           "Type": 3
         },
         {
-          "Description": "The reason the response contains a snapshot rather than replay.",
-          "Name": "Reset reason",
+          "Description": "De reden dat het antwoord een momentopname bevat in plaats van een herhaling.",
+          "Name": "Reden voor opnieuw instellen",
           "Type": 4
         },
         {
-          "Description": "The cursor representing the returned snapshot.",
-          "Name": "Current cursor",
+          "Description": "De cursor die de geretourneerde momentopname vertegenwoordigt.",
+          "Name": "Huidige cursor",
           "Type": 5
         },
         {
-          "Description": "The available cached sections constrained by requested ranges.",
-          "Name": "Weather snapshot",
+          "Description": "De beschikbare secties in de cache worden beperkt door de aangevraagde bereiken.",
+          "Name": "Weermomentopname",
           "Type": 6
         },
         {
-          "Description": "Rejects the request without changing client cursor or cached weather.",
-          "Name": "Recovery error",
+          "Description": "Weigert het verzoek zonder de clientcursor of het in de cache opgeslagen weer te wijzigen.",
+          "Name": "Herstelfout",
           "Type": 7
         },
         {
-          "Description": "The reason recovery could not be completed.",
-          "Name": "Error",
+          "Description": "De reden waarom het herstel niet kon worden voltooid.",
+          "Name": "Fout",
           "Type": 8
         },
         {
-          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
-          "Name": "Retry delay",
+          "Description": "Aanbevolen seconden voordat u het opnieuw probeert. `None` betekent dat het verzoek moet veranderen voordat een nieuwe poging kan slagen.",
+          "Name": "Wachttijd voor nieuwe poging",
           "Type": 9
         }
       ],
@@ -1398,27 +1398,27 @@
       "Name": "SprinklerWeatherIncrementalReportV1"
     },
     {
-      "Description": "Records for one endpoint share a transaction and scan prefix.",
-      "DisplayName": "Saved weather keys",
+      "Description": "Records voor één eindpunt delen een transactie en een scanvoorvoegsel.",
+      "DisplayName": "Opgeslagen weersleutels",
       "List": [
         {
-          "Description": "Records for one endpoint share a transaction and scan prefix.",
-          "Name": "Saved weather keys",
+          "Description": "Records voor één eindpunt delen een transactie en een scanvoorvoegsel.",
+          "Name": "Opgeslagen weersleutels",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Weather belonging to one service endpoint",
+          "Name": "Het weer dat bij één service-eindpunt hoort",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "endpoint",
+          "Name": "eindpunt",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "record",
+          "Name": "opnemen",
           "Type": 3
         }
       ],
@@ -1525,15 +1525,15 @@
         {
           "Description": "De laatste cursor die volledig en atomair door de client is toegepast. `None` vraagt om een initiële, tot het bereik beperkte momentopname. De server vergelijkt beide velden; een lagere sequentie duidt alleen op een reset wanneer de antwoordcursor ook een nieuwer epochtijdstempel heeft.",
           "Name": "Hervattingscursor",
-          "NullText": "Start from a fresh snapshot",
-          "SetText": "Resume after",
+          "NullText": "Begin met een nieuwe momentopname",
+          "SetText": "Hervat daarna",
           "Type": 2
         },
         {
           "Description": "Het halfopen bereik van begintijden van historische perioden dat moet worden opgenomen wanneer opnieuw afspelen onmogelijk is. `None` sluit de geschiedenis uit van de resetmomentopname.",
           "Name": "Historisch herstelbereik",
-          "NullText": "No history",
-          "SetText": "Include history for",
+          "NullText": "Geen geschiedenis",
+          "SetText": "Inclusief geschiedenis voor",
           "Type": 3
         },
         {
@@ -1544,8 +1544,8 @@
         {
           "Description": "Het halfopen bereik van begintijden van verwachtingsperioden dat moet worden opgenomen wanneer opnieuw afspelen onmogelijk is. `None` sluit verwachtingsgegevens uit van de resetmomentopname.",
           "Name": "Herstelbereik voor verwachtingen",
-          "NullText": "No forecast",
-          "SetText": "Include forecast for",
+          "NullText": "Geen voorspelling",
+          "SetText": "Inclusief prognose voor",
           "Type": 5
         },
         {
@@ -1578,41 +1578,41 @@
     },
     {
       "Description": "",
-      "DisplayName": "Saved weather record identity",
+      "DisplayName": "Identiteit van het weerrecord opgeslagen",
       "List": [
         {
           "Description": "",
-          "Name": "Saved weather record identity",
+          "Name": "Identiteit van het weerrecord opgeslagen",
           "Type": 0
         },
         {
           "Description": "",
-          "Name": "Location",
+          "Name": "Locatie",
           "Type": 1
         },
         {
           "Description": "",
-          "Name": "HistoryMetadata",
+          "Name": "GeschiedenisMetadata",
           "Type": 2
         },
         {
           "Description": "",
-          "Name": "HistoryPeriod",
+          "Name": "GeschiedenisPeriode",
           "Type": 3
         },
         {
           "Description": "",
-          "Name": "starts_at",
+          "Name": "begint_om",
           "Type": 4
         },
         {
           "Description": "",
-          "Name": "Current",
+          "Name": "Huidig",
           "Type": 5
         },
         {
           "Description": "",
-          "Name": "Forecast",
+          "Name": "Voorspelling",
           "Type": 6
         }
       ],

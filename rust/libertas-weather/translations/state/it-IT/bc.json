@@ -1,8 +1,8 @@
 {
   "Entries": {
     "package/property/\"Description\"": {
-      "Current": "sha256:6811dd8891e9856ff5559b13e763c09a921125798c406e316d522565b14664f0",
-      "Target": "Definisce dati meteorologici adattati alle decisioni prese dalle applicazioni Libertas. Lo schema per l'irrigazione memorizza la posizione del sito fornita dall'Hub separatamente dalla cronologia recente, dalle condizioni attuali e dai dati di previsione. Ogni sezione meteorologica ha un intervallo di aggiornamento diverso e può avere esito positivo o negativo in modo indipendente. Le istantanee di runtime possono contenere qualsiasi combinazione di sezioni. Le applicazioni memorizzano separatamente ogni sezione recuperata correttamente e conservano le sezioni precedenti quando un aggiornamento dei dati meteorologici non riesce. Le sottoscrizioni incrementali utilizzano cursori composti da timestamp dell'epoca e sequenza, in modo che i client possano distinguere il ripristino di un cursore del server da dati obsoleti o fuori sequenza, riprodurre le modifiche conservate oppure recuperare intervalli di tempo selezionati dai dati memorizzati nella cache. Lo schema per la climatizzazione degli edifici fornisce esclusivamente i dati esterni necessari per la previsione del carico termico, il funzionamento delle pompe di calore, le decisioni sull'economizzatore e la ventilazione controllata con aria esterna. Mantiene indipendenti le sezioni relative alle condizioni meteorologiche e alla qualità dell'aria esterna, poiché hanno fornitori e comportamenti di aggiornamento diversi. Le apparecchiature locali e i controlli di sicurezza devono continuare a utilizzare i propri sensori; i dati meteorologici Internet memorizzati nella cache sono un'informazione di supervisione, non un segnale di sicurezza."
+      "Current": "sha256:5c379c28bceb4555ffe853300912a801596a0e31fd3ef0215481325700d46bbd",
+      "Target": "Definisce i dati meteorologici personalizzati in base alle decisioni prese dalle applicazioni Libertas.\nLo schema degli irrigatori mantiene la posizione del sito fornita dall'hub separatamente dalla cronologia recente, dalle condizioni attuali e dai dati di previsione. Ogni sezione meteo ha un intervallo di aggiornamento diverso e può avere esito positivo o negativo in modo indipendente. Gli snapshot di runtime possono contenere qualsiasi combinazione di sezioni. Le applicazioni mantengono ciascuna sezione riuscita separatamente e conservano le sezioni più vecchie quando l'aggiornamento dei dati meteorologici non riesce. Gli abbonamenti incrementali utilizzano cursori di epoca, timestamp e sequenza in modo che i client possano distinguere la reimpostazione del cursore del server da dati obsoleti o fuori ordine, riprodurre le modifiche conservate o recuperare intervalli di tempo selezionati dai dati memorizzati nella cache.\nLo schema HVAC dell'edificio fornisce solo gli input esterni necessari per la previsione del carico termico, il funzionamento della pompa di calore, le decisioni sull'economizzatore e la ventilazione controllata dell'aria esterna. Mantiene indipendenti le sezioni relative al clima e alla qualità dell'aria esterna perché hanno fornitori e comportamenti di freschezza diversi. Le apparecchiature locali e i controlli di sicurezza devono continuare a utilizzare i propri sensori; Il meteo in Internet memorizzato nella cache è un input di supervisione, non un segnale di sicurezza."
     },
     "package/property/\"DisplayName\"": {
       "Current": "sha256:c395bc36da801ac4b25a74b1d2e42215e03c3599d4761a60d475f648df3d8008",
@@ -10,5 +10,11 @@
     }
   },
   "Reviewed": {},
-  "Translated": {}
+  "Translated": {
+    "package/property/\"Description\"": {
+      "At": "2026-11-11T14:33:20.435Z",
+      "By": "Translation gap completion: paragraph repair and terminology corrections",
+      "Revision": "sha256:5c379c28bceb4555ffe853300912a801596a0e31fd3ef0215481325700d46bbd"
+    }
+  }
 }
