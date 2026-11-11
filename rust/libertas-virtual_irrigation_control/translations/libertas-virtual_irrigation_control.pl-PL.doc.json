@@ -1,0 +1,75 @@
+{
+  "Description": "Umożliwia wypróbowanie aplikacji do obsługi zraszaczy bez instalowania fizycznego sprzętu do nawadniania.",
+  "DisplayName": "Emulator sterowania zraszaczami",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Virtual sprinkler valves",
+      "Description": "Umożliwia użytkownikom wypróbowanie aplikacji do obsługi zraszaczy bez instalowania fizycznego sprzętu do nawadniania. Użytkownik wybiera co najmniej jeden wirtualny zawór i może ustawić domyślny czas nawadniania dla każdego zaworu. Użytkownik lub aplikacja do obsługi zraszaczy może otworzyć zawór bezterminowo, otworzyć go na wybrany czas albo go zamknąć. Sterownik zaworów automatycznie kończy nawadnianie po upływie ustawionego czasu i przed otwarciem nowego zaworu zamyka każdy inny zawór, dzięki czemu w danej chwili nawadnia tylko jeden zawór. Sterownik zaworów wyświetla stan otwarcia lub zamknięcia każdego zaworu, wybrany czas, domyślny czas i pozostały czas, a także zachowuje domyślny czas po ponownym uruchomieniu.",
+      "DisplayName": "Emulator sterowania zraszaczami",
+      "List": [
+        {
+          "Description": "Dodaj po jednym wirtualnym zaworze dla każdego obszaru, który chcesz wypróbować.",
+          "Name": "Zawory zraszaczy",
+          "Type": 0
+        },
+        {
+          "Description": "Jeden wirtualny zawór wody.",
+          "Name": "Zawór zraszacza",
+          "Type": 1
+        }
+      ],
+      "Name": "virtual_irrigation_controller"
+    }
+  ],
+  "Locale": "pl-PL",
+  "StringResources": {
+    "DEFAULT_OPEN_DURATION": "Zapisany czas nawadniania dla {0}."
+  },
+  "Types": [
+    {
+      "Description": "Każda struktura danych zapisywana w bazie danych Libertas jest zdefiniowana bezpośrednio w tej unii.",
+      "DisplayName": "Trwałe dane zaworu.",
+      "List": [
+        {
+          "Description": "Każda struktura danych zapisywana w bazie danych Libertas jest zdefiniowana bezpośrednio w tej unii.",
+          "Name": "Trwałe dane zaworu.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Atrybut DefaultOpenDuration protokołu Matter.",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "DefaultOpenDuration w sekundach.",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved valve settings",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved valve settings",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Default watering duration for one valve",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveKey"
+    }
+  ]
+}

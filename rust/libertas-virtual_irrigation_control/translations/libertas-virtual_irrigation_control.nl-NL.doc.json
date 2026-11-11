@@ -1,0 +1,75 @@
+{
+  "Description": "Hiermee kunt u apps voor beregeningssystemen uitproberen zonder fysieke beregeningsapparatuur te installeren.",
+  "DisplayName": "Emulator voor beregeningsbesturing",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Virtual sprinkler valves",
+      "Description": "Hiermee kunnen mensen apps voor beregeningssystemen uitproberen zonder fysieke beregeningsapparatuur te installeren. De gebruiker kiest een of meer virtuele kleppen en kan voor elke klep de standaardbesproeiingsduur instellen. De gebruiker of een app voor beregeningssystemen kan een klep voor onbepaalde tijd openen, voor een gekozen duur openen of sluiten. De klepbesturing beëindigt een besproeiing met tijdslimiet automatisch en sluit elke andere klep voordat een nieuwe wordt geopend, zodat er slechts één klep tegelijk water geeft. De klepbesturing toont voor elke klep of deze open of gesloten is, de gekozen duur, de standaardduur en de resterende tijd, en onthoudt de standaardduur na opnieuw opstarten.",
+      "DisplayName": "Emulator voor beregeningsbesturing",
+      "List": [
+        {
+          "Description": "Voeg één virtuele klep toe voor elk gebied dat u wilt uitproberen.",
+          "Name": "Beregeningskleppen",
+          "Type": 0
+        },
+        {
+          "Description": "Eén virtuele waterklep.",
+          "Name": "Beregeningsklep",
+          "Type": 1
+        }
+      ],
+      "Name": "virtual_irrigation_controller"
+    }
+  ],
+  "Locale": "nl-NL",
+  "StringResources": {
+    "DEFAULT_OPEN_DURATION": "Opgeslagen besproeiingsduur voor {0}."
+  },
+  "Types": [
+    {
+      "Description": "Elke gegevensstructuur die naar de Libertas-database wordt geschreven, wordt rechtstreeks in dit uniontype gedefinieerd.",
+      "DisplayName": "Permanent opgeslagen klepgegevens.",
+      "List": [
+        {
+          "Description": "Elke gegevensstructuur die naar de Libertas-database wordt geschreven, wordt rechtstreeks in dit uniontype gedefinieerd.",
+          "Name": "Permanent opgeslagen klepgegevens.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Matter-attribuut DefaultOpenDuration.",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "DefaultOpenDuration, in seconden.",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved valve settings",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved valve settings",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Default watering duration for one valve",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveKey"
+    }
+  ]
+}

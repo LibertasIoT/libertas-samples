@@ -1,0 +1,75 @@
+{
+  "Description": "Consente di provare le app per irrigatori senza installare dispositivi fisici di irrigazione.",
+  "DisplayName": "Emulatore di controllo degli irrigatori",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Virtual sprinkler valves",
+      "Description": "Consente di provare le applicazioni per irrigatori senza installare dispositivi fisici di irrigazione. L'utente sceglie una o più valvole virtuali e può impostare la durata di irrigazione predefinita per ciascuna valvola. L'utente o un'applicazione per irrigatori può aprire una valvola a tempo indeterminato, aprirla per la durata scelta oppure chiuderla. Il sistema di controllo chiude automaticamente la valvola al termine dell'irrigazione temporizzata e chiude qualsiasi altra valvola prima di aprirne una nuova, in modo che sia in funzione una sola valvola alla volta. Il sistema mostra per ogni valvola lo stato aperto o chiuso, la durata selezionata, la durata predefinita e il tempo rimanente, e conserva la durata predefinita anche dopo il riavvio.",
+      "DisplayName": "Emulatore di controllo degli irrigatori",
+      "List": [
+        {
+          "Description": "Aggiungi una valvola virtuale per ogni area che vuoi provare.",
+          "Name": "Valvole degli irrigatori",
+          "Type": 0
+        },
+        {
+          "Description": "Una valvola virtuale per l'acqua.",
+          "Name": "Valvola dell'irrigatore",
+          "Type": 1
+        }
+      ],
+      "Name": "virtual_irrigation_controller"
+    }
+  ],
+  "Locale": "it-IT",
+  "StringResources": {
+    "DEFAULT_OPEN_DURATION": "Durata di irrigazione salvata per {0}."
+  },
+  "Types": [
+    {
+      "Description": "Ogni struttura di dati scritta nel database Libertas è definita direttamente in questa unione.",
+      "DisplayName": "Dati persistenti della valvola.",
+      "List": [
+        {
+          "Description": "Ogni struttura di dati scritta nel database Libertas è definita direttamente in questa unione.",
+          "Name": "Dati persistenti della valvola.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Attributo Matter DefaultOpenDuration.",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "DefaultOpenDuration, in secondi.",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved valve settings",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved valve settings",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Default watering duration for one valve",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveKey"
+    }
+  ]
+}

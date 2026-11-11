@@ -1,0 +1,1802 @@
+{
+  "Description": "Entdecken Sie anhand simulierter Beispieldaten dreizehn interaktive Beispiele für räumliche Muster, Produktvergleiche und mathematische Oberflächen. Die Galerie wird auf einem Libertas Hub ausgeführt und enthält Beispiele für eine Anzeigeanwendung, die Libertas-3D-Diagramme unterstützt.",
+  "DisplayName": "Libertas-Galerie für 3D-Diagramme",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "Description": "Mit der Galerie für 3D-Diagramme können Benutzer dreizehn interaktive Beispiele für räumliche Muster, Produktvergleiche und mathematische Oberflächen erkunden. Bei der Einrichtung wählen sie einen Namen für die Galerie aus. Anschließend können sie jedes beliebige Beispiel aus der Galerie öffnen. Die Galerie zeigt räumliche Streugruppen, Verläufe für Erhebungen, Prognosen und Betriebsgrenzen, regionale Umsatzsäulen, horizontale Produktvergleiche sowie Quader mit unterschiedlichen Abmessungen. In einem Blasendiagramm können Benutzer Reichweite, Wachstum und Kundenbindung von Produkten vergleichen, wobei die Blasengröße den Jahreswert darstellt. Die Galerie zeigt außerdem eine Höhenkarte eines Geländes, ein Drahtgittermodell einer Sattelfläche, Konturen gleicher Höhe auf einer Oberfläche, eine ungleichmäßig abgetastete Oberfläche mit einer absichtlich gelassenen Lücke und eine gekrümmte mathematische Oberfläche. Benutzer können Frequenzspektren vergleichen, positive und negative, von null aus gemessene Impulse untersuchen, eine Wolke aus 96 räumlichen Messpunkten erkunden sowie Periodenvolumen, Trends und Beobachtungen gemeinsam vergleichen. Die Beispiele veranschaulichen kombinierte Diagramme und separate Ansichten mit Beschriftungen, Legenden, Details zu den Messpunkten und unterschiedlichen Perspektiven. Die Galerie berechnet die Beispieldaten, sobald ein Benutzer ein Beispiel öffnet. Wird dasselbe Beispiel erneut ausgewählt, werden dieselben simulierten Werte erzeugt. Die Galerie wird auf einem Libertas Hub ausgeführt und erfordert eine Anzeigeanwendung, die Libertas-3D-Diagramme unterstützt. Entwickelt von Smartonlabs Inc. (libertas).",
+      "DisplayName": "Galerie für 3D-Diagramme",
+      "List": [
+        {
+          "DefaultText": "Galerie für 3D-Diagramme",
+          "Description": "Der Benutzer benennt die von dieser Aufgabe erstellte Galerie. Er kann diese Galerie öffnen, um anhand simulierter Beispiele räumliche Vergleiche und mathematische Oberflächen zu erkunden.",
+          "Name": "Galeriedienst",
+          "Type": 0
+        }
+      ],
+      "Name": "chart3d_demo"
+    }
+  ],
+  "Locale": "de-DE",
+  "StringResources": {},
+  "Types": [
+    {
+      "Description": "Zeigt regionale Umsatzsäulen, horizontale Produktvergleiche und Quader als drei separate Beispiele.",
+      "DisplayName": "3D-Balkenvergleiche",
+      "List": [
+        {
+          "Description": "Zeigt regionale Umsatzsäulen, horizontale Produktvergleiche und Quader als drei separate Beispiele.",
+          "Name": "3D-Balkenvergleiche",
+          "Type": 0
+        },
+        {
+          "Description": "Vergleicht den Umsatz nach Quartal und Vertriebsregion.",
+          "Name": "Regionale Umsätze",
+          "Type": 1
+        },
+        {
+          "Description": "Vergleicht die tatsächlichen und geplanten Ergebnisse jeder Produktfamilie.",
+          "Name": "Produktvergleiche",
+          "Type": 2
+        },
+        {
+          "Description": "Vergleicht Quader mit unterschiedlichen Abmessungen und Positionen.",
+          "Name": "Quader",
+          "Type": 3
+        }
+      ],
+      "Name": "BarFormsChartV1"
+    },
+    {
+      "Description": "Unterscheidet das tatsächliche Ergebnis des Beispiels von seinem geplanten Ergebnis.",
+      "DisplayName": "Umsatzszenario",
+      "List": [
+        {
+          "Description": "Unterscheidet das tatsächliche Ergebnis des Beispiels von seinem geplanten Ergebnis.",
+          "Enum": [
+            {
+              "Description": "Das Ergebnis, das in diesem simulierten Vergleich als tatsächliches Ergebnis dargestellt wird.",
+              "Name": "Istwert",
+              "Type": 1
+            },
+            {
+              "Description": "Das geplante Ergebnis, das mit dem tatsächlichen Ergebnis des Beispiels verglichen wird.",
+              "Name": "Planwert",
+              "Type": 2
+            }
+          ],
+          "Name": "Umsatzszenario",
+          "Type": 0
+        }
+      ],
+      "Name": "BarScenarioV1"
+    },
+    {
+      "Description": "Vergleicht Reichweite, Wachstum und Kundenbindung von Produkten, wobei die Blasengröße den Jahreswert darstellt.",
+      "DisplayName": "3D-Produktblasen",
+      "List": [
+        {
+          "Description": "Vergleicht Reichweite, Wachstum und Kundenbindung von Produkten, wobei die Blasengröße den Jahreswert darstellt.",
+          "Name": "3D-Produktblasen",
+          "Type": 0
+        },
+        {
+          "Description": "Reichweite, Wachstum, Kundenbindung, Jahreswert, Segment und Zielgruppe eines simulierten Produkts.",
+          "Name": "Produktblase",
+          "Type": 1
+        }
+      ],
+      "Name": "BubbleChartV1"
+    },
+    {
+      "Description": "Gibt an, ob sich ein Beispielprodukt an Verbraucher, die Industrie oder wissenschaftliche Anwender richtet.",
+      "DisplayName": "Produktzielgruppe",
+      "List": [
+        {
+          "Description": "Gibt an, ob sich ein Beispielprodukt an Verbraucher, die Industrie oder wissenschaftliche Anwender richtet.",
+          "Enum": [
+            {
+              "Description": "An Verbraucher gerichtetes Produkt.",
+              "Name": "Verbraucher",
+              "Type": 1
+            },
+            {
+              "Description": "Industrieprodukt.",
+              "Name": "Industrie",
+              "Type": 2
+            },
+            {
+              "Description": "Wissenschaftliches Produkt.",
+              "Name": "Wissenschaft",
+              "Type": 3
+            }
+          ],
+          "Name": "Produktzielgruppe",
+          "Type": 0
+        }
+      ],
+      "Name": "BubbleClassV1"
+    },
+    {
+      "Description": "Reichweite, Wachstum, Kundenbindung, Jahreswert, Segment und Zielgruppe eines simulierten Produkts.",
+      "DisplayName": "Produktblase",
+      "List": [
+        {
+          "Description": "Reichweite, Wachstum, Kundenbindung, Jahreswert, Segment und Zielgruppe eines simulierten Produkts.",
+          "Name": "Produktblase",
+          "Type": 0
+        },
+        {
+          "Description": "Die relative Marktreichweite des Beispielprodukts.",
+          "Name": "Reichweite",
+          "Type": 1
+        },
+        {
+          "Description": "Das Wachstum des Beispielprodukts; ein negativer Wert steht für einen Rückgang.",
+          "Name": "Wachstum",
+          "Type": 2
+        },
+        {
+          "Description": "Der Anteil der Kunden, die dem Beispielprodukt treu bleiben.",
+          "Name": "Kundenbindung",
+          "Type": 3
+        },
+        {
+          "Description": "Der Jahreswert des Beispielprodukts, wobei größere Werte als größere Blasen dargestellt werden.",
+          "Name": "Jahreswert",
+          "Type": 4
+        },
+        {
+          "Description": "Gibt an, ob dieses Produkt zu einem etablierten, wachsenden oder experimentellen Segment gehört.",
+          "Name": "Segment",
+          "Type": 5
+        },
+        {
+          "Description": "Gibt an, ob sich dieses Produkt an Verbraucher, die Industrie oder wissenschaftliche Anwender richtet.",
+          "Name": "Produktzielgruppe",
+          "Type": 6
+        },
+        {
+          "Description": "Unterscheidet dieses Produkt von den anderen Beispielprodukten.",
+          "Name": "Produktkennung",
+          "Type": 7
+        }
+      ],
+      "Name": "BubblePointV1"
+    },
+    {
+      "Description": "Gruppiert Beispielprodukte danach, ob sie etabliert, wachsend oder experimentell sind.",
+      "DisplayName": "Produktsegment",
+      "List": [
+        {
+          "Description": "Gruppiert Beispielprodukte danach, ob sie etabliert, wachsend oder experimentell sind.",
+          "Enum": [
+            {
+              "Description": "Etablierte Kernprodukte.",
+              "Name": "Kernprodukte",
+              "Type": 1
+            },
+            {
+              "Description": "Produkte mit raschem Wachstum.",
+              "Name": "Wachstum",
+              "Type": 2
+            },
+            {
+              "Description": "Experimentelle Produkte.",
+              "Name": "Forschung",
+              "Type": 3
+            }
+          ],
+          "Name": "Produktsegment",
+          "Type": 0
+        }
+      ],
+      "Name": "BubbleSegmentV1"
+    },
+    {
+      "Description": "Die Benutzer können ein Beispiel auswählen, um simulierte räumliche Muster, Vergleiche oder mathematische Oberflächen zu erkunden.",
+      "DisplayName": "Galerie für 3D-Diagramme",
+      "List": [
+        {
+          "Description": "Die Benutzer können ein Beispiel auswählen, um simulierte räumliche Muster, Vergleiche oder mathematische Oberflächen zu erkunden.",
+          "Name": "Galerie für 3D-Diagramme",
+          "Type": 0
+        },
+        {
+          "Description": "Die Benutzer können die Streuung und Abgrenzung dreier Gruppen simulierter Standorte vergleichen.",
+          "Name": "Räumliche Stichproben anzeigen",
+          "Type": 1
+        },
+        {
+          "Description": "Die Galerie zeigt simulierte Standorte rund um einen Höhenrücken, ein Becken und eine Geländestufe.",
+          "Name": "Räumliche Stichproben",
+          "Type": 2
+        },
+        {
+          "Description": "Die Benutzer können simulierte Verläufe für Vermessung, Prognose und Betriebsgrenzen vergleichen.",
+          "Name": "3D-Verläufe anzeigen",
+          "Type": 3
+        },
+        {
+          "Description": "Die Galerie zeigt drei räumliche Verläufe zum Vergleich.",
+          "Name": "3D-Verläufe",
+          "Type": 4
+        },
+        {
+          "Description": "Die Benutzer können regionale Umsatzsäulen, horizontale Produktvergleiche und Quader erkunden.",
+          "Name": "3D-Balkenvergleiche anzeigen",
+          "Type": 5
+        },
+        {
+          "Description": "Die Galerie zeigt drei separate Beispiele für Balken und Quader mit unterschiedlichen Abmessungen.",
+          "Name": "3D-Balkenvergleiche",
+          "Type": 6
+        },
+        {
+          "Description": "Die Benutzer können Produktreichweite, Wachstum und Kundenbindung zusammen mit dem Jahreswert vergleichen.",
+          "Name": "3D-Produktblasen anzeigen",
+          "Type": 7
+        },
+        {
+          "Description": "Die Galerie zeigt simulierte Produktergebnisse, wobei die Blasengröße den Jahreswert darstellt.",
+          "Name": "3D-Produktblasen",
+          "Type": 8
+        },
+        {
+          "Description": "Die Benutzer können die Höhen und Tiefen eines simulierten Geländes erkunden.",
+          "Name": "Geländehöhenkarte anzeigen",
+          "Type": 9
+        },
+        {
+          "Description": "Die Galerie zeigt eine ausgefüllte Geländeoberfläche, die an gleichmäßig verteilten Positionen abgetastet wurde.",
+          "Name": "Geländehöhenkarte",
+          "Type": 10
+        },
+        {
+          "Description": "Die Benutzer können eine sattelförmige Oberfläche anhand ihres Gitters aus verbundenen Linien erkunden.",
+          "Name": "Drahtgitter einer Sattelfläche anzeigen",
+          "Type": 11
+        },
+        {
+          "Description": "Die Galerie zeigt die Form einer Sattelfläche als offenes Gitter.",
+          "Name": "Drahtgitter einer Sattelfläche",
+          "Type": 12
+        },
+        {
+          "Description": "Die Benutzer können Linien gleicher Höhe mit der von ihnen beschriebenen Oberfläche vergleichen.",
+          "Name": "Höhenlinien auf einer Oberfläche anzeigen",
+          "Type": 13
+        },
+        {
+          "Description": "Die Galerie zeigt eine Oberfläche zusammen mit ihren rautenförmigen Höhenlinien.",
+          "Name": "Höhenlinien auf einer Oberfläche",
+          "Type": 14
+        },
+        {
+          "Description": "Die Benutzer können eine in ungleichmäßigen Abständen abgetastete Oberfläche erkunden und die durch einen fehlenden Messpunkt entstandene Lücke sehen.",
+          "Name": "Ungleichmäßig abgetastete Oberfläche anzeigen",
+          "Type": 15
+        },
+        {
+          "Description": "Die Galerie zeigt eine Oberfläche mit ungleichmäßigen Abständen zwischen den Messpunkten und einem absichtlich ausgelassenen Messpunkt.",
+          "Name": "Ungleichmäßig abgetastete Oberfläche",
+          "Type": 16
+        },
+        {
+          "Description": "Die Benutzer können Frequenzspektren für einen Ausgangswert und drei Tageszeiten vergleichen.",
+          "Name": "Wasserfallspektren anzeigen",
+          "Type": 17
+        },
+        {
+          "Description": "Die Galerie zeigt simulierte Signalstärken über verschiedene Frequenzen für vier Zeiträume.",
+          "Name": "Wasserfallspektren",
+          "Type": 18
+        },
+        {
+          "Description": "Die Benutzer können positive und negative Impulse mit dem Nullwert vergleichen.",
+          "Name": "Impulsstäbe anzeigen",
+          "Type": 19
+        },
+        {
+          "Description": "Die Galerie zeigt jeden simulierten Impuls als Stab ausgehend vom Nullwert, dessen Spitze den Impulswert kennzeichnet.",
+          "Name": "Impulsstäbe",
+          "Type": 20
+        },
+        {
+          "Description": "Die Benutzer können eine gekrümmte Oberfläche erkunden, die aus einem Polynom mit zwei Parametern berechnet wurde.",
+          "Name": "Mathematische Oberfläche anzeigen",
+          "Type": 21
+        },
+        {
+          "Description": "Die Galerie zeigt, wie zwei mathematische Parameter eine Oberfläche im dreidimensionalen Raum formen.",
+          "Name": "Mathematische Oberfläche",
+          "Type": 22
+        },
+        {
+          "Description": "Die Benutzer können die Streuung von 96 simulierten räumlichen Stichproben erkunden und deren Regionen und relative Gewichtungen vergleichen.",
+          "Name": "3D-Punktwolke anzeigen",
+          "Type": 23
+        },
+        {
+          "Description": "Die Galerie zeigt nach Regionen gruppierte räumliche Stichproben, wobei die Punktgröße die relative Gewichtung darstellt.",
+          "Name": "3D-Punktwolke",
+          "Type": 24
+        },
+        {
+          "Description": "Die Benutzer können Frequenzspektren sowie ein kombiniertes Diagramm für Volumen, Trend und Beobachtungen erkunden.",
+          "Name": "Mehrere 3D-Vergleiche anzeigen",
+          "Type": 25
+        },
+        {
+          "Description": "Die Galerie zeigt separate Vergleiche nach Spektrum und Zeitraum, darunter drei Messgrößen in einem Diagramm.",
+          "Name": "Mehrere 3D-Vergleiche",
+          "Type": 26
+        }
+      ],
+      "Name": "Chart3dDemoProtocol"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved stored values for the function's required data schema.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved stored values for the function's required data schema.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "value",
+          "Type": 2
+        }
+      ],
+      "Name": "ChartData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved storage keys; this demonstration currently writes no records.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved storage keys; this demonstration currently writes no records.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        }
+      ],
+      "Name": "ChartDataKey"
+    },
+    {
+      "Description": "Gruppiert simulierte räumliche Stichproben nach ihrer Höhe und ihrer Ost-West-Position.",
+      "DisplayName": "Punktwolkenregion",
+      "List": [
+        {
+          "Description": "Gruppiert simulierte räumliche Stichproben nach ihrer Höhe und ihrer Ost-West-Position.",
+          "Enum": [
+            {
+              "Description": "Stichproben über der Höhe null und am oder östlich vom Ursprung.",
+              "Name": "Oben Ost",
+              "Type": 1
+            },
+            {
+              "Description": "Stichproben über der Höhe null und westlich vom Ursprung.",
+              "Name": "Oben West",
+              "Type": 2
+            },
+            {
+              "Description": "Stichproben auf oder unter der Höhe null und am oder östlich vom Ursprung.",
+              "Name": "Unten Ost",
+              "Type": 3
+            },
+            {
+              "Description": "Stichproben auf oder unter der Höhe null und westlich vom Ursprung.",
+              "Name": "Unten West",
+              "Type": 4
+            }
+          ],
+          "Name": "Wolkenbereich",
+          "Type": 0
+        }
+      ],
+      "Name": "CloudRegionV1"
+    },
+    {
+      "Description": "Die Höhe, die alle Positionen entlang einer Höhenlinie gemeinsam haben und die zum Vergleich von Oberflächenhöhen dient.",
+      "DisplayName": "Höhenlinienniveau",
+      "List": [
+        {
+          "Description": "Die Höhe, die alle Positionen entlang einer Höhenlinie gemeinsam haben und die zum Vergleich von Oberflächenhöhen dient.",
+          "Enum": [
+            {
+              "Description": "Höhenlinie auf einer Höheneinheit.",
+              "Name": "Eine Einheit",
+              "Type": 1
+            },
+            {
+              "Description": "Höhenlinie auf zwei Höheneinheiten.",
+              "Name": "Zwei Einheiten",
+              "Type": 2
+            },
+            {
+              "Description": "Höhenlinie auf drei Höheneinheiten.",
+              "Name": "Drei Einheiten",
+              "Type": 3
+            }
+          ],
+          "Name": "Höhenlinienniveau",
+          "Type": 0
+        }
+      ],
+      "Name": "ContourLevelV1"
+    },
+    {
+      "Description": "Eine Position entlang einer Linie, die Orte gleicher Höhe verbindet.",
+      "DisplayName": "Höhenlinienpunkt",
+      "List": [
+        {
+          "Description": "Eine Position entlang einer Linie, die Orte gleicher Höhe verbindet.",
+          "Name": "Höhenlinienpunkt",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position der Höhenlinie entlang der X-Richtung der Oberfläche.",
+          "Name": "X-Koordinate",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position der Höhenlinie entlang der Y-Richtung der Oberfläche.",
+          "Name": "Y-Koordinate",
+          "Type": 2
+        },
+        {
+          "Description": "Die Höhe, die alle Positionen auf dieser Höhenlinie gemeinsam haben.",
+          "Name": "Höhe",
+          "Type": 3
+        },
+        {
+          "Description": "Das von dieser Höhenlinie dargestellte Höhenniveau.",
+          "Name": "Höhenlinienniveau",
+          "Type": 4
+        },
+        {
+          "Description": "Die Stelle der Position im Verlauf der Höhenlinie auf einem geschlossenen Pfad.",
+          "Name": "Höhenlinienreihenfolge",
+          "Type": 5
+        },
+        {
+          "Description": "Unterscheidet diese Position von den anderen Positionen entlang der Höhenlinien.",
+          "Name": "Höhenlinienreferenz",
+          "Type": 6
+        }
+      ],
+      "Name": "ContourLinePointV1"
+    },
+    {
+      "Description": "Verbindet Positionen gleicher Höhe, um Höhenänderungen auf der Oberfläche darzustellen.",
+      "DisplayName": "Höhenlinienpfade",
+      "List": [
+        {
+          "Description": "Verbindet Positionen gleicher Höhe, um Höhenänderungen auf der Oberfläche darzustellen.",
+          "Name": "Höhenlinienpfade",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Position entlang einer Linie, die Orte gleicher Höhe verbindet.",
+          "Name": "Höhenlinienpunkt",
+          "Type": 1
+        }
+      ],
+      "Name": "ContourLinesChartV1"
+    },
+    {
+      "Description": "Zeigt eine Oberfläche, deren Linien gleicher Höhe Rauten um ihren Mittelpunkt bilden.",
+      "DisplayName": "Höhenlinien-Oberflächenstichproben",
+      "List": [
+        {
+          "Description": "Zeigt eine Oberfläche, deren Linien gleicher Höhe Rauten um ihren Mittelpunkt bilden.",
+          "Name": "Höhenlinien-Oberflächenstichproben",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Position und Höhe auf der Oberfläche, die zum Vergleich von Höhenlinienniveaus dient.",
+          "Name": "Höhenlinien-Oberflächenstichprobe",
+          "Type": 1
+        }
+      ],
+      "Name": "ContourSurfaceChartV1"
+    },
+    {
+      "Description": "Eine Position und Höhe auf der Oberfläche, die zum Vergleich von Höhenlinienniveaus dient.",
+      "DisplayName": "Höhenlinien-Oberflächenstichprobe",
+      "List": [
+        {
+          "Description": "Eine Position und Höhe auf der Oberfläche, die zum Vergleich von Höhenlinienniveaus dient.",
+          "Name": "Höhenlinien-Oberflächenstichprobe",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position entlang der X-Richtung, die der Oberfläche und ihren Höhenlinien gemeinsam ist.",
+          "Name": "X-Koordinate",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position entlang der Y-Richtung, die der Oberfläche und ihren Höhenlinien gemeinsam ist.",
+          "Name": "Y-Koordinate",
+          "Type": 2
+        },
+        {
+          "Description": "Die Höhe der rautenförmigen Oberfläche des Beispiels an dieser Position.",
+          "Name": "Höhe",
+          "Type": 3
+        },
+        {
+          "Description": "Die Höhe, anhand derer Höhenbereiche auf dieser Oberfläche unterschieden werden.",
+          "Name": "Höhenunterscheidung",
+          "Type": 4
+        }
+      ],
+      "Name": "ContourSurfacePointV1"
+    },
+    {
+      "Description": "Vergleicht Quader mit unterschiedlichen Positionen, Breiten, Tiefen und Höhen.",
+      "DisplayName": "Quader",
+      "List": [
+        {
+          "Description": "Vergleicht Quader mit unterschiedlichen Positionen, Breiten, Tiefen und Höhen.",
+          "Name": "Quader",
+          "Type": 0
+        },
+        {
+          "Description": "Ein Quader im Beispiel mit eigener Position, Breite, Tiefe und Höhe.",
+          "Name": "Quader",
+          "Type": 1
+        }
+      ],
+      "Name": "ExplicitCuboidsChartV1"
+    },
+    {
+      "Description": "Ein Quader im Beispiel mit eigener Position, Breite, Tiefe und Höhe.",
+      "DisplayName": "Quader",
+      "List": [
+        {
+          "Description": "Ein Quader im Beispiel mit eigener Position, Breite, Tiefe und Höhe.",
+          "Name": "Quader",
+          "Type": 0
+        },
+        {
+          "Description": "Die Anfangsposition des Quaders in X-Richtung.",
+          "Name": "X-Anfang",
+          "Type": 1
+        },
+        {
+          "Description": "Die Endposition des Quaders in X-Richtung.",
+          "Name": "X-Ende",
+          "Type": 2
+        },
+        {
+          "Description": "Die Anfangsposition des Quaders in Y-Richtung.",
+          "Name": "Y-Anfang",
+          "Type": 3
+        },
+        {
+          "Description": "Die Endposition des Quaders in Y-Richtung.",
+          "Name": "Y-Ende",
+          "Type": 4
+        },
+        {
+          "Description": "Die Höhe der Oberseite des Quaders.",
+          "Name": "Höhe der Oberseite",
+          "Type": 5
+        },
+        {
+          "Description": "Die Höhe der Unterseite des Quaders, die unter null liegen kann.",
+          "Name": "Höhe der Unterseite",
+          "Type": 6
+        },
+        {
+          "Description": "Unterscheidet diesen Quader von den anderen Quadern im Beispiel.",
+          "Name": "Quaderkennung",
+          "Type": 7
+        }
+      ],
+      "Name": "ExplicitCuboidV1"
+    },
+    {
+      "Description": "Zeigt die Höhen und Tiefen einer simulierten Geländeoberfläche anhand von Messpunkten in gleichmäßigen Abständen.",
+      "DisplayName": "Geländehöhen-Messpunkte",
+      "List": [
+        {
+          "Description": "Zeigt die Höhen und Tiefen einer simulierten Geländeoberfläche anhand von Messpunkten in gleichmäßigen Abständen.",
+          "Name": "Geländehöhen-Messpunkte",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Position und ihre Höhe im simulierten Gelände des Beispiels.",
+          "Name": "Oberflächen-Messpunkt",
+          "Type": 1
+        }
+      ],
+      "Name": "HeightMapChartV1"
+    },
+    {
+      "Description": "Eine Position und ihre Höhe im simulierten Gelände des Beispiels.",
+      "DisplayName": "Oberflächen-Messpunkt",
+      "List": [
+        {
+          "Description": "Eine Position und ihre Höhe im simulierten Gelände des Beispiels.",
+          "Name": "Oberflächen-Messpunkt",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position des Messpunkts in X-Richtung des Geländes.",
+          "Name": "X-Koordinate",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position des Messpunkts in Y-Richtung des Geländes.",
+          "Name": "Y-Koordinate",
+          "Type": 2
+        },
+        {
+          "Description": "Die simulierte Geländehöhe an dieser Position.",
+          "Name": "Höhe",
+          "Type": 3
+        },
+        {
+          "Description": "Die Geländehöhe, anhand derer Höhenbereiche auf der Oberfläche unterschieden werden.",
+          "Name": "Höhenklassifizierung",
+          "Type": 4
+        }
+      ],
+      "Name": "HeightMapPointV1"
+    },
+    {
+      "Description": "Vergleicht Mengen nach Zeitraum, einen geglätteten Trend und einzelne Beobachtungen in einem Diagramm.",
+      "DisplayName": "Kombinierter Zeitraumvergleich",
+      "List": [
+        {
+          "Description": "Vergleicht Mengen nach Zeitraum, einen geglätteten Trend und einzelne Beobachtungen in einem Diagramm.",
+          "Name": "Kombinierter Zeitraumvergleich",
+          "Type": 0
+        },
+        {
+          "Description": "Die Beispielmengen im Vergleich über mehrere Zeiträume hinweg.",
+          "Name": "Mengen nach Zeitraum",
+          "Type": 1
+        },
+        {
+          "Description": "Die geglätteten Ergebnisse im Vergleich über dieselben Zeiträume hinweg.",
+          "Name": "Trendmesspunkte",
+          "Type": 2
+        },
+        {
+          "Description": "Die einzelnen simulierten Ergebnisse im Vergleich über dieselben Zeiträume hinweg.",
+          "Name": "Beobachtungen nach Zeitraum",
+          "Type": 3
+        }
+      ],
+      "Name": "HeterogeneousSeriesChartV1"
+    },
+    {
+      "Description": "Vergleicht die tatsächlichen und geplanten Ergebnisse dreier beispielhafter Produktfamilien mithilfe horizontaler Balken.",
+      "DisplayName": "Balken für den Produktvergleich",
+      "List": [
+        {
+          "Description": "Vergleicht die tatsächlichen und geplanten Ergebnisse dreier beispielhafter Produktfamilien mithilfe horizontaler Balken.",
+          "Name": "Balken für den Produktvergleich",
+          "Type": 0
+        },
+        {
+          "Description": "Ein tatsächliches oder geplantes Ergebnis einer beispielhaften Produktfamilie, gemessen ab einer gemeinsamen Basislinie.",
+          "Name": "Produktvergleichsbalken",
+          "Type": 1
+        }
+      ],
+      "Name": "HorizontalLegacyBarsChartV1"
+    },
+    {
+      "Description": "Ein tatsächliches oder geplantes Ergebnis einer beispielhaften Produktfamilie, gemessen ab einer gemeinsamen Basislinie.",
+      "DisplayName": "Produktvergleichsbalken",
+      "List": [
+        {
+          "Description": "Ein tatsächliches oder geplantes Ergebnis einer beispielhaften Produktfamilie, gemessen ab einer gemeinsamen Basislinie.",
+          "Name": "Produktvergleichsbalken",
+          "Type": 0
+        },
+        {
+          "Description": "Das tatsächliche oder geplante Ergebnis des Beispiels für diese Produktfamilie.",
+          "Name": "Ergebnis",
+          "Type": 1
+        },
+        {
+          "Description": "Der Ausgangswert für den Vergleich dieses Ergebnisses; im Beispiel wird null verwendet.",
+          "Name": "Basislinie",
+          "Type": 2
+        },
+        {
+          "Description": "Die durch diesen Vergleich dargestellte Produktfamilie.",
+          "Name": "Produkt",
+          "Type": 3
+        },
+        {
+          "Description": "Gibt an, ob dieser Balken das tatsächliche Ergebnis oder die Planung des Beispiels darstellt.",
+          "Name": "Szenario",
+          "Type": 4
+        },
+        {
+          "Description": "Unterscheidet dieses Produkt und Szenario von den anderen Vergleichen.",
+          "Name": "Vergleichsreferenz",
+          "Type": 5
+        }
+      ],
+      "Name": "HorizontalLegacyBarV1"
+    },
+    {
+      "Description": "Zeigt positive und negative, von null aus gemessene Impulse, wobei eine Spitze jeweils den Endwert kennzeichnet.",
+      "DisplayName": "Impuls- und Stammdiagramm",
+      "List": [
+        {
+          "Description": "Zeigt positive und negative, von null aus gemessene Impulse, wobei eine Spitze jeweils den Endwert kennzeichnet.",
+          "Name": "Impuls- und Stammdiagramm",
+          "Type": 0
+        },
+        {
+          "Description": "Die Differenz zwischen null und dem jeweiligen simulierten Impulswert.",
+          "Name": "Impulsstämme",
+          "Type": 1
+        },
+        {
+          "Description": "Die Endwerte der entsprechenden simulierten Impulse.",
+          "Name": "Impulsspitzen",
+          "Type": 2
+        }
+      ],
+      "Name": "ImpulseChartV1"
+    },
+    {
+      "Description": "Gibt an, ob ein Beispielimpuls kleiner als null oder gleich null beziehungsweise positiv ist.",
+      "DisplayName": "Impulsvorzeichen",
+      "List": [
+        {
+          "Description": "Gibt an, ob ein Beispielimpuls kleiner als null oder gleich null beziehungsweise positiv ist.",
+          "Enum": [
+            {
+              "Description": "Ein Impuls mit einem Wert kleiner als null.",
+              "Name": "Negativ",
+              "Type": 1
+            },
+            {
+              "Description": "Ein Impuls mit einem Wert von null oder größer.",
+              "Name": "Null oder positiv",
+              "Type": 2
+            }
+          ],
+          "Name": "Impulsvorzeichen",
+          "Type": 0
+        }
+      ],
+      "Name": "ImpulseSignV1"
+    },
+    {
+      "Description": "Zeigt, wie weit sich die einzelnen simulierten Impulse über oder unter null erstrecken.",
+      "DisplayName": "Impulsstämme",
+      "List": [
+        {
+          "Description": "Zeigt, wie weit sich die einzelnen simulierten Impulse über oder unter null erstrecken.",
+          "Name": "Impulsstämme",
+          "Type": 0
+        },
+        {
+          "Description": "Ein simulierter Impuls, der von null bis zu seinem positiven oder negativen Wert gemessen wird.",
+          "Name": "Impulsstamm",
+          "Type": 1
+        }
+      ],
+      "Name": "ImpulseStemsV1"
+    },
+    {
+      "Description": "Ein simulierter Impuls, der von null bis zu seinem positiven oder negativen Wert gemessen wird.",
+      "DisplayName": "Impulsstamm",
+      "List": [
+        {
+          "Description": "Ein simulierter Impuls, der von null bis zu seinem positiven oder negativen Wert gemessen wird.",
+          "Name": "Impulsstamm",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position des Impulses in X-Richtung des Beispiels.",
+          "Name": "X-Koordinate",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position des Impulses in Y-Richtung des Beispiels.",
+          "Name": "Y-Koordinate",
+          "Type": 2
+        },
+        {
+          "Description": "Der positive, negative oder bei null liegende Wert des simulierten Impulses.",
+          "Name": "Impulswert",
+          "Type": 3
+        },
+        {
+          "Description": "Der Nullwert, von dem aus dieser Impuls gemessen wird.",
+          "Name": "Nullreferenz",
+          "Type": 4
+        },
+        {
+          "Description": "Gibt an, ob der Impuls negativ oder gleich null beziehungsweise positiv ist.",
+          "Name": "Vorzeichen",
+          "Type": 5
+        },
+        {
+          "Description": "Unterscheidet diesen Impuls und ordnet ihm die zugehörige Spitze zu.",
+          "Name": "Impulsreferenz",
+          "Type": 6
+        }
+      ],
+      "Name": "ImpulseStemV1"
+    },
+    {
+      "Description": "Kennzeichnet den Endwert jedes simulierten Impulses.",
+      "DisplayName": "Impulsspitzen",
+      "List": [
+        {
+          "Description": "Kennzeichnet den Endwert jedes simulierten Impulses.",
+          "Name": "Impulsspitzen",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position, die den Endwert eines simulierten Impulses darstellt.",
+          "Name": "Impulsspitze",
+          "Type": 1
+        }
+      ],
+      "Name": "ImpulseTipsV1"
+    },
+    {
+      "Description": "Die Position, die den Endwert eines simulierten Impulses darstellt.",
+      "DisplayName": "Impulsspitze",
+      "List": [
+        {
+          "Description": "Die Position, die den Endwert eines simulierten Impulses darstellt.",
+          "Name": "Impulsspitze",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position der Impulsspitze in X-Richtung des Beispiels.",
+          "Name": "X-Koordinate",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position der Impulsspitze in Y-Richtung des Beispiels.",
+          "Name": "Y-Koordinate",
+          "Type": 2
+        },
+        {
+          "Description": "Der positive, negative oder bei null liegende Wert des simulierten Impulses.",
+          "Name": "Impulswert",
+          "Type": 3
+        },
+        {
+          "Description": "Die relative Größe, durch die die einzelnen Impulsspitzen voneinander unterscheidbar werden.",
+          "Name": "Spitzenhervorhebung",
+          "Type": 4
+        },
+        {
+          "Description": "Gibt an, ob der Impuls negativ oder gleich null beziehungsweise positiv ist.",
+          "Name": "Vorzeichen",
+          "Type": 5
+        },
+        {
+          "Description": "Ordnet diese Spitze demselben Impuls zu, der durch den zugehörigen Stamm dargestellt wird.",
+          "Name": "Impulsreferenz",
+          "Type": 6
+        }
+      ],
+      "Name": "ImpulseTipV1"
+    },
+    {
+      "Description": "Zeigt eine gekrümmte Oberfläche, die aus einem Polynom mit zwei Parametern berechnet wird.",
+      "DisplayName": "Messpunkte einer mathematischen Oberfläche",
+      "List": [
+        {
+          "Description": "Zeigt eine gekrümmte Oberfläche, die aus einem Polynom mit zwei Parametern berechnet wird.",
+          "Name": "Messpunkte einer mathematischen Oberfläche",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Position auf einer Oberfläche, die aus zwei mathematischen Parametern berechnet wird.",
+          "Name": "Messpunkt einer mathematischen Oberfläche",
+          "Type": 1
+        }
+      ],
+      "Name": "MathematicalSurfaceChartV1"
+    },
+    {
+      "Description": "Eine Position auf einer Oberfläche, die aus zwei mathematischen Parametern berechnet wird.",
+      "DisplayName": "Messpunkt einer mathematischen Oberfläche",
+      "List": [
+        {
+          "Description": "Eine Position auf einer Oberfläche, die aus zwei mathematischen Parametern berechnet wird.",
+          "Name": "Messpunkt einer mathematischen Oberfläche",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position auf der Oberfläche in X-Richtung bei diesem Parameterpaar.",
+          "Name": "X-Koordinate",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position auf der Oberfläche in Y-Richtung bei diesem Parameterpaar.",
+          "Name": "Y-Koordinate",
+          "Type": 2
+        },
+        {
+          "Description": "Die Höhe der Oberfläche bei diesem Parameterpaar.",
+          "Name": "Z-Koordinate",
+          "Type": 3
+        },
+        {
+          "Description": "Die erste mathematische Eingabe, die diese Position auf der Oberfläche und die benachbarten Messpunkte bestimmt.",
+          "Name": "Erster Parameter",
+          "Type": 4
+        },
+        {
+          "Description": "Die zweite mathematische Eingabe, die diese Position auf der Oberfläche und die benachbarten Messpunkte bestimmt.",
+          "Name": "Zweiter Parameter",
+          "Type": 5
+        },
+        {
+          "Description": "Der erste Parameter, mit dem Bereiche der mathematischen Oberfläche unterschieden werden.",
+          "Name": "Parameter zur Unterscheidung",
+          "Type": 6
+        }
+      ],
+      "Name": "MathematicalSurfacePointV1"
+    },
+    {
+      "Description": "Zeigt das Volumen des Beispiels für jeden Zeitraum zusammen mit einem Trend und Beobachtungen.",
+      "DisplayName": "Volumen nach Zeitraum",
+      "List": [
+        {
+          "Description": "Zeigt das Volumen des Beispiels für jeden Zeitraum zusammen mit einem Trend und Beobachtungen.",
+          "Name": "Volumen nach Zeitraum",
+          "Type": 0
+        },
+        {
+          "Description": "Ein simulierter Wert für einen Zeitraum, verglichen mit einem Trend und einer Beobachtung.",
+          "Name": "Volumen eines Zeitraums",
+          "Type": 1
+        }
+      ],
+      "Name": "MultipleSeriesBarsV1"
+    },
+    {
+      "Description": "Ein simulierter Wert für einen Zeitraum, verglichen mit einem Trend und einer Beobachtung.",
+      "DisplayName": "Volumen eines Zeitraums",
+      "List": [
+        {
+          "Description": "Ein simulierter Wert für einen Zeitraum, verglichen mit einem Trend und einer Beobachtung.",
+          "Name": "Volumen eines Zeitraums",
+          "Type": 0
+        },
+        {
+          "Description": "Der gemeinsame Zeitraum für das verglichene Volumen, den Trend und die Beobachtung.",
+          "Name": "Zeitraum",
+          "Type": 1
+        },
+        {
+          "Description": "Die gemeinsame Gruppe der drei Messgrößen in diesem Beispiel.",
+          "Name": "Vergleichsgruppe",
+          "Type": 2
+        },
+        {
+          "Description": "Der Wert des Beispiels für diesen Zeitraum.",
+          "Name": "Volumen",
+          "Type": 3
+        },
+        {
+          "Description": "Gibt an, ob das Beispiel ein Volumen, einen Trend oder eine Beobachtung zeigt.",
+          "Name": "Vergleichsgröße",
+          "Type": 4
+        },
+        {
+          "Description": "Unterscheidet das Volumen dieses Zeitraums von den anderen Volumenwerten.",
+          "Name": "Volumenreferenz",
+          "Type": 5
+        }
+      ],
+      "Name": "MultipleSeriesBarV1"
+    },
+    {
+      "Description": "Zeigt Frequenzspektren sowie einen kombinierten Vergleich von Volumen, Trend und Beobachtungen als separate Beispiele.",
+      "DisplayName": "Mehrere 3D-Vergleiche",
+      "List": [
+        {
+          "Description": "Zeigt Frequenzspektren sowie einen kombinierten Vergleich von Volumen, Trend und Beobachtungen als separate Beispiele.",
+          "Name": "Mehrere 3D-Vergleiche",
+          "Type": 0
+        },
+        {
+          "Description": "Vergleicht die Signalstärken über verschiedene Frequenzen hinweg für den Ausgangswert und drei Tageszeiten.",
+          "Name": "Frequenzspektren",
+          "Type": 1
+        },
+        {
+          "Description": "Vergleicht Volumenwerte, einen Trend und Beobachtungen für dieselben Zeiträume in einem Diagramm.",
+          "Name": "Kombinierter Zeitraumvergleich",
+          "Type": 2
+        }
+      ],
+      "Name": "MultipleSeriesChartV1"
+    },
+    {
+      "Description": "Kennzeichnet die gemeinsame Gruppe, anhand der Volumen, Trend und Beobachtungen verglichen werden.",
+      "DisplayName": "Vergleichsgruppe",
+      "List": [
+        {
+          "Description": "Kennzeichnet die gemeinsame Gruppe, anhand der Volumen, Trend und Beobachtungen verglichen werden.",
+          "Enum": [
+            {
+              "Description": "Die gemeinsame Gruppe aller drei Messgrößen in diesem Beispiel.",
+              "Name": "Hauptgruppe",
+              "Type": 1
+            }
+          ],
+          "Name": "Vergleichsgruppe",
+          "Type": 0
+        }
+      ],
+      "Name": "MultipleSeriesLaneV1"
+    },
+    {
+      "Description": "Ein Punkt im geglätteten Änderungsverlauf des Beispiels über die Zeiträume hinweg.",
+      "DisplayName": "Trendmesspunkt",
+      "List": [
+        {
+          "Description": "Ein Punkt im geglätteten Änderungsverlauf des Beispiels über die Zeiträume hinweg.",
+          "Name": "Trendmesspunkt",
+          "Type": 0
+        },
+        {
+          "Description": "Der gemeinsame Zeitraum für den verglichenen Trend, das Volumen und die Beobachtung.",
+          "Name": "Zeitraum",
+          "Type": 1
+        },
+        {
+          "Description": "Die gemeinsame Gruppe der drei Messgrößen in diesem Beispiel.",
+          "Name": "Vergleichsgruppe",
+          "Type": 2
+        },
+        {
+          "Description": "Das geglättete Ergebnis des Beispiels für diesen Zeitraum.",
+          "Name": "Trend",
+          "Type": 3
+        },
+        {
+          "Description": "Gibt an, ob das Beispiel das Volumen, den Trend oder eine Beobachtung zeigt.",
+          "Name": "Vergleichsgröße",
+          "Type": 4
+        },
+        {
+          "Description": "Die Position des Messwerts in der zeitlichen Abfolge des Trends.",
+          "Name": "Trendreihenfolge",
+          "Type": 5
+        },
+        {
+          "Description": "Unterscheidet den Trendmesswert dieses Zeitraums von den anderen Trendmesswerten.",
+          "Name": "Trendreferenz",
+          "Type": 6
+        }
+      ],
+      "Name": "MultipleSeriesLinePointV1"
+    },
+    {
+      "Description": "Zeigt, wie sich das geglättete Ergebnis des Beispiels über mehrere Zeiträume hinweg verändert.",
+      "DisplayName": "Trendmesswerte",
+      "List": [
+        {
+          "Description": "Zeigt, wie sich das geglättete Ergebnis des Beispiels über mehrere Zeiträume hinweg verändert.",
+          "Name": "Trendmesswerte",
+          "Type": 0
+        },
+        {
+          "Description": "Ein Punkt in der geglätteten Veränderung des Beispiels über mehrere Zeiträume hinweg.",
+          "Name": "Trendmesswert",
+          "Type": 1
+        }
+      ],
+      "Name": "MultipleSeriesLineV1"
+    },
+    {
+      "Description": "Zeigt einzelne simulierte Ergebnisse zusammen mit Volumen und Trend für dieselben Zeiträume.",
+      "DisplayName": "Zeitraumbeobachtungen",
+      "List": [
+        {
+          "Description": "Zeigt einzelne simulierte Ergebnisse zusammen mit Volumen und Trend für dieselben Zeiträume.",
+          "Name": "Zeitraumbeobachtungen",
+          "Type": 0
+        },
+        {
+          "Description": "Ein simuliertes Ergebnis im Vergleich mit Volumen und Trend für denselben Zeitraum.",
+          "Name": "Zeitraumbeobachtung",
+          "Type": 1
+        }
+      ],
+      "Name": "MultipleSeriesPointsV1"
+    },
+    {
+      "Description": "Ein simuliertes Ergebnis im Vergleich mit Volumen und Trend für denselben Zeitraum.",
+      "DisplayName": "Zeitraumbeobachtung",
+      "List": [
+        {
+          "Description": "Ein simuliertes Ergebnis im Vergleich mit Volumen und Trend für denselben Zeitraum.",
+          "Name": "Zeitraumbeobachtung",
+          "Type": 0
+        },
+        {
+          "Description": "Der gemeinsame Zeitraum der verglichenen Beobachtung sowie des Volumens und Trends.",
+          "Name": "Zeitraum",
+          "Type": 1
+        },
+        {
+          "Description": "Die gemeinsame Gruppe der drei Größen in diesem Beispiel.",
+          "Name": "Vergleichsgruppe",
+          "Type": 2
+        },
+        {
+          "Description": "Das Einzelergebnis des Beispiels für diesen Zeitraum.",
+          "Name": "Beobachtung",
+          "Type": 3
+        },
+        {
+          "Description": "Die relative Größe, durch die die einzelnen Beobachtungen voneinander unterscheidbar werden.",
+          "Name": "Hervorhebung der Beobachtung",
+          "Type": 4
+        },
+        {
+          "Description": "Gibt an, ob das Beispiel das Volumen, den Trend oder eine Beobachtung zeigt.",
+          "Name": "Vergleichsgröße",
+          "Type": 5
+        },
+        {
+          "Description": "Unterscheidet die Beobachtung dieses Zeitraums von den anderen Beobachtungen.",
+          "Name": "Beobachtungsreferenz",
+          "Type": 6
+        }
+      ],
+      "Name": "MultipleSeriesPointV1"
+    },
+    {
+      "Description": "Unterscheidet in demselben Vergleich zwischen Volumen, einem Trend und einzelnen Beobachtungen.",
+      "DisplayName": "Vergleichsgröße",
+      "List": [
+        {
+          "Description": "Unterscheidet in demselben Vergleich zwischen Volumen, einem Trend und einzelnen Beobachtungen.",
+          "Enum": [
+            {
+              "Description": "Die Menge des Beispiels für einen Zeitraum.",
+              "Name": "Volumen",
+              "Type": 1
+            },
+            {
+              "Description": "Die geglättete Veränderung des Beispiels über mehrere Zeiträume hinweg.",
+              "Name": "Trend",
+              "Type": 2
+            },
+            {
+              "Description": "Ein simuliertes Ergebnis für einen Zeitraum.",
+              "Name": "Beobachtung",
+              "Type": 3
+            }
+          ],
+          "Name": "Vergleichsgröße",
+          "Type": 0
+        }
+      ],
+      "Name": "MultipleSeriesRoleV1"
+    },
+    {
+      "Description": "Zeigt eine in unregelmäßigen Abständen abgetastete Oberfläche, bei der ein fehlender Messpunkt eine Lücke hinterlässt.",
+      "DisplayName": "Unregelmäßig verteilte Oberflächenmesspunkte",
+      "List": [
+        {
+          "Description": "Zeigt eine in unregelmäßigen Abständen abgetastete Oberfläche, bei der ein fehlender Messpunkt eine Lücke hinterlässt.",
+          "Name": "Unregelmäßig verteilte Oberflächenmesspunkte",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Position und ihre Höhe auf einer in unregelmäßigen Abständen abgetasteten Oberfläche.",
+          "Name": "Unregelmäßig verteilter Oberflächenmesspunkt",
+          "Type": 1
+        }
+      ],
+      "Name": "NonuniformSurfaceChartV1"
+    },
+    {
+      "Description": "Eine Position und ihre Höhe auf einer in unregelmäßigen Abständen abgetasteten Oberfläche.",
+      "DisplayName": "Unregelmäßig verteilter Oberflächenmesspunkt",
+      "List": [
+        {
+          "Description": "Eine Position und ihre Höhe auf einer in unregelmäßigen Abständen abgetasteten Oberfläche.",
+          "Name": "Unregelmäßig verteilter Oberflächenmesspunkt",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position des Messpunkts zwischen unregelmäßig verteilten Stellen in X-Richtung.",
+          "Name": "X-Koordinate",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position des Messpunkts zwischen unregelmäßig verteilten Stellen in Y-Richtung.",
+          "Name": "Y-Koordinate",
+          "Type": 2
+        },
+        {
+          "Description": "Die Höhe der Beispieloberfläche an dieser Messposition.",
+          "Name": "Höhe",
+          "Type": 3
+        },
+        {
+          "Description": "Die Höhenlage, anhand derer die Höhenbereiche dieser Oberfläche unterschieden werden.",
+          "Name": "Höhenunterscheidung",
+          "Type": 4
+        }
+      ],
+      "Name": "NonuniformSurfacePointV1"
+    },
+    {
+      "Description": "Zeigt die Verteilung von 96 simulierten räumlichen Messpunkten, gruppiert nach Region und gewichtet nach relativer Größe.",
+      "DisplayName": "Punktwolken-Messpunkte",
+      "List": [
+        {
+          "Description": "Zeigt die Verteilung von 96 simulierten räumlichen Messpunkten, gruppiert nach Region und gewichtet nach relativer Größe.",
+          "Name": "Punktwolken-Messpunkte",
+          "Type": 0
+        },
+        {
+          "Description": "Ein simulierter räumlicher Messpunkt mit einer Position, einer relativen Gewichtung und einer Region.",
+          "Name": "Punktwolken-Messpunkt",
+          "Type": 1
+        }
+      ],
+      "Name": "PointCloudChartV1"
+    },
+    {
+      "Description": "Ein simulierter räumlicher Messpunkt mit einer Position, einer relativen Gewichtung und einer Region.",
+      "DisplayName": "Punktwolken-Messpunkt",
+      "List": [
+        {
+          "Description": "Ein simulierter räumlicher Messpunkt mit einer Position, einer relativen Gewichtung und einer Region.",
+          "Name": "Punktwolken-Messpunkt",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position des Messpunkts östlich oder westlich des Ursprungs.",
+          "Name": "Ost-West-Position",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position des Messpunkts nördlich oder südlich des Ursprungs.",
+          "Name": "Nord-Süd-Position",
+          "Type": 2
+        },
+        {
+          "Description": "Die Höhe des Messpunkts über oder unter null.",
+          "Name": "Höhe",
+          "Type": 3
+        },
+        {
+          "Description": "Die relative Größe des Messpunkts, wobei eine höhere Gewichtung als größerer Punkt dargestellt wird.",
+          "Name": "Relative Gewichtung",
+          "Type": 4
+        },
+        {
+          "Description": "Die Region des Messpunkts gemäß seiner Höhe und Ost-West-Position.",
+          "Name": "Region",
+          "Type": 5
+        },
+        {
+          "Description": "Kennzeichnet die Region, anhand derer dieser Messpunkt von Messpunkten in anderen Regionen unterschieden wird.",
+          "Name": "Regionsunterscheidung",
+          "Type": 6
+        },
+        {
+          "Description": "Die Region des Messpunkts, die zum Vergleich zusätzlich durch ein Symbol unterschieden wird.",
+          "Name": "Regionssymbol",
+          "Type": 7
+        },
+        {
+          "Description": "Unterscheidet diesen räumlichen Messpunkt von den anderen Messpunkten in der Wolke.",
+          "Name": "Messpunktreferenz",
+          "Type": 8
+        }
+      ],
+      "Name": "PointCloudPointV1"
+    },
+    {
+      "Description": "Kennzeichnet die Art des Produkts, dessen Ergebnis mit dem zugehörigen Plan verglichen wird.",
+      "DisplayName": "Produktfamilie",
+      "List": [
+        {
+          "Description": "Kennzeichnet die Art des Produkts, dessen Ergebnis mit dem zugehörigen Plan verglichen wird.",
+          "Enum": [
+            {
+              "Description": "Produkte für Privatkunden.",
+              "Name": "Privat",
+              "Type": 1
+            },
+            {
+              "Description": "Produkte für professionelle Teams.",
+              "Name": "Unternehmen",
+              "Type": 2
+            },
+            {
+              "Description": "Gemeinsam genutzte Plattformdienste.",
+              "Name": "Plattform",
+              "Type": 3
+            }
+          ],
+          "Name": "Produktfamilie",
+          "Type": 0
+        }
+      ],
+      "Name": "ProductFamilyV1"
+    },
+    {
+      "Description": "Kennzeichnet den dreimonatigen Verkaufszeitraum, der zum Vergleich regionaler Umsätze verwendet wird.",
+      "DisplayName": "Quartal",
+      "List": [
+        {
+          "Description": "Kennzeichnet den dreimonatigen Verkaufszeitraum, der zum Vergleich regionaler Umsätze verwendet wird.",
+          "Enum": [
+            {
+              "Description": "Januar bis März.",
+              "Name": "Erstes Quartal",
+              "Type": 1
+            },
+            {
+              "Description": "April bis Juni.",
+              "Name": "Zweites Quartal",
+              "Type": 2
+            },
+            {
+              "Description": "Juli bis September.",
+              "Name": "Drittes Quartal",
+              "Type": 3
+            }
+          ],
+          "Name": "Quartal",
+          "Type": 0
+        }
+      ],
+      "Name": "QuarterV1"
+    },
+    {
+      "Description": "Kennzeichnet den Markt, dessen Quartalsumsatz im Vertriebsvergleich angezeigt wird.",
+      "DisplayName": "Vertriebsregion",
+      "List": [
+        {
+          "Description": "Kennzeichnet den Markt, dessen Quartalsumsatz im Vertriebsvergleich angezeigt wird.",
+          "Enum": [
+            {
+              "Description": "Umsätze in Nord- und Südamerika.",
+              "Name": "Amerika",
+              "Type": 1
+            },
+            {
+              "Description": "Umsätze in Europa.",
+              "Name": "Europa",
+              "Type": 2
+            }
+          ],
+          "Name": "Vertriebsregion",
+          "Type": 0
+        }
+      ],
+      "Name": "SalesRegionV1"
+    },
+    {
+      "Description": "Zeigt drei Gruppen simulierter Positionen, sodass ihre Verteilung und Abgrenzung verglichen werden können.",
+      "DisplayName": "Räumliche Messpunkte",
+      "List": [
+        {
+          "Description": "Zeigt drei Gruppen simulierter Positionen, sodass ihre Verteilung und Abgrenzung verglichen werden können.",
+          "Name": "Räumliche Messpunkte",
+          "Type": 0
+        },
+        {
+          "Description": "Eine simulierte Position und ihr Cluster, die zum Vergleich räumlicher Muster verwendet werden.",
+          "Name": "Räumlicher Messpunkt",
+          "Type": 1
+        }
+      ],
+      "Name": "ScatterChartV1"
+    },
+    {
+      "Description": "Kennzeichnet den Höhenzug, das Becken oder den Schelf, der durch eine Gruppe simulierter räumlicher Messpunkte dargestellt wird.",
+      "DisplayName": "Messpunktcluster",
+      "List": [
+        {
+          "Description": "Kennzeichnet den Höhenzug, das Becken oder den Schelf, der durch eine Gruppe simulierter räumlicher Messpunkte dargestellt wird.",
+          "Enum": [
+            {
+              "Description": "Proben, die sich um den nördlichen Rücken konzentrieren.",
+              "Name": "Nordrücken",
+              "Type": 1
+            },
+            {
+              "Description": "Proben, die sich um das zentrale Becken konzentrieren.",
+              "Name": "Zentralbecken",
+              "Type": 2
+            },
+            {
+              "Description": "Proben, die sich um den südlichen Schelf konzentrieren.",
+              "Name": "Südlicher Schelf",
+              "Type": 3
+            }
+          ],
+          "Name": "Messpunktcluster",
+          "Type": 0
+        }
+      ],
+      "Name": "ScatterClusterV1"
+    },
+    {
+      "Description": "Ein simulierter Standort mit seiner Gruppe zum Vergleich räumlicher Muster.",
+      "DisplayName": "Räumliche Probe",
+      "List": [
+        {
+          "Description": "Ein simulierter Standort mit seiner Gruppe zum Vergleich räumlicher Muster.",
+          "Name": "Räumliche Probe",
+          "Type": 0
+        },
+        {
+          "Description": "Horizontale Ost-West-Position.",
+          "Name": "Rechtswert",
+          "Type": 1
+        },
+        {
+          "Description": "Horizontale Nord-Süd-Position.",
+          "Name": "Hochwert",
+          "Type": 2
+        },
+        {
+          "Description": "Vertikale Position.",
+          "Name": "Höhe",
+          "Type": 3
+        },
+        {
+          "Description": "Der Rücken, das Becken oder der Schelf, zu dem diese Probe gehört.",
+          "Name": "Gruppe",
+          "Type": 4
+        },
+        {
+          "Description": "Unterscheidet diesen Standort von den anderen Proben im Beispiel.",
+          "Name": "Probenreferenz",
+          "Type": 5
+        }
+      ],
+      "Name": "ScatterPointV1"
+    },
+    {
+      "Description": "Vergleicht simulierte Quartalsumsätze in Amerika und Europa.",
+      "DisplayName": "Regionale Umsatzsäulen",
+      "List": [
+        {
+          "Description": "Vergleicht simulierte Quartalsumsätze in Amerika und Europa.",
+          "Name": "Regionale Umsatzsäulen",
+          "Type": 0
+        },
+        {
+          "Description": "Ein simulierter Gesamtumsatz für ein Quartal und eine Vertriebsregion.",
+          "Name": "Regionales Umsatzergebnis",
+          "Type": 1
+        }
+      ],
+      "Name": "SparseColumnsChartV1"
+    },
+    {
+      "Description": "Ein simulierter Gesamtumsatz für ein Quartal und eine Vertriebsregion.",
+      "DisplayName": "Regionales Umsatzergebnis",
+      "List": [
+        {
+          "Description": "Ein simulierter Gesamtumsatz für ein Quartal und eine Vertriebsregion.",
+          "Name": "Regionales Umsatzergebnis",
+          "Type": 0
+        },
+        {
+          "Description": "Der Dreimonatszeitraum, den dieser Gesamtumsatz abbildet.",
+          "Name": "Quartal",
+          "Type": 1
+        },
+        {
+          "Description": "Die Vertriebsregion, die dieser Gesamtumsatz abbildet.",
+          "Name": "Region",
+          "Type": 2
+        },
+        {
+          "Description": "Der Umsatz des Beispiels für dieses Quartal und diese Vertriebsregion.",
+          "Name": "Umsatz",
+          "Type": 3
+        },
+        {
+          "Description": "Unterscheidet dieses Quartal und diese Region von den anderen Umsatzergebnissen.",
+          "Name": "Umsatzreferenz",
+          "Type": 4
+        }
+      ],
+      "Name": "SparseColumnV1"
+    },
+    {
+      "Description": "Eine simulierte Signalstärke bei einer bestimmten Frequenz für die Basislinie oder eine Tageszeit.",
+      "DisplayName": "Spektrumsprobe",
+      "List": [
+        {
+          "Description": "Eine simulierte Signalstärke bei einer bestimmten Frequenz für die Basislinie oder eine Tageszeit.",
+          "Name": "Spektrumsprobe",
+          "Type": 0
+        },
+        {
+          "Description": "Die Frequenz, die diese Signalstärkenprobe abbildet.",
+          "Name": "Frequenz",
+          "Type": 1
+        },
+        {
+          "Description": "Der Abstand, der dieses Spektrum zum Vergleich von den anderen Spektren trennt.",
+          "Name": "Spektrumsabstand",
+          "Type": 2
+        },
+        {
+          "Description": "Die simulierte Signalstärke bei dieser Frequenz, gemessen ab null.",
+          "Name": "Amplitude",
+          "Type": 3
+        },
+        {
+          "Description": "Die Basislinie oder Tageszeit, die diese Probe abbildet.",
+          "Name": "Spektrumszeitpunkt",
+          "Type": 4
+        },
+        {
+          "Description": "Kennzeichnet den Spektrumszeitpunkt, durch den sich diese Kurve von den anderen unterscheidet.",
+          "Name": "Zeitpunktkennung",
+          "Type": 5
+        },
+        {
+          "Description": "Die Position der Probe in der Reihenfolge aufsteigender Frequenzen innerhalb ihres Spektrums.",
+          "Name": "Frequenzreihenfolge",
+          "Type": 6
+        },
+        {
+          "Description": "Unterscheidet diese Frequenz und diesen Zeitpunkt von den anderen Spektrumsproben.",
+          "Name": "Spektrumsreferenz",
+          "Type": 7
+        }
+      ],
+      "Name": "SpectrumPointV1"
+    },
+    {
+      "Description": "Kennzeichnet die Basislinie oder Tageszeit, die ein Frequenzspektrum abbildet.",
+      "DisplayName": "Spektrumszeitpunkt",
+      "List": [
+        {
+          "Description": "Kennzeichnet die Basislinie oder Tageszeit, die ein Frequenzspektrum abbildet.",
+          "Enum": [
+            {
+              "Description": "Das Referenzspektrum, mit dem die täglichen Änderungen im Beispiel verglichen werden.",
+              "Name": "Basislinie",
+              "Type": 1
+            },
+            {
+              "Description": "Das simulierte morgendliche Spektrum.",
+              "Name": "Morgen",
+              "Type": 2
+            },
+            {
+              "Description": "Das simulierte Nachmittagsspektrum.",
+              "Name": "Nachmittag",
+              "Type": 3
+            },
+            {
+              "Description": "Das simulierte Abendspektrum.",
+              "Name": "Abend",
+              "Type": 4
+            }
+          ],
+          "Name": "Spektrumszeitpunkt",
+          "Type": 0
+        }
+      ],
+      "Name": "SpectrumTraceV1"
+    },
+    {
+      "Description": "Vergleicht die Signalstärken der Referenz sowie am Morgen, Nachmittag und Abend über verschiedene Frequenzen hinweg.",
+      "DisplayName": "Wasserfallspektren",
+      "List": [
+        {
+          "Description": "Vergleicht die Signalstärken der Referenz sowie am Morgen, Nachmittag und Abend über verschiedene Frequenzen hinweg.",
+          "Name": "Wasserfallspektren",
+          "Type": 0
+        },
+        {
+          "Description": "Eine simulierte Signalstärke bei einer bestimmten Frequenz für die Referenz oder eine Tageszeit.",
+          "Name": "Spektrumswert",
+          "Type": 1
+        }
+      ],
+      "Name": "SpectrumWaterfallChartV1"
+    },
+    {
+      "Description": "Zeigt Konturlinien gleicher Höhe zusammen mit der von ihnen beschriebenen Oberfläche.",
+      "DisplayName": "Konturlinien auf einer Oberfläche",
+      "List": [
+        {
+          "Description": "Zeigt Konturlinien gleicher Höhe zusammen mit der von ihnen beschriebenen Oberfläche.",
+          "Name": "Konturlinien auf einer Oberfläche",
+          "Type": 0
+        },
+        {
+          "Description": "Die Beispieloberfläche, deren Höhenverlauf durch die Konturlinien beschrieben wird.",
+          "Name": "Oberflächenwerte",
+          "Type": 1
+        },
+        {
+          "Description": "Die Linien gleicher Höhe, mit denen die Höhen auf der Oberfläche verglichen werden.",
+          "Name": "Konturlinien",
+          "Type": 2
+        }
+      ],
+      "Name": "SurfaceContoursChartV1"
+    },
+    {
+      "Description": "Vergleicht simulierte Vermessungs-, Prognose- und Betriebsgrenzpfade im dreidimensionalen Raum.",
+      "DisplayName": "3D-Trajektorien",
+      "List": [
+        {
+          "Description": "Vergleicht simulierte Vermessungs-, Prognose- und Betriebsgrenzpfade im dreidimensionalen Raum.",
+          "Name": "3D-Trajektorien",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Position entlang eines beispielhaften Vermessungs-, Prognose- oder Betriebsgrenzpfads.",
+          "Name": "Trajektorienpunkt",
+          "Type": 1
+        }
+      ],
+      "Name": "TrajectoryChartV1"
+    },
+    {
+      "Description": "Eine Position entlang eines beispielhaften Vermessungs-, Prognose- oder Betriebsgrenzpfads.",
+      "DisplayName": "Trajektorienpunkt",
+      "List": [
+        {
+          "Description": "Eine Position entlang eines beispielhaften Vermessungs-, Prognose- oder Betriebsgrenzpfads.",
+          "Name": "Trajektorienpunkt",
+          "Type": 0
+        },
+        {
+          "Description": "Horizontaler Fortschritt entlang des Pfads.",
+          "Name": "Fortschritt",
+          "Type": 1
+        },
+        {
+          "Description": "Seitliche Position auf dem Pfad.",
+          "Name": "Seitliche Position",
+          "Type": 2
+        },
+        {
+          "Description": "Vertikale Position auf dem Pfad.",
+          "Name": "Höhe",
+          "Type": 3
+        },
+        {
+          "Description": "Der Vermessungs-, Prognose- oder Betriebsgrenzpfad, zu dem diese Position gehört.",
+          "Name": "Trajektorie",
+          "Type": 4
+        },
+        {
+          "Description": "Kennzeichnet den Pfad, durch dessen Darstellung sich diese Position von den Positionen der anderen Pfade unterscheidet.",
+          "Name": "Pfadunterscheidung",
+          "Type": 5
+        },
+        {
+          "Description": "Die Stelle der Position in der Abfolge entlang ihres Pfads.",
+          "Name": "Pfadreihenfolge",
+          "Type": 6
+        },
+        {
+          "Description": "Unterscheidet diese Position von anderen Positionen entlang der Beispielpfade.",
+          "Name": "Positionskennung",
+          "Type": 7
+        }
+      ],
+      "Name": "TrajectoryPointV1"
+    },
+    {
+      "Description": "Kennzeichnet einen geordneten Pfad durch den dreidimensionalen Raum.",
+      "DisplayName": "Trajektorie",
+      "List": [
+        {
+          "Description": "Kennzeichnet einen geordneten Pfad durch den dreidimensionalen Raum.",
+          "Enum": [
+            {
+              "Description": "Der simulierte Vermessungspfad des Beispiels.",
+              "Name": "Vermessung",
+              "Type": 1
+            },
+            {
+              "Description": "Der prognostizierte Pfad des Beispiels zum Vergleich mit der simulierten Vermessung.",
+              "Name": "Prognose",
+              "Type": 2
+            },
+            {
+              "Description": "Der Referenzpfad des Beispiels, der eine Betriebsgrenze darstellt.",
+              "Name": "Grenzwert",
+              "Type": 3
+            }
+          ],
+          "Name": "Trajektorie",
+          "Type": 0
+        }
+      ],
+      "Name": "TrajectoryV1"
+    },
+    {
+      "Description": "Zeigt die Form einer Sattelfläche als offenes Gitter aus Verbindungslinien.",
+      "DisplayName": "Drahtgitterwerte der Sattelfläche",
+      "List": [
+        {
+          "Description": "Zeigt die Form einer Sattelfläche als offenes Gitter aus Verbindungslinien.",
+          "Name": "Drahtgitterwerte der Sattelfläche",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Position und ihre Höhe auf der sattelförmigen Beispieloberfläche.",
+          "Name": "Sattelflächenwert",
+          "Type": 1
+        }
+      ],
+      "Name": "WireframeChartV1"
+    },
+    {
+      "Description": "Eine Position und ihre Höhe auf der sattelförmigen Beispieloberfläche.",
+      "DisplayName": "Sattelflächenwert",
+      "List": [
+        {
+          "Description": "Eine Position und ihre Höhe auf der sattelförmigen Beispieloberfläche.",
+          "Name": "Sattelflächenwert",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position des Werts in X-Richtung der Sattelfläche.",
+          "Name": "X-Koordinate",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position des Messpunkts in Y-Richtung des Sattels.",
+          "Name": "Y-Koordinate",
+          "Type": 2
+        },
+        {
+          "Description": "Die Höhe der Satteloberfläche an dieser Stelle.",
+          "Name": "Höhe",
+          "Type": 3
+        },
+        {
+          "Description": "Der Höhenwert, mit dem Höhenbereiche entlang des Sattels unterschieden werden.",
+          "Name": "Höhenabgrenzung",
+          "Type": 4
+        }
+      ],
+      "Name": "WireframePointV1"
+    }
+  ]
+}

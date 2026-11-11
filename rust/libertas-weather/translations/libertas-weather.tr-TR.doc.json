@@ -1,0 +1,1825 @@
+{
+  "Description": "Libertas uygulamalarının aldığı kararlara uyarlanmış hava durumu verilerini tanımlar. Yağmurlama sistemi şeması, Hub tarafından sağlanan tesis konumunu yakın geçmiş, mevcut koşullar ve tahmin verilerinden ayrı olarak kalıcı hâle getirir. Her hava durumu bölümünün yenileme aralığı farklıdır ve her bölüm bağımsız olarak başarılı veya başarısız olabilir. Çalışma zamanı anlık görüntüleri bölümlerin herhangi bir birleşimini içerebilir. Uygulamalar başarıyla alınan her bölümü ayrı ayrı kalıcı hâle getirir ve hava durumu verileri yenilenemediğinde eski bölümleri korur. Artımlı abonelikler, istemcilerin sunucu imleci sıfırlamasını eski veya sırasız verilerden ayırt edebilmesi, saklanan değişiklikleri yeniden oynatabilmesi ya da önbelleğe alınmış verilerden seçili zaman aralıklarını kurtarabilmesi için dönem zaman damgası ve sıra numarasından oluşan imleçler kullanır. Bina HVAC şeması yalnızca ısıl yük tahmini, ısı pompası işletimi, ekonomizör kararları ve kontrollü dış hava havalandırması için gereken dış ortam girdilerini sağlar. Hava durumu ve dış hava kalitesi bölümlerini, sağlayıcıları ve güncellik davranışları farklı olduğundan birbirinden bağımsız tutar. Yerel ekipman ve can güvenliği kontrolleri kendi sensörlerini kullanmaya devam etmelidir; önbelleğe alınmış internet hava durumu verileri bir üst denetim girdisidir, güvenlik sinyali değildir.",
+  "DisplayName": "Libertas Hava Durumu",
+  "DocumentVersion": "0.0.2",
+  "List": [],
+  "Locale": "tr-TR",
+  "StringResources": {},
+  "Types": [
+    {
+      "Description": "Üst denetimli HVAC kontrolünde kullanılan en güncel modellenmiş dış ortam koşullarını içerir. Ekipman veya donma koruması için kullanılan yerel bir dış ortam sensörünün yerini almaz.",
+      "DisplayName": "Bina HVAC mevcut hava durumu",
+      "List": [
+        {
+          "Description": "Üst denetimli HVAC kontrolünde kullanılan en güncel modellenmiş dış ortam koşullarını içerir. Ekipman veya donma koruması için kullanılan yerel bir dış ortam sensörünün yerini almaz.",
+          "Name": "Bina HVAC mevcut hava durumu",
+          "Type": 0
+        },
+        {
+          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
+          "Name": "Retrieved at",
+          "Type": 1
+        },
+        {
+          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
+          "Name": "Valid until",
+          "Type": 2
+        },
+        {
+          "Description": "The provider-supplied date and time represented by these current conditions.",
+          "Name": "Valid at",
+          "Type": 3
+        },
+        {
+          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
+          "Name": "Observation interval",
+          "Type": 4
+        },
+        {
+          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
+          "Name": "Outdoor conditions",
+          "Type": 5
+        }
+      ],
+      "Name": "BuildingHvacCurrentWeatherV1"
+    },
+    {
+      "Description": "Sağlıksız koşullarda mekanik dış hava girişinin artırılmasını önlemek için kullanılan modellenmiş dış ortam kirletici madde konsantrasyonlarını içerir. Bu bölgesel model değerleri, yerel güvenlik sensörlerinin veya resmî acil durum talimatlarının yerini almaz.",
+      "DisplayName": "Bina HVAC dış hava kalitesi dönemi",
+      "List": [
+        {
+          "Description": "Sağlıksız koşullarda mekanik dış hava girişinin artırılmasını önlemek için kullanılan modellenmiş dış ortam kirletici madde konsantrasyonlarını içerir. Bu bölgesel model değerleri, yerel güvenlik sensörlerinin veya resmî acil durum talimatlarının yerini almaz.",
+          "Name": "Bina HVAC dış hava kalitesi dönemi",
+          "Type": 0
+        },
+        {
+          "Description": "Bu hava kalitesi döneminin temsil ettiği, başlangıç anını kapsayan tarih ve saat.",
+          "Name": "Başlangıç zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Bu dönemin saniye cinsinden uzunluğu. Modellenmiş dış hava kalitesi normalde 3.600 saniyelik dönemler kullanır.",
+          "Name": "Süre",
+          "Type": 2
+        },
+        {
+          "Description": "Metreküp başına mikrogram cinsinden modellenmiş dış ortam PM2.5 konsantrasyonu.",
+          "Name": "İnce partikül madde",
+          "Type": 3
+        },
+        {
+          "Description": "Metreküp başına mikrogram cinsinden modellenmiş dış ortam PM10 konsantrasyonu.",
+          "Name": "Partikül madde",
+          "Type": 4
+        },
+        {
+          "Description": "Metreküp başına mikrogram cinsinden modellenmiş dış ortam ozon konsantrasyonu.",
+          "Name": "Ozon",
+          "Type": 5
+        },
+        {
+          "Description": "Metreküp başına mikrogram cinsinden modellenmiş dış ortam azot dioksit konsantrasyonu.",
+          "Name": "Azot dioksit",
+          "Type": 6
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityPeriodV1"
+    },
+    {
+      "Description": "Havalandırma planlaması için mevcut ve tahmin edilen modellenmiş dış ortam kirletici madde dönemlerini içerir. Fiziksel hava durumundan bağımsız olarak isteğe bağlıdır ve bağımsız olarak önbelleğe alınır.",
+      "DisplayName": "Bina HVAC dış hava kalitesi",
+      "List": [
+        {
+          "Description": "Havalandırma planlaması için mevcut ve tahmin edilen modellenmiş dış ortam kirletici madde dönemlerini içerir. Fiziksel hava durumundan bağımsız olarak isteğe bağlıdır ve bağımsız olarak önbelleğe alınır.",
+          "Name": "Bina HVAC dış hava kalitesi",
+          "Type": 0
+        },
+        {
+          "Description": "Bu eksiksiz hava kalitesi bölümünün alındığı, doğrulandığı ve kabul edildiği tarih ve saat.",
+          "Name": "Alınma zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Güncellik süresinin hariç tutulan bitiş anı. Güncelliğini yitirmiş modellenmiş değerler, dış havanın güvenli olduğunun kanıtı olarak yorumlanmamalıdır.",
+          "Name": "Geçerlilik bitişi",
+          "Type": 2
+        },
+        {
+          "Description": "En erkenden en geçe doğru sıralanmış mevcut ve gelecekteki dönemler. Normal bir yanıt en fazla 48 saati kapsar.",
+          "Name": "Hava kalitesi dönemleri",
+          "Type": 3
+        },
+        {
+          "Description": "Bir döneme ait modellenmiş dış ortam kirletici madde konsantrasyonları.",
+          "Name": "Hava kalitesi dönemi",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityV1"
+    },
+    {
+      "Description": "HVAC yük tahmini, psikrometrik hesaplamalar, ekonomizör kararları, sızıntı tahmini ve dış etkilere açık ekipmanın hava durumunu dikkate alan işletimi için gereken fiziksel dış ortam girdilerini içerir.",
+      "DisplayName": "Bina HVAC dış ortam koşulları",
+      "List": [
+        {
+          "Description": "HVAC yük tahmini, psikrometrik hesaplamalar, ekonomizör kararları, sızıntı tahmini ve dış etkilere açık ekipmanın hava durumunu dikkate alan işletimi için gereken fiziksel dış ortam girdilerini içerir.",
+          "Name": "Bina HVAC dış ortam koşulları",
+          "Type": 0
+        },
+        {
+          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
+          "Name": "Dry-bulb temperature",
+          "Type": 1
+        },
+        {
+          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
+          "Name": "Dew-point temperature",
+          "Type": 2
+        },
+        {
+          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
+          "Name": "Relative humidity",
+          "Type": 3
+        },
+        {
+          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
+          "Name": "Surface pressure",
+          "Type": 4
+        },
+        {
+          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
+          "Name": "Wind speed",
+          "Type": 5
+        },
+        {
+          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
+          "Name": "Wind gust",
+          "Type": 6
+        },
+        {
+          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
+          "Name": "Wind direction",
+          "Type": 7
+        },
+        {
+          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
+          "Name": "Precipitation",
+          "Type": 8
+        },
+        {
+          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
+          "Name": "Precipitation kind",
+          "Type": 9
+        },
+        {
+          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
+          "Name": "Solar elevation",
+          "Type": 10
+        },
+        {
+          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
+          "Name": "Solar azimuth",
+          "Type": 11
+        },
+        {
+          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
+          "Name": "Global horizontal irradiance",
+          "Type": 12
+        },
+        {
+          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
+          "Name": "Direct normal irradiance",
+          "Type": 13
+        },
+        {
+          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
+          "Name": "Diffuse horizontal irradiance",
+          "Type": 14
+        }
+      ],
+      "Name": "BuildingHvacOutdoorConditionsV1"
+    },
+    {
+      "Description": "Fazı dış ortam serpantinlerini, hava girişlerini, damperleri veya dış etkilere açık diğer HVAC ekipmanlarını etkileyebildiğinde yağışı sınıflandırır.",
+      "DisplayName": "Bina HVAC yağış türü",
+      "List": [
+        {
+          "Description": "Fazı dış ortam serpantinlerini, hava girişlerini, damperleri veya dış etkilere açık diğer HVAC ekipmanlarını etkileyebildiğinde yağışı sınıflandırır.",
+          "Enum": [
+            {
+              "Description": "Dönem için yağış olmadığı temsil edilir.",
+              "Name": "Yağış yok",
+              "Type": 1
+            },
+            {
+              "Description": "Dönem için sıvı yağmur veya sağanak yağış temsil edilir.",
+              "Name": "Yağmur",
+              "Type": 2
+            },
+            {
+              "Description": "Dönem için dış etkilere açık ekipman üzerinde donabilen aşırı soğumuş sıvı yağış temsil edilir.",
+              "Name": "Donan yağmur",
+              "Type": 3
+            },
+            {
+              "Description": "Dönem için ağırlıklı olarak kardan oluşan donmuş yağış temsil edilir.",
+              "Name": "Kar",
+              "Type": 4
+            },
+            {
+              "Description": "Birden fazla sıvı veya donmuş yağış fazı temsil edilir.",
+              "Name": "Karışık yağış",
+              "Type": 5
+            },
+            {
+              "Description": "Yağış vardır ancak sağlayıcı bunun fazını sınıflandıramamaktadır.",
+              "Name": "Bilinmeyen yağış",
+              "Type": 6
+            }
+          ],
+          "Name": "Bina HVAC yağış türü",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacPrecipitationKindV1"
+    },
+    {
+      "Description": "Artımlı bina HVAC hava durumu akışındaki tek bir atomik değişikliği tanımlar. Varyant ve alan sırası, Avro kablo protokolü sözleşmesinin parçasıdır.",
+      "DisplayName": "Bina HVAC hava durumu değişikliği",
+      "List": [
+        {
+          "Description": "Artımlı bina HVAC hava durumu akışındaki tek bir atomik değişikliği tanımlar. Varyant ve alan sırası, Avro kablo protokolü sözleşmesinin parçasıdır.",
+          "Name": "Bina HVAC hava durumu değişikliği",
+          "Type": 0
+        },
+        {
+          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
+          "Name": "Upsert historical periods",
+          "Type": 1
+        },
+        {
+          "Description": "The retrieval and validation time for the updated history section.",
+          "Name": "Retrieved at",
+          "Type": 2
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the history section.",
+          "Name": "Valid until",
+          "Type": 3
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from oldest to newest.",
+          "Name": "Historical periods",
+          "Type": 4
+        },
+        {
+          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
+          "Name": "Historical period",
+          "Type": 5
+        },
+        {
+          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove historical periods",
+          "Type": 6
+        },
+        {
+          "Description": "The half-open range of historical period start times to remove.",
+          "Name": "Time range",
+          "Type": 7
+        },
+        {
+          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
+          "Name": "Replace current conditions",
+          "Type": 8
+        },
+        {
+          "Description": "The complete newly accepted current-condition section.",
+          "Name": "Current conditions",
+          "Type": 9
+        },
+        {
+          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
+          "Name": "Upsert forecast periods",
+          "Type": 10
+        },
+        {
+          "Description": "The retrieval and validation time for the updated forecast section.",
+          "Name": "Retrieved at",
+          "Type": 11
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the forecast section.",
+          "Name": "Valid until",
+          "Type": 12
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Forecast periods",
+          "Type": 13
+        },
+        {
+          "Description": "One future outdoor-condition period keyed by `starts_at`.",
+          "Name": "Forecast period",
+          "Type": 14
+        },
+        {
+          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove forecast periods",
+          "Type": 15
+        },
+        {
+          "Description": "The half-open range of forecast period start times to remove.",
+          "Name": "Time range",
+          "Type": 16
+        },
+        {
+          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
+          "Name": "Upsert outdoor-air-quality periods",
+          "Type": 17
+        },
+        {
+          "Description": "The retrieval and validation time for the updated air-quality section.",
+          "Name": "Retrieved at",
+          "Type": 18
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the air-quality section.",
+          "Name": "Valid until",
+          "Type": 19
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Air-quality periods",
+          "Type": 20
+        },
+        {
+          "Description": "One modeled pollutant period keyed by `starts_at`.",
+          "Name": "Air-quality period",
+          "Type": 21
+        },
+        {
+          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove outdoor-air-quality periods",
+          "Type": 22
+        },
+        {
+          "Description": "The half-open range of air-quality period start times to remove.",
+          "Name": "Time range",
+          "Type": 23
+        },
+        {
+          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
+          "Name": "Clear weather section",
+          "Type": 24
+        },
+        {
+          "Description": "The independently cached section to clear.",
+          "Name": "Weather section",
+          "Type": 25
+        },
+        {
+          "Description": "Replaces the complete historical section after a successful refresh.",
+          "Name": "Replace history",
+          "Type": 26
+        },
+        {
+          "Description": "The complete newly accepted history section.",
+          "Name": "History",
+          "Type": 27
+        },
+        {
+          "Description": "Replaces the complete forecast section after a successful refresh.",
+          "Name": "Replace forecast",
+          "Type": 28
+        },
+        {
+          "Description": "The complete newly accepted forecast section.",
+          "Name": "Forecast",
+          "Type": 29
+        },
+        {
+          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
+          "Name": "Replace outdoor air quality",
+          "Type": 30
+        },
+        {
+          "Description": "The complete newly accepted outdoor-air-quality section.",
+          "Name": "Outdoor air quality",
+          "Type": 31
+        }
+      ],
+      "Name": "BuildingHvacWeatherChangeV1"
+    },
+    {
+      "Description": "Artımlı bir bina HVAC hava durumu akışında tamamen uygulanmış bir durumu tanımlar. İstemciler dönem zaman damgasını ve sıra numarasını birlikte karşılaştırır.",
+      "DisplayName": "Bina HVAC hava durumu imleci",
+      "List": [
+        {
+          "Description": "Artımlı bir bina HVAC hava durumu akışında tamamen uygulanmış bir durumu tanımlar. İstemciler dönem zaman damgasını ve sıra numarasını birlikte karşılaştırır.",
+          "Name": "Bina HVAC hava durumu imleci",
+          "Type": 0
+        },
+        {
+          "Description": "Akış neslini tanımlayan, sunucu tarafından atanmış tarih ve saat. Normal sıra ilerlemesi sırasında sabit kalır. Geçici imleç durumunu kaybeden bir sunucu, kesin olarak daha yeni bir zaman damgası atar.",
+          "Name": "Dönem zaman damgası",
+          "Type": 1
+        },
+        {
+          "Description": "En son uygulanan atomik değişikliğin sıra numarası. Sunucu imlecinin sıfırlanması bu numarayı yeniden sıfırdan başlatır, ancak istemci sıfırlama sonrasındaki daha ileri bir sıra numarasını ilk olarak gözlemleyebilir.",
+          "Name": "Sıra",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherCursorV1"
+    },
+    {
+      "Description": "Model öngörülü HVAC planlamasının bir dönemi için tahmin edilen dış ortam koşullarını içerir.",
+      "DisplayName": "Bina HVAC tahmin dönemi",
+      "List": [
+        {
+          "Description": "Model öngörülü HVAC planlamasının bir dönemi için tahmin edilen dış ortam koşullarını içerir.",
+          "Name": "Bina HVAC tahmin dönemi",
+          "Type": 0
+        },
+        {
+          "Description": "Bu tahmin döneminin başladığı, başlangıç anının dâhil olduğu tarih ve saat.",
+          "Name": "Başlangıç zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Bu tahmin döneminin saniye cinsinden uzunluğu. Sağlayıcılar, şimdiki zamana yakın dönemler için 900 saniyelik, daha sonraki dönemler için ise 3.600 saniyelik aralıklar sağlayabilir.",
+          "Name": "Süre",
+          "Type": 2
+        },
+        {
+          "Description": "Bu dönem boyunca ölçülebilir yağış olasılığının 0 ile 100 arasında bir tam sayı yüzdesi olarak değeri.",
+          "Name": "Yağış olasılığı",
+          "Type": 3
+        },
+        {
+          "Description": "Dönem için tahmin edilen sıcaklık, nem, basınç, rüzgâr, yağış ve güneş girdileri.",
+          "Name": "Dış ortam koşulları",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "Yük tahmini, ön ısıtma, ön soğutma, ısıl depolama ve hava durumunu dikkate alan havalandırma planlaması için gelecekteki dış ortam koşullarını içerir.",
+      "DisplayName": "Bina HVAC hava durumu tahmini",
+      "List": [
+        {
+          "Description": "Yük tahmini, ön ısıtma, ön soğutma, ısıl depolama ve hava durumunu dikkate alan havalandırma planlaması için gelecekteki dış ortam koşullarını içerir.",
+          "Name": "Bina HVAC hava durumu tahmini",
+          "Type": 0
+        },
+        {
+          "Description": "Bu eksiksiz tahmin bölümünün alındığı, doğrulandığı ve kabul edildiği tarih ve saat.",
+          "Name": "Alınma zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Tazelik için hariç tutulan son tarih. Daha eski tahminler, kısıtlı planlama için kullanılabilir durumda kalır ancak güvenlik açısından hassas işlemlere izin vermek için kullanılmamalıdır.",
+          "Name": "Geçerlilik sonu",
+          "Type": 2
+        },
+        {
+          "Description": "En erkenden en geçe doğru sıralanmış gelecek dönemler. Normal bir yanıt 72 saati kapsar; isteğe bağlı olarak ilk altı saat için 15 dakikalık, sonrasında ise saatlik dönemler kullanılabilir.",
+          "Name": "Tahmin dönemleri",
+          "Type": 3
+        },
+        {
+          "Description": "Bir planlama dönemi için tahmin edilen dış ortam HVAC koşulları.",
+          "Name": "Tahmin dönemi",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastV1"
+    },
+    {
+      "Description": "Bir binanın ısıl durum tahminini geri yüklemek veya güncellemek için kullanılan, tamamlanmış bir döneme ait dış ortam koşullarını içerir.",
+      "DisplayName": "Bina HVAC geçmiş hava durumu dönemi",
+      "List": [
+        {
+          "Description": "Bir binanın ısıl durum tahminini geri yüklemek veya güncellemek için kullanılan, tamamlanmış bir döneme ait dış ortam koşullarını içerir.",
+          "Name": "Bina HVAC geçmiş hava durumu dönemi",
+          "Type": 0
+        },
+        {
+          "Description": "Bu geçmiş döneminin başladığı, başlangıç anının dâhil olduğu tarih ve saat.",
+          "Name": "Başlangıç zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Bu tamamlanmış dönemin saniye cinsinden uzunluğu. Geçmiş veriler normalde 3.600 saniyelik dönemler kullanır.",
+          "Name": "Süre",
+          "Type": 2
+        },
+        {
+          "Description": "Bu tamamlanmış dönemin temsil ettiği sıcaklık, nem, basınç, rüzgâr, yağış ve güneş koşulları.",
+          "Name": "Dış ortam koşulları",
+          "Type": 3
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryPeriodV1"
+    },
+    {
+      "Description": "Kısa vadeli ısıl durum kurtarma için kullanılan, yakın zamanda tamamlanmış dış ortam koşulu dönemlerini içerir. Uzun vadeli bina öğrenimi, HVAC uygulamasının kendi telemetri ve model kalıcılığı kapsamındadır.",
+      "DisplayName": "Bina HVAC hava durumu geçmişi",
+      "List": [
+        {
+          "Description": "Kısa vadeli ısıl durum kurtarma için kullanılan, yakın zamanda tamamlanmış dış ortam koşulu dönemlerini içerir. Uzun vadeli bina öğrenimi, HVAC uygulamasının kendi telemetri ve model kalıcılığı kapsamındadır.",
+          "Name": "Bina HVAC hava durumu geçmişi",
+          "Type": 0
+        },
+        {
+          "Description": "Bu eksiksiz geçmiş bölümünün alındığı, doğrulandığı ve kabul edildiği tarih ve saat.",
+          "Name": "Alınma zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Tazelik için hariç tutulan son tarih. Daha eski geçmiş veriler, bu zamandan sonra kısıtlı model girdisi olarak kullanılabilir durumda kalır.",
+          "Name": "Geçerlilik sonu",
+          "Type": 2
+        },
+        {
+          "Description": "En eskiden en yeniye doğru sıralanmış tamamlanmış dönemler. Normal bir yanıt önceki 72 saati kapsar; daha kısa bir liste geçerli bir kısmi geçmiştir.",
+          "Name": "Geçmiş dönemleri",
+          "Type": 3
+        },
+        {
+          "Description": "Tamamlanmış bir döneme ait dış ortam HVAC koşulları.",
+          "Name": "Geçmiş dönemi",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryV1"
+    },
+    {
+      "Description": "Bina HVAC hava durumu değişikliklerinin sıralı ve atomik bir aralığını taşır. İstemci bunu yalnızca `from_cursor` değeri son imleciyle eşleştiğinde uygular. Boş bir rapor, güncel duruma ulaşma kurtarmasıdır; değişiklik olmadığını belirten düzenli canlılık bildirimleri PeerAlive kullanır.",
+      "DisplayName": "Bina HVAC hava durumu artımlı raporu",
+      "List": [
+        {
+          "Description": "Bina HVAC hava durumu değişikliklerinin sıralı ve atomik bir aralığını taşır. İstemci bunu yalnızca `from_cursor` değeri son imleciyle eşleştiğinde uygular. Boş bir rapor, güncel duruma ulaşma kurtarmasıdır; değişiklik olmadığını belirten düzenli canlılık bildirimleri PeerAlive kullanır.",
+          "Name": "Bina HVAC hava durumu artımlı raporu",
+          "Type": 0
+        },
+        {
+          "Description": "Rapor uygulanmadan önce gerekli olan, hariç tutulan alt imleç ve tam istemci durumu.",
+          "Name": "Başlangıç imleci",
+          "Type": 1
+        },
+        {
+          "Description": "Her değişikliğin atomik olarak uygulanmasından sonra ulaşılan, dâhil edilen imleç.",
+          "Name": "Bitiş imleci",
+          "Type": 2
+        },
+        {
+          "Description": "İmleç sırasındaki sıralı değişiklikler. Her değişiklik sıra numarasını tam olarak bir artırır; boş liste imleci korur.",
+          "Name": "Hava durumu değişiklikleri",
+          "Type": 3
+        },
+        {
+          "Description": "İmleç sırasında tek bir atomik durum değişikliği.",
+          "Name": "Hava durumu değişikliği",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Bir evin veya binanın tamamı için hava durumu bilgilerini almak amacıyla kullanılan Libertas Hub konumunu saklar.",
+      "DisplayName": "Bina HVAC hava durumu konumu",
+      "List": [
+        {
+          "Description": "Bir evin veya binanın tamamı için hava durumu bilgilerini almak amacıyla kullanılan Libertas Hub konumunu saklar.",
+          "Name": "Bina HVAC hava durumu konumu",
+          "Type": 0
+        },
+        {
+          "Description": "Ondalık derece cinsinden WGS84 boylamı. Greenwich'in batısındaki konumlar negatif değerler kullanır.",
+          "Name": "Boylam",
+          "Type": 1
+        },
+        {
+          "Description": "Ondalık derece cinsinden WGS84 enlemi.",
+          "Name": "Enlem",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherLocationV1"
+    },
+    {
+      "Description": "Bir bina HVAC hava durumu aracısının Libertas veritabanına yazabileceği tüm değerleri tanımlar. Kısmi sağlayıcı arızasının başka bir bölümü silememesi için her varyant kendi kararlı kaynak tanımlayıcısı altında depolanır. Abonelik imleçleri, günlükler, eşler ve PeerAlive son tarihleri kalıcı değildir.",
+      "DisplayName": "Bina HVAC hava durumu kalıcı verileri",
+      "List": [
+        {
+          "Description": "Bir bina HVAC hava durumu aracısının Libertas veritabanına yazabileceği tüm değerleri tanımlar. Kısmi sağlayıcı arızasının başka bir bölümü silememesi için her varyant kendi kararlı kaynak tanımlayıcısı altında depolanır. Abonelik imleçleri, günlükler, eşler ve PeerAlive son tarihleri kalıcı değildir.",
+          "Name": "Bina HVAC hava durumu kalıcı verileri",
+          "Type": 0
+        },
+        {
+          "Description": "Libertas Hub'dan alınan son geçerli saha koordinatlarını depolar.",
+          "Name": "Bina konumu",
+          "Type": 1
+        },
+        {
+          "Description": "Sağlayıcı istekleri için kullanılan WGS84 saha koordinatları.",
+          "Name": "Konum",
+          "Type": 2
+        },
+        {
+          "Description": "Başarıyla kabul edilen son fiziksel hava durumu geçmişini depolar.",
+          "Name": "Yakın geçmiş",
+          "Type": 3
+        },
+        {
+          "Description": "Alınma ve güncellik zaman damgalarını içeren yakın tarihli dış ortam koşulu dönemleri.",
+          "Name": "Geçmiş",
+          "Type": 4
+        },
+        {
+          "Description": "Başarıyla kabul edilen son mevcut fiziksel hava durumunu depolar.",
+          "Name": "Mevcut koşullar",
+          "Type": 5
+        },
+        {
+          "Description": "Geçerlilik ve alınma zaman damgalarını içeren mevcut dış ortam HVAC girdileri.",
+          "Name": "Mevcut koşullar",
+          "Type": 6
+        },
+        {
+          "Description": "Başarıyla kabul edilen son fiziksel hava durumu tahminini depolar.",
+          "Name": "Tahmin",
+          "Type": 7
+        },
+        {
+          "Description": "Alınma ve güncellik zaman damgalarını içeren gelecekteki dış ortam HVAC girdileri.",
+          "Name": "Tahmin",
+          "Type": 8
+        },
+        {
+          "Description": "Başarıyla kabul edilen son modellenmiş kirletici verilerini fiziksel hava durumundan ayrı olarak depolar.",
+          "Name": "Dış ortam hava kalitesi",
+          "Type": 9
+        },
+        {
+          "Description": "Alınma ve güncellik zaman damgalarını içeren mevcut ve gelecekteki dış ortam kirletici dönemleri.",
+          "Name": "Dış ortam hava kalitesi",
+          "Type": 10
+        }
+      ],
+      "Name": "BuildingHvacWeatherPersistentData"
+    },
+    {
+      "Description": "Tüm ev veya tüm bina HVAC hava durumu için tek seferlik işlemleri ve abonelik işlemlerini tanımlar. Tek seferlik veya abonelik davranışını bu genel ileti sözleşmesindeki bir alan değil, Libertas uç noktası işlemi seçer.",
+      "DisplayName": "Bina HVAC hava durumu protokolü",
+      "List": [
+        {
+          "Description": "Tüm ev veya tüm bina HVAC hava durumu için tek seferlik işlemleri ve abonelik işlemlerini tanımlar. Tek seferlik veya abonelik davranışını bu genel ileti sözleşmesindeki bir alan değil, Libertas uç noktası işlemi seçer.",
+          "Name": "Bina HVAC hava durumu protokolü",
+          "Type": 0
+        },
+        {
+          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
+          "Name": "Get building HVAC weather",
+          "Type": 1
+        },
+        {
+          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
+          "Name": "Resume cursor",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
+          "Name": "Historical recovery range",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
+          "Name": "Include current conditions",
+          "Type": 4
+        },
+        {
+          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
+          "Name": "Forecast recovery range",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
+          "Name": "Outdoor-air-quality recovery range",
+          "NullText": "No outdoor air quality",
+          "SetText": "Include outdoor air quality for",
+          "Type": 6
+        },
+        {
+          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
+          "Name": "Building HVAC weather recovery",
+          "Type": 7
+        },
+        {
+          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
+          "Name": "Maximum wait interval",
+          "Type": 8
+        },
+        {
+          "Description": "The replay, reset snapshot, or typed error result.",
+          "Name": "Recovery",
+          "Type": 9
+        },
+        {
+          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
+          "Name": "Building HVAC weather increment",
+          "Type": 10
+        },
+        {
+          "Description": "The ordered, atomic cursor range and its weather changes.",
+          "Name": "Incremental report",
+          "Type": 11
+        }
+      ],
+      "Name": "BuildingHvacWeatherProtocol"
+    },
+    {
+      "Description": "Yeniden oynatma veya aralıkla sınırlandırılmış önbelleğe alınmış anlık görüntü yoluyla karşılanamayan bir kurtarma isteğini tanımlar.",
+      "DisplayName": "Bina HVAC hava durumu kurtarma hatası",
+      "List": [
+        {
+          "Description": "Yeniden oynatma veya aralıkla sınırlandırılmış önbelleğe alınmış anlık görüntü yoluyla karşılanamayan bir kurtarma isteğini tanımlar.",
+          "Enum": [
+            {
+              "Description": "İstenen yarı açık aralıklardan en az biri boş veya ters çevrilmiştir.",
+              "Name": "Geçersiz zaman aralığı",
+              "Type": 1
+            },
+            {
+              "Description": "Sağlanan imleç, mevcut imleç durumuyla veya tutulan günlükle uzlaştırılamaz.",
+              "Name": "İmleç ileride",
+              "Type": 2
+            },
+            {
+              "Description": "İstenen kurtarma aralıklarından en az biri sınırlı yanıt kapasitesini aşıyor.",
+              "Name": "İstek çok büyük",
+              "Type": 3
+            },
+            {
+              "Description": "Gerekli bir önbelleğe alınmış kayıt veya kurtarma kaynağı geçici olarak kullanılamıyor.",
+              "Name": "Geçici olarak kullanılamıyor",
+              "Type": 4
+            }
+          ],
+          "Name": "Bina HVAC hava durumu kurtarma hatası",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "Tutulan değişiklikleri yeniden oynatır, yeni bir imleç ve anlık görüntü oluşturur veya kurtarılabilir bir istek hatasını bildirir.",
+      "DisplayName": "Bina HVAC hava durumu kurtarma",
+      "List": [
+        {
+          "Description": "Tutulan değişiklikleri yeniden oynatır, yeni bir imleç ve anlık görüntü oluşturur veya kurtarılabilir bir istek hatasını bildirir.",
+          "Name": "Bina HVAC hava durumu kurtarma",
+          "Type": 0
+        },
+        {
+          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
+          "Name": "Replayed changes",
+          "Type": 1
+        },
+        {
+          "Description": "The contiguous retained change range beginning at the request cursor.",
+          "Name": "Incremental report",
+          "Type": 2
+        },
+        {
+          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
+          "Name": "Reset with snapshot",
+          "Type": 3
+        },
+        {
+          "Description": "The reason the response contains a snapshot rather than replay.",
+          "Name": "Reset reason",
+          "Type": 4
+        },
+        {
+          "Description": "The cursor representing the returned snapshot.",
+          "Name": "Current cursor",
+          "Type": 5
+        },
+        {
+          "Description": "The available cached sections constrained by requested ranges.",
+          "Name": "Weather snapshot",
+          "Type": 6
+        },
+        {
+          "Description": "Rejects the request without changing client cursor or cached weather.",
+          "Name": "Recovery error",
+          "Type": 7
+        },
+        {
+          "Description": "The reason recovery could not be completed.",
+          "Name": "Error",
+          "Type": 8
+        },
+        {
+          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
+          "Name": "Retry delay",
+          "Type": 9
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryV1"
+    },
+    {
+      "Description": "Kurtarmanın neden artımlı değişiklikleri yeniden oynatmak yerine aralıkla sınırlandırılmış bir anlık görüntüden durum oluşturduğunu açıklar.",
+      "DisplayName": "Bina HVAC hava durumu sıfırlama nedeni",
+      "List": [
+        {
+          "Description": "Kurtarmanın neden artımlı değişiklikleri yeniden oynatmak yerine aralıkla sınırlandırılmış bir anlık görüntüden durum oluşturduğunu açıklar.",
+          "Enum": [
+            {
+              "Description": "Önceki bir imleç sağlanmadı.",
+              "Name": "İlk abonelik",
+              "Type": 1
+            },
+            {
+              "Description": "İstenen sıra, tutulan yeniden oynatma günlüğünden daha eskidir.",
+              "Name": "İmlecin süresi doldu",
+              "Type": 2
+            },
+            {
+              "Description": "Sunucu yalnızca geçici imlecini ve yeniden oynatma günlüğünü kaybetti veya kasıtlı olarak attı; bağımsız olarak kalıcılaştırılmış hava durumu bölümleri kullanılabilir durumda kalır.",
+              "Name": "Sunucu imleci sıfırlandı",
+              "Type": 3
+            }
+          ],
+          "Name": "Bina HVAC hava durumu sıfırlama nedeni",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherResetReasonV1"
+    },
+    {
+      "Description": "Bağımsız olarak önbelleğe alınan bir bina HVAC hava durumu bölümünü tanımlar.",
+      "DisplayName": "Bina HVAC hava durumu bölümü",
+      "List": [
+        {
+          "Description": "Bağımsız olarak önbelleğe alınan bir bina HVAC hava durumu bölümünü tanımlar.",
+          "Enum": [
+            {
+              "Description": "Yakın tarihli fiziksel dış ortam koşulu geçmişini seçer.",
+              "Name": "Yakın geçmiş",
+              "Type": 1
+            },
+            {
+              "Description": "Modellenmiş mevcut fiziksel dış ortam koşullarını seçer.",
+              "Name": "Mevcut koşullar",
+              "Type": 2
+            },
+            {
+              "Description": "Gelecekteki fiziksel dış ortam koşulları tahminini seçer.",
+              "Name": "Hava durumu tahmini",
+              "Type": 3
+            },
+            {
+              "Description": "Modellenmiş mevcut ve tahmini dış ortam kirletici konsantrasyonlarını seçer.",
+              "Name": "Dış ortam hava kalitesi",
+              "Type": 4
+            }
+          ],
+          "Name": "Bina HVAC hava durumu bölümü",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherSectionV1"
+    },
+    {
+      "Description": "İstenen her bölümün başarıyla kabul edilen son değerini içerir. Eksik bölümlerin kullanılabilir önbelleği yoktur; güncelliğini yitirmiş bölümler özgün güncellik son tarihleriyle birlikte mevcut kalır.",
+      "DisplayName": "Bina HVAC hava durumu anlık görüntüsü",
+      "List": [
+        {
+          "Description": "İstenen her bölümün başarıyla kabul edilen son değerini içerir. Eksik bölümlerin kullanılabilir önbelleği yoktur; güncelliğini yitirmiş bölümler özgün güncellik son tarihleriyle birlikte mevcut kalır.",
+          "Name": "Bina HVAC hava durumu anlık görüntüsü",
+          "Type": 0
+        },
+        {
+          "Description": "Kullanılabilir önbelleğe alınmış geçmiş bulunduğunda, istenen yakın geçmiş dış ortam koşulu dönemleri.",
+          "Name": "Yakın geçmiş",
+          "Type": 1
+        },
+        {
+          "Description": "İstendiğinde ve kullanılabilir olduğunda, kabul edilen son mevcut dış ortam koşulları.",
+          "Name": "Mevcut koşullar",
+          "Type": 2
+        },
+        {
+          "Description": "Kullanılabilir önbelleğe alınmış tahmin verileri bulunduğunda, istenen gelecekteki dış ortam koşulu dönemleri.",
+          "Name": "Hava durumu tahmini",
+          "Type": 3
+        },
+        {
+          "Description": "Kullanılabilir modellenmiş hava kalitesi verileri bulunduğunda, istenen mevcut ve tahmini kirletici dönemleri.",
+          "Name": "Dış ortam hava kalitesi",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherSnapshotV1"
+    },
+    {
+      "Description": "Geçmiş, tahmin veya dış ortam hava kalitesi dönemlerinin başlangıç zamanlarına göre yarı açık bir aralığını seçer.",
+      "DisplayName": "Bina HVAC hava durumu zaman aralığı",
+      "List": [
+        {
+          "Description": "Geçmiş, tahmin veya dış ortam hava kalitesi dönemlerinin başlangıç zamanlarına göre yarı açık bir aralığını seçer.",
+          "Name": "Bina HVAC hava durumu zaman aralığı",
+          "Type": 0
+        },
+        {
+          "Description": "Seçilen dönemlerin başlangıç zamanları için kapsayıcı alt sınır.",
+          "Name": "Başlangıç zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Seçilen dönemlerin başlangıç zamanları için hariç tutulan üst sınır. `starts_at` değerinden daha geç olmalıdır.",
+          "Name": "Bitiş zamanı",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherTimeRangeV1"
+    },
+    {
+      "Description": "Normalde zamanlanmış bir sulama işleminin güvenle başlatılıp başlatılamayacağına veya sürdürülüp sürdürülemeyeceğine karar vermek için kullanılan anlık yağmur, don, nem, rüzgâr ve su dengesi girdilerini içerir.",
+      "DisplayName": "Sprinkler mevcut hava durumu",
+      "List": [
+        {
+          "Description": "Normalde zamanlanmış bir sulama işleminin güvenle başlatılıp başlatılamayacağına veya sürdürülüp sürdürülemeyeceğine karar vermek için kullanılan anlık yağmur, don, nem, rüzgâr ve su dengesi girdilerini içerir.",
+          "Name": "Sprinkler mevcut hava durumu",
+          "Type": 0
+        },
+        {
+          "Description": "Mevcut hava durumu bölümünün tamamının en son alındığı, doğrulandığı ve kabul edildiği tarih ve saat.",
+          "Name": "Alınma zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Hariç tutulan güncellik son tarihi. Geçerli zaman bu değerden önce olduğu sürece mevcut hava durumu günceldir. Bu değerde veya sonrasında bölüm önbellekte kalır, ancak sulamanın güvenli olduğunun kanıtı olarak değerlendirilmemelidir.",
+          "Name": "Geçerlilik sonu",
+          "Type": 2
+        },
+        {
+          "Description": "Mevcut koşul değerlerinin temsil ettiği, sağlayıcı tarafından belirtilen tarih ve saat. Bu, `retrieved_at` değerinden farklı olabilir.",
+          "Name": "Geçerlilik zamanı",
+          "Type": 3
+        },
+        {
+          "Description": "Birikmiş yağış ve evapotranspirasyonun temsil ettiği, saniye cinsinden geriye dönük aralık. Open-Meteo mevcut hava durumu normalde 900 saniyelik bir aralık kullanır.",
+          "Name": "Gözlem aralığı",
+          "Type": 4
+        },
+        {
+          "Description": "Santigrat derece cinsinden, yerden iki metre yükseklikteki hava sıcaklığı. Sprinkler, donma noktasına yakın veya altındaki sıcaklıklarda sulamayı engellemek için bu değeri kullanır.",
+          "Name": "Sıcaklık",
+          "Type": 5
+        },
+        {
+          "Description": "Yerden iki metre yükseklikteki, 0 ile 100 arasında yüzde olarak ifade edilen bağıl nem. Sprinkler, üstten sulama gerektiğinde bitki örtüsünün gereksiz yere uzun süre ıslak kalmasını önlemek için bu değeri kullanır.",
+          "Name": "Bağıl nem",
+          "Type": 6
+        },
+        {
+          "Description": "`interval_seconds` boyunca biriken yağmur, sağanak ve su eşdeğeri donmuş yağışın milimetre cinsinden toplamı. Sprinkler, yağış devam ederken sulamayı engellemek için sıfırdan farklı bir değer kullanır.",
+          "Name": "Yağış",
+          "Type": 7
+        },
+        {
+          "Description": "`interval_seconds` boyunca biriken, milimetre cinsinden FAO-56 referans evapotranspirasyonu. Bir sonraki tamamlanmış geçmiş dönem kullanılabilir olana kadar su dengesini uzatabilir.",
+          "Name": "Referans evapotranspirasyon",
+          "Type": 8
+        },
+        {
+          "Description": "Saniyede metre cinsinden, yerden 10 metre yükseklikteki sürekli rüzgâr hızı. Bu veriyi kullanan sprinkler, yapılandırılmış rüzgâr eşiğini uygular.",
+          "Name": "Rüzgâr hızı",
+          "Type": 9
+        },
+        {
+          "Description": "Saniyede metre cinsinden, yerden 10 metre yükseklikteki en yüksek ani rüzgâr hızı. Bu veriyi kullanan sprinkler, püskürtme sürüklenmesini önlemek için bu değeri sürekli rüzgârla birlikte kullanır.",
+          "Name": "Ani rüzgâr",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerCurrentWeatherV1"
+    },
+    {
+      "Description": "Artımlı sprinkler hava durumu akışındaki tek bir atomik değişikliği tanımlar. Varyant sırası ve alan sırası, yalnızca sona eklemeli Avro kablo biçiminin parçasıdır.",
+      "DisplayName": "Sprinkler hava durumu değişikliği",
+      "List": [
+        {
+          "Description": "Artımlı sprinkler hava durumu akışındaki tek bir atomik değişikliği tanımlar. Varyant sırası ve alan sırası, yalnızca sona eklemeli Avro kablo biçiminin parçasıdır.",
+          "Name": "Sprinkler hava durumu değişikliği",
+          "Type": 0
+        },
+        {
+          "Description": "Başlangıç zamanları sağlanan yarı açık aralıkta bulunan önbelleğe alınmış geçmiş dönemleri kaldırır.",
+          "Name": "Geçmiş dönemleri kaldır",
+          "Type": 1
+        },
+        {
+          "Description": "Kaldırılacak geçmiş dönem başlangıç zamanlarının yarı açık aralığı.",
+          "Name": "Zaman aralığı",
+          "Type": 2
+        },
+        {
+          "Description": "Başarılı bir alma ve doğrulama işleminden sonra mevcut koşullar bölümünün tamamını değiştirir.",
+          "Name": "Mevcut koşulları değiştir",
+          "Type": 3
+        },
+        {
+          "Description": "Yeni kabul edilen mevcut koşullar bölümü.",
+          "Name": "Mevcut koşullar",
+          "Type": 4
+        },
+        {
+          "Description": "Başarılı bir tahmin yenilemesini işaretler ve dönemleri `starts_at` değerine göre ekler veya değiştirir. Boş bir dönem listesi yalnızca alma ve güncellik meta verilerini günceller.",
+          "Name": "Tahmin dönemlerini ekle veya güncelle",
+          "Type": 5
+        },
+        {
+          "Description": "Tahmin bölümünün başarıyla alındığı ve doğrulandığı zaman.",
+          "Name": "Alınma zamanı",
+          "Type": 6
+        },
+        {
+          "Description": "Tahmin bölümünün güncel sayılacağı, kendisi hariç yeni son zaman.",
+          "Name": "Geçerlilik sonu",
+          "Type": 7
+        },
+        {
+          "Description": "En erkenden en geçe doğru sıralanmış, eklenecek veya değiştirilecek dönemler.",
+          "Name": "Tahmin dönemleri",
+          "Type": 8
+        },
+        {
+          "Description": "`starts_at` değerine göre anahtarlanmış bir sulama planlama dönemi.",
+          "Name": "Tahmin dönemi",
+          "Type": 9
+        },
+        {
+          "Description": "Başlangıç zamanları belirtilen yarı açık aralıkta bulunan önbelleğe alınmış tahmin dönemlerini kaldırır.",
+          "Name": "Tahmin dönemlerini kaldır",
+          "Type": 10
+        },
+        {
+          "Description": "Kaldırılacak tahmin dönemi başlangıç zamanlarının yarı açık aralığı.",
+          "Name": "Zaman aralığı",
+          "Type": 11
+        },
+        {
+          "Description": "Yalnızca doğrulamanın başarısız olması veya uyumsuz bir geçiş gibi nedenlerle önbelleğe alınmış değerinin geçersiz olduğu bilinen bir bölümü temizler. Sağlayıcı yenilemesinin tek başına başarısız olması bu değişikliği yayımlamamalıdır.",
+          "Name": "Hava durumu bölümünü temizle",
+          "Type": 12
+        },
+        {
+          "Description": "Bağımsız olarak önbelleğe alınan ve temizlenecek bölüm.",
+          "Name": "Hava durumu bölümü",
+          "Type": 13
+        },
+        {
+          "Description": "Başarılı bir sağlayıcı yenilemesinden sonra tahmin bölümünün tamamını değiştirir. Yeni tahminde bulunmayan dönemler artık önbellekte tutulmaz.",
+          "Name": "Tahmini değiştir",
+          "Type": 14
+        },
+        {
+          "Description": "Yeni kabul edilen tahmin bölümünün tamamı.",
+          "Name": "Tahmin",
+          "Type": 15
+        },
+        {
+          "Description": "Sonraki tüm hava durumu değişikliklerinin fiziksel sahasını tanımlar. İstemci, geri çağırma sırasına bağlı kalmadan farklı Hub konumlarından saklanan geçmişi ayrı nesiller hâlinde tutmak için bu değeri kullanır.",
+          "Name": "Hava durumu sahasını değiştir",
+          "Type": 16
+        },
+        {
+          "Description": "Sağlayıcı gözlemleri ve tahminleri için kullanılan WGS84 konumu.",
+          "Name": "Saha konumu",
+          "Type": 17
+        },
+        {
+          "Description": "Başarılı bir geçmiş yenilemesini işaretler ve tam hava durumu dönemlerini `starts_at` değerine göre ekler veya değiştirir.",
+          "Name": "Geçmiş dönemleri ekle veya güncelle V2",
+          "Type": 18
+        },
+        {
+          "Description": "Geçmiş bölümünün başarıyla alındığı ve doğrulandığı zaman.",
+          "Name": "Alınma zamanı",
+          "Type": 19
+        },
+        {
+          "Description": "Geçmiş bölümünün güncel sayılacağı, kendisi hariç yeni son zaman.",
+          "Name": "Geçerlilik sonu",
+          "Type": 20
+        },
+        {
+          "Description": "En eskiden en yeniye doğru sıralanmış, eklenecek veya değiştirilecek tam hava durumu dönemleri.",
+          "Name": "Geçmiş dönemler",
+          "Type": 21
+        },
+        {
+          "Description": "`starts_at` değerine göre anahtarlanmış, tamamlanmış bir V2 gözlemi.",
+          "Name": "Geçmiş dönemi",
+          "Type": 22
+        },
+        {
+          "Description": "Başarılı bir sağlayıcı yenilemesinden sonra tam gözlem geçmişi bölümünün tamamını değiştirir.",
+          "Name": "Geçmişi değiştir V2",
+          "Type": 23
+        },
+        {
+          "Description": "Yeni kabul edilen V2 geçmiş bölümünün tamamı.",
+          "Name": "Geçmiş",
+          "Type": 24
+        }
+      ],
+      "Name": "SprinklerWeatherChangeV1"
+    },
+    {
+      "Description": "Artımlı bir yağmurlama sistemi hava durumu akışında uygulanmış bir durumu tanımlar. İstemci her iki alanı da karşılaştırır ve yalnızca daha küçük bir sıra değerini sunucunun sıfırlandığı şeklinde yorumlamamalıdır.",
+      "DisplayName": "Yağmurlama sistemi hava durumu imleci",
+      "List": [
+        {
+          "Description": "Artımlı bir yağmurlama sistemi hava durumu akışında uygulanmış bir durumu tanımlar. İstemci her iki alanı da karşılaştırır ve yalnızca daha küçük bir sıra değerini sunucunun sıfırlandığı şeklinde yorumlamamalıdır.",
+          "Name": "Yağmurlama sistemi hava durumu imleci",
+          "Type": 0
+        },
+        {
+          "Description": "İmleç neslini tanımlayan, sunucu tarafından atanmış tarih ve saat. Bu tek alan hem akış epoku hem de sıralanabilir bir zaman damgasıdır; ayrı bir opak epok yoktur. Normal sıra ilerlemesi sırasında değişmeden kalır. Sunucu geçici imlecini veya yeniden oynatma günlüğünü kaybettiğinde, öncekinden kesinlikle daha yeni bir epok zaman damgası atar ve `sequence` değerini yeniden sıfırdan başlatır. İstemci, sıfır yerine sıfırlama sonrasındaki daha ileri bir sıra değerini ilk olarak gözlemleyebilir. Bu zaman damgası hava durumu değerlerinin gözlem zamanını değil, imleç durumunu açıklar.",
+          "Name": "Epok zaman damgası",
+          "Type": 1
+        },
+        {
+          "Description": "Uygulanan en son durum değişikliğini tanımlar. Sunucu, kabul edilen her hava durumu değişikliği için bu değeri bir artırır. Geçici sunucu imleci sıfırlandığında bu değeri sıfıra ayarlar, ardından sonraki değişiklikler için artırır; sıfırlama işlemi geçmiş, mevcut veya tahminî hava durumu verilerini temizlemez.",
+          "Name": "Sıra",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherCursorV1"
+    },
+    {
+      "Description": "Bir planlama dönemi boyunca ne zaman ve ne kadar sulama yapılacağına karar vermek için kullanılan tahminî su girdisini, su kaybını, sıcaklığı, nemi ve rüzgâr tehlikelerini içerir.",
+      "DisplayName": "Yağmurlama sistemi hava durumu tahmin dönemi",
+      "List": [
+        {
+          "Description": "Bir planlama dönemi boyunca ne zaman ve ne kadar sulama yapılacağına karar vermek için kullanılan tahminî su girdisini, su kaybını, sıcaklığı, nemi ve rüzgâr tehlikelerini içerir.",
+          "Name": "Yağmurlama sistemi hava durumu tahmin dönemi",
+          "Type": 0
+        },
+        {
+          "Description": "Bu tahmin döneminin başladığı, dâhil olan tarih ve saat.",
+          "Name": "Başlangıç zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Bu tahmin döneminin saniye cinsinden uzunluğu. Open-Meteo tahminleri normalde 3.600 saniyelik dönemler kullanır.",
+          "Name": "Süre",
+          "Type": 2
+        },
+        {
+          "Description": "Yerden iki metre yükseklikte, santigrat derece cinsinden tahmin edilen hava sıcaklığı. Yağmurlama sistemi, tahmin edilen donma koşullarında sulamadan kaçınmak için bunu kullanır.",
+          "Name": "Sıcaklık",
+          "Type": 3
+        },
+        {
+          "Description": "Yerden iki metre yükseklikte tahmin edilen ve 0 ile 100 arasında tam sayı yüzdesi olarak ifade edilen bağıl nem. Bu değer, güneşin konumu ve yağmurlama başlığı türüyle birlikte yaprakların uzun süre ıslak kalmasını önlemeye yardımcı olur.",
+          "Name": "Bağıl nem",
+          "Type": 4
+        },
+        {
+          "Description": "Bu dönem boyunca ölçülebilir yağış olasılığı; 0 ile 100 arasında tam sayı yüzdesi olarak ifade edilir. Bu, tahmin belirsizliğini beklenen yağış miktarından ayrı olarak belirtir.",
+          "Name": "Yağış olasılığı",
+          "Type": 5
+        },
+        {
+          "Description": "Bu dönem boyunca biriken tahminî toplam yağmur, sağanak ve su eşdeğeri donmuş yağış miktarı; milimetre cinsinden ifade edilir.",
+          "Name": "Beklenen yağış",
+          "Type": 6
+        },
+        {
+          "Description": "Bu dönem boyunca biriken, milimetre cinsinden tahminî FAO-56 referans evapotranspirasyonu.",
+          "Name": "Referans evapotranspirasyon",
+          "Type": 7
+        },
+        {
+          "Description": "Yerden 10 metre yükseklikte saniyede metre cinsinden tahmin edilen sürekli rüzgâr hızı.",
+          "Name": "Rüzgâr hızı",
+          "Type": 8
+        },
+        {
+          "Description": "Yerden 10 metre yükseklikte saniyede metre cinsinden tahmin edilen en yüksek rüzgâr hamlesi hızı. Yağmurlama sistemi, olası püskürtme sürüklenmesi sırasında sulama planlamaktan kaçınmak için bunu sürekli rüzgârla birlikte kullanır.",
+          "Name": "Rüzgâr hamlesi",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "Önümüzdeki yedi gün boyunca yağmurlama sistemiyle sulamayı planlamak için kullanılan geleceğe yönelik saatlik hava durumu girdilerini içerir. Daha sonraki bir tahmin yenilemesi başarısız olduğunda, son başarılı değer korunur.",
+      "DisplayName": "Yağmurlama sistemi hava tahmini",
+      "List": [
+        {
+          "Description": "Önümüzdeki yedi gün boyunca yağmurlama sistemiyle sulamayı planlamak için kullanılan geleceğe yönelik saatlik hava durumu girdilerini içerir. Daha sonraki bir tahmin yenilemesi başarısız olduğunda, son başarılı değer korunur.",
+          "Name": "Yağmurlama sistemi hava tahmini",
+          "Type": 0
+        },
+        {
+          "Description": "Tahmin bölümünün tamamının en son alındığı, doğrulandığı ve kabul edildiği tarih ve saat.",
+          "Name": "Alınma zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Hariç tutulan güncellik son sınırı. Geçerli saat bu değerden önceyken tahmin günceldir; bu değerde veya sonrasında ise eskidir. Eski bir tahmin, düşük nitelikli önbelleğe alınmış girdi olarak kullanılabilir durumda kalır.",
+          "Name": "Geçerlilik sonu",
+          "Type": 2
+        },
+        {
+          "Description": "En erkenden en geçe doğru sıralanmış gelecek dönemler. Normal bir yanıt, önümüzdeki yedi günü bir saatlik çözünürlükle kapsar; daha kısa bir liste geçerli bir kısmi tahmindir.",
+          "Name": "Tahmin dönemleri",
+          "Type": 3
+        },
+        {
+          "Description": "Tek bir planlama dönemi için tahmin edilen yağış, referans evapotranspirasyon, sıcaklık, nem ve rüzgâr.",
+          "Name": "Tahmin dönemi",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherForecastV1"
+    },
+    {
+      "Description": "Dinamik olarak yeniden oluşturulan indeksli geçmiş dönemlerinin güncellik zaman damgalarını saklar.",
+      "DisplayName": "Yağmurlama sistemi hava geçmişi meta verileri",
+      "List": [
+        {
+          "Description": "Dinamik olarak yeniden oluşturulan indeksli geçmiş dönemlerinin güncellik zaman damgalarını saklar.",
+          "Name": "Yağmurlama sistemi hava geçmişi meta verileri",
+          "Type": 0
+        },
+        {
+          "Description": "İndeksli geçmiş kümesinin tamamının en son alındığı, doğrulandığı ve kabul edildiği tarih ve saat.",
+          "Name": "Alınma zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Yeniden oluşturulan geçmiş bölümü için hariç tutulan güncellik son sınırı.",
+          "Name": "Geçerlilik sonu",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryMetadataV1"
+    },
+    {
+      "Description": "Tamamlanmış dönemin su dengesini, sulama kararlarını açıklamak için gereken sıcaklık, nem, sürekli rüzgâr ve rüzgâr hamlesi gözlemleriyle genişletir.",
+      "DisplayName": "Yağmurlama sistemi hava geçmişi dönemi V2",
+      "List": [
+        {
+          "Description": "Tamamlanmış dönemin su dengesini, sulama kararlarını açıklamak için gereken sıcaklık, nem, sürekli rüzgâr ve rüzgâr hamlesi gözlemleriyle genişletir.",
+          "Name": "Yağmurlama sistemi hava geçmişi dönemi V2",
+          "Type": 0
+        },
+        {
+          "Description": "Bu geçmiş döneminin başladığı, dâhil edilen tarih ve saat.",
+          "Name": "Başlangıç zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Bu geçmiş döneminin saniye cinsinden uzunluğu. Open-Meteo geçmişi normalde 3.600 saniyelik dönemler kullanır.",
+          "Name": "Süre",
+          "Type": 2
+        },
+        {
+          "Description": "Donmuş yağışın su eşdeğeri de dâhil olmak üzere bu dönem boyunca biriken, milimetre cinsinden toplam yağış.",
+          "Name": "Yağış",
+          "Type": 3
+        },
+        {
+          "Description": "Bu dönem boyunca biriken, milimetre cinsinden FAO-56 referans evapotranspirasyonu.",
+          "Name": "Referans evapotranspirasyon",
+          "Type": 4
+        },
+        {
+          "Description": "Bu geçmiş dönemi boyunca yerden iki metre yükseklikte Santigrat derece cinsinden hava sıcaklığı.",
+          "Name": "Sıcaklık",
+          "Type": 5
+        },
+        {
+          "Description": "Bu geçmiş dönemi boyunca yerden iki metre yükseklikte, 0 ile 100 arasında tam sayı yüzdesi olarak ifade edilen bağıl nem.",
+          "Name": "Bağıl nem",
+          "Type": 6
+        },
+        {
+          "Description": "Bu geçmiş dönemi boyunca yerden 10 metre yükseklikte saniyede metre cinsinden sürekli rüzgâr hızı.",
+          "Name": "Rüzgâr hızı",
+          "Type": 7
+        },
+        {
+          "Description": "Bu geçmiş dönemi boyunca yerden 10 metre yükseklikte saniyede metre cinsinden en yüksek rüzgâr hamlesi hızı.",
+          "Name": "Rüzgâr hamlesi",
+          "Type": 8
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryPeriodV2"
+    },
+    {
+      "Description": "Hem sulama hesaplamalarında hem de karar açıklama grafiklerinde kullanılan tüm hava durumu gözlemlerini içeren yakın zamandaki tamamlanmış dönemleri kapsar.",
+      "DisplayName": "Yağmurlama sistemi hava geçmişi V2",
+      "List": [
+        {
+          "Description": "Hem sulama hesaplamalarında hem de karar açıklama grafiklerinde kullanılan tüm hava durumu gözlemlerini içeren yakın zamandaki tamamlanmış dönemleri kapsar.",
+          "Name": "Yağmurlama sistemi hava geçmişi V2",
+          "Type": 0
+        },
+        {
+          "Description": "Geçmiş bölümünün tamamının en son alındığı, doğrulandığı ve kabul edildiği tarih ve saat.",
+          "Name": "Alınma zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Hariç tutulan güncellik son sınırı. Eski geçmiş verileri, düşük nitelikli önbelleğe alınmış girdi olarak kullanılabilir durumda kalır.",
+          "Name": "Geçerlilik sonu",
+          "Type": 2
+        },
+        {
+          "Description": "En eskiden en yeniye doğru sıralanmış tamamlanmış dönemler.",
+          "Name": "Geçmiş dönemleri",
+          "Type": 3
+        },
+        {
+          "Description": "Tamamlanmış tek bir dönem için sıcaklık, nem, yağış, referans evapotranspirasyon ve rüzgâr.",
+          "Name": "Geçmiş dönemi",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryV2"
+    },
+    {
+      "Description": "Sıralı ve atomik bir hava durumu değişiklikleri aralığını taşır. İstemci, raporu yalnızca sakladığı imleç `from_cursor` değerine eşitse uygular ve ardından `through_cursor` değerini saklar. Boş bir rapor, güncel duruma ulaşılmış bir kurtarma sonucudur; değişiklik olmayan dönemlerdeki düzenli canlılık denetimi PeerAlive kullanır.",
+      "DisplayName": "Yağmurlama sistemi hava durumu artımlı raporu",
+      "List": [
+        {
+          "Description": "Sıralı ve atomik bir hava durumu değişiklikleri aralığını taşır. İstemci, raporu yalnızca sakladığı imleç `from_cursor` değerine eşitse uygular ve ardından `through_cursor` değerini saklar. Boş bir rapor, güncel duruma ulaşılmış bir kurtarma sonucudur; değişiklik olmayan dönemlerdeki düzenli canlılık denetimi PeerAlive kullanır.",
+          "Name": "Yağmurlama sistemi hava durumu artımlı raporu",
+          "Type": 0
+        },
+        {
+          "Description": "Bu raporun hariç tutulan alt imleci ve istemcinin raporu uygulamadan önce zaten sahip olması gereken imlecin tam değeri.",
+          "Name": "Başlangıç imleci",
+          "Type": 1
+        },
+        {
+          "Description": "Bu rapordaki her değişiklik uygulandıktan sonra ulaşılan, dâhil edilen üst imleç. `from_cursor` ile aynı dönem zaman damgasını korumalıdır. Sunucu imlecinin sıfırlanması hiçbir zaman artımlı bir rapor olarak taşınmaz; tam sıfırlama gerektirir.",
+          "Name": "Bitiş imleci",
+          "Type": 2
+        },
+        {
+          "Description": "Atomik olarak uygulanacak sıralı değişiklikler. Her öğe sıra numarasını tam olarak bir artırır; boş liste, sistemin güncel olduğu bir kurtarma durumudur ve imleci ilerletmez ya da periyodik canlılık sinyali işlevi görmez.",
+          "Name": "Hava durumu değişiklikleri",
+          "Type": 3
+        },
+        {
+          "Description": "İmleç sırasındaki tek bir atomik durum değişikliği.",
+          "Name": "Hava durumu değişikliği",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Records for one endpoint share a transaction and scan prefix.",
+      "DisplayName": "Saved weather keys",
+      "List": [
+        {
+          "Description": "Records for one endpoint share a transaction and scan prefix.",
+          "Name": "Saved weather keys",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Weather belonging to one service endpoint",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherKey"
+    },
+    {
+      "Description": "Bir yağmurlama sahasının hava durumunu almak için kullanılan Libertas Hub konumunu depolar. Hava durumu aracısının geçici bir Hub kesintisi sırasında yenilemeye devam edebilmesi için sağlayıcı verilerinden bağımsız olarak önbelleğe alınır.",
+      "DisplayName": "Yağmurlama sistemi hava durumu konumu",
+      "List": [
+        {
+          "Description": "Bir yağmurlama sahasının hava durumunu almak için kullanılan Libertas Hub konumunu depolar. Hava durumu aracısının geçici bir Hub kesintisi sırasında yenilemeye devam edebilmesi için sağlayıcı verilerinden bağımsız olarak önbelleğe alınır.",
+          "Name": "Yağmurlama sistemi hava durumu konumu",
+          "Type": 0
+        },
+        {
+          "Description": "Ondalık derece cinsinden WGS84 boylamı. Greenwich'in batısındaki konumlar negatif değerler kullanır.",
+          "Name": "Boylam",
+          "Type": 1
+        },
+        {
+          "Description": "Ondalık derece cinsinden WGS84 enlemi.",
+          "Name": "Enlem",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherLocationV1"
+    },
+    {
+      "Description": "Yağmurlama sistemi hava durumu aracısının Libertas veritabanına yazabileceği değerlerin eksiksiz kümesini tanımlar. Geçmiş meta verileri, mevcut koşullar, tahmin ve konum birbirinden bağımsız tekil kayıtlardır. Tamamlanan her geçmiş dönemi, başlangıç zaman damgasıyla anahtarlanan dizinlenmiş bir kayıttır. Abonelik imleçleri ve yeniden yürütme günlükleri özellikle dahil edilmemiştir: bunların sıfırlanması bu kayıtları silmemelidir.",
+      "DisplayName": "Yağmurlama sistemi hava durumu kalıcı verileri",
+      "List": [
+        {
+          "Description": "Yağmurlama sistemi hava durumu aracısının Libertas veritabanına yazabileceği değerlerin eksiksiz kümesini tanımlar. Geçmiş meta verileri, mevcut koşullar, tahmin ve konum birbirinden bağımsız tekil kayıtlardır. Tamamlanan her geçmiş dönemi, başlangıç zaman damgasıyla anahtarlanan dizinlenmiş bir kayıttır. Abonelik imleçleri ve yeniden yürütme günlükleri özellikle dahil edilmemiştir: bunların sıfırlanması bu kayıtları silmemelidir.",
+          "Name": "Yağmurlama sistemi hava durumu kalıcı verileri",
+          "Type": 0
+        },
+        {
+          "Description": "Libertas Hub tarafından bildirilen son geçerli konumu depolar. Önbelleğe alınan değer, Hub geçici olarak kullanılamazken sağlayıcı yenilemelerinin devam etmesini sağlar.",
+          "Name": "Yağmurlama sahası konumu",
+          "Type": 1
+        },
+        {
+          "Description": "Sağlayıcı istekleri için kullanılan WGS84 koordinatları.",
+          "Name": "Konum",
+          "Type": 2
+        },
+        {
+          "Description": "Dinamik olarak yeniden oluşturulan dizinlenmiş geçmişin güncellik bilgisini depolar.",
+          "Name": "Geçmiş meta verileri",
+          "Type": 3
+        },
+        {
+          "Description": "Kabul edilen dizinlenmiş kümenin alınma ve güncellik zaman damgaları.",
+          "Name": "Geçmiş meta verileri",
+          "Type": 4
+        },
+        {
+          "Description": "Tamamlanmış bir tam hava durumu dönemini dizinlenmiş verilerde depolar. Kaldırılan V1 döneminin birleşimdeki konumunu kaplar; V2 geçmiş kaynak adı, uyumsuz dizinlenmiş kayıtları birbirinden ayrı tutar.",
+          "Name": "Geçmiş dönemi V2",
+          "Type": 5
+        },
+        {
+          "Description": "Sıcaklık, nem, yağış, referans evapotranspirasyon, rüzgâr ve ani rüzgârlar.",
+          "Name": "Geçmiş dönemi",
+          "Type": 6
+        },
+        {
+          "Description": "Başarıyla alınan ve doğrulanan son mevcut koşullar bölümünü depolar. Başarısız bir yenileme, mevcut veritabanı kaydını değiştirmeden bırakır.",
+          "Name": "Mevcut koşullar",
+          "Type": 7
+        },
+        {
+          "Description": "Alınma ve güncellik zaman damgalarıyla birlikte anlık yağmur, don, nem, rüzgâr ve su dengesi girdileri.",
+          "Name": "Mevcut koşullar",
+          "Type": 8
+        },
+        {
+          "Description": "Başarıyla alınan ve doğrulanan son tahmin bölümünü depolar. Başarısız bir yenileme, mevcut veritabanı kaydını değiştirmeden bırakır.",
+          "Name": "Tahmin",
+          "Type": 9
+        },
+        {
+          "Description": "Alınma ve güncellik zaman damgalarıyla birlikte gelecekteki yağış, referans evapotranspirasyon, sıcaklık, nem ve rüzgâr girdileri.",
+          "Name": "Tahmin",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherPersistentData"
+    },
+    {
+      "Description": "Yağmurlama sistemi hava durumunu istemek veya buna abone olmak için türü belirlenmiş Libertas uç nokta işlemini tanımlar. Yanıtlar geçmiş, mevcut koşullar ve tahmin bölümlerini birbirinden bağımsız olarak sunar; böylece bir kesinti kullanılabilir önbellek verilerini gizlemez. Libertas uç noktası durum sözleşmesi, hatalı biçimlendirilmiş Avro'yu ve yanlış ileti rolünde kullanılan değerleri reddeder; bu aktarım hataları kurtarma varyantları değildir.",
+      "DisplayName": "Yağmurlama sistemi hava durumu protokolü",
+      "List": [
+        {
+          "Description": "Yağmurlama sistemi hava durumunu istemek veya buna abone olmak için türü belirlenmiş Libertas uç nokta işlemini tanımlar. Yanıtlar geçmiş, mevcut koşullar ve tahmin bölümlerini birbirinden bağımsız olarak sunar; böylece bir kesinti kullanılabilir önbellek verilerini gizlemez. Libertas uç noktası durum sözleşmesi, hatalı biçimlendirilmiş Avro'yu ve yanlış ileti rolünde kullanılan değerleri reddeder; bu aktarım hataları kurtarma varyantları değildir.",
+          "Name": "Yağmurlama sistemi hava durumu protokolü",
+          "Type": 0
+        },
+        {
+          "Description": "Tek seferlik bir artımlı okuma gerçekleştirir veya artımlı bir abonelik başlatır ya da sürdürür. Davranışı Libertas uç noktası işlemi seçer; bu iletide kodlanmaz. Sunucu mümkün olduğunda `after_cursor` sonrasında tutulan değişiklikleri yeniden yürütür veya aralıkla sınırlandırılmış önbellek anlık görüntüsü döndürür.",
+          "Name": "Yağmurlama sistemi hava durumunu al",
+          "Type": 1
+        },
+        {
+          "Description": "İstemci tarafından eksiksiz ve atomik olarak uygulanan son imleç. `None`, aralıkla sınırlandırılmış bir başlangıç anlık görüntüsü ister. Sunucu her iki alanı da karşılaştırır; daha düşük bir sıra numarası, yalnızca yanıt imlecinde daha yeni bir epok zaman damgası da varsa sıfırlamayı belirtir.",
+          "Name": "Sürdürme imleci",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "Yeniden yürütmenin olanaksız olduğu durumlarda dahil edilecek geçmiş dönem başlangıç zamanlarının yarı açık aralığı. `None`, geçmiş verilerini sıfırlama anlık görüntüsünün dışında bırakır.",
+          "Name": "Geçmiş kurtarma aralığı",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Sıfırlama anlık görüntüsünün önbelleğe alınmış mevcut koşulları içerip içermeyeceği.",
+          "Name": "Mevcut koşulları dahil et",
+          "Type": 4
+        },
+        {
+          "Description": "Yeniden yürütmenin olanaksız olduğu durumlarda dahil edilecek tahmin dönemi başlangıç zamanlarının yarı açık aralığı. `None`, tahmin verilerini sıfırlama anlık görüntüsünün dışında bırakır.",
+          "Name": "Tahmin kurtarma aralığı",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "Bir hava durumu isteğine yeniden yürütülen değişikliklerle, sıfırlama anlık görüntüsüyle veya kurtarılabilir bir hatayla yanıt verir. Her yanıt bir azami bekleme süresi sağlar. Abonelik istemcisi bunu başarılı bir yeniden yürütme veya sıfırlamadan sonra kullanır; tek seferlik istemci ise yok sayar. Bir hatadan sonra kurtarma hatası ve yeniden deneme gecikmesi önceliklidir.",
+          "Name": "Yağmurlama sistemi hava durumu kurtarması",
+          "Type": 6
+        },
+        {
+          "Description": "Bir abonelik istemcisinin başarılı bir kurtarma, artımlı rapor veya PeerAlive sonrasında bekleyeceği azami saniye sayısı. Sunucu önce değişen verileri veya PeerAlive'ı gönderir. Tek seferlik istemciler bu zorunlu, sıfır olmayan değeri yok sayar.",
+          "Name": "Azami bekleme süresi",
+          "Type": 7
+        },
+        {
+          "Description": "Sürdürme isteğinin yeniden yürütme, sıfırlama veya hata sonucu.",
+          "Name": "Kurtarma",
+          "Type": 8
+        },
+        {
+          "Description": "Başarılı bir hava durumu isteğinden sonra yalnızca durum değişikliklerini bildirir. İmleç uyuşmazlığı veya bitişik olmayan aralık, başka bir abonelik isteği gerektirir; istemci raporu kısmen uygulamamalıdır. Geçerli bir rapor veya PeerAlive, kurtarma yanıtının bekleme zamanlayıcısını yeniden başlatır; PeerAlive hiçbir zaman bu veri şemasına girmez veya imleci değiştirmez.",
+          "Name": "Yağmurlama sistemi hava durumu artımı",
+          "Type": 9
+        },
+        {
+          "Description": "Sıralı atomik imleç aralığı ve bu aralıktaki hava durumu değişiklikleri.",
+          "Name": "Artımlı rapor",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherProtocol"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved weather record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved weather record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "HistoryMetadata",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "HistoryPeriod",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "starts_at",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "Current",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Forecast",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWeatherRecordKey"
+    },
+    {
+      "Description": "Yeniden yürütülen değişikliklerle veya aralıkla sınırlandırılmış bir önbellek anlık görüntüsüyle karşılanamayan bir kurtarma isteğini tanımlar.",
+      "DisplayName": "Yağmurlama sistemi hava durumu kurtarma hatası",
+      "List": [
+        {
+          "Description": "Yeniden yürütülen değişikliklerle veya aralıkla sınırlandırılmış bir önbellek anlık görüntüsüyle karşılanamayan bir kurtarma isteğini tanımlar.",
+          "Enum": [
+            {
+              "Description": "İstenen yarı açık zaman aralıklarından en az biri boş veya ters çevrilmiş.",
+              "Name": "Geçersiz zaman aralığı",
+              "Type": 1
+            },
+            {
+              "Description": "Sağlanan dönem-zaman damgası-ve-sıra imleci, sunucunun geçerli imleci veya saklanan yeniden oynatma günlüğüyle bağdaştırılamıyor.",
+              "Name": "İmleç ileride",
+              "Type": 2
+            },
+            {
+              "Description": "İstenen kurtarma aralıkları, sunucunun sınırlı yanıt kapasitesini aşıyor.",
+              "Name": "İstek çok büyük",
+              "Type": 3
+            },
+            {
+              "Description": "Önbelleğe alınmış veriler veya kurtarma için gereken başka bir kaynak geçici olarak kullanılamıyor; istemci, belirtilen gecikmeden sonra yeniden deneyebilir.",
+              "Name": "Geçici olarak kullanılamıyor",
+              "Type": 4
+            }
+          ],
+          "Name": "Yağmurlama sistemi hava durumu kurtarma hatası",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "Yeniden oynatılan değişiklikleri döndürür, aralıkla sınırlı bir anlık görüntüyle yeni bir imleç oluşturur veya kurtarılabilir bir istek hatası bildirir.",
+      "DisplayName": "Yağmurlama sistemi hava durumu kurtarma",
+      "List": [
+        {
+          "Description": "Yeniden oynatılan değişiklikleri döndürür, aralıkla sınırlı bir anlık görüntüyle yeni bir imleç oluşturur veya kurtarılabilir bir istek hatası bildirir.",
+          "Name": "Yağmurlama sistemi hava durumu kurtarma",
+          "Type": 0
+        },
+        {
+          "Description": "Sağlanan imleçten sonraki tüm saklanan değişiklikleri yeniden oynatarak istenen akışı sürdürür. Boş bir rapor, istemcinin zaten güncel olduğu anlamına gelir.",
+          "Name": "Yeniden oynatılan değişiklikler",
+          "Type": 1
+        },
+        {
+          "Description": "İstenen imleçte başlayan kesintisiz değişiklik aralığı.",
+          "Name": "Artımlı rapor",
+          "Type": 2
+        },
+        {
+          "Description": "İstemcinin imlecini veya yerel hava durumu durumunu değiştirmeden isteği reddeder.",
+          "Name": "Kurtarma hatası",
+          "Type": 3
+        },
+        {
+          "Description": "Kurtarmanın tamamlanamama nedeni.",
+          "Name": "Hata",
+          "Type": 4
+        },
+        {
+          "Description": "Yeniden denemeden önce önerilen saniye cinsinden gecikme. `None`, yeniden denemenin başarılı olabilmesi için istek parametrelerinin değiştirilmesi gerektiği anlamına gelir.",
+          "Name": "Yeniden deneme gecikmesi",
+          "Type": 5
+        },
+        {
+          "Description": "Yeni bir imleç oluşturur ve tam gözlem geçmişi anlık görüntüsünü sağlayıcı tesisine bağlar.",
+          "Name": "Tesis anlık görüntüsü V2 ile sıfırla",
+          "Type": 6
+        },
+        {
+          "Description": "Anlık görüntünün artımlı yeniden oynatmanın yerini alma nedeni.",
+          "Name": "Sıfırlama nedeni",
+          "Type": 7
+        },
+        {
+          "Description": "Döndürülen anlık görüntüyü temsil eden imleç.",
+          "Name": "Geçerli imleç",
+          "Type": 8
+        },
+        {
+          "Description": "Döndürülen hava durumu bölümlerini elde etmek için kullanılan WGS84 konumu.",
+          "Name": "Tesis konumu",
+          "Type": 9
+        },
+        {
+          "Description": "İstenen aralıklarla sınırlandırılmış, kullanılabilir önbelleğe alınmış V2 bölümleri.",
+          "Name": "Hava durumu anlık görüntüsü",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryV1"
+    },
+    {
+      "Description": "Kurtarmanın, istenen imleçten sonraki artımlı değişiklikleri yeniden oynatmak yerine neden aralıkla sınırlı bir anlık görüntü döndürdüğünü açıklar.",
+      "DisplayName": "Yağmurlama sistemi hava durumu sıfırlama nedeni",
+      "List": [
+        {
+          "Description": "Kurtarmanın, istenen imleçten sonraki artımlı değişiklikleri yeniden oynatmak yerine neden aralıkla sınırlı bir anlık görüntü döndürdüğünü açıklar.",
+          "Enum": [
+            {
+              "Description": "Önceden bir imleç sağlanmadığından, anlık görüntü başlangıç durumunu oluşturur.",
+              "Name": "İlk abonelik",
+              "Type": 1
+            },
+            {
+              "Description": "İstenen sıra, saklanan yeniden oynatma günlüğünden daha eski.",
+              "Name": "İmlecin süresi doldu",
+              "Type": 2
+            },
+            {
+              "Description": "Sunucu yalnızca geçici imlecini ve yeniden oynatma günlüğünü kaybetti veya bunları kasıtlı olarak sildi. Kalıcı hava durumu bölümleri kullanılabilir durumda kalır ve eksik geçmiş veriler Open-Meteo'dan yeniden alınabilir.",
+              "Name": "Sunucu imleci sıfırlandı",
+              "Type": 3
+            }
+          ],
+          "Name": "Yağmurlama sistemi hava durumu sıfırlama nedeni",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherResetReasonV1"
+    },
+    {
+      "Description": "Bağımsız olarak önbelleğe alınan bir yağmurlama sistemi hava durumu bölümünü tanımlar.",
+      "DisplayName": "Yağmurlama sistemi hava durumu bölümü",
+      "List": [
+        {
+          "Description": "Bağımsız olarak önbelleğe alınan bir yağmurlama sistemi hava durumu bölümünü tanımlar.",
+          "Enum": [
+            {
+              "Description": "Geçmiş su dengesi bölümünü seçer.",
+              "Name": "Yakın geçmiş",
+              "Type": 1
+            },
+            {
+              "Description": "Anlık sulama güvenliği bölümünü seçer.",
+              "Name": "Mevcut koşullar",
+              "Type": 2
+            },
+            {
+              "Description": "Gelecekteki sulama planlaması bölümünü seçer.",
+              "Name": "Tahmin",
+              "Type": 3
+            }
+          ],
+          "Name": "Yağmurlama sistemi hava durumu bölümü",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherSectionV1"
+    },
+    {
+      "Description": "Bağımsız olarak kullanılabilen tam gözlem geçmişi, mevcut koşullar ve tahmin bölümlerini içerir. Eksik bölümlerde kullanılabilir bir önbellek değeri yoktur; güncelliğini yitirmiş bölümler özgün geçerlilik zaman damgalarını korur.",
+      "DisplayName": "Yağmurlama sistemi hava durumu anlık görüntüsü V2",
+      "List": [
+        {
+          "Description": "Bağımsız olarak kullanılabilen tam gözlem geçmişi, mevcut koşullar ve tahmin bölümlerini içerir. Eksik bölümlerde kullanılabilir bir önbellek değeri yoktur; güncelliğini yitirmiş bölümler özgün geçerlilik zaman damgalarını korur.",
+          "Name": "Yağmurlama sistemi hava durumu anlık görüntüsü V2",
+          "Type": 0
+        },
+        {
+          "Description": "Kullanılabilir önbelleğe alınmış geçmiş bulunduğunda, istenen V2 geçmiş dönemleri.",
+          "Name": "Yakın geçmiş",
+          "Type": 1
+        },
+        {
+          "Description": "İstendiğinde ve kullanılabilir olduğunda, en son kabul edilen mevcut koşullar.",
+          "Name": "Mevcut koşullar",
+          "Type": 2
+        },
+        {
+          "Description": "Kullanılabilir önbelleğe alınmış veriler bulunduğunda, istenen tahmin dönemleri.",
+          "Name": "Tahmin",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherSnapshotV2"
+    },
+    {
+      "Description": "Kurtarma için geçmiş veya tahmin dönemlerinden oluşan yarı açık bir aralık seçer. Bir dönem, başlangıç zamanı en az `starts_at` olduğunda ve `ends_before` değerinden önce olduğunda seçilir.",
+      "DisplayName": "Yağmurlama sistemi hava durumu zaman aralığı",
+      "List": [
+        {
+          "Description": "Geri alma işlemi için geçmiş veya tahminî dönemlerden oluşan yarı açık bir aralık seçer. Başlangıç zamanı `starts_at` değerine eşit veya bu değerden büyük ve `ends_before` değerinden küçük olan dönem seçilir.",
+          "Name": "Yağmurlama sistemi hava durumu zaman aralığı",
+          "Type": 0
+        },
+        {
+          "Description": "Seçilen dönemlerin başlangıç zamanları için kapsayıcı alt sınır.",
+          "Name": "Başlangıç zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Seçilen dönemlerin başlangıç zamanları için dışlayıcı üst sınır. Bu değer `starts_at` değerinden daha ileri bir zaman olmalıdır.",
+          "Name": "Bitiş zamanı",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherTimeRangeV1"
+    }
+  ]
+}

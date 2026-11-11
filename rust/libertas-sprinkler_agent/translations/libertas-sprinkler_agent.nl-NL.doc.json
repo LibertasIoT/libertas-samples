@@ -1,0 +1,2555 @@
+{
+  "Description": "Geeft elk deel van de tuin alleen water wanneer dat nodig is. Kies wat er in elk gebied groeit, hoe het wordt beregend en op welke tijden de beregening moet worden onderbroken. Slimme beregening gebruikt recente regen, het actuele weer en de weersverwachting om een veilig beregeningstijdstip en een geschikte hoeveelheid te kiezen. Het systeem houdt ook rekening met handmatige beregening, blijft werken tijdens korte internetstoringen en herinnert u eraan het systeem winterklaar te maken voor vriesweer.",
+  "DisplayName": "Slimme beregening",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Smart sprinkler",
+      "Description": "Beregent elk gazon, elke tuin of elk beplant gebied op basis van de planten, de beregeningsmethode, recente regen, de weersverwachting en door de gebruiker gekozen aanpassingen. De gebruiker kiest de weerbron, waar bedieningselementen en rapporten voor gebieden beschikbaar zijn, wie herinneringen ontvangt en voor elk gebied de klep, het planttype en de beregeningsmethode. De gebruiker kan op elk moment het beregeningspercentage en de periodes zonder beregening voor elk gebied handmatig aanpassen, of het hele systeem winterklaar maken en opnieuw activeren. De beregening plant en bedient elke klep automatisch op basis van regen, verwachte neerslag, wind, vorsttemperaturen, behoeften van planten en periodes zonder beregening, en gebruikt opgeslagen schattingen tijdens korte weerstoringen. De beregening toont voor elk gebied de huidige status, de geschatte waterhoeveelheid, de klepstatus en het aankomende beregeningsplan. De beregening biedt grafieken voor waterbalans, dagelijks watergebruik en geregistreerd en verwacht weer, en stuurt geselecteerde personen herinneringen vóór vriesweer. Wijzigingslogboek: protocolvarianten bijgewerkt.",
+      "DisplayName": "Slimme beregening",
+      "List": [
+        {
+          "Description": "Kies de lokale weerservice die wordt gebruikt voor regen, temperatuur, wind en weersverwachtingen. Slimme beregening kan tijdens korte storingen opgeslagen schattingen gebruiken.",
+          "Name": "Weerservice",
+          "Type": 0
+        },
+        {
+          "Description": "Kies waar grafieken voor waterbalans, watergebruik en weer beschikbaar zijn.",
+          "Name": "Beregeningsrapporten",
+          "Type": 1
+        },
+        {
+          "Description": "Kies de personen die herinneringen moeten ontvangen om het beregeningssysteem voor te bereiden op vriesweer.",
+          "Name": "Ontvangers van herinneringen",
+          "Type": 2
+        },
+        {
+          "Description": "Eén persoon die beregeningsherinneringen moet ontvangen.",
+          "Name": "Te waarschuwen persoon",
+          "Type": 3
+        },
+        {
+          "Description": "Voeg elk gazon, elke tuin of elk beplant gebied toe dat afzonderlijk moet worden beregend.",
+          "Name": "Beregende gebieden",
+          "Type": 4
+        },
+        {
+          "Description": "Eén gebied met een eigen klep, planten en beregeningsmethode.",
+          "Name": "Beregend gebied",
+          "Type": 5
+        }
+      ],
+      "Name": "libertas_sprinkler"
+    }
+  ],
+  "Locale": "nl-NL",
+  "StringResources": {
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "Opgeslagen dagelijkse waterbalans voor {0}.",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "Gebruik niet meer dan 64 periodes zonder beregening, elk met een geldige starttijd en een duur groter dan nul.",
+    "SPRINKLER_INVALID_WATERING_PERCENT": "De waterhoeveelheid moet tussen 20% en 200% liggen, in stappen van 10%.",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "Opgeslagen weersschattingen die tijdens serviceonderbrekingen worden gebruikt bij {0}.",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "De eerste datum kan niet later zijn dan de laatste datum.",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "Opgeslagen locatie die door beregeningsweerrapporten wordt gebruikt bij {0}.",
+    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "Opgeslagen gedetailleerde weersgeschiedenis voor beregeningsrapporten bij {0}.",
+    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "Opgeslagen actuele weerswaarnemingen voor beregeningsrapporten bij {0}.",
+    "SPRINKLER_SITE_LOCATION_V1": "Opgeslagen locatie die voor het beregeningsweer wordt gebruikt bij {0}.",
+    "SPRINKLER_UI_CHANGE_DATES": "Change dates",
+    "SPRINKLER_UI_SYSTEM_ACTIVE": "System active",
+    "SPRINKLER_UI_VALVE": "Valve",
+    "SPRINKLER_UI_WATERING_PLAN": "Watering plan",
+    "SPRINKLER_UI_WATER_BALANCE": "Water balance",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "Opgeslagen beregeningsgeschiedenis voor {0}.",
+    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "Huidige beregeningsactiviteit voor {0}.",
+    "SPRINKLER_WATERING_MODE_V1": "Opgeslagen beregeningsmodus voor {0}.",
+    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
+    "SPRINKLER_WATER_EVENTS_V1": "Opgeslagen recente regen en beregening voor {0}.",
+    "SPRINKLER_WATER_USAGE_RAIN_LANE": "Regen",
+    "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
+    "SPRINKLER_WINTERIZATION_REMINDER_V1": "Opgeslagen geschiedenis van herinneringen voor winterklaar maken bij {0}.",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "Het koude seizoen nadert op deze locatie. Maak uw beregeningssysteem winterklaar en schakel daarna Actief uit.",
+    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "Vriesweer ({0}) kan uw beregeningssysteem beschadigen. Maak het systeem winterklaar en schakel daarna Actief uit.",
+    "SPRINKLER_ZONE_MEMORY_V1": "Opgeslagen waterbalans en instellingen voor {0}.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Gebruik de locatie van deze Hub om lokaal weer op te halen voor automatische beregening."
+  },
+  "Types": [
+    {
+      "Description": "Een voor onbepaalde tijd bewaard controlepunt per UTC-dag met een samenvatting van de wateradministratie. Hiermee kan een oud waterbalansvenster worden opgevraagd zonder elke gebeurtenis sinds de installatie opnieuw af te spelen.",
+      "DisplayName": "Dagelijks beregeningsrapport",
+      "List": [
+        {
+          "Description": "Een voor onbepaalde tijd bewaard controlepunt per UTC-dag met een samenvatting van de wateradministratie. Hiermee kan een oud waterbalansvenster worden opgevraagd zonder elke gebeurtenis sinds de installatie opnieuw af te spelen.",
+          "Name": "Dagelijks beregeningsrapport",
+          "Type": 0
+        },
+        {
+          "Description": "Inclusieve UTC-kalenderdaggrens die als geïndexeerde recordsleutel wordt gebruikt.",
+          "Name": "Begin van dag",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusieve UTC-kalenderdaggrens.",
+          "Name": "Einde van dag",
+          "Type": 2
+        },
+        {
+          "Description": "Eerste tijdstip dat door dit controlepunt wordt vertegenwoordigd. Dit kan op de installatie- of locatieovergangsdag later zijn dan de UTC-daggrens.",
+          "Name": "Begin dekking",
+          "Type": 3
+        },
+        {
+          "Description": "Exclusief laatste tijdstip dat door dit controlepunt wordt vertegenwoordigd. Voor de huidige gedeeltelijke dag kan dit vóór de daggrens liggen.",
+          "Name": "Einde dekking",
+          "Type": 4
+        },
+        {
+          "Description": "Gemodelleerde capaciteit van het plantprofiel in millimeters.",
+          "Name": "Wortelzonecapaciteit",
+          "Type": 5
+        },
+        {
+          "Description": "Berekend watertekort in de wortelzone aan het begin van de weergegeven dag.",
+          "Name": "Beginnend tekort",
+          "Type": 6
+        },
+        {
+          "Description": "Berekend watertekort in de wortelzone aan het weergegeven einde of op het laatst bekende tijdstip.",
+          "Name": "Eindigend tekort",
+          "Type": 7
+        },
+        {
+          "Description": "Door de provider geregistreerde neerslag die aan deze UTC-dag is toegewezen.",
+          "Name": "Regen",
+          "Type": 8
+        },
+        {
+          "Description": "Door de provider geregistreerde referentie-ET die aan deze UTC-dag is toegewezen voordat de plantspecifieke gewascoëfficiënt wordt toegepast.",
+          "Name": "Referentie-evapotranspiratie",
+          "Type": 9
+        },
+        {
+          "Description": "Referentie-ET die wordt gebruikt om intervallen aan te vullen die niet door de geschiedenis van de provider worden gedekt.",
+          "Name": "Gemodelleerde referentie-evapotranspiratie",
+          "Type": 10
+        },
+        {
+          "Description": "Bron van de gemodelleerde ET-hoeveelheid; weggelaten wanneer de providerhistorie het volledige weergegeven interval dekt.",
+          "Name": "Bron van gemodelleerde vraag",
+          "Type": 11
+        },
+        {
+          "Description": "Aantal seconden in het weergegeven interval dat wordt gedekt door geaccepteerde weerperiodes van de provider.",
+          "Name": "Dekking van providerweer",
+          "Type": 12
+        },
+        {
+          "Description": "Waterdiepte geschat op basis van waargenomen intervallen waarin de klep openstond en die aan deze UTC-dag zijn toegewezen.",
+          "Name": "Beregening",
+          "Type": 13
+        },
+        {
+          "Description": "Of het controlepunt de volledige UTC-dag vertegenwoordigt in plaats van de huidige gedeeltelijke dag.",
+          "Name": "Volledige dag",
+          "Type": 14
+        },
+        {
+          "Description": "UTC-tijd waarop dit controlepunt voor het laatst opnieuw is opgebouwd.",
+          "Name": "Berekend op",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerDailyReportV1"
+    },
+    {
+      "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+      "DisplayName": "Daily water use",
+      "List": [
+        {
+          "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+          "Name": "Daily water use",
+          "Type": 0
+        },
+        {
+          "Description": "Recorded and planned water amounts.",
+          "Name": "Rain and watering",
+          "Type": 1
+        },
+        {
+          "Description": "Areas with no rain or watering during the selected dates.",
+          "Name": "Areas with no recorded water",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerDailyWaterUsageChartV1"
+    },
+    {
+      "Description": "Definieert elke waarde die door de beregeningstoepassing wordt geschreven. Zonegegevens worden onder elke Matter-klep opgeslagen; gedeelde systeemgegevens gebruiken het weereindpunt.",
+      "DisplayName": "Permanente beregeningsgegevens",
+      "List": [
+        {
+          "Description": "Definieert elke waarde die door de beregeningstoepassing wordt geschreven. Zonegegevens worden onder elke Matter-klep opgeslagen; gedeelde systeemgegevens gebruiken het weereindpunt.",
+          "Name": "Permanente beregeningsgegevens",
+          "Type": 0
+        },
+        {
+          "Description": "Slaat de runtime-aanpassing, beperkingen en samengevouwen basislijn van één zone op.",
+          "Name": "Zonegeheugen",
+          "Type": 1
+        },
+        {
+          "Description": "De volledige herstartbestendige status voor de geconfigureerde klep.",
+          "Name": "Zonegeheugen",
+          "Type": 2
+        },
+        {
+          "Description": "Slaat één afzonderlijk geïndexeerde weer- of beregeningsgebeurtenis op.",
+          "Name": "Watergebeurtenis",
+          "Type": 3
+        },
+        {
+          "Description": "Eén voltooide weerperiode of verwerkt interval waarin de klep openstond.",
+          "Name": "Watergebeurtenis",
+          "Type": 4
+        },
+        {
+          "Description": "Slaat de laatste geldige Hub-locatie op voor offline seizoensschattingen.",
+          "Name": "Locatie van installatie",
+          "Type": 5
+        },
+        {
+          "Description": "De in cache opgeslagen WGS84-coördinaten van de beregeningslocatie.",
+          "Name": "Locatie van installatie",
+          "Type": 6
+        },
+        {
+          "Description": "Slaat de gedeelde modus Actief of Winterklaar voor het beregeningssysteem op.",
+          "Name": "Beregeningsmodus",
+          "Type": 7
+        },
+        {
+          "Description": "De herstartbestendige bedrijfsmodus die door alle zones wordt gedeeld.",
+          "Name": "Beregeningsmodus",
+          "Type": 8
+        },
+        {
+          "Description": "Slaat het laatste systeembrede herinneringstijdstip en de reden op.",
+          "Name": "Herinnering voor winterklaar maken",
+          "Type": 9
+        },
+        {
+          "Description": "Herstartbestendige status voor het beperken van de frequentie van meldingen over winterklaar maken.",
+          "Name": "Herinneringsgeheugen",
+          "Type": 10
+        },
+        {
+          "Description": "Archiveert één exact fallback-ET-interval voor onbepaalde tijd.",
+          "Name": "Gemodelleerd weergat",
+          "Type": 11
+        },
+        {
+          "Description": "Exact interval met onveranderlijke herkomst van bron en snelheid.",
+          "Name": "Gemodelleerd gat",
+          "Type": 12
+        },
+        {
+          "Description": "Archiveert één geplande, actieve, voltooide, overgeslagen, mislukte, vervangen, handmatige of oudere beregeningsactiviteit voor onbepaalde tijd.",
+          "Name": "Beregeningsactiviteit",
+          "Type": 13
+        },
+        {
+          "Description": "Volledige duurzame levenscyclusgegevens voor gepland tegenover werkelijk.",
+          "Name": "Activiteit",
+          "Type": 14
+        },
+        {
+          "Description": "Archiveert één controlepunt voor wateradministratie en balans per UTC-dag voor onbepaalde tijd, zodat oude bereiken opvraagbaar blijven.",
+          "Name": "Dagrapport",
+          "Type": 15
+        },
+        {
+          "Description": "Regen, ET, geschatte beregening en gemodelleerd tekort bij begin en einde.",
+          "Name": "Dagrapport",
+          "Type": 16
+        },
+        {
+          "Description": "Its generation is bound only by explicit provider site messages.",
+          "Name": "Report weather archive state V2",
+          "Type": 17
+        },
+        {
+          "Description": "Active indefinitely retained provider-site generation.",
+          "Name": "Archive state",
+          "Type": 18
+        },
+        {
+          "Description": "Archiveert één geaccepteerd monster van de huidige omstandigheden voor onbepaalde tijd. Het bewaart beslissingsbewijs per 15 minuten zonder regen of ET dubbel te tellen die al door voltooide uurhistorie worden vertegenwoordigd.",
+          "Name": "Weerswaarneming voor rapport",
+          "Type": 19
+        },
+        {
+          "Description": "Temperatuur, luchtvochtigheid, wind, windstoten en directe watertoevoer op het door de provider weergegeven tijdstip.",
+          "Name": "Weerswaarneming",
+          "Type": 20
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 21
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 22
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 23
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 24
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 25
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 26
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 27
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 28
+        }
+      ],
+      "Name": "SprinklerData"
+    },
+    {
+      "Description": "Geregistreerd en verwacht waterverlies door verdamping en gebruik door planten.",
+      "DisplayName": "Geschat waterverlies",
+      "List": [
+        {
+          "Description": "Geregistreerd en verwacht waterverlies door verdamping en gebruik door planten.",
+          "Name": "Geschat waterverlies",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerEtChartV1"
+    },
+    {
+      "Description": "Eén geregistreerde of verwachte hoeveelheid water die verloren gaat door verdamping en planten.",
+      "DisplayName": "Dagelijks waterverlies",
+      "List": [
+        {
+          "Description": "Eén geregistreerde of verwachte hoeveelheid water die verloren gaat door verdamping en planten.",
+          "Name": "Dagelijks waterverlies",
+          "Type": 0
+        },
+        {
+          "Description": "Wanneer deze weerperiode begint.",
+          "Name": "Begint om",
+          "Type": 1
+        },
+        {
+          "Description": "Wanneer deze weerperiode eindigt.",
+          "Name": "Eindigt om",
+          "Type": 2
+        },
+        {
+          "Description": "Water dat verloren gaat door verdamping en gebruik door planten.",
+          "Name": "Geschat waterverlies",
+          "Type": 3
+        },
+        {
+          "Description": "Of deze waarde is geregistreerd of voorspeld.",
+          "Name": "Bron",
+          "Type": 4
+        },
+        {
+          "Description": "Door de server gegenereerde identiteit voor dit interval en deze bron.",
+          "Name": "Stabiele sleutel",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerEtRowV1"
+    },
+    {
+      "Description": "Kies het type sproeier- of druppelsysteem dat in dit gebied is geïnstalleerd.",
+      "DisplayName": "Beregeningsmethode",
+      "List": [
+        {
+          "Description": "Kies het type sproeier- of druppelsysteem dat in dit gebied is geïnstalleerd.",
+          "Enum": [
+            {
+              "Description": "Langzame, gerichte afgifte door druppelaars aan het oppervlak.",
+              "Name": "Oppervlaktedruppelaars",
+              "Type": 1
+            },
+            {
+              "Description": "Geconcentreerde afgifte rond bomen, struiken of plantvakken.",
+              "Name": "Bubbelaars",
+              "Type": 2
+            },
+            {
+              "Description": "Brede, relatief snelle afgifte door vaste pop-upsproeikoppen.",
+              "Name": "Pop-upsproeiers",
+              "Type": 3
+            },
+            {
+              "Description": "Langzame afgifte over een groot gebied door hoogrendements- of meerstraalsrotors.",
+              "Name": "Rotors met laag debiet",
+              "Type": 4
+            },
+            {
+              "Description": "Snellere afgifte over een groot gebied door conventionele rotorsproeiers.",
+              "Name": "Rotors met hoog debiet",
+              "Type": 5
+            }
+          ],
+          "Name": "Beregeningsmethode",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerHeadTypeV1"
+    },
+    {
+      "Description": "Waargenomen en voorspelde luchtvochtigheid op een eigen schaal van nul tot 100 procent.",
+      "DisplayName": "Relatieve luchtvochtigheid",
+      "List": [
+        {
+          "Description": "Waargenomen en voorspelde luchtvochtigheid op een eigen schaal van nul tot 100 procent.",
+          "Name": "Relatieve luchtvochtigheid",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerHumidityChartV1"
+    },
+    {
+      "Description": "Eén waargenomen of voorspeld monster van de relatieve luchtvochtigheid.",
+      "DisplayName": "Luchtvochtigheidsrij",
+      "List": [
+        {
+          "Description": "Eén waargenomen of voorspeld monster van de relatieve luchtvochtigheid.",
+          "Name": "Luchtvochtigheidsrij",
+          "Type": 0
+        },
+        {
+          "Description": "Begin van de providerperiode.",
+          "Name": "Tijd",
+          "Type": 1
+        },
+        {
+          "Description": "Percentage relatieve luchtvochtigheid.",
+          "Name": "Relatieve luchtvochtigheid",
+          "Type": 2
+        },
+        {
+          "Description": "Geeft aan dat deze lijn de relatieve luchtvochtigheid in het gecombineerde paneel weergeeft.",
+          "Name": "Meting",
+          "Type": 3
+        },
+        {
+          "Description": "Waargenomen of voorspeld.",
+          "Name": "Bron",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerHumidityRowV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved sprinkler identities",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved sprinkler identities",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "System settings and weather archives",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "One valve's settings, accounting and reports",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerKey"
+    },
+    {
+      "Description": "Eén exact interval dat niet door de provider wordt gedekt en waarvan de fallbackbron en -snelheid voor referentie-ET worden vastgezet wanneer het interval voor het eerst wordt geregistreerd. Een later geaccepteerde providerperiode kan dit interval inkorten of vervangen; latere wijzigingen in fallbackschattingen herschrijven de herkomst niet.",
+      "DisplayName": "Gemodelleerd weergat",
+      "List": [
+        {
+          "Description": "Eén exact interval dat niet door de provider wordt gedekt en waarvan de fallbackbron en -snelheid voor referentie-ET worden vastgezet wanneer het interval voor het eerst wordt geregistreerd. Een later geaccepteerde providerperiode kan dit interval inkorten of vervangen; latere wijzigingen in fallbackschattingen herschrijven de herkomst niet.",
+          "Name": "Gemodelleerd weergat",
+          "Type": 0
+        },
+        {
+          "Description": "Inclusief begin van het interval dat niet door de provider wordt gedekt.",
+          "Name": "Starttijd",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusief einde van het interval dat niet door de provider wordt gedekt.",
+          "Name": "Eindtijd",
+          "Type": 2
+        },
+        {
+          "Description": "Vastgezette fallback-snelheid voor referentie-ET in millimeters per UTC-dag.",
+          "Name": "Snelheid referentie-evapotranspiratie",
+          "Type": 3
+        },
+        {
+          "Description": "Vastgezette herkomst uit recent weer, locatie/seizoen of conservatieve schatting.",
+          "Name": "Vraagbron",
+          "Type": 4
+        },
+        {
+          "Description": "UTC-tijd waarop dit interval voor het eerst zijn vastgezette herkomst kreeg.",
+          "Name": "Geregistreerd op",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerModeledWeatherGapV1"
+    },
+    {
+      "Description": "Kies wat er in dit gebied groeit, zodat de beregening op de behoeften kan worden afgestemd.",
+      "DisplayName": "Planttype",
+      "List": [
+        {
+          "Description": "Kies wat er in dit gebied groeit, zodat de beregening op de behoeften kan worden afgestemd.",
+          "Enum": [
+            {
+              "Description": "Dicht geplant gras met ondiepe wortels en een regelmatige waterbehoefte.",
+              "Name": "Gazon",
+              "Type": 1
+            },
+            {
+              "Description": "Sierbloeiende planten met middelmatig diepe wortels en een gemiddelde waterbehoefte.",
+              "Name": "Bloemen",
+              "Type": 2
+            },
+            {
+              "Description": "Seizoensgebonden voedselgewassen met middelmatig diepe wortels en een relatief hoge waterbehoefte.",
+              "Name": "Groenten",
+              "Type": 3
+            },
+            {
+              "Description": "Volgroeide fruitbomen met diepere wortels en een gemiddelde waterbehoefte.",
+              "Name": "Fruitbomen",
+              "Type": 4
+            },
+            {
+              "Description": "Citrusbomen met diepe wortels en een gemiddelde tot hoge waterbehoefte.",
+              "Name": "Citrusbomen",
+              "Type": 5
+            },
+            {
+              "Description": "Volgroeide houtige landschapsplanten met diepe wortels.",
+              "Name": "Bomen en struiken",
+              "Type": 6
+            },
+            {
+              "Description": "Aan droogte aangepaste beplanting met een lage, door het weer bepaalde waterbehoefte.",
+              "Name": "Droogtetuin",
+              "Type": 7
+            }
+          ],
+          "Name": "Planttype",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerPlantTypeV1"
+    },
+    {
+      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+      "DisplayName": "Available report range",
+      "List": [
+        {
+          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+          "Name": "Available report range",
+          "Type": 0
+        },
+        {
+          "Description": "Earliest currently selectable date after applying this chart's maximum range length.",
+          "Name": "Earliest date",
+          "Type": 1
+        },
+        {
+          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts.",
+          "Name": "Latest date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportAvailableRangeV1"
+    },
+    {
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "DisplayName": "Effective report range",
+      "List": [
+        {
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+          "Name": "Effective report range",
+          "Type": 0
+        },
+        {
+          "Description": "First calendar date included in the generated report.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Last calendar date included in the generated report.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportEffectiveRangeV1"
+    },
+    {
+      "Description": "Legt uit waarom een geconfigureerd gebied niets kan tonen voor de geselecteerde datums.",
+      "DisplayName": "Geen rapportgegevens",
+      "List": [
+        {
+          "Description": "Legt uit waarom een geconfigureerd gebied niets kan tonen voor de geselecteerde datums.",
+          "Enum": [
+            {
+              "Description": "Voor dit gebied is tijdens de geselecteerde datums geen regen of beregening geregistreerd.",
+              "Name": "Geen geregistreerde watertoevoer",
+              "Type": 1
+            }
+          ],
+          "Name": "Geen rapportgegevens",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerReportEmptyStateV1"
+    },
+    {
+      "Description": "Bekijk de waterbalans, het watergebruik of het weer voor elk gebied. Laat de datums leeg om de recente periode te bekijken. Datums buiten de beschikbare geschiedenis worden automatisch aangepast aan de vroegste of laatste beschikbare datum.",
+      "DisplayName": "Beregeningsrapporten",
+      "List": [
+        {
+          "Description": "Bekijk de waterbalans, het watergebruik of het weer voor elk gebied. Laat de datums leeg om de recente periode te bekijken. Datums buiten de beschikbare geschiedenis worden automatisch aangepast aan de vroegste of laatste beschikbare datum.",
+          "Name": "Beregeningsrapporten",
+          "Type": 0
+        },
+        {
+          "Description": "Toont het geschatte voor planten beschikbare water en beregeningsgebeurtenissen voor elk gebied. Een geselecteerde periode kan maximaal 365 dagen beslaan; bij een langere selectie blijven de laatste 365 dagen behouden.",
+          "Name": "Waterbalans bekijken",
+          "Type": 1
+        },
+        {
+          "Description": "Inclusieve datums die daadwerkelijk zijn gebruikt om dit antwoord te genereren.",
+          "Name": "Effectief bereik",
+          "Type": 2
+        },
+        {
+          "Description": "Water-balance chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 3
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 4
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 5
+        },
+        {
+          "Description": "Huidige grenzen en standaardwaarden van de datumkiezer voor het volgende verzoek.",
+          "Name": "Beschikbaar bereik",
+          "Type": 6
+        },
+        {
+          "Description": "Watergebruiksgrafiek voor het effectieve rapportbereik.",
+          "Name": "Grafiek",
+          "Type": 7
+        },
+        {
+          "Description": "Water-use chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 8
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 9
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 10
+        },
+        {
+          "Description": "Inclusieve datums die daadwerkelijk zijn gebruikt om dit antwoord te genereren.",
+          "Name": "Effectief bereik",
+          "Type": 11
+        },
+        {
+          "Description": "Geregistreerde en voorspelde temperatuur, luchtvochtigheid, wind en geschat waterverlies.",
+          "Name": "Weer",
+          "Type": 12
+        },
+        {
+          "Description": "Weather chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 13
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 14
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerReportProtocol"
+    },
+    {
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "DisplayName": "Report date range",
+      "List": [
+        {
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+          "Name": "Report date range",
+          "Type": 0
+        },
+        {
+          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportRequestRangeV1"
+    },
+    {
+      "Description": "Selecteert de actieve generatie van de fysieke locatie, terwijl oudere generaties bewaard blijven maar niet met het huidige beregeningsrapport worden gecombineerd. Een expliciete vervanging van de locatie in de weerstream of een locatiegebonden reset bindt een generatie; het wissen van secties geldt nooit als bevestiging van een locatiegrens.",
+      "DisplayName": "Status weerarchief voor rapport",
+      "List": [
+        {
+          "Description": "Selecteert de actieve generatie van de fysieke locatie, terwijl oudere generaties bewaard blijven maar niet met het huidige beregeningsrapport worden gecombineerd. Een expliciete vervanging van de locatie in de weerstream of een locatiegebonden reset bindt een generatie; het wissen van secties geldt nooit als bevestiging van een locatiegrens.",
+          "Name": "Status weerarchief voor rapport",
+          "Type": 0
+        },
+        {
+          "Description": "Neemt monotoon toe bij elke geaccepteerde overgang tussen verschillende providerlocaties.",
+          "Name": "Generatie",
+          "Type": 1
+        },
+        {
+          "Description": "Providerlocatie die expliciet aan deze generatie is gebonden, indien bekend.",
+          "Name": "Locatie van installatie",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportWeatherArchiveStateV2"
+    },
+    {
+      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+      "DisplayName": "Restart accounting checkpoint",
+      "List": [
+        {
+          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+          "Name": "Restart accounting checkpoint",
+          "Type": 0
+        },
+        {
+          "Description": "Authoritative lifecycle snapshot at the checkpoint.",
+          "Name": "Activity",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusive end of the already accounted valve-open interval.",
+          "Name": "Accounted through",
+          "Type": 2
+        },
+        {
+          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted.",
+          "Name": "Ledger segment",
+          "Type": 3
+        },
+        {
+          "Description": "Expected end of an automatic timed run; manual runs have no known end.",
+          "Name": "Expected finish",
+          "Type": 4
+        },
+        {
+          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour.",
+          "Name": "Delivery rate",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerRestartAccountingV1"
+    },
+    {
+      "Description": "Legt uit wat de beregening doet of waarom de beregening wordt uitgesteld.",
+      "DisplayName": "Beregeningsstatus",
+      "List": [
+        {
+          "Description": "Legt uit wat de beregening doet of waarom de beregening wordt uitgesteld.",
+          "Enum": [
+            {
+              "Description": "De nieuwste informatie wordt voorbereid.",
+              "Name": "Initialiseren",
+              "Type": 1
+            },
+            {
+              "Description": "De planten hebben momenteel voldoende water.",
+              "Name": "Geen water nodig",
+              "Type": 2
+            },
+            {
+              "Description": "De verwachte regen zou voorlopig voldoende water moeten leveren.",
+              "Name": "Regen voorspeld",
+              "Type": 3
+            },
+            {
+              "Description": "De beregening wordt uitgesteld omdat het regent, bijna vriest of te hard waait.",
+              "Name": "Wachten op veilig weer",
+              "Type": 4
+            },
+            {
+              "Description": "De planten kunnen tijdens een periode zonder beregening te droog worden, daarom wordt vóór het begin een veilige beregening gepland.",
+              "Name": "Beregenen vóór een pauze",
+              "Type": 5
+            },
+            {
+              "Description": "De beregening is verplaatst tot na een periode zonder beregening.",
+              "Name": "Uitgesteld",
+              "Type": 6
+            },
+            {
+              "Description": "Het volgende beregeningstijdstip is gekozen op basis van de behoeften van de planten en beschikbare weersinformatie.",
+              "Name": "Gepland",
+              "Type": 7
+            },
+            {
+              "Description": "De beregening wacht tot de klep een wijziging bevestigt.",
+              "Name": "Starten of stoppen",
+              "Type": 8
+            },
+            {
+              "Description": "De klepstatus is niet beschikbaar, daarom start automatische beregening niet.",
+              "Name": "Klepstatus niet beschikbaar",
+              "Type": 9
+            },
+            {
+              "Description": "Dit gebied wordt nu beregend.",
+              "Name": "Klep open",
+              "Type": 10
+            },
+            {
+              "Description": "De klep heeft een probleem gemeld, daarom is automatische beregening onderbroken.",
+              "Name": "Klepstoring",
+              "Type": 11
+            },
+            {
+              "Description": "Live weer is niet beschikbaar, daarom gebruikt het schema de beste opgeslagen of seizoensgebonden schatting.",
+              "Name": "Offline weerschatting",
+              "Type": 12
+            }
+          ],
+          "Name": "Beregeningsstatus",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerScheduleConditionV1"
+    },
+    {
+      "Description": "Waargenomen en voorspelde temperatuur zonder de schaal te mengen met ET of wind.",
+      "DisplayName": "Temperatuur",
+      "List": [
+        {
+          "Description": "Waargenomen en voorspelde temperatuur zonder de schaal te mengen met ET of wind.",
+          "Name": "Temperatuur",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerTemperatureChartV1"
+    },
+    {
+      "Description": "Legt temperatuur en luchtvochtigheid in de tijd over elkaar heen, terwijl onafhankelijke linker- en rechter-y-assen voor hun niet-compatibele eenheden behouden blijven.",
+      "DisplayName": "Temperatuur en relatieve luchtvochtigheid",
+      "List": [
+        {
+          "Description": "Legt temperatuur en luchtvochtigheid in de tijd over elkaar heen, terwijl onafhankelijke linker- en rechter-y-assen voor hun niet-compatibele eenheden behouden blijven.",
+          "Name": "Temperatuur en relatieve luchtvochtigheid",
+          "Type": 0
+        },
+        {
+          "Description": "Temperatuur gebruikt de eerste automatische y-richtlijn.",
+          "Name": "Temperatuur",
+          "Type": 1
+        },
+        {
+          "Description": "Relatieve luchtvochtigheid gebruikt de onafhankelijke tweede y-richtlijn.",
+          "Name": "Relatieve luchtvochtigheid",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityChartV1"
+    },
+    {
+      "Description": "Onderscheidt de twee onafhankelijk geschaalde lijnen in het gecombineerde weerpaneel.",
+      "DisplayName": "Meting van temperatuur en luchtvochtigheid",
+      "List": [
+        {
+          "Description": "Onderscheidt de twee onafhankelijk geschaalde lijnen in het gecombineerde weerpaneel.",
+          "Enum": [
+            {
+              "Description": "Luchttemperatuur in graden Celsius.",
+              "Name": "Temperatuur",
+              "Type": 1
+            },
+            {
+              "Description": "Percentage relatieve luchtvochtigheid.",
+              "Name": "Relatieve luchtvochtigheid",
+              "Type": 2
+            }
+          ],
+          "Name": "Meting van temperatuur en luchtvochtigheid",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityMeasurementV1"
+    },
+    {
+      "Description": "Eén waargenomen of voorspeld luchttemperatuurmonster.",
+      "DisplayName": "Temperatuurrij",
+      "List": [
+        {
+          "Description": "Eén waargenomen of voorspeld luchttemperatuurmonster.",
+          "Name": "Temperatuurrij",
+          "Type": 0
+        },
+        {
+          "Description": "Begin van de providerperiode.",
+          "Name": "Tijd",
+          "Type": 1
+        },
+        {
+          "Description": "Luchttemperatuur in graden Celsius.",
+          "Name": "Temperatuur",
+          "Type": 2
+        },
+        {
+          "Description": "Geeft aan dat deze lijn de temperatuur in het gecombineerde paneel weergeeft.",
+          "Name": "Meting",
+          "Type": 3
+        },
+        {
+          "Description": "Waargenomen of voorspeld.",
+          "Name": "Bron",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerTemperatureRowV1"
+    },
+    {
+      "Description": "Een starttijd en tijdsduur voor beregening of een beregeningspauze.",
+      "DisplayName": "Tijdsperiode",
+      "List": [
+        {
+          "Description": "Een starttijd en tijdsduur voor beregening of een beregeningspauze.",
+          "Name": "Tijdsperiode",
+          "Type": 0
+        },
+        {
+          "Description": "Wanneer deze periode begint.",
+          "Name": "Begint om",
+          "Type": 1
+        },
+        {
+          "Description": "Hoe lang deze periode duurt.",
+          "Name": "Duur",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTimeSlotV1"
+    },
+    {
+      "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+      "DisplayName": "Valve problems",
+      "List": [
+        {
+          "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+          "Enum": [
+            {
+              "Description": "The valve reported a problem without a more specific classification.",
+              "Name": "General problem",
+              "Type": 1
+            },
+            {
+              "Description": "The valve cannot move because it is blocked.",
+              "Name": "Blocked",
+              "Type": 2
+            },
+            {
+              "Description": "The valve detected an unexpected water leak.",
+              "Name": "Leak detected",
+              "Type": 3
+            },
+            {
+              "Description": "The controller cannot detect a connected valve.",
+              "Name": "Not connected",
+              "Type": 4
+            },
+            {
+              "Description": "The valve or its wiring has a short circuit.",
+              "Name": "Short circuit",
+              "Type": 5
+            },
+            {
+              "Description": "The valve exceeded the available electrical current.",
+              "Name": "Too much current",
+              "Type": 6
+            }
+          ],
+          "Name": "Valve problems",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerValveFaultFlagsV1"
+    },
+    {
+      "Description": "Combineert geschatte waterniveaus met beregeningsgebeurtenissen voor elk gebied.",
+      "DisplayName": "Waterbalans",
+      "List": [
+        {
+          "Description": "Combineert geschatte waterniveaus met beregeningsgebeurtenissen voor elk gebied.",
+          "Name": "Waterbalans",
+          "Type": 0
+        },
+        {
+          "Description": "Geschat water en belangrijke beregeningsniveaus voor elk gebied.",
+          "Name": "Beschikbaar water en niveaus",
+          "Type": 1
+        },
+        {
+          "Description": "Geplande, overgeslagen, mislukte, handmatige en voltooide beregeningsbeurten.",
+          "Name": "Beregeningsgebeurtenissen",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterBalanceChartV1"
+    },
+    {
+      "Description": "Geschat beschikbaar water en belangrijke beregeningsniveaus voor elk gebied.",
+      "DisplayName": "Waterbalanslijnen",
+      "List": [
+        {
+          "Description": "Geschat beschikbaar water en belangrijke beregeningsniveaus voor elk gebied.",
+          "Name": "Waterbalanslijnen",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterBalanceLinesV1"
+    },
+    {
+      "Description": "Eén punt dat het geschatte voor planten beschikbare water of een belangrijk beregeningsniveau toont. Beschikbaar water is een schatting, geen meting van een bodemsensor.",
+      "DisplayName": "Waterbalanspunt",
+      "List": [
+        {
+          "Description": "Eén punt dat het geschatte voor planten beschikbare water of een belangrijk beregeningsniveau toont. Beschikbaar water is een schatting, geen meting van een bodemsensor.",
+          "Name": "Waterbalanspunt",
+          "Type": 0
+        },
+        {
+          "Description": "Wanneer dit waterniveau van toepassing is.",
+          "Name": "Tijd",
+          "Type": 1
+        },
+        {
+          "Description": "Geschatte hoeveelheid water die beschikbaar is voor de planten, van 0 tot en met 100 procent.",
+          "Name": "Beschikbaar water",
+          "Type": 2
+        },
+        {
+          "Description": "Beschikbaar water of één belangrijk beregeningsniveau.",
+          "Name": "Lijn",
+          "Type": 3
+        },
+        {
+          "Description": "Het beregende gebied dat door dit deel van de grafiek wordt weergegeven.",
+          "Name": "Gebied",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWaterBalancePointV1"
+    },
+    {
+      "Description": "Identificeert het beschikbare water en de belangrijke beregeningsniveaus.",
+      "DisplayName": "Waterbalanslijn",
+      "List": [
+        {
+          "Description": "Identificeert het beschikbare water en de belangrijke beregeningsniveaus.",
+          "Enum": [
+            {
+              "Description": "Geschatte hoeveelheid water die voor de planten beschikbaar is.",
+              "Name": "Beschikbaar water",
+              "Type": 1
+            },
+            {
+              "Description": "De bodem bevat naar schatting al het water dat hij kan vasthouden en gebruiken.",
+              "Name": "Veldcapaciteit",
+              "Type": 2
+            },
+            {
+              "Description": "Het niveau waarop beregening normaal gesproken nodig wordt.",
+              "Name": "Beregeningsdrempel",
+              "Type": 3
+            },
+            {
+              "Description": "Het niveau waarop beregening dringend wordt.",
+              "Name": "Kritieke drempel",
+              "Type": 4
+            }
+          ],
+          "Name": "Waterbalanslijn",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterBalanceSeriesV1"
+    },
+    {
+      "Description": "Toont welke informatie is gebruikt om te schatten hoe snel planten water verliezen.",
+      "DisplayName": "Schatting watergebruik",
+      "List": [
+        {
+          "Description": "Toont welke informatie is gebruikt om te schatten hoe snel planten water verliezen.",
+          "Enum": [
+            {
+              "Description": "Gebaseerd op recent weer op deze locatie.",
+              "Name": "Recent weer",
+              "Type": 1
+            },
+            {
+              "Description": "Gebaseerd op de locatie en de tijd van het jaar.",
+              "Name": "Locatie en seizoen",
+              "Type": 2
+            },
+            {
+              "Description": "Wordt gebruikt wanneer recent weer en locatiegegevens niet beschikbaar zijn.",
+              "Name": "Ingebouwde schatting",
+              "Type": 3
+            }
+          ],
+          "Name": "Schatting watergebruik",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterDemandSourceV1"
+    },
+    {
+      "Description": "Slaat één afzonderlijk geïndexeerde weerperiode of waargenomen beregeningsinterval op in de zevendaagse watergeschiedenis.",
+      "DisplayName": "Beregeningswatergebeurtenis",
+      "List": [
+        {
+          "Description": "Slaat één afzonderlijk geïndexeerde weerperiode of waargenomen beregeningsinterval op in de zevendaagse watergeschiedenis.",
+          "Name": "Beregeningswatergebeurtenis",
+          "Type": 0
+        },
+        {
+          "Description": "Registreert neerslag en referentie-evapotranspiratie van de provider voor één voltooide historische periode.",
+          "Name": "Weerperiode",
+          "Type": 1
+        },
+        {
+          "Description": "Het inclusieve begin van de voltooide weerperiode.",
+          "Name": "Starttijd",
+          "Type": 2
+        },
+        {
+          "Description": "De lengte van de voltooide weerperiode in seconden.",
+          "Name": "Duur",
+          "Type": 3
+        },
+        {
+          "Description": "Door de provider geregistreerde neerslag die tijdens de periode is opgebouwd, in millimeters.",
+          "Name": "Neerslag",
+          "Type": 4
+        },
+        {
+          "Description": "Door de provider geregistreerde FAO-56-referentie-evapotranspiratie die tijdens de periode is opgebouwd, in millimeters.",
+          "Name": "Referentie-evapotranspiratie",
+          "Type": 5
+        },
+        {
+          "Description": "Registreert water dat is afgeleid uit de werkelijke tijd dat de Matter-klep openstond, inclusief handmatig openen, samen met de waterhoeveelheidsaanpassing van de zone tijdens dat waargenomen interval.",
+          "Name": "Beregeningsinterval",
+          "Type": 6
+        },
+        {
+          "Description": "Het inclusieve begin van het verwerkte interval waarin de klep openstond.",
+          "Name": "Starttijd",
+          "Type": 7
+        },
+        {
+          "Description": "De lengte van het waargenomen interval waarin de klep openstond, in seconden.",
+          "Name": "Duur",
+          "Type": 8
+        },
+        {
+          "Description": "Het geconfigureerde beregeningspercentage van de zone terwijl dit interval met geopende klep werd waargenomen. Als de instelling verandert terwijl de klep openstaat, gebruikt de geschiedenis afzonderlijke aangrenzende intervallen.",
+          "Name": "Waterhoeveelheidsaanpassing",
+          "Type": 9
+        },
+        {
+          "Description": "Geschatte waterdiepte berekend uit de waargenomen open tijd en het geconfigureerde sproeikopprofiel, in millimeters.",
+          "Name": "Toegepast water",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWaterEventV1"
+    },
+    {
+      "Description": "Slaat de laatste volledige momentopname van de levenscyclus op vóór de bijbehorende auditrij wordt geschreven. De expliciete huidige vlag onderscheidt een niet-definitieve activiteit die na een herstart kan worden gereconcilieerd van een definitieve momentopname waarvoor alleen auditherstel nodig is.",
+      "DisplayName": "Gezaghebbende status van beregeningsactiviteit",
+      "List": [
+        {
+          "Description": "Slaat de laatste volledige momentopname van de levenscyclus op vóór de bijbehorende auditrij wordt geschreven. De expliciete huidige vlag onderscheidt een niet-definitieve activiteit die na een herstart kan worden gereconcilieerd van een definitieve momentopname waarvoor alleen auditherstel nodig is.",
+          "Name": "Gezaghebbende status van beregeningsactiviteit",
+          "Type": 0
+        },
+        {
+          "Description": "Volledige laatste momentopname van de levenscyclus, of geen waarde vóór de eerste activiteit. Definitieve momentopnamen blijven hier staan totdat een nieuwere activiteit begint.",
+          "Name": "Laatste activiteit",
+          "Type": 1
+        },
+        {
+          "Description": "Alleen waar wanneer de laatste activiteit gepland, in afwachting van een opdracht of actief is en bij het opstarten moet worden gereconcilieerd.",
+          "Name": "Activiteit is huidig",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWateringActivityStateV2"
+    },
+    {
+      "Description": "Houdt geplande en werkelijke timing gescheiden, zodat het rapport kan uitleggen wat was gepland, wat er gebeurde en waarom een beregeningsbeurt werd overgeslagen of mislukte.",
+      "DisplayName": "Opgeslagen beregeningsactiviteit",
+      "List": [
+        {
+          "Description": "Houdt geplande en werkelijke timing gescheiden, zodat het rapport kan uitleggen wat was gepland, wat er gebeurde en waarom een beregeningsbeurt werd overgeslagen of mislukte.",
+          "Name": "Opgeslagen beregeningsactiviteit",
+          "Type": 0
+        },
+        {
+          "Description": "Stabiele signed database-index die voor elke levenscyclusupdate opnieuw wordt gebruikt.",
+          "Name": "Activiteitsindex",
+          "Type": 1
+        },
+        {
+          "Description": "Botsingsveilige volgorde binnen dezelfde ankerseconde en oorsprong.",
+          "Name": "Activiteitsvolgnummer",
+          "Type": 2
+        },
+        {
+          "Description": "Automatische, handmatige of niet-classificeerbare oudere activiteit.",
+          "Name": "Oorsprong",
+          "Type": 3
+        },
+        {
+          "Description": "Huidige of definitieve duurzame levenscyclusstatus.",
+          "Name": "Resultaat",
+          "Type": 4
+        },
+        {
+          "Description": "Duurzame verklaring voor het huidige of definitieve resultaat.",
+          "Name": "Reden",
+          "Type": 5
+        },
+        {
+          "Description": "Geplande automatische start. Bij handmatige en oudere activiteiten wordt deze weggelaten.",
+          "Name": "Geplande start",
+          "Type": 6
+        },
+        {
+          "Description": "Geplande automatische duur waarin de klep openstaat, in seconden. Deze wordt nooit overschreven met de werkelijk waargenomen duur.",
+          "Name": "Geplande duur",
+          "Type": 7
+        },
+        {
+          "Description": "Geplande automatische waterdiepte in millimeters.",
+          "Name": "Gepland water",
+          "Type": 8
+        },
+        {
+          "Description": "Eerste waargenomen tijdstip waarop de klep openstaat; afwezig totdat een opening wordt waargenomen.",
+          "Name": "Werkelijke start",
+          "Type": 9
+        },
+        {
+          "Description": "Verwerkte waargenomen duur waarin de klep openstond, in seconden.",
+          "Name": "Werkelijke duur",
+          "Type": 10
+        },
+        {
+          "Description": "Waterdiepte geschat op basis van de werkelijke open tijd en het sproeikopprofiel, niet op basis van een debietmeter.",
+          "Name": "Toegepast water",
+          "Type": 11
+        },
+        {
+          "Description": "Zone-aanpassing die van kracht was toen deze activiteit werd aangemaakt.",
+          "Name": "Waterhoeveelheidsaanpassing",
+          "Type": 12
+        },
+        {
+          "Description": "UTC-tijd die door de laatste opgeslagen levenscyclusupdate wordt weergegeven.",
+          "Name": "Bijgewerkt op",
+          "Type": 13
+        }
+      ],
+      "Name": "SprinklerWateringActivityV1"
+    },
+    {
+      "Description": "Een geplande, overgeslagen, mislukte, handmatige of voltooide beregeningsbeurt.",
+      "DisplayName": "Beregeningsgebeurtenis",
+      "List": [
+        {
+          "Description": "Een geplande, overgeslagen, mislukte, handmatige of voltooide beregeningsbeurt.",
+          "Name": "Beregeningsgebeurtenis",
+          "Type": 0
+        },
+        {
+          "Description": "Wanneer de beregening begon, of wanneer deze gepland was om te beginnen.",
+          "Name": "Tijd",
+          "Type": 1
+        },
+        {
+          "Description": "Geschat voor planten beschikbaar water op dat tijdstip.",
+          "Name": "Beschikbaar water",
+          "Type": 2
+        },
+        {
+          "Description": "Het beregende gebied voor deze gebeurtenis.",
+          "Name": "Gebied",
+          "Type": 3
+        },
+        {
+          "Description": "Wat er met dit beregeningsplan of deze beregeningsbeurt is gebeurd.",
+          "Name": "Resultaat",
+          "Type": 4
+        },
+        {
+          "Description": "Of de beregening automatisch, handmatig of op onbekende wijze is gestart.",
+          "Name": "Gestart door",
+          "Type": 5
+        },
+        {
+          "Description": "Waarom de beregeningsbeurt is gepland, gewijzigd, gestopt of mislukt.",
+          "Name": "Reden",
+          "Type": 6
+        },
+        {
+          "Description": "Hoe lang de automatische beregening gepland was om te lopen.",
+          "Name": "Geplande duur",
+          "Type": 7
+        },
+        {
+          "Description": "Hoe lang werd waargenomen dat de klep openstond.",
+          "Name": "Werkelijke duur",
+          "Type": 8
+        },
+        {
+          "Description": "Stabiele focussleutel die uniek is voor alle geconfigureerde zones.",
+          "Name": "Beslissingssleutel",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWateringDecisionRowV1"
+    },
+    {
+      "Description": "Toont automatische en handmatige beregening in de waterbalansgrafiek.",
+      "DisplayName": "Beregeningsgebeurtenissen",
+      "List": [
+        {
+          "Description": "Toont automatische en handmatige beregening in de waterbalansgrafiek.",
+          "Name": "Beregeningsgebeurtenissen",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWateringDecisionsV1"
+    },
+    {
+      "Description": "Selecteert of het beregeningssysteem actief beregent of winterklaar is.",
+      "DisplayName": "Beregeningsmodus",
+      "List": [
+        {
+          "Description": "Selecteert of het beregeningssysteem actief beregent of winterklaar is.",
+          "Enum": [
+            {
+              "Description": "Automatische beregening is ingeschakeld.",
+              "Name": "Actief",
+              "Type": 1
+            },
+            {
+              "Description": "Automatische beregening is voor het koude seizoen uitgeschakeld.",
+              "Name": "Winterklaar",
+              "Type": 2
+            }
+          ],
+          "Name": "Beregeningsmodus",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringModeV1"
+    },
+    {
+      "Description": "Toont of de beregening automatisch of op een andere manier is gestart.",
+      "DisplayName": "Hoe de beregening is gestart",
+      "List": [
+        {
+          "Description": "Toont of de beregening automatisch of op een andere manier is gestart.",
+          "Enum": [
+            {
+              "Description": "Slimme beregening heeft deze beregeningsbeurt gestart.",
+              "Name": "Automatisch",
+              "Type": 1
+            },
+            {
+              "Description": "De klep is buiten Slimme beregening om geopend.",
+              "Name": "Handmatig",
+              "Type": 2
+            },
+            {
+              "Description": "Oudere opgeslagen gegevens geven niet aan hoe deze beregeningsbeurt is gestart.",
+              "Name": "Onbekend",
+              "Type": 3
+            }
+          ],
+          "Name": "Hoe de beregening is gestart",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOriginV1"
+    },
+    {
+      "Description": "Toont wat er met een beregeningsplan of beregeningsbeurt is gebeurd.",
+      "DisplayName": "Beregeningsresultaat",
+      "List": [
+        {
+          "Description": "Toont wat er met een beregeningsplan of beregeningsbeurt is gebeurd.",
+          "Enum": [
+            {
+              "Description": "Een berekende toekomstige automatische beregeningsbeurt staat nog gepland.",
+              "Name": "Gepland",
+              "Type": 1
+            },
+            {
+              "Description": "De beregening heeft de klep gevraagd te openen en wacht op bevestiging.",
+              "Name": "Opdracht in behandeling",
+              "Type": 2
+            },
+            {
+              "Description": "De klep staat open en de beregening wordt bijgehouden.",
+              "Name": "Actief",
+              "Type": 3
+            },
+            {
+              "Description": "De beregening is voltooid nadat de klep is gesloten.",
+              "Name": "Voltooid",
+              "Type": 4
+            },
+            {
+              "Description": "Een geplande beregeningsbeurt is niet gestart omdat het weer, instellingen of veiligheidsvoorwaarden dit verhinderden.",
+              "Name": "Overgeslagen",
+              "Type": 5
+            },
+            {
+              "Description": "Een klepprobleem heeft verhinderd dat de beregeningsbeurt werd voltooid.",
+              "Name": "Mislukt",
+              "Type": 6
+            },
+            {
+              "Description": "Een nieuwer beregeningsplan heeft dit plan vervangen voordat het begon.",
+              "Name": "Vervangen",
+              "Type": 7
+            }
+          ],
+          "Name": "Beregeningsresultaat",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOutcomeV1"
+    },
+    {
+      "Description": "Legt uit waarom een beregeningsbeurt is gepland, gewijzigd, gestopt of mislukt.",
+      "DisplayName": "Reden voor beregening",
+      "List": [
+        {
+          "Description": "Legt uit waarom een beregeningsbeurt is gepland, gewijzigd, gestopt of mislukt.",
+          "Enum": [
+            {
+              "Description": "Slimme beregening heeft deze beregeningsbeurt geselecteerd op basis van de behoeften van planten en het weer.",
+              "Name": "Slim schema",
+              "Type": 1
+            },
+            {
+              "Description": "De klep is buiten Slimme beregening om geopend.",
+              "Name": "Handmatige bediening",
+              "Type": 2
+            },
+            {
+              "Description": "Verwachte regen heeft de geplande beregening uitgesteld of vervangen.",
+              "Name": "Regen voorspeld",
+              "Type": 3
+            },
+            {
+              "Description": "Geregistreerde regen heeft de beregening gestopt of voorkomen.",
+              "Name": "Waargenomen regen",
+              "Type": 4
+            },
+            {
+              "Description": "De temperatuur was te laag voor veilige beregening.",
+              "Name": "Vriesweer",
+              "Type": 5
+            },
+            {
+              "Description": "De wind was te sterk voor deze beregeningsmethode.",
+              "Name": "Te veel wind",
+              "Type": 6
+            },
+            {
+              "Description": "Het weer was niet veilig voor beregening.",
+              "Name": "Ander onveilig weer",
+              "Type": 7
+            },
+            {
+              "Description": "Een periode zonder beregening heeft de geplande beregeningsbeurt verhinderd.",
+              "Name": "Uitstelperiode",
+              "Type": 8
+            },
+            {
+              "Description": "Het systeem was winterklaar gemaakt, daarom was automatische beregening uitgeschakeld.",
+              "Name": "Winterklaar maken",
+              "Type": 9
+            },
+            {
+              "Description": "De klepstatus was niet beschikbaar.",
+              "Name": "Klep niet beschikbaar",
+              "Type": 10
+            },
+            {
+              "Description": "De klep heeft een probleem gemeld.",
+              "Name": "Klepstoring",
+              "Type": 11
+            },
+            {
+              "Description": "De klep heeft het verzoek niet geaccepteerd.",
+              "Name": "Opdracht mislukt",
+              "Type": 12
+            },
+            {
+              "Description": "De klep heeft het verzoek niet op tijd bevestigd.",
+              "Name": "Time-out van opdracht",
+              "Type": 13
+            },
+            {
+              "Description": "De klep kreeg de opdracht te openen, maar er is geen beregening gedetecteerd.",
+              "Name": "Geen opening waargenomen",
+              "Type": 14
+            },
+            {
+              "Description": "Een nieuwere berekening heeft de geplande beregeningsbeurt vervangen.",
+              "Name": "Opnieuw berekend",
+              "Type": 15
+            },
+            {
+              "Description": "Oudere opgeslagen gegevens bevatten geen specifiekere reden.",
+              "Name": "Onbekend",
+              "Type": 16
+            },
+            {
+              "Description": "The valve was observed closed before its timed run was due to finish.",
+              "Name": "Stopped early",
+              "Type": 17
+            }
+          ],
+          "Name": "Reden voor beregening",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringReasonV1"
+    },
+    {
+      "Description": "Toont waar het water vandaan kwam of dat het later wordt verwacht.",
+      "DisplayName": "Waterbron",
+      "List": [
+        {
+          "Description": "Toont waar het water vandaan kwam of dat het later wordt verwacht.",
+          "Enum": [
+            {
+              "Description": "Regen die al door de weerservice is geregistreerd.",
+              "Name": "Regen",
+              "Type": 1
+            },
+            {
+              "Description": "Water geschat op basis van hoe lang de klep openstond.",
+              "Name": "Beregening",
+              "Type": 2
+            },
+            {
+              "Description": "Regen die volgens de verwachting wordt verwacht.",
+              "Name": "Regen voorspeld",
+              "Type": 3
+            },
+            {
+              "Description": "Automatische beregening die gepland is maar nog niet is gestart.",
+              "Name": "Gepland water",
+              "Type": 4
+            }
+          ],
+          "Name": "Waterbron",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterInputTypeV1"
+    },
+    {
+      "Description": "Combineert een compacte samenvatting van regen tegenover beregening met dagelijkse details.",
+      "DisplayName": "Watergebruik",
+      "List": [
+        {
+          "Description": "Combineert een compacte samenvatting van regen tegenover beregening met dagelijkse details.",
+          "Name": "Watergebruik",
+          "Type": 0
+        },
+        {
+          "Description": "Shared rain and per-area irrigation during the selected dates.",
+          "Name": "Summary",
+          "Type": 1
+        },
+        {
+          "Description": "Rain and watering amounts by local calendar date.",
+          "Name": "Daily details",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterUsageChartV1"
+    },
+    {
+      "Description": "Houdt een gebied zichtbaar wanneer er tijdens de geselecteerde datums geen regen of beregening was.",
+      "DisplayName": "Gebied zonder geregistreerd water",
+      "List": [
+        {
+          "Description": "Houdt een gebied zichtbaar wanneer er tijdens de geselecteerde datums geen regen of beregening was.",
+          "Name": "Gebied zonder geregistreerd water",
+          "Type": 0
+        },
+        {
+          "Description": "Centreert het bericht in de grafiek.",
+          "Name": "Labelpositie",
+          "Type": 1
+        },
+        {
+          "Description": "Het beregende gebied zonder geregistreerd water.",
+          "Name": "Gebied",
+          "Type": 2
+        },
+        {
+          "Description": "Legt uit waarom dit gebied geen balken in de grafiek heeft.",
+          "Name": "Bericht",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZoneRowV1"
+    },
+    {
+      "Description": "Berichten voor gebieden zonder regen of beregening tijdens de geselecteerde datums.",
+      "DisplayName": "Gebieden zonder geregistreerd water",
+      "List": [
+        {
+          "Description": "Berichten voor gebieden zonder regen of beregening tijdens de geselecteerde datums.",
+          "Name": "Gebieden zonder geregistreerd water",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZonesV1"
+    },
+    {
+      "Description": "Toont voor elk gebied hoeveel regen en beregening er per datum was.",
+      "DisplayName": "Watergebruik",
+      "List": [
+        {
+          "Description": "Toont voor elk gebied hoeveel regen en beregening er per datum was.",
+          "Name": "Watergebruik",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageMarksV1"
+    },
+    {
+      "Description": "Eén hoeveelheid regen of beregening die voor een gebied op een bepaalde datum wordt weergegeven.",
+      "DisplayName": "Watergebruiksitem",
+      "List": [
+        {
+          "Description": "Eén hoeveelheid regen of beregening die voor een gebied op een bepaalde datum wordt weergegeven.",
+          "Name": "Watergebruiksitem",
+          "Type": 0
+        },
+        {
+          "Description": "De lokale kalenderdatum voor deze hoeveelheid regen of beregening.",
+          "Name": "Datum",
+          "Type": 1
+        },
+        {
+          "Description": "Waar deze hoeveelheid in de grafiek begint.",
+          "Name": "Begin balk",
+          "Type": 2
+        },
+        {
+          "Description": "Waar deze hoeveelheid in de grafiek eindigt.",
+          "Name": "Einde balk",
+          "Type": 3
+        },
+        {
+          "Description": "Regen of beregening die door dit deel van de balk wordt weergegeven.",
+          "Name": "Waterhoeveelheid",
+          "Type": 4
+        },
+        {
+          "Description": "Geregistreerde regen, beregening, verwachte regen of geplande beregening.",
+          "Name": "Waterbron",
+          "Type": 5
+        },
+        {
+          "Description": "Het beregende gebied dat door deze rij wordt weergegeven.",
+          "Name": "Gebied",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageRowV1"
+    },
+    {
+      "Description": "Shows shared rain and irrigation for every area together on one chart.",
+      "DisplayName": "Water-use summary",
+      "List": [
+        {
+          "Description": "Shows shared rain and irrigation for every area together on one chart.",
+          "Name": "Water-use summary",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryChartV1"
+    },
+    {
+      "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+      "DisplayName": "Water-use summary item",
+      "List": [
+        {
+          "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+          "Name": "Water-use summary item",
+          "Type": 0
+        },
+        {
+          "Description": "Millimeter scale for comparing rain and irrigation.",
+          "Name": "Water amount",
+          "Type": 1
+        },
+        {
+          "Description": "Where this contribution ends in its stacked total.",
+          "Name": "Amount end",
+          "Type": 2
+        },
+        {
+          "Description": "Total rain or irrigation represented by this part of the bar.",
+          "Name": "Amount",
+          "Type": 3
+        },
+        {
+          "Description": "Recorded rain, forecast rain, actual watering, or scheduled watering.",
+          "Name": "Water source",
+          "Type": 4
+        },
+        {
+          "Description": "Keeps shared rain first, followed by every configured area.",
+          "Name": "Lane",
+          "Type": 5
+        },
+        {
+          "Description": "Shows Rain or the configured area's name on the summary axis.",
+          "Name": "Rain or area",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryRowV1"
+    },
+    {
+      "Description": "Toont of een waarde is geregistreerd of voorspeld.",
+      "DisplayName": "Weerbron",
+      "List": [
+        {
+          "Description": "Toont of een waarde is geregistreerd of voorspeld.",
+          "Enum": [
+            {
+              "Description": "Een voltooide weerswaarneming.",
+              "Name": "Geregistreerde geschiedenis",
+              "Type": 1
+            },
+            {
+              "Description": "Een recente waarneming van het huidige weer.",
+              "Name": "Huidige omstandigheden",
+              "Type": 2
+            },
+            {
+              "Description": "Een toekomstige waarde uit de nieuwste weersverwachting.",
+              "Name": "Verwachting",
+              "Type": 3
+            }
+          ],
+          "Name": "Weerbron",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherChartSourceV1"
+    },
+    {
+      "Description": "Toont geschat waterverlies, temperatuur, luchtvochtigheid en wind samen.",
+      "DisplayName": "Weer",
+      "List": [
+        {
+          "Description": "Toont geschat waterverlies, temperatuur, luchtvochtigheid en wind samen.",
+          "Name": "Weer",
+          "Type": 0
+        },
+        {
+          "Description": "Geregistreerd en voorspeld waterverlies door verdamping en gebruik door planten.",
+          "Name": "Geschat waterverlies",
+          "Type": 1
+        },
+        {
+          "Description": "Waargenomen en voorspelde waarden met onafhankelijke y-assen.",
+          "Name": "Temperatuur en relatieve luchtvochtigheid",
+          "Type": 2
+        },
+        {
+          "Description": "Waargenomen en voorspelde aanhoudende wind en windstoten.",
+          "Name": "Wind",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherEtChartV1"
+    },
+    {
+      "Description": "Waargenomen en voorspelde aanhoudende wind en windstoten op één vergelijkbare schaal.",
+      "DisplayName": "Wind en windstoten",
+      "List": [
+        {
+          "Description": "Waargenomen en voorspelde aanhoudende wind en windstoten op één vergelijkbare schaal.",
+          "Name": "Wind en windstoten",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWindChartV1"
+    },
+    {
+      "Description": "Eén monster van aanhoudende wind of een windstoot.",
+      "DisplayName": "Windrij",
+      "List": [
+        {
+          "Description": "Eén monster van aanhoudende wind of een windstoot.",
+          "Name": "Windrij",
+          "Type": 0
+        },
+        {
+          "Description": "Begin van de providerperiode.",
+          "Name": "Tijd",
+          "Type": 1
+        },
+        {
+          "Description": "Snelheid van aanhoudende wind of een windstoot in meters per seconde.",
+          "Name": "Windsnelheid",
+          "Type": 2
+        },
+        {
+          "Description": "Waargenomen of voorspelde aanhoudende wind of windstoot.",
+          "Name": "Reeks",
+          "Type": 3
+        },
+        {
+          "Description": "Door de server gegenereerde identiteit voor dit tijdstip en deze windreeks.",
+          "Name": "Stabiele sleutel",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWindRowV1"
+    },
+    {
+      "Description": "Scheidt aanhoudende wind en windstoten voor waargenomen en voorspelde periodes.",
+      "DisplayName": "Windreeks",
+      "List": [
+        {
+          "Description": "Scheidt aanhoudende wind en windstoten voor waargenomen en voorspelde periodes.",
+          "Enum": [
+            {
+              "Description": "Aanhoudende wind uit een voltooide historische periode.",
+              "Name": "Historische aanhoudende wind",
+              "Type": 1
+            },
+            {
+              "Description": "Piekwindstoot uit een voltooide historische periode.",
+              "Name": "Historische windstoot",
+              "Type": 2
+            },
+            {
+              "Description": "Aanhoudende wind uit een bewaarde huidige waarneming.",
+              "Name": "Huidige aanhoudende wind",
+              "Type": 3
+            },
+            {
+              "Description": "Piekwindstoot uit een bewaarde huidige waarneming.",
+              "Name": "Huidige windstoot",
+              "Type": 4
+            },
+            {
+              "Description": "Voorspelde aanhoudende wind.",
+              "Name": "Voorspelde aanhoudende wind",
+              "Type": 5
+            },
+            {
+              "Description": "Voorspelde piekwindstoot.",
+              "Name": "Voorspelde windstoot",
+              "Type": 6
+            }
+          ],
+          "Name": "Windreeks",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWindSeriesV1"
+    },
+    {
+      "Description": "Onthoudt de laatste herinnering, zodat deze niet te snel opnieuw wordt verzonden.",
+      "DisplayName": "Laatste herinnering voor winterklaar maken",
+      "List": [
+        {
+          "Description": "Onthoudt de laatste herinnering, zodat deze niet te snel opnieuw wordt verzonden.",
+          "Name": "Laatste herinnering voor winterklaar maken",
+          "Type": 0
+        },
+        {
+          "Description": "Wanneer de laatste herinnering is verzonden.",
+          "Name": "Verzonden op",
+          "Type": 1
+        },
+        {
+          "Description": "Waarom de laatste herinnering is verzonden.",
+          "Name": "Reden",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderMemoryV1"
+    },
+    {
+      "Description": "Legt uit waarom de laatste herinnering voor koud weer is verzonden.",
+      "DisplayName": "Reden voor herinnering om winterklaar te maken",
+      "List": [
+        {
+          "Description": "Legt uit waarom de laatste herinnering voor koud weer is verzonden.",
+          "Enum": [
+            {
+              "Description": "De breedtegraad van de locatie en het huidige seizoen geven aan dat koud weer nadert.",
+              "Name": "Locatie en seizoen",
+              "Type": 1
+            },
+            {
+              "Description": "Recente huidige omstandigheden of voorspellingsgegevens tonen een temperatuur op of onder de veiligheidsdrempel voor koud weer van de beregening.",
+              "Name": "Vriesweer",
+              "Type": 2
+            }
+          ],
+          "Name": "Reden voor herinnering om winterklaar te maken",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderReasonV1"
+    },
+    {
+      "Description": "Toont de informatie achter het huidige beregeningsplan.",
+      "DisplayName": "Zonedetails",
+      "List": [
+        {
+          "Description": "Toont de informatie achter het huidige beregeningsplan.",
+          "Name": "Zonedetails",
+          "Type": 0
+        },
+        {
+          "Description": "De informatie die wordt gebruikt om te schatten wanneer de planten weer water nodig hebben.",
+          "Name": "Schatting watergebruik",
+          "Type": 1
+        },
+        {
+          "Description": "Geschatte hoeveelheid water die elke dag verloren gaat door verdamping en gebruik door planten.",
+          "Name": "Geschat dagelijks waterverlies",
+          "Type": 2
+        },
+        {
+          "Description": "Wanneer dit beregeningsplan is berekend.",
+          "Name": "Laatst bijgewerkt",
+          "Type": 3
+        },
+        {
+          "Description": "De huidige beregeningsbeslissing of reden voor uitstel.",
+          "Name": "Status",
+          "Type": 4
+        },
+        {
+          "Description": "De geplande starttijd en duur. Het weer of de beschikbaarheid van de klep kan het plan nog wijzigen.",
+          "Name": "Volgende beregening",
+          "Type": 5
+        },
+        {
+          "Description": "De hoeveelheid water die voor de volgende automatische beregeningsbeurt is gepland.",
+          "Name": "Gepland water",
+          "Type": 6
+        },
+        {
+          "Description": "Hoeveel water de planten naar schatting nodig hebben.",
+          "Name": "Geschat watertekort",
+          "Type": 7
+        },
+        {
+          "Description": "Regen die gedurende de afgelopen zeven dagen is meegerekend.",
+          "Name": "Recente regen",
+          "Type": 8
+        },
+        {
+          "Description": "Beregening die gedurende de afgelopen zeven dagen is meegerekend.",
+          "Name": "Recente beregening",
+          "Type": 9
+        },
+        {
+          "Description": "Of de klep momenteel openstaat.",
+          "Name": "Nu beregenen",
+          "Type": 10
+        },
+        {
+          "Description": "Automatische beregening wacht totdat de klepstatus beschikbaar is.",
+          "Name": "Klepstatus beschikbaar",
+          "Type": 11
+        },
+        {
+          "Description": "Door de klep gemelde problemen. Er kunnen meerdere problemen tegelijk aanwezig zijn.",
+          "Name": "Klepproblemen",
+          "Type": 12
+        }
+      ],
+      "Name": "SprinklerZoneActiveStateV1"
+    },
+    {
+      "Description": "Toont het volledige beregeningsplan of dat het systeem winterklaar is.",
+      "DisplayName": "Gedetailleerde beregeningsstatus",
+      "List": [
+        {
+          "Description": "Toont het volledige beregeningsplan of dat het systeem winterklaar is.",
+          "Name": "Gedetailleerde beregeningsstatus",
+          "Type": 0
+        },
+        {
+          "Description": "Automatische beregening is ingeschakeld en alle huidige zonegegevens zijn beschikbaar.",
+          "Name": "Actief",
+          "Type": 1
+        },
+        {
+          "Description": "Het huidige beregeningsplan, de geschatte waterhoeveelheid en de klepstatus.",
+          "Name": "Zonedetails",
+          "Type": 2
+        },
+        {
+          "Description": "Automatische beregening is voor het gehele beregeningssysteem uitgeschakeld en er is geen beregeningsperiode gepland.",
+          "Name": "Winterklaar",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerZoneAdvancedStateV1"
+    },
+    {
+      "Description": "Explains why a requested sprinkler setting was not changed.",
+      "DisplayName": "Configuration error",
+      "List": [
+        {
+          "Description": "Explains why a requested sprinkler setting was not changed.",
+          "Enum": [
+            {
+              "Description": "The percentage was outside the supported range or step.",
+              "Name": "Invalid water amount",
+              "Type": 1
+            },
+            {
+              "Description": "The replacement contained too many periods or an invalid interval.",
+              "Name": "Invalid no-watering periods",
+              "Type": 2
+            }
+          ],
+          "Name": "Configuration error",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationErrorV1"
+    },
+    {
+      "Description": "Pas de waterhoeveelheid, periodes zonder beregening of de actieve status van automatische beregening aan.",
+      "DisplayName": "Zone-instellingen",
+      "List": [
+        {
+          "Description": "Pas de waterhoeveelheid, periodes zonder beregening of de actieve status van automatische beregening aan.",
+          "Name": "Zone-instellingen",
+          "Type": 0
+        },
+        {
+          "Description": "Gebruik 100% voor de aanbevolen hoeveelheid, een lagere waarde voor minder water of een hogere waarde voor meer water.",
+          "Name": "Waterhoeveelheid",
+          "Type": 1
+        },
+        {
+          "Description": "Times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 2
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 3
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationV1"
+    },
+    {
+      "Description": "Bewaart de compacte, herstartbestendige waterhoeveelheidsaanpassing, beperkingen en samengevouwen basislijn van de waterbalans voor één geconfigureerde klep. Watergebeurtenissen worden afzonderlijk opgeslagen als incrementele geïndexeerde records.",
+      "DisplayName": "Beregeningszonegeheugen",
+      "List": [
+        {
+          "Description": "Bewaart de compacte, herstartbestendige waterhoeveelheidsaanpassing, beperkingen en samengevouwen basislijn van de waterbalans voor één geconfigureerde klep. Watergebeurtenissen worden afzonderlijk opgeslagen als incrementele geïndexeerde records.",
+          "Name": "Beregeningszonegeheugen",
+          "Type": 0
+        },
+        {
+          "Description": "Percentage van de adaptieve beregeningshoeveelheid dat moet worden toegepast. De standaardwaarde is 100%.",
+          "Name": "Waterhoeveelheidsaanpassing",
+          "Type": 1
+        },
+        {
+          "Description": "De genormaliseerde runtimebeperkingen voor planning.",
+          "Name": "Uitstelperiodes",
+          "Type": 2
+        },
+        {
+          "Description": "Een halfopen interval waarin de zone niet mag beregenen.",
+          "Name": "Uitstelperiode",
+          "Type": 3
+        },
+        {
+          "Description": "De datum en tijd tot en met welke oudere watertoevoer is samengevouwen in `baseline_deficit_millimeters`.",
+          "Name": "Tijdstip balansbasislijn",
+          "Type": 4
+        },
+        {
+          "Description": "Watertekort in de wortelzone op `balance_baseline_at`, in millimeters.",
+          "Name": "Basistekort",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerZoneMemoryV1"
+    },
+    {
+      "Description": "Bekijk de status en details van dit gebied of wijzig de beregeningsinstellingen.",
+      "DisplayName": "Beregeningsbediening",
+      "List": [
+        {
+          "Description": "Bekijk de status en details van dit gebied of wijzig de beregeningsinstellingen.",
+          "Name": "Beregeningsbediening",
+          "Type": 0
+        },
+        {
+          "Description": "Toont wat dit gebied doet en wanneer het de volgende keer wordt beregend.",
+          "Name": "Status bekijken",
+          "Type": 1
+        },
+        {
+          "Description": "De huidige beregeningsstatus en het volgende beregeningsplan.",
+          "Name": "Huidige status",
+          "Type": 2
+        },
+        {
+          "Description": "De huidige status voor dit gebied of het winterklaar gemaakte systeem.",
+          "Name": "Beregeningsstatus",
+          "Type": 3
+        },
+        {
+          "Description": "Toont de geschatte waterhoeveelheid, het beregeningsplan en de klepstatus.",
+          "Name": "Details bekijken",
+          "Type": 4
+        },
+        {
+          "Description": "De geschatte waterhoeveelheid, het beregeningsplan en de klepstatus.",
+          "Name": "Zonedetails",
+          "Type": 5
+        },
+        {
+          "Description": "Toont de waterhoeveelheid, periodes zonder beregening en actieve status.",
+          "Name": "Instellingen bekijken",
+          "Type": 6
+        },
+        {
+          "Description": "De huidige waterhoeveelheid, periodes zonder beregening en actieve status. Later geaccepteerde wijzigingen worden als abonnementsgegevens geleverd vóór hun definitieve bevestiging.",
+          "Name": "Zone-instellingen",
+          "Type": 7
+        },
+        {
+          "Description": "De huidige instellingen voor dit gebied.",
+          "Name": "Instellingen",
+          "Type": 8
+        },
+        {
+          "Description": "Gebruik meer of minder water dan de aanbevolen hoeveelheid.",
+          "Name": "Waterhoeveelheid wijzigen",
+          "Type": 9
+        },
+        {
+          "Description": "Use more or less water than the recommended amount.",
+          "Name": "Change water amount",
+          "Type": 10
+        },
+        {
+          "Description": "Use 100% for the recommended amount, a lower value for less water, or a higher value for more water.",
+          "Name": "Water amount",
+          "Type": 11
+        },
+        {
+          "Description": "Replace the times when this area must not be watered.",
+          "Name": "Change no-watering periods",
+          "Type": 12
+        },
+        {
+          "Description": "The complete list of times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 13
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 14
+        },
+        {
+          "Description": "Turn automatic watering on or off.",
+          "Name": "Change active state",
+          "Type": 15
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 16
+        },
+        {
+          "Description": "Confirms that a requested setting was persisted and applied. The current subscribed configuration remains installed.",
+          "Name": "Change accepted",
+          "Type": 17
+        },
+        {
+          "Description": "Explains why a requested setting was not changed while preserving the current subscribed configuration for correction and retry.",
+          "Name": "Change rejected",
+          "Type": 18
+        },
+        {
+          "Description": "A localized explanation of the invalid setting.",
+          "Name": "Error message",
+          "Type": 19
+        },
+        {
+          "Description": "The reason the setting was rejected.",
+          "Name": "Error",
+          "Type": 20
+        }
+      ],
+      "Name": "SprinklerZoneProtocol"
+    },
+    {
+      "Description": "Toont de huidige status en het volgende beregeningsplan.",
+      "DisplayName": "Beregeningsstatus",
+      "List": [
+        {
+          "Description": "Toont de huidige status en het volgende beregeningsplan.",
+          "Name": "Beregeningsstatus",
+          "Type": 0
+        },
+        {
+          "Description": "Automatische beregening is ingeschakeld.",
+          "Name": "Actief",
+          "Type": 1
+        },
+        {
+          "Description": "De huidige beregeningsbeslissing of reden voor uitstel.",
+          "Name": "Status",
+          "Type": 2
+        },
+        {
+          "Description": "De geplande starttijd en duur.",
+          "Name": "Volgende beregening",
+          "Type": 3
+        },
+        {
+          "Description": "Automatische beregening is voor het gehele beregeningssysteem uitgeschakeld en er is geen beregeningsperiode gepland.",
+          "Name": "Winterklaar",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneStateV1"
+    },
+    {
+      "Description": "Stel één gazon, tuin of beplant gebied in dat afzonderlijk wordt beregend.",
+      "DisplayName": "Beregend gebied",
+      "List": [
+        {
+          "Description": "Stel één gazon, tuin of beplant gebied in dat afzonderlijk wordt beregend.",
+          "Name": "Beregend gebied",
+          "Type": 0
+        },
+        {
+          "Description": "Kies de klep die dit gebied bedient.",
+          "Name": "Waterklep",
+          "Type": 1
+        },
+        {
+          "Description": "Kies wat er in dit gebied groeit.",
+          "Name": "Planttype",
+          "Type": 2
+        },
+        {
+          "Description": "Kies hoe water in dit gebied wordt toegediend.",
+          "Name": "Beregeningsmethode",
+          "Type": 3
+        },
+        {
+          "Description": "Kies waar de status, instellingen en bediening van dit gebied beschikbaar zijn.",
+          "Name": "Gebiedsbediening",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "System record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "System record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "ArchiveState",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "WateringMode",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WinterizationReminder",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "WeatherHistory",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "WeatherObservation",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 10
+        }
+      ],
+      "Name": "SystemRecord"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Valve record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Valve record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Memory",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "ActivityState",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "Restart",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WaterEvent",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Activity",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "DailyReport",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "ModeledWeatherGap",
+          "Type": 10
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 11
+        }
+      ],
+      "Name": "ZoneRecord"
+    }
+  ]
+}

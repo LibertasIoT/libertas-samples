@@ -1,0 +1,2555 @@
+{
+  "Description": "รดน้ำแต่ละส่วนของสวนเฉพาะเมื่อจำเป็นต้องใช้น้ำ เลือกสิ่งที่ปลูกในแต่ละพื้นที่ วิธีการรดน้ำ และช่วงเวลาที่ต้องหยุดรดน้ำ สปริงเกลอร์อัจฉริยะใช้ข้อมูลฝนล่าสุด สภาพอากาศปัจจุบัน และพยากรณ์อากาศเพื่อเลือกเวลาและปริมาณการรดน้ำที่ปลอดภัย นอกจากนี้ยังนับการรดน้ำด้วยตนเอง ทำงานต่อได้ในช่วงที่อินเทอร์เน็ตขัดข้องระยะสั้น และเตือนให้คุณเตรียมระบบสำหรับสภาพอากาศเยือกแข็ง",
+  "DisplayName": "สปริงเกลอร์อัจฉริยะ",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Smart sprinkler",
+      "Description": "รดน้ำสนามหญ้า สวน หรือพื้นที่ปลูกแต่ละแห่งตามชนิดพืช วิธีการรดน้ำ ฝนล่าสุด พยากรณ์อากาศ และการปรับที่ผู้ใช้เลือก ผู้ใช้เลือกแหล่งข้อมูลสภาพอากาศ ตำแหน่งที่จะแสดงตัวควบคุมและรายงานของพื้นที่ ผู้รับการแจ้งเตือน รวมถึงวาล์ว ชนิดพืช และวิธีรดน้ำของแต่ละพื้นที่ ผู้ใช้สามารถเปลี่ยนเปอร์เซ็นต์การรดน้ำและช่วงห้ามรดน้ำของแต่ละพื้นที่ด้วยตนเองได้ทุกเมื่อ หรือเตรียมระบบทั้งหมดสำหรับฤดูหนาวและเปิดใช้งานอีกครั้ง สปริงเกลอร์จะกำหนดเวลาและควบคุมแต่ละวาล์วโดยอัตโนมัติตามฝน ปริมาณฝนที่พยากรณ์ ลม อุณหภูมิเยือกแข็ง ความต้องการของพืช และช่วงห้ามรดน้ำ และใช้ค่าประมาณที่บันทึกไว้ระหว่างที่บริการสภาพอากาศขัดข้องระยะสั้น สปริงเกลอร์แสดงสถานะปัจจุบัน ค่าประมาณน้ำ สถานะวาล์ว และแผนการรดน้ำครั้งถัดไปของแต่ละพื้นที่ สปริงเกลอร์มีกราฟสมดุลน้ำ การใช้น้ำรายวัน และสภาพอากาศที่บันทึกและพยากรณ์ไว้ และส่งการเตือนให้บุคคลที่เลือกก่อนเกิดสภาพอากาศเยือกแข็ง การเปลี่ยนแปลง: อัปเดตรูปแบบโปรโตคอลแล้ว",
+      "DisplayName": "สปริงเกลอร์อัจฉริยะ",
+      "List": [
+        {
+          "Description": "เลือกบริการสภาพอากาศในพื้นที่ที่ใช้สำหรับข้อมูลฝน อุณหภูมิ ลม และการพยากรณ์ สปริงเกลอร์อัจฉริยะสามารถใช้ค่าประมาณที่บันทึกไว้ระหว่างการขัดข้องระยะสั้นได้",
+          "Name": "บริการสภาพอากาศ",
+          "Type": 0
+        },
+        {
+          "Description": "เลือกตำแหน่งที่จะแสดงกราฟสมดุลน้ำ การใช้น้ำ และสภาพอากาศ",
+          "Name": "รายงานสปริงเกลอร์",
+          "Type": 1
+        },
+        {
+          "Description": "เลือกบุคคลที่ควรได้รับการเตือนให้เตรียมระบบสปริงเกลอร์สำหรับสภาพอากาศเยือกแข็ง",
+          "Name": "ผู้รับการแจ้งเตือน",
+          "Type": 2
+        },
+        {
+          "Description": "บุคคลหนึ่งคนที่ควรได้รับการแจ้งเตือนจากสปริงเกลอร์",
+          "Name": "บุคคลที่จะแจ้ง",
+          "Type": 3
+        },
+        {
+          "Description": "เพิ่มสนามหญ้า สวน หรือพื้นที่ปลูกแต่ละแห่งที่ควรรดน้ำแยกจากกัน",
+          "Name": "พื้นที่ที่รดน้ำ",
+          "Type": 4
+        },
+        {
+          "Description": "พื้นที่หนึ่งแห่งที่มีวาล์ว พืช และวิธีการรดน้ำของตนเอง",
+          "Name": "พื้นที่ที่รดน้ำ",
+          "Type": 5
+        }
+      ],
+      "Name": "libertas_sprinkler"
+    }
+  ],
+  "Locale": "th-TH",
+  "StringResources": {
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "บันทึกสมดุลน้ำรายวันสำหรับ {0}",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "ใช้ช่วงห้ามรดน้ำได้ไม่เกิน 64 ช่วง โดยแต่ละช่วงต้องมีเวลาเริ่มต้นที่ถูกต้องและมีระยะเวลามากกว่าศูนย์",
+    "SPRINKLER_INVALID_WATERING_PERCENT": "ปริมาณน้ำต้องอยู่ระหว่าง 20% ถึง 200% โดยปรับเพิ่มหรือลดครั้งละ 10%",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "บันทึกค่าประมาณสภาพอากาศที่ใช้ระหว่างบริการขัดข้องที่ {0}",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "วันที่แรกต้องไม่อยู่หลังวันที่สุดท้าย",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "บันทึกตำแหน่งที่ใช้โดยรายงานสภาพอากาศของสปริงเกลอร์ที่ {0}",
+    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "บันทึกประวัติสภาพอากาศโดยละเอียดสำหรับรายงานสปริงเกลอร์ที่ {0}",
+    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "บันทึกการสังเกตสภาพอากาศปัจจุบันสำหรับรายงานสปริงเกลอร์ที่ {0}",
+    "SPRINKLER_SITE_LOCATION_V1": "บันทึกตำแหน่งที่ใช้สำหรับสภาพอากาศของสปริงเกลอร์ที่ {0}",
+    "SPRINKLER_UI_CHANGE_DATES": "Change dates",
+    "SPRINKLER_UI_SYSTEM_ACTIVE": "System active",
+    "SPRINKLER_UI_VALVE": "Valve",
+    "SPRINKLER_UI_WATERING_PLAN": "Watering plan",
+    "SPRINKLER_UI_WATER_BALANCE": "Water balance",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "บันทึกประวัติการรดน้ำสำหรับ {0}",
+    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "กิจกรรมการรดน้ำปัจจุบันสำหรับ {0}",
+    "SPRINKLER_WATERING_MODE_V1": "บันทึกโหมดการรดน้ำสำหรับ {0}",
+    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
+    "SPRINKLER_WATER_EVENTS_V1": "บันทึกฝนและการรดน้ำล่าสุดสำหรับ {0}",
+    "SPRINKLER_WATER_USAGE_RAIN_LANE": "ฝน",
+    "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
+    "SPRINKLER_WINTERIZATION_REMINDER_V1": "บันทึกประวัติการเตือนการเตรียมระบบสำหรับฤดูหนาวที่ {0}",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "ฤดูหนาวกำลังใกล้เข้ามาในตำแหน่งนี้ เตรียมระบบสปริงเกลอร์สำหรับฤดูหนาว แล้วปิด Active",
+    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "สภาพอากาศเยือกแข็ง ({0}) อาจทำให้ระบบสปริงเกลอร์เสียหาย เตรียมระบบสำหรับฤดูหนาว แล้วปิด Active",
+    "SPRINKLER_ZONE_MEMORY_V1": "บันทึกสมดุลน้ำและการตั้งค่าสำหรับ {0}",
+    "libertas.permission.ACCESS_FINE_LOCATION": "ใช้ตำแหน่งของ Hub นี้เพื่อรับข้อมูลสภาพอากาศในพื้นที่สำหรับการรดน้ำอัตโนมัติ"
+  },
+  "Types": [
+    {
+      "Description": "จุดตรวจสอบตามวัน UTC และสรุปบัญชีน้ำที่เก็บรักษาไว้อย่างไม่มีกำหนด ทำให้สามารถค้นหาช่วงสมดุลน้ำในอดีตได้โดยไม่ต้องเล่นซ้ำทุกเหตุการณ์ตั้งแต่ติดตั้ง",
+      "DisplayName": "รายงานสปริงเกลอร์รายวัน",
+      "List": [
+        {
+          "Description": "จุดตรวจสอบตามวัน UTC และสรุปบัญชีน้ำที่เก็บรักษาไว้อย่างไม่มีกำหนด ทำให้สามารถค้นหาช่วงสมดุลน้ำในอดีตได้โดยไม่ต้องเล่นซ้ำทุกเหตุการณ์ตั้งแต่ติดตั้ง",
+          "Name": "รายงานสปริงเกลอร์รายวัน",
+          "Type": 0
+        },
+        {
+          "Description": "ขอบเขตวันตามปฏิทิน UTC แบบรวมจุดเริ่มต้น ซึ่งใช้เป็นคีย์ระเบียนที่ทำดัชนี",
+          "Name": "เริ่มต้นวัน",
+          "Type": 1
+        },
+        {
+          "Description": "ขอบเขตวันตามปฏิทิน UTC แบบไม่รวมจุดสิ้นสุด",
+          "Name": "สิ้นสุดวัน",
+          "Type": 2
+        },
+        {
+          "Description": "เวลาแรกสุดที่แสดงโดยจุดตรวจสอบนี้ อาจช้ากว่าขอบเขตวัน UTC ในวันที่ติดตั้งหรือวันที่เปลี่ยนไซต์",
+          "Name": "เริ่มต้นช่วงข้อมูล",
+          "Type": 3
+        },
+        {
+          "Description": "เวลาสุดท้ายแบบไม่รวมจุดสิ้นสุดที่แสดงโดยจุดตรวจสอบนี้ อาจอยู่ก่อนขอบเขตวันสำหรับวันปัจจุบันที่ยังไม่ครบ",
+          "Name": "สิ้นสุดช่วงข้อมูล",
+          "Type": 4
+        },
+        {
+          "Description": "ความจุตามแบบจำลองของโปรไฟล์พืช หน่วยเป็นมิลลิเมตร",
+          "Name": "ความจุเขตราก",
+          "Type": 5
+        },
+        {
+          "Description": "ค่าการขาดน้ำในเขตรากที่คำนวณ ณ จุดเริ่มต้นของวันที่แสดง",
+          "Name": "การขาดน้ำเริ่มต้น",
+          "Type": 6
+        },
+        {
+          "Description": "ค่าการขาดน้ำในเขตรากที่คำนวณ ณ จุดสิ้นสุดที่แสดงหรือเวลาล่าสุดที่ทราบ",
+          "Name": "การขาดน้ำสิ้นสุด",
+          "Type": 7
+        },
+        {
+          "Description": "ปริมาณหยาดน้ำฟ้าที่ผู้ให้บริการบันทึกและกำหนดให้กับวัน UTC นี้",
+          "Name": "ฝน",
+          "Type": 8
+        },
+        {
+          "Description": "ค่า ET อ้างอิงที่ผู้ให้บริการบันทึกและกำหนดให้กับวัน UTC นี้ ก่อนใช้ค่าสัมประสิทธิ์พืชเฉพาะชนิด",
+          "Name": "การคายระเหยอ้างอิง",
+          "Type": 9
+        },
+        {
+          "Description": "ค่า ET อ้างอิงที่ใช้เติมช่วงเวลาที่ไม่มีประวัติจากผู้ให้บริการ",
+          "Name": "การคายระเหยอ้างอิงตามแบบจำลอง",
+          "Type": 10
+        },
+        {
+          "Description": "แหล่งที่มาของค่า ET ตามแบบจำลอง โดยละไว้เมื่อประวัติของผู้ให้บริการครอบคลุมช่วงเวลาที่แสดงทั้งหมด",
+          "Name": "แหล่งความต้องการตามแบบจำลอง",
+          "Type": 11
+        },
+        {
+          "Description": "จำนวนวินาทีในช่วงเวลาที่แสดงซึ่งครอบคลุมโดยช่วงข้อมูลสภาพอากาศจากผู้ให้บริการที่ยอมรับแล้ว",
+          "Name": "ความครอบคลุมของข้อมูลสภาพอากาศจากผู้ให้บริการ",
+          "Type": 12
+        },
+        {
+          "Description": "ความลึกของน้ำที่ประมาณจากช่วงเวลาที่ตรวจพบว่าวาล์วเปิดและกำหนดให้กับวัน UTC นี้",
+          "Name": "การชลประทาน",
+          "Type": 13
+        },
+        {
+          "Description": "ระบุว่าจุดตรวจสอบแสดงวัน UTC ทั้งวันแทนที่จะเป็นวันปัจจุบันที่ยังไม่ครบหรือไม่",
+          "Name": "วันครบถ้วน",
+          "Type": 14
+        },
+        {
+          "Description": "เวลา UTC ที่จุดตรวจสอบนี้ถูกสร้างใหม่ครั้งล่าสุด",
+          "Name": "คำนวณเมื่อ",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerDailyReportV1"
+    },
+    {
+      "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+      "DisplayName": "Daily water use",
+      "List": [
+        {
+          "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+          "Name": "Daily water use",
+          "Type": 0
+        },
+        {
+          "Description": "Recorded and planned water amounts.",
+          "Name": "Rain and watering",
+          "Type": 1
+        },
+        {
+          "Description": "Areas with no rain or watering during the selected dates.",
+          "Name": "Areas with no recorded water",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerDailyWaterUsageChartV1"
+    },
+    {
+      "Description": "กำหนดค่าทุกค่าที่แอปพลิเคชันสปริงเกลอร์เขียน ข้อมูลโซนจัดเก็บภายใต้ Matter Valve แต่ละตัว ส่วนข้อมูลระบบที่ใช้ร่วมกันใช้ปลายทางสภาพอากาศ",
+      "DisplayName": "ข้อมูลถาวรของสปริงเกลอร์",
+      "List": [
+        {
+          "Description": "กำหนดค่าทุกค่าที่แอปพลิเคชันสปริงเกลอร์เขียน ข้อมูลโซนจัดเก็บภายใต้ Matter Valve แต่ละตัว ส่วนข้อมูลระบบที่ใช้ร่วมกันใช้ปลายทางสภาพอากาศ",
+          "Name": "ข้อมูลถาวรของสปริงเกลอร์",
+          "Type": 0
+        },
+        {
+          "Description": "จัดเก็บตัวปรับระหว่างการทำงาน ข้อจำกัด และค่าฐานที่รวมแล้วของหนึ่งโซน",
+          "Name": "หน่วยความจำโซน",
+          "Type": 1
+        },
+        {
+          "Description": "สถานะที่ปลอดภัยต่อการเริ่มระบบใหม่ทั้งหมดสำหรับวาล์วที่กำหนดค่า",
+          "Name": "หน่วยความจำโซน",
+          "Type": 2
+        },
+        {
+          "Description": "จัดเก็บเหตุการณ์สภาพอากาศหรือการชลประทานหนึ่งเหตุการณ์ที่ทำดัชนีแยกกัน",
+          "Name": "เหตุการณ์น้ำ",
+          "Type": 3
+        },
+        {
+          "Description": "ช่วงสภาพอากาศที่เสร็จสมบูรณ์หนึ่งช่วง หรือช่วงเวลาที่วาล์วเปิดซึ่งถูกนำมาคำนวณแล้วหนึ่งช่วง",
+          "Name": "เหตุการณ์น้ำ",
+          "Type": 4
+        },
+        {
+          "Description": "จัดเก็บตำแหน่ง Hub ที่ถูกต้องล่าสุดสำหรับการประมาณตามฤดูกาลขณะออฟไลน์",
+          "Name": "ตำแหน่งไซต์",
+          "Type": 5
+        },
+        {
+          "Description": "พิกัด WGS84 ที่แคชไว้สำหรับไซต์สปริงเกลอร์",
+          "Name": "ตำแหน่งไซต์",
+          "Type": 6
+        },
+        {
+          "Description": "จัดเก็บโหมด Active หรือ Winterization ที่ใช้ร่วมกันสำหรับระบบสปริงเกลอร์",
+          "Name": "โหมดการรดน้ำ",
+          "Type": 7
+        },
+        {
+          "Description": "โหมดการทำงานที่ปลอดภัยต่อการเริ่มใหม่ซึ่งใช้ร่วมกันโดยทุกโซน",
+          "Name": "โหมดการรดน้ำ",
+          "Type": 8
+        },
+        {
+          "Description": "จัดเก็บเวลาและเหตุผลของการเตือนล่าสุดสำหรับทั้งระบบ",
+          "Name": "การเตือนเตรียมระบบสำหรับฤดูหนาว",
+          "Type": 9
+        },
+        {
+          "Description": "สถานะควบคุมความถี่ที่ปลอดภัยต่อการเริ่มใหม่สำหรับการแจ้งเตือนการเตรียมระบบสำหรับฤดูหนาว",
+          "Name": "หน่วยความจำการเตือน",
+          "Type": 10
+        },
+        {
+          "Description": "เก็บช่วงเวลาสำรอง ET ที่แน่นอนหนึ่งช่วงไว้อย่างไม่มีกำหนด",
+          "Name": "ช่องว่างสภาพอากาศตามแบบจำลอง",
+          "Type": 11
+        },
+        {
+          "Description": "ช่วงเวลาที่แน่นอนพร้อมแหล่งที่มาและอัตราที่ไม่เปลี่ยนแปลง",
+          "Name": "ช่องว่างตามแบบจำลอง",
+          "Type": 12
+        },
+        {
+          "Description": "เก็บกิจกรรมการรดน้ำที่กำหนดเวลา กำลังทำงาน เสร็จสิ้น ข้าม ล้มเหลว ถูกแทนที่ ทำด้วยตนเอง หรือแบบเดิมหนึ่งรายการไว้อย่างไม่มีกำหนด",
+          "Name": "กิจกรรมการรดน้ำ",
+          "Type": 13
+        },
+        {
+          "Description": "ข้อมูลวงจรชีวิตแบบถาวรที่สมบูรณ์ แยกระหว่างเวลาที่กำหนดไว้กับเวลาที่เกิดขึ้นจริง",
+          "Name": "กิจกรรม",
+          "Type": 14
+        },
+        {
+          "Description": "เก็บจุดตรวจสอบบัญชีน้ำและสมดุลน้ำรายวัน UTC หนึ่งรายการไว้อย่างไม่มีกำหนด เพื่อให้ช่วงข้อมูลเก่ายังคงค้นหาได้",
+          "Name": "รายงานรายวัน",
+          "Type": 15
+        },
+        {
+          "Description": "ฝน ET การชลประทานโดยประมาณ และค่าการขาดน้ำตามแบบจำลองตอนต้นและตอนปลาย",
+          "Name": "รายงานรายวัน",
+          "Type": 16
+        },
+        {
+          "Description": "Its generation is bound only by explicit provider site messages.",
+          "Name": "Report weather archive state V2",
+          "Type": 17
+        },
+        {
+          "Description": "Active indefinitely retained provider-site generation.",
+          "Name": "Archive state",
+          "Type": 18
+        },
+        {
+          "Description": "เก็บตัวอย่างสภาพปัจจุบันที่ยอมรับแล้วหนึ่งรายการไว้อย่างไม่มีกำหนด เพื่อรักษาหลักฐานการตัดสินใจทุก 15 นาทีโดยไม่ทำให้ฝนหรือ ET ที่อยู่ในประวัติรายชั่วโมงที่เสร็จสมบูรณ์ถูกนับซ้ำ",
+          "Name": "การสังเกตสภาพอากาศสำหรับรายงาน",
+          "Type": 19
+        },
+        {
+          "Description": "อุณหภูมิ ความชื้น ลม ลมกระโชก และข้อมูลน้ำทันที ณ เวลาที่ผู้ให้บริการระบุ",
+          "Name": "การสังเกตสภาพอากาศ",
+          "Type": 20
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 21
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 22
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 23
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 24
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 25
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 26
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 27
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 28
+        }
+      ],
+      "Name": "SprinklerData"
+    },
+    {
+      "Description": "การสูญเสียน้ำที่บันทึกและพยากรณ์จากการระเหยและการใช้น้ำของพืช",
+      "DisplayName": "การสูญเสียน้ำโดยประมาณ",
+      "List": [
+        {
+          "Description": "การสูญเสียน้ำที่บันทึกและพยากรณ์จากการระเหยและการใช้น้ำของพืช",
+          "Name": "การสูญเสียน้ำโดยประมาณ",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerEtChartV1"
+    },
+    {
+      "Description": "ปริมาณน้ำที่สูญเสียจากการระเหยและพืชหนึ่งค่าที่บันทึกหรือพยากรณ์ไว้",
+      "DisplayName": "การสูญเสียน้ำรายวัน",
+      "List": [
+        {
+          "Description": "ปริมาณน้ำที่สูญเสียจากการระเหยและพืชหนึ่งค่าที่บันทึกหรือพยากรณ์ไว้",
+          "Name": "การสูญเสียน้ำรายวัน",
+          "Type": 0
+        },
+        {
+          "Description": "เวลาที่ช่วงสภาพอากาศนี้เริ่มต้น",
+          "Name": "เริ่มเมื่อ",
+          "Type": 1
+        },
+        {
+          "Description": "เวลาที่ช่วงสภาพอากาศนี้สิ้นสุด",
+          "Name": "สิ้นสุดเมื่อ",
+          "Type": 2
+        },
+        {
+          "Description": "น้ำที่สูญเสียจากการระเหยและการใช้น้ำของพืช",
+          "Name": "การสูญเสียน้ำโดยประมาณ",
+          "Type": 3
+        },
+        {
+          "Description": "ระบุว่าค่านี้มาจากข้อมูลที่บันทึกหรือพยากรณ์",
+          "Name": "แหล่งที่มา",
+          "Type": 4
+        },
+        {
+          "Description": "ข้อมูลระบุตัวตนที่เซิร์ฟเวอร์สร้างสำหรับช่วงเวลาและแหล่งที่มานี้",
+          "Name": "คีย์คงที่",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerEtRowV1"
+    },
+    {
+      "Description": "เลือกประเภทสปริงเกลอร์หรือระบบน้ำหยดที่ติดตั้งในพื้นที่นี้",
+      "DisplayName": "วิธีการรดน้ำ",
+      "List": [
+        {
+          "Description": "เลือกประเภทสปริงเกลอร์หรือระบบน้ำหยดที่ติดตั้งในพื้นที่นี้",
+          "Enum": [
+            {
+              "Description": "จ่ายน้ำช้าและเจาะจงจากหัวจ่ายน้ำหยดบนผิวดิน",
+              "Name": "น้ำหยดบนผิวดิน",
+              "Type": 1
+            },
+            {
+              "Description": "จ่ายน้ำแบบเข้มข้นบริเวณต้นไม้ พุ่มไม้ หรือแอ่งปลูก",
+              "Name": "หัวบับเบลอร์",
+              "Type": 2
+            },
+            {
+              "Description": "จ่ายน้ำครอบคลุมพื้นที่กว้างและค่อนข้างเร็วจากหัวสเปรย์ป๊อปอัปแบบคงที่",
+              "Name": "หัวสเปรย์ป๊อปอัป",
+              "Type": 3
+            },
+            {
+              "Description": "จ่ายน้ำช้าครอบคลุมพื้นที่กว้างจากหัวโรเตอร์ประสิทธิภาพสูงหรือหลายสาย",
+              "Name": "หัวโรเตอร์อัตราต่ำ",
+              "Type": 4
+            },
+            {
+              "Description": "จ่ายน้ำครอบคลุมพื้นที่กว้างได้เร็วขึ้นจากหัวโรเตอร์แบบทั่วไป",
+              "Name": "หัวโรเตอร์อัตราสูง",
+              "Type": 5
+            }
+          ],
+          "Name": "วิธีการรดน้ำ",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerHeadTypeV1"
+    },
+    {
+      "Description": "ความชื้นที่สังเกตและพยากรณ์บนสเกลของตนเองตั้งแต่ศูนย์ถึง 100 เปอร์เซ็นต์",
+      "DisplayName": "ความชื้นสัมพัทธ์",
+      "List": [
+        {
+          "Description": "ความชื้นที่สังเกตและพยากรณ์บนสเกลของตนเองตั้งแต่ศูนย์ถึง 100 เปอร์เซ็นต์",
+          "Name": "ความชื้นสัมพัทธ์",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerHumidityChartV1"
+    },
+    {
+      "Description": "ตัวอย่างความชื้นสัมพัทธ์หนึ่งค่าที่สังเกตหรือพยากรณ์",
+      "DisplayName": "แถวความชื้น",
+      "List": [
+        {
+          "Description": "ตัวอย่างความชื้นสัมพัทธ์หนึ่งค่าที่สังเกตหรือพยากรณ์",
+          "Name": "แถวความชื้น",
+          "Type": 0
+        },
+        {
+          "Description": "เวลาเริ่มต้นช่วงข้อมูลของผู้ให้บริการ",
+          "Name": "เวลา",
+          "Type": 1
+        },
+        {
+          "Description": "เปอร์เซ็นต์ความชื้นสัมพัทธ์",
+          "Name": "ความชื้นสัมพัทธ์",
+          "Type": 2
+        },
+        {
+          "Description": "ระบุว่าเส้นนี้คือความชื้นสัมพัทธ์ในแผงรวม",
+          "Name": "การวัด",
+          "Type": 3
+        },
+        {
+          "Description": "ค่าที่สังเกตหรือพยากรณ์",
+          "Name": "แหล่งที่มา",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerHumidityRowV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved sprinkler identities",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved sprinkler identities",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "System settings and weather archives",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "One valve's settings, accounting and reports",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerKey"
+    },
+    {
+      "Description": "ช่วงเวลาที่ผู้ให้บริการไม่ครอบคลุมหนึ่งช่วง โดยแหล่งและอัตรา ET อ้างอิงสำรองจะถูกตรึงเมื่อบันทึกช่วงนี้ครั้งแรก ช่วงข้อมูลจากผู้ให้บริการที่ยอมรับในภายหลังอาจตัดหรือแทนที่ช่วงนี้ ส่วนการเปลี่ยนแปลงค่าประมาณสำรองในภายหลังจะไม่เขียนแหล่งที่มาของช่วงนี้ใหม่",
+      "DisplayName": "ช่องว่างสภาพอากาศตามแบบจำลอง",
+      "List": [
+        {
+          "Description": "ช่วงเวลาที่ผู้ให้บริการไม่ครอบคลุมหนึ่งช่วง โดยแหล่งและอัตรา ET อ้างอิงสำรองจะถูกตรึงเมื่อบันทึกช่วงนี้ครั้งแรก ช่วงข้อมูลจากผู้ให้บริการที่ยอมรับในภายหลังอาจตัดหรือแทนที่ช่วงนี้ ส่วนการเปลี่ยนแปลงค่าประมาณสำรองในภายหลังจะไม่เขียนแหล่งที่มาของช่วงนี้ใหม่",
+          "Name": "ช่องว่างสภาพอากาศตามแบบจำลอง",
+          "Type": 0
+        },
+        {
+          "Description": "จุดเริ่มต้นแบบรวมของช่วงเวลาที่ผู้ให้บริการไม่ครอบคลุม",
+          "Name": "เวลาเริ่มต้น",
+          "Type": 1
+        },
+        {
+          "Description": "จุดสิ้นสุดแบบไม่รวมของช่วงเวลาที่ผู้ให้บริการไม่ครอบคลุม",
+          "Name": "เวลาสิ้นสุด",
+          "Type": 2
+        },
+        {
+          "Description": "อัตรา ET อ้างอิงสำรองที่ตรึงไว้ หน่วยเป็นมิลลิเมตรต่อวัน UTC",
+          "Name": "อัตราการคายระเหยอ้างอิง",
+          "Type": 3
+        },
+        {
+          "Description": "แหล่งที่มาที่ตรึงไว้จากสภาพอากาศล่าสุด ตำแหน่ง/ฤดูกาล หรือค่าประมาณแบบอนุรักษ์นิยม",
+          "Name": "แหล่งความต้องการ",
+          "Type": 4
+        },
+        {
+          "Description": "เวลา UTC ที่ช่วงนี้ได้รับแหล่งที่มาที่ตรึงไว้เป็นครั้งแรก",
+          "Name": "บันทึกเมื่อ",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerModeledWeatherGapV1"
+    },
+    {
+      "Description": "เลือกสิ่งที่ปลูกในพื้นที่นี้เพื่อให้การรดน้ำตรงกับความต้องการ",
+      "DisplayName": "ชนิดพืช",
+      "List": [
+        {
+          "Description": "เลือกสิ่งที่ปลูกในพื้นที่นี้เพื่อให้การรดน้ำตรงกับความต้องการ",
+          "Enum": [
+            {
+              "Description": "หญ้าปลูกหนาแน่น มีรากตื้น และต้องการน้ำอย่างสม่ำเสมอ",
+              "Name": "สนามหญ้า",
+              "Type": 1
+            },
+            {
+              "Description": "ไม้ดอกประดับที่มีรากและความต้องการน้ำระดับปานกลาง",
+              "Name": "ดอกไม้",
+              "Type": 2
+            },
+            {
+              "Description": "พืชอาหารตามฤดูกาลที่มีรากระดับปานกลางและมีความต้องการน้ำค่อนข้างสูง",
+              "Name": "ผัก",
+              "Type": 3
+            },
+            {
+              "Description": "ไม้ผลที่เติบโตเต็มที่ มีรากลึกกว่าและมีความต้องการน้ำระดับปานกลาง",
+              "Name": "ไม้ผล",
+              "Type": 4
+            },
+            {
+              "Description": "ต้นพืชตระกูลส้มที่มีรากลึกและมีความต้องการน้ำระดับปานกลางถึงสูง",
+              "Name": "พืชตระกูลส้ม",
+              "Type": 5
+            },
+            {
+              "Description": "ไม้ยืนต้นและไม้พุ่มในภูมิทัศน์ที่เติบโตเต็มที่และมีรากลึก",
+              "Name": "ต้นไม้และพุ่มไม้",
+              "Type": 6
+            },
+            {
+              "Description": "พืชที่ปรับตัวต่อความแห้งแล้งและมีความต้องการน้ำตามสภาพอากาศต่ำ",
+              "Name": "สวนใช้น้ำน้อย",
+              "Type": 7
+            }
+          ],
+          "Name": "ชนิดพืช",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerPlantTypeV1"
+    },
+    {
+      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+      "DisplayName": "Available report range",
+      "List": [
+        {
+          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+          "Name": "Available report range",
+          "Type": 0
+        },
+        {
+          "Description": "Earliest currently selectable date after applying this chart's maximum range length.",
+          "Name": "Earliest date",
+          "Type": 1
+        },
+        {
+          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts.",
+          "Name": "Latest date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportAvailableRangeV1"
+    },
+    {
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "DisplayName": "Effective report range",
+      "List": [
+        {
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+          "Name": "Effective report range",
+          "Type": 0
+        },
+        {
+          "Description": "First calendar date included in the generated report.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Last calendar date included in the generated report.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportEffectiveRangeV1"
+    },
+    {
+      "Description": "อธิบายเหตุผลที่พื้นที่ซึ่งกำหนดค่าไว้ไม่มีข้อมูลให้แสดงสำหรับวันที่ที่เลือก",
+      "DisplayName": "ไม่มีข้อมูลรายงาน",
+      "List": [
+        {
+          "Description": "อธิบายเหตุผลที่พื้นที่ซึ่งกำหนดค่าไว้ไม่มีข้อมูลให้แสดงสำหรับวันที่ที่เลือก",
+          "Enum": [
+            {
+              "Description": "ไม่มีการบันทึกฝนหรือการรดน้ำสำหรับพื้นที่นี้ในช่วงวันที่ที่เลือก",
+              "Name": "ไม่มีน้ำที่บันทึกไว้",
+              "Type": 1
+            }
+          ],
+          "Name": "ไม่มีข้อมูลรายงาน",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerReportEmptyStateV1"
+    },
+    {
+      "Description": "ดูสมดุลน้ำ การใช้น้ำ หรือสภาพอากาศสำหรับทุกพื้นที่ เว้นวันที่ว่างเพื่อดูช่วงล่าสุด วันที่ที่อยู่นอกประวัติที่มีจะถูกปรับโดยอัตโนมัติเป็นวันที่แรกสุดหรือวันที่ล่าสุดที่มี",
+      "DisplayName": "รายงานสปริงเกลอร์",
+      "List": [
+        {
+          "Description": "ดูสมดุลน้ำ การใช้น้ำ หรือสภาพอากาศสำหรับทุกพื้นที่ เว้นวันที่ว่างเพื่อดูช่วงล่าสุด วันที่ที่อยู่นอกประวัติที่มีจะถูกปรับโดยอัตโนมัติเป็นวันที่แรกสุดหรือวันที่ล่าสุดที่มี",
+          "Name": "รายงานสปริงเกลอร์",
+          "Type": 0
+        },
+        {
+          "Description": "แสดงปริมาณน้ำที่พืชสามารถใช้ได้โดยประมาณและเหตุการณ์การรดน้ำสำหรับทุกพื้นที่ ช่วงที่เลือกครอบคลุมได้สูงสุด 365 วัน หากเลือกนานกว่านั้นจะใช้ 365 วันล่าสุด",
+          "Name": "ดูสมดุลน้ำ",
+          "Type": 1
+        },
+        {
+          "Description": "วันที่แบบรวมที่ใช้จริงเพื่อสร้างการตอบนี้",
+          "Name": "ช่วงที่ใช้จริง",
+          "Type": 2
+        },
+        {
+          "Description": "Water-balance chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 3
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 4
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 5
+        },
+        {
+          "Description": "ขีดจำกัดและค่าเริ่มต้นของตัวเลือกวันที่ปัจจุบันสำหรับคำขอครั้งถัดไป",
+          "Name": "ช่วงที่ใช้ได้",
+          "Type": 6
+        },
+        {
+          "Description": "กราฟการใช้น้ำสำหรับช่วงรายงานที่ใช้จริง",
+          "Name": "กราฟ",
+          "Type": 7
+        },
+        {
+          "Description": "Water-use chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 8
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 9
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 10
+        },
+        {
+          "Description": "วันที่แบบรวมที่ใช้จริงเพื่อสร้างการตอบนี้",
+          "Name": "ช่วงที่ใช้จริง",
+          "Type": 11
+        },
+        {
+          "Description": "อุณหภูมิ ความชื้น ลม และการสูญเสียน้ำโดยประมาณที่บันทึกและพยากรณ์",
+          "Name": "สภาพอากาศ",
+          "Type": 12
+        },
+        {
+          "Description": "Weather chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 13
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 14
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerReportProtocol"
+    },
+    {
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "DisplayName": "Report date range",
+      "List": [
+        {
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+          "Name": "Report date range",
+          "Type": 0
+        },
+        {
+          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportRequestRangeV1"
+    },
+    {
+      "Description": "เลือกรุ่นข้อมูลของไซต์จริงที่ใช้งานอยู่ โดยยังเก็บรุ่นเก่าไว้แต่ไม่นำมาปะปนกับรายงานสปริงเกลอร์ปัจจุบัน การแทนที่ไซต์ของสตรีมสภาพอากาศหรือการรีเซ็ตที่ผูกกับไซต์อย่างชัดเจนจะผูกรุ่นข้อมูล ส่วนการล้างส่วนข้อมูลจะไม่ถือเป็นการยืนยันขอบเขตไซต์",
+      "DisplayName": "สถานะคลังสภาพอากาศของรายงาน",
+      "List": [
+        {
+          "Description": "เลือกรุ่นข้อมูลของไซต์จริงที่ใช้งานอยู่ โดยยังเก็บรุ่นเก่าไว้แต่ไม่นำมาปะปนกับรายงานสปริงเกลอร์ปัจจุบัน การแทนที่ไซต์ของสตรีมสภาพอากาศหรือการรีเซ็ตที่ผูกกับไซต์อย่างชัดเจนจะผูกรุ่นข้อมูล ส่วนการล้างส่วนข้อมูลจะไม่ถือเป็นการยืนยันขอบเขตไซต์",
+          "Name": "สถานะคลังสภาพอากาศของรายงาน",
+          "Type": 0
+        },
+        {
+          "Description": "เพิ่มขึ้นอย่างต่อเนื่องทุกครั้งที่ยอมรับการเปลี่ยนระหว่างไซต์ผู้ให้บริการที่แตกต่างกัน",
+          "Name": "รุ่นข้อมูล",
+          "Type": 1
+        },
+        {
+          "Description": "ตำแหน่งของผู้ให้บริการที่ผูกกับรุ่นข้อมูลนี้อย่างชัดเจน เมื่อทราบ",
+          "Name": "ตำแหน่งไซต์",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportWeatherArchiveStateV2"
+    },
+    {
+      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+      "DisplayName": "Restart accounting checkpoint",
+      "List": [
+        {
+          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+          "Name": "Restart accounting checkpoint",
+          "Type": 0
+        },
+        {
+          "Description": "Authoritative lifecycle snapshot at the checkpoint.",
+          "Name": "Activity",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusive end of the already accounted valve-open interval.",
+          "Name": "Accounted through",
+          "Type": 2
+        },
+        {
+          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted.",
+          "Name": "Ledger segment",
+          "Type": 3
+        },
+        {
+          "Description": "Expected end of an automatic timed run; manual runs have no known end.",
+          "Name": "Expected finish",
+          "Type": 4
+        },
+        {
+          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour.",
+          "Name": "Delivery rate",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerRestartAccountingV1"
+    },
+    {
+      "Description": "อธิบายว่าสปริงเกลอร์กำลังทำอะไรหรือเหตุใดการรดน้ำจึงล่าช้า",
+      "DisplayName": "สถานะการรดน้ำ",
+      "List": [
+        {
+          "Description": "อธิบายว่าสปริงเกลอร์กำลังทำอะไรหรือเหตุใดการรดน้ำจึงล่าช้า",
+          "Enum": [
+            {
+              "Description": "กำลังเตรียมข้อมูลล่าสุด",
+              "Name": "กำลังเริ่มต้น",
+              "Type": 1
+            },
+            {
+              "Description": "ขณะนี้พืชมีน้ำเพียงพอ",
+              "Name": "ยังไม่จำเป็นต้องรดน้ำ",
+              "Type": 2
+            },
+            {
+              "Description": "คาดว่าฝนจะให้น้ำเพียงพอในตอนนี้",
+              "Name": "มีฝนในพยากรณ์",
+              "Type": 3
+            },
+            {
+              "Description": "เลื่อนการรดน้ำเพราะกำลังมีฝน อุณหภูมิใกล้เยือกแข็ง หรือลมแรงเกินไป",
+              "Name": "รอสภาพอากาศที่ปลอดภัย",
+              "Type": 4
+            },
+            {
+              "Description": "พืชอาจแห้งเกินไประหว่างช่วงห้ามรดน้ำ จึงวางแผนรดน้ำอย่างปลอดภัยก่อนช่วงนั้นเริ่ม",
+              "Name": "รดน้ำก่อนช่วงหยุด",
+              "Type": 5
+            },
+            {
+              "Description": "เลื่อนการรดน้ำไปหลังช่วงห้ามรดน้ำ",
+              "Name": "พักการรดน้ำ",
+              "Type": 6
+            },
+            {
+              "Description": "เลือกเวลารดน้ำครั้งถัดไปแล้วโดยอิงจากความต้องการของพืชและข้อมูลสภาพอากาศที่มี",
+              "Name": "กำหนดเวลาแล้ว",
+              "Type": 7
+            },
+            {
+              "Description": "สปริงเกลอร์กำลังรอให้วาล์วยืนยันการเปลี่ยนแปลง",
+              "Name": "กำลังเริ่มหรือหยุด",
+              "Type": 8
+            },
+            {
+              "Description": "ไม่มีข้อมูลสถานะวาล์ว ดังนั้นการรดน้ำอัตโนมัติจะไม่เริ่ม",
+              "Name": "ไม่มีสถานะวาล์ว",
+              "Type": 9
+            },
+            {
+              "Description": "พื้นที่นี้กำลังรดน้ำอยู่",
+              "Name": "วาล์วเปิด",
+              "Type": 10
+            },
+            {
+              "Description": "วาล์วรายงานปัญหา จึงหยุดการรดน้ำอัตโนมัติชั่วคราว",
+              "Name": "วาล์วขัดข้อง",
+              "Type": 11
+            },
+            {
+              "Description": "ไม่มีข้อมูลสภาพอากาศสด ตารางเวลาจึงใช้ค่าประมาณที่บันทึกไว้หรือค่าตามฤดูกาลที่ดีที่สุด",
+              "Name": "ค่าประมาณสภาพอากาศขณะออฟไลน์",
+              "Type": 12
+            }
+          ],
+          "Name": "สถานะการรดน้ำ",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerScheduleConditionV1"
+    },
+    {
+      "Description": "อุณหภูมิที่สังเกตและพยากรณ์โดยไม่รวมสเกลกับ ET หรือลม",
+      "DisplayName": "อุณหภูมิ",
+      "List": [
+        {
+          "Description": "อุณหภูมิที่สังเกตและพยากรณ์โดยไม่รวมสเกลกับ ET หรือลม",
+          "Name": "อุณหภูมิ",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerTemperatureChartV1"
+    },
+    {
+      "Description": "ซ้อนอุณหภูมิและความชื้นตามเวลา โดยยังคงแกน y ซ้ายและขวาแยกจากกันสำหรับหน่วยที่เข้ากันไม่ได้",
+      "DisplayName": "อุณหภูมิและความชื้นสัมพัทธ์",
+      "List": [
+        {
+          "Description": "ซ้อนอุณหภูมิและความชื้นตามเวลา โดยยังคงแกน y ซ้ายและขวาแยกจากกันสำหรับหน่วยที่เข้ากันไม่ได้",
+          "Name": "อุณหภูมิและความชื้นสัมพัทธ์",
+          "Type": 0
+        },
+        {
+          "Description": "อุณหภูมิใช้แนวแกน y อัตโนมัติชุดแรก",
+          "Name": "อุณหภูมิ",
+          "Type": 1
+        },
+        {
+          "Description": "ความชื้นสัมพัทธ์ใช้แนวแกน y ชุดที่สองซึ่งเป็นอิสระ",
+          "Name": "ความชื้นสัมพัทธ์",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityChartV1"
+    },
+    {
+      "Description": "แยกเส้นสองเส้นที่ใช้สเกลอิสระในแผงสภาพอากาศรวม",
+      "DisplayName": "การวัดอุณหภูมิและความชื้น",
+      "List": [
+        {
+          "Description": "แยกเส้นสองเส้นที่ใช้สเกลอิสระในแผงสภาพอากาศรวม",
+          "Enum": [
+            {
+              "Description": "อุณหภูมิอากาศเป็นองศาเซลเซียส",
+              "Name": "อุณหภูมิ",
+              "Type": 1
+            },
+            {
+              "Description": "เปอร์เซ็นต์ความชื้นสัมพัทธ์",
+              "Name": "ความชื้นสัมพัทธ์",
+              "Type": 2
+            }
+          ],
+          "Name": "การวัดอุณหภูมิและความชื้น",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityMeasurementV1"
+    },
+    {
+      "Description": "ตัวอย่างอุณหภูมิอากาศหนึ่งค่าที่สังเกตหรือพยากรณ์",
+      "DisplayName": "แถวอุณหภูมิ",
+      "List": [
+        {
+          "Description": "ตัวอย่างอุณหภูมิอากาศหนึ่งค่าที่สังเกตหรือพยากรณ์",
+          "Name": "แถวอุณหภูมิ",
+          "Type": 0
+        },
+        {
+          "Description": "เวลาเริ่มต้นช่วงข้อมูลของผู้ให้บริการ",
+          "Name": "เวลา",
+          "Type": 1
+        },
+        {
+          "Description": "อุณหภูมิอากาศเป็นองศาเซลเซียส",
+          "Name": "อุณหภูมิ",
+          "Type": 2
+        },
+        {
+          "Description": "ระบุว่าเส้นนี้คืออุณหภูมิในแผงรวม",
+          "Name": "การวัด",
+          "Type": 3
+        },
+        {
+          "Description": "ค่าที่สังเกตหรือพยากรณ์",
+          "Name": "แหล่งที่มา",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerTemperatureRowV1"
+    },
+    {
+      "Description": "เวลาเริ่มต้นและระยะเวลาสำหรับการรดน้ำหรือการหยุดรดน้ำ",
+      "DisplayName": "ช่วงเวลา",
+      "List": [
+        {
+          "Description": "เวลาเริ่มต้นและระยะเวลาสำหรับการรดน้ำหรือการหยุดรดน้ำ",
+          "Name": "ช่วงเวลา",
+          "Type": 0
+        },
+        {
+          "Description": "เวลาที่ช่วงนี้เริ่มต้น",
+          "Name": "เริ่มเมื่อ",
+          "Type": 1
+        },
+        {
+          "Description": "ช่วงนี้ใช้เวลานานเท่าใด",
+          "Name": "ระยะเวลา",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTimeSlotV1"
+    },
+    {
+      "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+      "DisplayName": "Valve problems",
+      "List": [
+        {
+          "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+          "Enum": [
+            {
+              "Description": "The valve reported a problem without a more specific classification.",
+              "Name": "General problem",
+              "Type": 1
+            },
+            {
+              "Description": "The valve cannot move because it is blocked.",
+              "Name": "Blocked",
+              "Type": 2
+            },
+            {
+              "Description": "The valve detected an unexpected water leak.",
+              "Name": "Leak detected",
+              "Type": 3
+            },
+            {
+              "Description": "The controller cannot detect a connected valve.",
+              "Name": "Not connected",
+              "Type": 4
+            },
+            {
+              "Description": "The valve or its wiring has a short circuit.",
+              "Name": "Short circuit",
+              "Type": 5
+            },
+            {
+              "Description": "The valve exceeded the available electrical current.",
+              "Name": "Too much current",
+              "Type": 6
+            }
+          ],
+          "Name": "Valve problems",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerValveFaultFlagsV1"
+    },
+    {
+      "Description": "รวมระดับน้ำโดยประมาณกับเหตุการณ์การรดน้ำสำหรับทุกพื้นที่",
+      "DisplayName": "สมดุลน้ำ",
+      "List": [
+        {
+          "Description": "รวมระดับน้ำโดยประมาณกับเหตุการณ์การรดน้ำสำหรับทุกพื้นที่",
+          "Name": "สมดุลน้ำ",
+          "Type": 0
+        },
+        {
+          "Description": "น้ำโดยประมาณและระดับการรดน้ำที่สำคัญสำหรับทุกพื้นที่",
+          "Name": "น้ำที่ใช้ได้และระดับต่าง ๆ",
+          "Type": 1
+        },
+        {
+          "Description": "การรดน้ำที่วางแผนไว้ ข้าม ไม่สำเร็จ ทำด้วยตนเอง และเสร็จสมบูรณ์",
+          "Name": "เหตุการณ์การรดน้ำ",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterBalanceChartV1"
+    },
+    {
+      "Description": "ปริมาณน้ำที่ใช้ได้โดยประมาณและระดับการรดน้ำที่สำคัญสำหรับทุกพื้นที่",
+      "DisplayName": "เส้นสมดุลน้ำ",
+      "List": [
+        {
+          "Description": "ปริมาณน้ำที่ใช้ได้โดยประมาณและระดับการรดน้ำที่สำคัญสำหรับทุกพื้นที่",
+          "Name": "เส้นสมดุลน้ำ",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterBalanceLinesV1"
+    },
+    {
+      "Description": "จุดหนึ่งที่แสดงปริมาณน้ำที่พืชใช้ได้โดยประมาณหรือระดับการรดน้ำที่สำคัญ น้ำที่ใช้ได้เป็นค่าประมาณ ไม่ใช่ค่าที่อ่านจากเซ็นเซอร์ดิน",
+      "DisplayName": "จุดสมดุลน้ำ",
+      "List": [
+        {
+          "Description": "จุดหนึ่งที่แสดงปริมาณน้ำที่พืชใช้ได้โดยประมาณหรือระดับการรดน้ำที่สำคัญ น้ำที่ใช้ได้เป็นค่าประมาณ ไม่ใช่ค่าที่อ่านจากเซ็นเซอร์ดิน",
+          "Name": "จุดสมดุลน้ำ",
+          "Type": 0
+        },
+        {
+          "Description": "เวลาที่ระดับน้ำนี้มีผล",
+          "Name": "เวลา",
+          "Type": 1
+        },
+        {
+          "Description": "ปริมาณน้ำโดยประมาณที่พืชใช้ได้ ตั้งแต่ 0 ถึง 100 เปอร์เซ็นต์",
+          "Name": "น้ำที่ใช้ได้",
+          "Type": 2
+        },
+        {
+          "Description": "น้ำที่ใช้ได้หรือระดับการรดน้ำที่สำคัญหนึ่งระดับ",
+          "Name": "เส้น",
+          "Type": 3
+        },
+        {
+          "Description": "พื้นที่ที่รดน้ำซึ่งแสดงโดยส่วนนี้ของกราฟ",
+          "Name": "พื้นที่",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWaterBalancePointV1"
+    },
+    {
+      "Description": "ระบุน้ำที่ใช้ได้และระดับการรดน้ำที่สำคัญ",
+      "DisplayName": "เส้นสมดุลน้ำ",
+      "List": [
+        {
+          "Description": "ระบุน้ำที่ใช้ได้และระดับการรดน้ำที่สำคัญ",
+          "Enum": [
+            {
+              "Description": "ปริมาณน้ำโดยประมาณที่พืชใช้ได้",
+              "Name": "น้ำที่ใช้ได้",
+              "Type": 1
+            },
+            {
+              "Description": "ประมาณว่าดินกักเก็บน้ำที่สามารถใช้ได้เต็มความจุ",
+              "Name": "ความจุสนาม",
+              "Type": 2
+            },
+            {
+              "Description": "ระดับที่โดยปกติควรเริ่มรดน้ำ",
+              "Name": "เกณฑ์การรดน้ำ",
+              "Type": 3
+            },
+            {
+              "Description": "ระดับที่จำเป็นต้องรดน้ำอย่างเร่งด่วน",
+              "Name": "เกณฑ์วิกฤต",
+              "Type": 4
+            }
+          ],
+          "Name": "เส้นสมดุลน้ำ",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterBalanceSeriesV1"
+    },
+    {
+      "Description": "แสดงว่าข้อมูลใดถูกใช้ในการประมาณว่าพืชสูญเสียน้ำเร็วเพียงใด",
+      "DisplayName": "ค่าประมาณการใช้น้ำ",
+      "List": [
+        {
+          "Description": "แสดงว่าข้อมูลใดถูกใช้ในการประมาณว่าพืชสูญเสียน้ำเร็วเพียงใด",
+          "Enum": [
+            {
+              "Description": "อิงจากสภาพอากาศล่าสุดที่ตำแหน่งนี้",
+              "Name": "สภาพอากาศล่าสุด",
+              "Type": 1
+            },
+            {
+              "Description": "อิงจากตำแหน่งและช่วงเวลาของปี",
+              "Name": "ตำแหน่งและฤดูกาล",
+              "Type": 2
+            },
+            {
+              "Description": "ใช้เมื่อไม่มีข้อมูลสภาพอากาศล่าสุดและข้อมูลตำแหน่ง",
+              "Name": "ค่าประมาณในตัว",
+              "Type": 3
+            }
+          ],
+          "Name": "ค่าประมาณการใช้น้ำ",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterDemandSourceV1"
+    },
+    {
+      "Description": "จัดเก็บช่วงสภาพอากาศหรือช่วงการชลประทานที่สังเกตหนึ่งช่วงแบบทำดัชนีแยกกันในประวัติน้ำเจ็ดวัน",
+      "DisplayName": "เหตุการณ์น้ำของสปริงเกลอร์",
+      "List": [
+        {
+          "Description": "จัดเก็บช่วงสภาพอากาศหรือช่วงการชลประทานที่สังเกตหนึ่งช่วงแบบทำดัชนีแยกกันในประวัติน้ำเจ็ดวัน",
+          "Name": "เหตุการณ์น้ำของสปริงเกลอร์",
+          "Type": 0
+        },
+        {
+          "Description": "บันทึกปริมาณหยาดน้ำฟ้าและการคายระเหยอ้างอิงจากผู้ให้บริการสำหรับช่วงประวัติที่เสร็จสมบูรณ์หนึ่งช่วง",
+          "Name": "ช่วงสภาพอากาศ",
+          "Type": 1
+        },
+        {
+          "Description": "เวลาเริ่มต้นแบบรวมของช่วงสภาพอากาศที่เสร็จสมบูรณ์",
+          "Name": "เวลาเริ่มต้น",
+          "Type": 2
+        },
+        {
+          "Description": "ความยาวของช่วงสภาพอากาศที่เสร็จสมบูรณ์ หน่วยเป็นวินาที",
+          "Name": "ระยะเวลา",
+          "Type": 3
+        },
+        {
+          "Description": "ปริมาณหยาดน้ำฟ้าจากผู้ให้บริการที่สะสมในช่วงนี้ หน่วยเป็นมิลลิเมตร",
+          "Name": "ปริมาณหยาดน้ำฟ้า",
+          "Type": 4
+        },
+        {
+          "Description": "การคายระเหยอ้างอิง FAO-56 จากผู้ให้บริการที่สะสมในช่วงนี้ หน่วยเป็นมิลลิเมตร",
+          "Name": "การคายระเหยอ้างอิง",
+          "Type": 5
+        },
+        {
+          "Description": "บันทึกน้ำที่อนุมานจากเวลาที่ Matter Valve เปิดจริง รวมถึงการเปิดด้วยตนเอง พร้อมตัวปรับปริมาณน้ำของโซนในช่วงที่สังเกตนั้น",
+          "Name": "ช่วงการชลประทาน",
+          "Type": 6
+        },
+        {
+          "Description": "เวลาเริ่มต้นแบบรวมของช่วงที่วาล์วเปิดซึ่งนำมาคำนวณ",
+          "Name": "เวลาเริ่มต้น",
+          "Type": 7
+        },
+        {
+          "Description": "ความยาวของช่วงที่ตรวจพบว่าวาล์วเปิด หน่วยเป็นวินาที",
+          "Name": "ระยะเวลา",
+          "Type": 8
+        },
+        {
+          "Description": "เปอร์เซ็นต์การรดน้ำที่กำหนดสำหรับโซนในขณะที่สังเกตช่วงที่วาล์วเปิดนี้ หากการตั้งค่าเปลี่ยนขณะที่วาล์วยังเปิด ประวัติจะใช้ช่วงติดกันแยกกัน",
+          "Name": "ตัวปรับปริมาณน้ำ",
+          "Type": 9
+        },
+        {
+          "Description": "ความลึกของน้ำโดยประมาณที่คำนวณจากเวลาเปิดที่สังเกตและโปรไฟล์หัวสปริงเกลอร์ที่กำหนด หน่วยเป็นมิลลิเมตร",
+          "Name": "น้ำที่จ่าย",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWaterEventV1"
+    },
+    {
+      "Description": "จัดเก็บสแนปช็อตวงจรชีวิตที่สมบูรณ์ล่าสุดก่อนการเขียนแถวตรวจสอบที่ตรงกัน ธงสถานะปัจจุบันที่ระบุอย่างชัดเจนใช้แยกกิจกรรมที่ยังไม่สิ้นสุดและต้องปรับให้ตรงกันหลังเริ่มใหม่ ออกจากสแนปช็อตที่สิ้นสุดแล้วและต้องเพียงซ่อมแซมบันทึกตรวจสอบ",
+      "DisplayName": "สถานะกิจกรรมการรดน้ำที่เป็นแหล่งอ้างอิงหลัก",
+      "List": [
+        {
+          "Description": "จัดเก็บสแนปช็อตวงจรชีวิตที่สมบูรณ์ล่าสุดก่อนการเขียนแถวตรวจสอบที่ตรงกัน ธงสถานะปัจจุบันที่ระบุอย่างชัดเจนใช้แยกกิจกรรมที่ยังไม่สิ้นสุดและต้องปรับให้ตรงกันหลังเริ่มใหม่ ออกจากสแนปช็อตที่สิ้นสุดแล้วและต้องเพียงซ่อมแซมบันทึกตรวจสอบ",
+          "Name": "สถานะกิจกรรมการรดน้ำที่เป็นแหล่งอ้างอิงหลัก",
+          "Type": 0
+        },
+        {
+          "Description": "สแนปช็อตวงจรชีวิตล่าสุดที่สมบูรณ์ หรือไม่มีค่าก่อนกิจกรรมแรก สแนปช็อตที่สิ้นสุดแล้วยังคงอยู่ที่นี่จนกว่าจะเริ่มกิจกรรมใหม่",
+          "Name": "กิจกรรมล่าสุด",
+          "Type": 1
+        },
+        {
+          "Description": "เป็นจริงเฉพาะเมื่อกิจกรรมล่าสุดอยู่ในสถานะกำหนดเวลาแล้ว รอคำสั่ง หรือกำลังทำงาน และต้องปรับให้ตรงกันเมื่อเริ่มระบบ",
+          "Name": "กิจกรรมเป็นปัจจุบัน",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWateringActivityStateV2"
+    },
+    {
+      "Description": "แยกเวลาที่กำหนดไว้และเวลาที่เกิดขึ้นจริง เพื่อให้รายงานอธิบายได้ว่าวางแผนอะไร เกิดอะไรขึ้น และเหตุใดการรดน้ำจึงถูกข้ามหรือล้มเหลว",
+      "DisplayName": "กิจกรรมการรดน้ำที่บันทึกถาวร",
+      "List": [
+        {
+          "Description": "แยกเวลาที่กำหนดไว้และเวลาที่เกิดขึ้นจริง เพื่อให้รายงานอธิบายได้ว่าวางแผนอะไร เกิดอะไรขึ้น และเหตุใดการรดน้ำจึงถูกข้ามหรือล้มเหลว",
+          "Name": "กิจกรรมการรดน้ำที่บันทึกถาวร",
+          "Type": 0
+        },
+        {
+          "Description": "ดัชนีฐานข้อมูลแบบมีเครื่องหมายที่คงที่และนำกลับมาใช้ซ้ำสำหรับทุกการอัปเดตวงจรชีวิต",
+          "Name": "ดัชนีกิจกรรม",
+          "Type": 1
+        },
+        {
+          "Description": "ลำดับที่ป้องกันการชนกันภายในวินาทีอ้างอิงและแหล่งกำเนิดเดียวกัน",
+          "Name": "ลำดับกิจกรรม",
+          "Type": 2
+        },
+        {
+          "Description": "กิจกรรมอัตโนมัติ ทำด้วยตนเอง หรือข้อมูลเก่าที่ไม่สามารถจำแนกได้",
+          "Name": "แหล่งกำเนิด",
+          "Type": 3
+        },
+        {
+          "Description": "สถานะวงจรชีวิตแบบถาวรปัจจุบันหรือสุดท้าย",
+          "Name": "ผลลัพธ์",
+          "Type": 4
+        },
+        {
+          "Description": "คำอธิบายแบบถาวรสำหรับผลลัพธ์ปัจจุบันหรือสุดท้าย",
+          "Name": "เหตุผล",
+          "Type": 5
+        },
+        {
+          "Description": "เวลาเริ่มอัตโนมัติที่วางแผนไว้ กิจกรรมแบบทำด้วยตนเองและข้อมูลเก่าจะไม่มีค่านี้",
+          "Name": "เวลาเริ่มที่กำหนด",
+          "Type": 6
+        },
+        {
+          "Description": "ระยะเวลาที่วางแผนให้วาล์วเปิดอัตโนมัติ หน่วยเป็นวินาที ค่านี้จะไม่ถูกเขียนทับด้วยระยะเวลาที่สังเกตจริง",
+          "Name": "ระยะเวลาที่กำหนด",
+          "Type": 7
+        },
+        {
+          "Description": "ความลึกของน้ำอัตโนมัติที่วางแผนไว้ หน่วยเป็นมิลลิเมตร",
+          "Name": "น้ำที่วางแผน",
+          "Type": 8
+        },
+        {
+          "Description": "เวลาที่ตรวจพบว่าวาล์วเปิดครั้งแรก ไม่มีค่าจนกว่าจะตรวจพบการเปิด",
+          "Name": "เวลาเริ่มจริง",
+          "Type": 9
+        },
+        {
+          "Description": "ระยะเวลาที่นำมาคำนวณจากการตรวจพบว่าวาล์วเปิด หน่วยเป็นวินาที",
+          "Name": "ระยะเวลาจริง",
+          "Type": 10
+        },
+        {
+          "Description": "ความลึกของน้ำที่ประมาณจากเวลาเปิดจริงและโปรไฟล์หัวสปริงเกลอร์ ไม่ได้มาจากมิเตอร์วัดการไหล",
+          "Name": "น้ำที่จ่าย",
+          "Type": 11
+        },
+        {
+          "Description": "ตัวปรับของโซนที่มีผลเมื่อสร้างกิจกรรมนี้",
+          "Name": "ตัวปรับปริมาณน้ำ",
+          "Type": 12
+        },
+        {
+          "Description": "เวลา UTC ที่แสดงโดยการอัปเดตวงจรชีวิตที่บันทึกถาวรล่าสุด",
+          "Name": "อัปเดตเมื่อ",
+          "Type": 13
+        }
+      ],
+      "Name": "SprinklerWateringActivityV1"
+    },
+    {
+      "Description": "การรดน้ำหนึ่งครั้งที่วางแผนไว้ ข้าม ไม่สำเร็จ ทำด้วยตนเอง หรือเสร็จสมบูรณ์",
+      "DisplayName": "เหตุการณ์การรดน้ำ",
+      "List": [
+        {
+          "Description": "การรดน้ำหนึ่งครั้งที่วางแผนไว้ ข้าม ไม่สำเร็จ ทำด้วยตนเอง หรือเสร็จสมบูรณ์",
+          "Name": "เหตุการณ์การรดน้ำ",
+          "Type": 0
+        },
+        {
+          "Description": "เวลาที่เริ่มรดน้ำ หรือเวลาที่วางแผนจะเริ่ม",
+          "Name": "เวลา",
+          "Type": 1
+        },
+        {
+          "Description": "ปริมาณน้ำที่พืชใช้ได้โดยประมาณ ณ เวลานั้น",
+          "Name": "น้ำที่ใช้ได้",
+          "Type": 2
+        },
+        {
+          "Description": "พื้นที่ที่รดน้ำสำหรับเหตุการณ์นี้",
+          "Name": "พื้นที่",
+          "Type": 3
+        },
+        {
+          "Description": "สิ่งที่เกิดขึ้นกับแผนหรือการรดน้ำครั้งนี้",
+          "Name": "ผลลัพธ์",
+          "Type": 4
+        },
+        {
+          "Description": "ระบุว่าการรดน้ำเริ่มแบบอัตโนมัติ ทำด้วยตนเอง หรือไม่ทราบ",
+          "Name": "เริ่มโดย",
+          "Type": 5
+        },
+        {
+          "Description": "เหตุผลที่วางแผน เปลี่ยน หยุด หรือทำให้การรดน้ำไม่สำเร็จ",
+          "Name": "เหตุผล",
+          "Type": 6
+        },
+        {
+          "Description": "ระยะเวลาที่วางแผนให้การรดน้ำอัตโนมัติทำงาน",
+          "Name": "ระยะเวลาที่วางแผน",
+          "Type": 7
+        },
+        {
+          "Description": "ระยะเวลาที่ตรวจพบว่าวาล์วเปิด",
+          "Name": "ระยะเวลาจริง",
+          "Type": 8
+        },
+        {
+          "Description": "คีย์โฟกัสคงที่ที่ไม่ซ้ำกันในทุกโซนที่กำหนดค่า",
+          "Name": "คีย์การตัดสินใจ",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWateringDecisionRowV1"
+    },
+    {
+      "Description": "แสดงการรดน้ำอัตโนมัติและด้วยตนเองบนกราฟสมดุลน้ำ",
+      "DisplayName": "เหตุการณ์การรดน้ำ",
+      "List": [
+        {
+          "Description": "แสดงการรดน้ำอัตโนมัติและด้วยตนเองบนกราฟสมดุลน้ำ",
+          "Name": "เหตุการณ์การรดน้ำ",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWateringDecisionsV1"
+    },
+    {
+      "Description": "เลือกว่าระบบสปริงเกลอร์กำลังรดน้ำอยู่หรือถูกเตรียมสำหรับฤดูหนาว",
+      "DisplayName": "โหมดการรดน้ำ",
+      "List": [
+        {
+          "Description": "เลือกว่าระบบสปริงเกลอร์กำลังรดน้ำอยู่หรือถูกเตรียมสำหรับฤดูหนาว",
+          "Enum": [
+            {
+              "Description": "เปิดใช้การรดน้ำอัตโนมัติ",
+              "Name": "ใช้งาน",
+              "Type": 1
+            },
+            {
+              "Description": "ปิดการรดน้ำอัตโนมัติสำหรับฤดูหนาว",
+              "Name": "เตรียมสำหรับฤดูหนาว",
+              "Type": 2
+            }
+          ],
+          "Name": "โหมดการรดน้ำ",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringModeV1"
+    },
+    {
+      "Description": "แสดงว่าการรดน้ำเริ่มโดยอัตโนมัติหรือเริ่มด้วยวิธีอื่น",
+      "DisplayName": "วิธีเริ่มการรดน้ำ",
+      "List": [
+        {
+          "Description": "แสดงว่าการรดน้ำเริ่มโดยอัตโนมัติหรือเริ่มด้วยวิธีอื่น",
+          "Enum": [
+            {
+              "Description": "สปริงเกลอร์อัจฉริยะเริ่มการรดน้ำครั้งนี้",
+              "Name": "อัตโนมัติ",
+              "Type": 1
+            },
+            {
+              "Description": "วาล์วถูกเปิดจากภายนอกสปริงเกลอร์อัจฉริยะ",
+              "Name": "ด้วยตนเอง",
+              "Type": 2
+            },
+            {
+              "Description": "ข้อมูลเก่าที่บันทึกไว้ไม่แสดงว่าการรดน้ำครั้งนี้เริ่มอย่างไร",
+              "Name": "ไม่ทราบ",
+              "Type": 3
+            }
+          ],
+          "Name": "วิธีเริ่มการรดน้ำ",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOriginV1"
+    },
+    {
+      "Description": "แสดงสิ่งที่เกิดขึ้นกับแผนหรือการรดน้ำ",
+      "DisplayName": "ผลการรดน้ำ",
+      "List": [
+        {
+          "Description": "แสดงสิ่งที่เกิดขึ้นกับแผนหรือการรดน้ำ",
+          "Enum": [
+            {
+              "Description": "การรดน้ำอัตโนมัติในอนาคตที่คำนวณไว้ยังคงอยู่ในแผน",
+              "Name": "กำหนดเวลาแล้ว",
+              "Type": 1
+            },
+            {
+              "Description": "สปริงเกลอร์สั่งให้วาล์วเปิดและกำลังรอการยืนยัน",
+              "Name": "รอคำสั่ง",
+              "Type": 2
+            },
+            {
+              "Description": "วาล์วเปิดอยู่และกำลังนับการรดน้ำ",
+              "Name": "กำลังทำงาน",
+              "Type": 3
+            },
+            {
+              "Description": "การรดน้ำเสร็จสิ้นหลังวาล์วปิด",
+              "Name": "เสร็จสมบูรณ์",
+              "Type": 4
+            },
+            {
+              "Description": "การรดน้ำที่วางแผนไว้ไม่ได้เริ่ม เพราะสภาพอากาศ การตั้งค่า หรือความปลอดภัยหยุดไว้",
+              "Name": "ข้าม",
+              "Type": 5
+            },
+            {
+              "Description": "ปัญหาวาล์วทำให้การรดน้ำไม่สามารถเสร็จสมบูรณ์",
+              "Name": "ล้มเหลว",
+              "Type": 6
+            },
+            {
+              "Description": "แผนการรดน้ำใหม่กว่าแทนที่แผนนี้ก่อนที่จะเริ่ม",
+              "Name": "ถูกแทนที่",
+              "Type": 7
+            }
+          ],
+          "Name": "ผลการรดน้ำ",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOutcomeV1"
+    },
+    {
+      "Description": "อธิบายเหตุผลที่วางแผน เปลี่ยน หยุด หรือทำให้การรดน้ำไม่สำเร็จ",
+      "DisplayName": "เหตุผลการรดน้ำ",
+      "List": [
+        {
+          "Description": "อธิบายเหตุผลที่วางแผน เปลี่ยน หยุด หรือทำให้การรดน้ำไม่สำเร็จ",
+          "Enum": [
+            {
+              "Description": "สปริงเกลอร์อัจฉริยะเลือกการรดน้ำครั้งนี้ตามความต้องการของพืชและสภาพอากาศ",
+              "Name": "ตารางเวลาอัจฉริยะ",
+              "Type": 1
+            },
+            {
+              "Description": "วาล์วถูกเปิดจากภายนอกสปริงเกลอร์อัจฉริยะ",
+              "Name": "การทำงานด้วยตนเอง",
+              "Type": 2
+            },
+            {
+              "Description": "ฝนที่คาดไว้ทำให้การรดน้ำที่วางแผนไว้ล่าช้าหรือถูกแทนที่",
+              "Name": "มีฝนในพยากรณ์",
+              "Type": 3
+            },
+            {
+              "Description": "ฝนที่บันทึกไว้หยุดหรือป้องกันการรดน้ำ",
+              "Name": "ตรวจพบฝน",
+              "Type": 4
+            },
+            {
+              "Description": "อุณหภูมิต่ำเกินไปสำหรับการรดน้ำอย่างปลอดภัย",
+              "Name": "สภาพอากาศเยือกแข็ง",
+              "Type": 5
+            },
+            {
+              "Description": "ลมแรงเกินไปสำหรับวิธีการรดน้ำนี้",
+              "Name": "ลมแรงเกินไป",
+              "Type": 6
+            },
+            {
+              "Description": "สภาพอากาศไม่ปลอดภัยสำหรับการรดน้ำ",
+              "Name": "สภาพอากาศไม่ปลอดภัยอื่น ๆ",
+              "Type": 7
+            },
+            {
+              "Description": "ช่วงห้ามรดน้ำป้องกันการรดน้ำที่วางแผนไว้",
+              "Name": "ช่วงพักการรดน้ำ",
+              "Type": 8
+            },
+            {
+              "Description": "ระบบถูกเตรียมสำหรับฤดูหนาว จึงปิดการรดน้ำอัตโนมัติ",
+              "Name": "การเตรียมสำหรับฤดูหนาว",
+              "Type": 9
+            },
+            {
+              "Description": "ไม่มีข้อมูลสถานะวาล์ว",
+              "Name": "วาล์วไม่พร้อมใช้งาน",
+              "Type": 10
+            },
+            {
+              "Description": "วาล์วรายงานปัญหา",
+              "Name": "วาล์วขัดข้อง",
+              "Type": 11
+            },
+            {
+              "Description": "วาล์วไม่ยอมรับคำขอ",
+              "Name": "คำสั่งล้มเหลว",
+              "Type": 12
+            },
+            {
+              "Description": "วาล์วไม่ยืนยันคำขอภายในเวลาที่กำหนด",
+              "Name": "คำสั่งหมดเวลา",
+              "Type": 13
+            },
+            {
+              "Description": "มีการสั่งให้วาล์วเปิด แต่ไม่ตรวจพบการรดน้ำ",
+              "Name": "ไม่ตรวจพบการเปิด",
+              "Type": 14
+            },
+            {
+              "Description": "การคำนวณใหม่กว่าแทนที่การรดน้ำที่วางแผนไว้",
+              "Name": "คำนวณใหม่",
+              "Type": 15
+            },
+            {
+              "Description": "ข้อมูลเก่าที่บันทึกไว้ไม่มีเหตุผลที่เฉพาะเจาะจงกว่านี้",
+              "Name": "ไม่ทราบ",
+              "Type": 16
+            },
+            {
+              "Description": "The valve was observed closed before its timed run was due to finish.",
+              "Name": "Stopped early",
+              "Type": 17
+            }
+          ],
+          "Name": "เหตุผลการรดน้ำ",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringReasonV1"
+    },
+    {
+      "Description": "แสดงว่าน้ำมาจากที่ใดหรือคาดว่าจะมาในภายหลัง",
+      "DisplayName": "แหล่งน้ำ",
+      "List": [
+        {
+          "Description": "แสดงว่าน้ำมาจากที่ใดหรือคาดว่าจะมาในภายหลัง",
+          "Enum": [
+            {
+              "Description": "ฝนที่บริการสภาพอากาศบันทึกไว้แล้ว",
+              "Name": "ฝน",
+              "Type": 1
+            },
+            {
+              "Description": "น้ำที่ประมาณจากระยะเวลาที่วาล์วเปิด",
+              "Name": "การชลประทาน",
+              "Type": 2
+            },
+            {
+              "Description": "ฝนที่คาดไว้ในพยากรณ์",
+              "Name": "ฝนที่พยากรณ์",
+              "Type": 3
+            },
+            {
+              "Description": "การรดน้ำอัตโนมัติที่วางแผนไว้แต่ยังไม่เริ่ม",
+              "Name": "น้ำที่กำหนดเวลา",
+              "Type": 4
+            }
+          ],
+          "Name": "แหล่งน้ำ",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterInputTypeV1"
+    },
+    {
+      "Description": "รวมสรุปฝนเทียบกับการชลประทานแบบกะทัดรัดเข้ากับรายละเอียดรายวัน",
+      "DisplayName": "การใช้น้ำ",
+      "List": [
+        {
+          "Description": "รวมสรุปฝนเทียบกับการชลประทานแบบกะทัดรัดเข้ากับรายละเอียดรายวัน",
+          "Name": "การใช้น้ำ",
+          "Type": 0
+        },
+        {
+          "Description": "Shared rain and per-area irrigation during the selected dates.",
+          "Name": "Summary",
+          "Type": 1
+        },
+        {
+          "Description": "Rain and watering amounts by local calendar date.",
+          "Name": "Daily details",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterUsageChartV1"
+    },
+    {
+      "Description": "คงพื้นที่ให้มองเห็นได้เมื่อไม่มีฝนหรือการรดน้ำในช่วงวันที่ที่เลือก",
+      "DisplayName": "พื้นที่ที่ไม่มีน้ำบันทึกไว้",
+      "List": [
+        {
+          "Description": "คงพื้นที่ให้มองเห็นได้เมื่อไม่มีฝนหรือการรดน้ำในช่วงวันที่ที่เลือก",
+          "Name": "พื้นที่ที่ไม่มีน้ำบันทึกไว้",
+          "Type": 0
+        },
+        {
+          "Description": "จัดข้อความให้อยู่กึ่งกลางกราฟ",
+          "Name": "ตำแหน่งป้าย",
+          "Type": 1
+        },
+        {
+          "Description": "พื้นที่ที่รดน้ำซึ่งไม่มีน้ำบันทึกไว้",
+          "Name": "พื้นที่",
+          "Type": 2
+        },
+        {
+          "Description": "อธิบายเหตุผลที่พื้นที่นี้ไม่มีแท่งในกราฟ",
+          "Name": "ข้อความ",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZoneRowV1"
+    },
+    {
+      "Description": "ข้อความสำหรับพื้นที่ที่ไม่มีฝนหรือการรดน้ำในช่วงวันที่ที่เลือก",
+      "DisplayName": "พื้นที่ที่ไม่มีน้ำบันทึกไว้",
+      "List": [
+        {
+          "Description": "ข้อความสำหรับพื้นที่ที่ไม่มีฝนหรือการรดน้ำในช่วงวันที่ที่เลือก",
+          "Name": "พื้นที่ที่ไม่มีน้ำบันทึกไว้",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZonesV1"
+    },
+    {
+      "Description": "แสดงปริมาณฝนและการรดน้ำตามวันที่สำหรับทุกพื้นที่",
+      "DisplayName": "การใช้น้ำ",
+      "List": [
+        {
+          "Description": "แสดงปริมาณฝนและการรดน้ำตามวันที่สำหรับทุกพื้นที่",
+          "Name": "การใช้น้ำ",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageMarksV1"
+    },
+    {
+      "Description": "ปริมาณฝนหรือการรดน้ำหนึ่งค่าที่แสดงสำหรับพื้นที่หนึ่งในวันที่หนึ่ง",
+      "DisplayName": "รายการการใช้น้ำ",
+      "List": [
+        {
+          "Description": "ปริมาณฝนหรือการรดน้ำหนึ่งค่าที่แสดงสำหรับพื้นที่หนึ่งในวันที่หนึ่ง",
+          "Name": "รายการการใช้น้ำ",
+          "Type": 0
+        },
+        {
+          "Description": "วันที่ตามปฏิทินท้องถิ่นสำหรับปริมาณฝนหรือการรดน้ำนี้",
+          "Name": "วันที่",
+          "Type": 1
+        },
+        {
+          "Description": "ตำแหน่งที่ปริมาณนี้เริ่มต้นในกราฟ",
+          "Name": "จุดเริ่มแท่ง",
+          "Type": 2
+        },
+        {
+          "Description": "ตำแหน่งที่ปริมาณนี้สิ้นสุดในกราฟ",
+          "Name": "จุดสิ้นสุดแท่ง",
+          "Type": 3
+        },
+        {
+          "Description": "ฝนหรือการรดน้ำที่แสดงโดยส่วนนี้ของแท่ง",
+          "Name": "ปริมาณน้ำ",
+          "Type": 4
+        },
+        {
+          "Description": "ฝนที่บันทึก การรดน้ำ ฝนที่คาดไว้ หรือการรดน้ำที่วางแผนไว้",
+          "Name": "แหล่งน้ำ",
+          "Type": 5
+        },
+        {
+          "Description": "พื้นที่ที่รดน้ำซึ่งแสดงโดยแถวนี้",
+          "Name": "พื้นที่",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageRowV1"
+    },
+    {
+      "Description": "Shows shared rain and irrigation for every area together on one chart.",
+      "DisplayName": "Water-use summary",
+      "List": [
+        {
+          "Description": "Shows shared rain and irrigation for every area together on one chart.",
+          "Name": "Water-use summary",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryChartV1"
+    },
+    {
+      "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+      "DisplayName": "Water-use summary item",
+      "List": [
+        {
+          "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+          "Name": "Water-use summary item",
+          "Type": 0
+        },
+        {
+          "Description": "Millimeter scale for comparing rain and irrigation.",
+          "Name": "Water amount",
+          "Type": 1
+        },
+        {
+          "Description": "Where this contribution ends in its stacked total.",
+          "Name": "Amount end",
+          "Type": 2
+        },
+        {
+          "Description": "Total rain or irrigation represented by this part of the bar.",
+          "Name": "Amount",
+          "Type": 3
+        },
+        {
+          "Description": "Recorded rain, forecast rain, actual watering, or scheduled watering.",
+          "Name": "Water source",
+          "Type": 4
+        },
+        {
+          "Description": "Keeps shared rain first, followed by every configured area.",
+          "Name": "Lane",
+          "Type": 5
+        },
+        {
+          "Description": "Shows Rain or the configured area's name on the summary axis.",
+          "Name": "Rain or area",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryRowV1"
+    },
+    {
+      "Description": "แสดงว่าค่าหนึ่งเป็นค่าที่บันทึกหรือพยากรณ์",
+      "DisplayName": "แหล่งข้อมูลสภาพอากาศ",
+      "List": [
+        {
+          "Description": "แสดงว่าค่าหนึ่งเป็นค่าที่บันทึกหรือพยากรณ์",
+          "Enum": [
+            {
+              "Description": "การสังเกตสภาพอากาศที่เสร็จสมบูรณ์",
+              "Name": "ประวัติที่บันทึก",
+              "Type": 1
+            },
+            {
+              "Description": "การสังเกตสภาพอากาศปัจจุบันล่าสุด",
+              "Name": "สภาพปัจจุบัน",
+              "Type": 2
+            },
+            {
+              "Description": "ค่าในอนาคตจากพยากรณ์ล่าสุด",
+              "Name": "พยากรณ์",
+              "Type": 3
+            }
+          ],
+          "Name": "แหล่งข้อมูลสภาพอากาศ",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherChartSourceV1"
+    },
+    {
+      "Description": "แสดงการสูญเสียน้ำโดยประมาณ อุณหภูมิ ความชื้น และลมร่วมกัน",
+      "DisplayName": "สภาพอากาศ",
+      "List": [
+        {
+          "Description": "แสดงการสูญเสียน้ำโดยประมาณ อุณหภูมิ ความชื้น และลมร่วมกัน",
+          "Name": "สภาพอากาศ",
+          "Type": 0
+        },
+        {
+          "Description": "การสูญเสียน้ำที่บันทึกและพยากรณ์จากการระเหยและการใช้น้ำของพืช",
+          "Name": "การสูญเสียน้ำโดยประมาณ",
+          "Type": 1
+        },
+        {
+          "Description": "ค่าที่สังเกตและพยากรณ์พร้อมแกน y แยกอิสระ",
+          "Name": "อุณหภูมิและความชื้นสัมพัทธ์",
+          "Type": 2
+        },
+        {
+          "Description": "ลมต่อเนื่องและลมกระโชกที่สังเกตและพยากรณ์",
+          "Name": "ลม",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherEtChartV1"
+    },
+    {
+      "Description": "ลมต่อเนื่องและลมกระโชกที่สังเกตและพยากรณ์บนสเกลเดียวกันที่เปรียบเทียบได้",
+      "DisplayName": "ลมและลมกระโชก",
+      "List": [
+        {
+          "Description": "ลมต่อเนื่องและลมกระโชกที่สังเกตและพยากรณ์บนสเกลเดียวกันที่เปรียบเทียบได้",
+          "Name": "ลมและลมกระโชก",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWindChartV1"
+    },
+    {
+      "Description": "ตัวอย่างลมต่อเนื่องหรือลมกระโชกหนึ่งค่า",
+      "DisplayName": "แถวลม",
+      "List": [
+        {
+          "Description": "ตัวอย่างลมต่อเนื่องหรือลมกระโชกหนึ่งค่า",
+          "Name": "แถวลม",
+          "Type": 0
+        },
+        {
+          "Description": "เวลาเริ่มต้นช่วงข้อมูลของผู้ให้บริการ",
+          "Name": "เวลา",
+          "Type": 1
+        },
+        {
+          "Description": "ความเร็วลมต่อเนื่องหรือลมกระโชก หน่วยเป็นเมตรต่อวินาที",
+          "Name": "ความเร็วลม",
+          "Type": 2
+        },
+        {
+          "Description": "ลมต่อเนื่องหรือลมกระโชกที่สังเกตหรือพยากรณ์",
+          "Name": "ชุดข้อมูล",
+          "Type": 3
+        },
+        {
+          "Description": "ข้อมูลระบุตัวตนที่เซิร์ฟเวอร์สร้างสำหรับเวลาและชุดข้อมูลลมนี้",
+          "Name": "คีย์คงที่",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWindRowV1"
+    },
+    {
+      "Description": "แยกลมต่อเนื่องและลมกระโชกสำหรับช่วงที่สังเกตและพยากรณ์",
+      "DisplayName": "ชุดข้อมูลลม",
+      "List": [
+        {
+          "Description": "แยกลมต่อเนื่องและลมกระโชกสำหรับช่วงที่สังเกตและพยากรณ์",
+          "Enum": [
+            {
+              "Description": "ลมต่อเนื่องจากช่วงประวัติที่เสร็จสมบูรณ์",
+              "Name": "ลมต่อเนื่องในอดีต",
+              "Type": 1
+            },
+            {
+              "Description": "ลมกระโชกสูงสุดจากช่วงประวัติที่เสร็จสมบูรณ์",
+              "Name": "ลมกระโชกในอดีต",
+              "Type": 2
+            },
+            {
+              "Description": "ลมต่อเนื่องจากการสังเกตปัจจุบันที่เก็บไว้",
+              "Name": "ลมต่อเนื่องปัจจุบัน",
+              "Type": 3
+            },
+            {
+              "Description": "ลมกระโชกสูงสุดจากการสังเกตปัจจุบันที่เก็บไว้",
+              "Name": "ลมกระโชกปัจจุบัน",
+              "Type": 4
+            },
+            {
+              "Description": "ลมต่อเนื่องที่คาดการณ์",
+              "Name": "ลมต่อเนื่องที่พยากรณ์",
+              "Type": 5
+            },
+            {
+              "Description": "ลมกระโชกสูงสุดที่คาดการณ์",
+              "Name": "ลมกระโชกที่พยากรณ์",
+              "Type": 6
+            }
+          ],
+          "Name": "ชุดข้อมูลลม",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWindSeriesV1"
+    },
+    {
+      "Description": "จดจำการเตือนล่าสุดเพื่อไม่ให้ส่งซ้ำเร็วเกินไป",
+      "DisplayName": "การเตรียมระบบสำหรับฤดูหนาวครั้งล่าสุด",
+      "List": [
+        {
+          "Description": "จดจำการเตือนล่าสุดเพื่อไม่ให้ส่งซ้ำเร็วเกินไป",
+          "Name": "การเตรียมระบบสำหรับฤดูหนาวครั้งล่าสุด",
+          "Type": 0
+        },
+        {
+          "Description": "เวลาที่ส่งการเตือนล่าสุด",
+          "Name": "ส่งเมื่อ",
+          "Type": 1
+        },
+        {
+          "Description": "เหตุผลที่ส่งการเตือนล่าสุด",
+          "Name": "เหตุผล",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderMemoryV1"
+    },
+    {
+      "Description": "อธิบายเหตุผลที่ส่งการเตือนสภาพอากาศหนาวล่าสุด",
+      "DisplayName": "เหตุผลการเตรียมระบบสำหรับฤดูหนาว",
+      "List": [
+        {
+          "Description": "อธิบายเหตุผลที่ส่งการเตือนสภาพอากาศหนาวล่าสุด",
+          "Enum": [
+            {
+              "Description": "ละติจูดของไซต์และฤดูกาลปัจจุบันบ่งชี้ว่าสภาพอากาศหนาวกำลังใกล้เข้ามา",
+              "Name": "ตำแหน่งและฤดูกาล",
+              "Type": 1
+            },
+            {
+              "Description": "สภาพปัจจุบันหรือข้อมูลพยากรณ์ล่าสุดแสดงอุณหภูมิที่ระดับหรือต่ำกว่าเกณฑ์ความปลอดภัยสำหรับอากาศหนาวของสปริงเกลอร์",
+              "Name": "สภาพอากาศเยือกแข็ง",
+              "Type": 2
+            }
+          ],
+          "Name": "เหตุผลการเตรียมระบบสำหรับฤดูหนาว",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderReasonV1"
+    },
+    {
+      "Description": "แสดงข้อมูลเบื้องหลังแผนการรดน้ำปัจจุบัน",
+      "DisplayName": "รายละเอียดโซน",
+      "List": [
+        {
+          "Description": "แสดงข้อมูลเบื้องหลังแผนการรดน้ำปัจจุบัน",
+          "Name": "รายละเอียดโซน",
+          "Type": 0
+        },
+        {
+          "Description": "ข้อมูลที่ใช้ประมาณว่าพืชจะต้องการน้ำครั้งถัดไปเมื่อใด",
+          "Name": "ค่าประมาณการใช้น้ำ",
+          "Type": 1
+        },
+        {
+          "Description": "ปริมาณน้ำโดยประมาณที่สูญเสียในแต่ละวันจากการระเหยและการใช้น้ำของพืช",
+          "Name": "การสูญเสียน้ำรายวันโดยประมาณ",
+          "Type": 2
+        },
+        {
+          "Description": "เวลาที่คำนวณแผนการรดน้ำนี้",
+          "Name": "อัปเดตล่าสุด",
+          "Type": 3
+        },
+        {
+          "Description": "การตัดสินใจรดน้ำปัจจุบันหรือเหตุผลที่ล่าช้า",
+          "Name": "สถานะ",
+          "Type": 4
+        },
+        {
+          "Description": "เวลาเริ่มต้นและระยะเวลาที่วางแผนไว้ สภาพอากาศหรือความพร้อมของวาล์วยังอาจเปลี่ยนแผนได้",
+          "Name": "การรดน้ำครั้งถัดไป",
+          "Type": 5
+        },
+        {
+          "Description": "ปริมาณน้ำที่วางแผนสำหรับการรดน้ำอัตโนมัติครั้งถัดไป",
+          "Name": "น้ำที่วางแผน",
+          "Type": 6
+        },
+        {
+          "Description": "ปริมาณน้ำโดยประมาณที่พืชต้องการ",
+          "Name": "ปริมาณน้ำที่ขาดโดยประมาณ",
+          "Type": 7
+        },
+        {
+          "Description": "ฝนที่นับในช่วงเจ็ดวันที่ผ่านมา",
+          "Name": "ฝนล่าสุด",
+          "Type": 8
+        },
+        {
+          "Description": "การรดน้ำที่นับในช่วงเจ็ดวันที่ผ่านมา",
+          "Name": "การรดน้ำล่าสุด",
+          "Type": 9
+        },
+        {
+          "Description": "ระบุว่าวาล์วกำลังเปิดอยู่หรือไม่",
+          "Name": "กำลังรดน้ำ",
+          "Type": 10
+        },
+        {
+          "Description": "การรดน้ำอัตโนมัติจะรอจนกว่าจะมีข้อมูลสถานะวาล์ว",
+          "Name": "มีสถานะวาล์ว",
+          "Type": 11
+        },
+        {
+          "Description": "ปัญหาที่วาล์วรายงาน อาจมีมากกว่าหนึ่งปัญหา",
+          "Name": "ปัญหาวาล์ว",
+          "Type": 12
+        }
+      ],
+      "Name": "SprinklerZoneActiveStateV1"
+    },
+    {
+      "Description": "แสดงแผนการรดน้ำทั้งหมด หรือแสดงว่าระบบถูกเตรียมสำหรับฤดูหนาว",
+      "DisplayName": "สถานะสปริงเกลอร์โดยละเอียด",
+      "List": [
+        {
+          "Description": "แสดงแผนการรดน้ำทั้งหมด หรือแสดงว่าระบบถูกเตรียมสำหรับฤดูหนาว",
+          "Name": "สถานะสปริงเกลอร์โดยละเอียด",
+          "Type": 0
+        },
+        {
+          "Description": "เปิดใช้การรดน้ำอัตโนมัติและมีข้อมูลโซนปัจจุบันทั้งหมด",
+          "Name": "ใช้งาน",
+          "Type": 1
+        },
+        {
+          "Description": "แผนการรดน้ำปัจจุบัน ค่าประมาณน้ำ และสถานะวาล์ว",
+          "Name": "รายละเอียดโซน",
+          "Type": 2
+        },
+        {
+          "Description": "ปิดการรดน้ำอัตโนมัติสำหรับระบบสปริงเกลอร์ทั้งหมด และไม่มีการกำหนดช่วงเวลารดน้ำ",
+          "Name": "เตรียมสำหรับฤดูหนาว",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerZoneAdvancedStateV1"
+    },
+    {
+      "Description": "Explains why a requested sprinkler setting was not changed.",
+      "DisplayName": "Configuration error",
+      "List": [
+        {
+          "Description": "Explains why a requested sprinkler setting was not changed.",
+          "Enum": [
+            {
+              "Description": "The percentage was outside the supported range or step.",
+              "Name": "Invalid water amount",
+              "Type": 1
+            },
+            {
+              "Description": "The replacement contained too many periods or an invalid interval.",
+              "Name": "Invalid no-watering periods",
+              "Type": 2
+            }
+          ],
+          "Name": "Configuration error",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationErrorV1"
+    },
+    {
+      "Description": "ปรับปริมาณน้ำ ช่วงห้ามรดน้ำ หรือกำหนดว่าการรดน้ำอัตโนมัติทำงานอยู่หรือไม่",
+      "DisplayName": "การตั้งค่าโซน",
+      "List": [
+        {
+          "Description": "ปรับปริมาณน้ำ ช่วงห้ามรดน้ำ หรือกำหนดว่าการรดน้ำอัตโนมัติทำงานอยู่หรือไม่",
+          "Name": "การตั้งค่าโซน",
+          "Type": 0
+        },
+        {
+          "Description": "ใช้ 100% สำหรับปริมาณที่แนะนำ ค่าที่ต่ำกว่าสำหรับใช้น้ำน้อยลง หรือค่าที่สูงกว่าสำหรับใช้น้ำมากขึ้น",
+          "Name": "ปริมาณน้ำ",
+          "Type": 1
+        },
+        {
+          "Description": "Times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 2
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 3
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationV1"
+    },
+    {
+      "Description": "เก็บตัวปรับปริมาณน้ำแบบกะทัดรัดที่ปลอดภัยต่อการเริ่มใหม่ ข้อจำกัด และค่าฐานสมดุลน้ำที่รวมแล้วสำหรับวาล์วที่กำหนดหนึ่งตัว เหตุการณ์น้ำจัดเก็บแยกกันเป็นระเบียนแบบทำดัชนีเพิ่มขึ้น",
+      "DisplayName": "หน่วยความจำโซนสปริงเกลอร์",
+      "List": [
+        {
+          "Description": "เก็บตัวปรับปริมาณน้ำแบบกะทัดรัดที่ปลอดภัยต่อการเริ่มใหม่ ข้อจำกัด และค่าฐานสมดุลน้ำที่รวมแล้วสำหรับวาล์วที่กำหนดหนึ่งตัว เหตุการณ์น้ำจัดเก็บแยกกันเป็นระเบียนแบบทำดัชนีเพิ่มขึ้น",
+          "Name": "หน่วยความจำโซนสปริงเกลอร์",
+          "Type": 0
+        },
+        {
+          "Description": "เปอร์เซ็นต์ของปริมาณการรดน้ำแบบปรับตัวที่จะนำไปใช้ ค่าเริ่มต้นคือ 100%",
+          "Name": "ตัวปรับปริมาณน้ำ",
+          "Type": 1
+        },
+        {
+          "Description": "ข้อจำกัดการกำหนดเวลาระหว่างการทำงานที่ผ่านการปรับให้อยู่ในรูปมาตรฐาน",
+          "Name": "ช่วงพักการรดน้ำ",
+          "Type": 2
+        },
+        {
+          "Description": "ช่วงเวลาแบบรวมจุดเริ่มต้นแต่ไม่รวมจุดสิ้นสุดที่โซนไม่สามารถรดน้ำได้",
+          "Name": "ช่วงพักการรดน้ำ",
+          "Type": 3
+        },
+        {
+          "Description": "วันที่และเวลาที่ข้อมูลน้ำเก่ากว่านี้ถูกนำไปรวมไว้ใน `baseline_deficit_millimeters`",
+          "Name": "เวลาฐานสมดุล",
+          "Type": 4
+        },
+        {
+          "Description": "ค่าการขาดน้ำในเขตราก ณ `balance_baseline_at` หน่วยเป็นมิลลิเมตร",
+          "Name": "ค่าการขาดน้ำฐาน",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerZoneMemoryV1"
+    },
+    {
+      "Description": "ดูสถานะและรายละเอียดของพื้นที่นี้ หรือเปลี่ยนการตั้งค่าการรดน้ำ",
+      "DisplayName": "ตัวควบคุมสปริงเกลอร์",
+      "List": [
+        {
+          "Description": "ดูสถานะและรายละเอียดของพื้นที่นี้ หรือเปลี่ยนการตั้งค่าการรดน้ำ",
+          "Name": "ตัวควบคุมสปริงเกลอร์",
+          "Type": 0
+        },
+        {
+          "Description": "แสดงว่าพื้นที่นี้กำลังทำอะไรและจะรดน้ำครั้งถัดไปเมื่อใด",
+          "Name": "ดูสถานะ",
+          "Type": 1
+        },
+        {
+          "Description": "สถานะการรดน้ำปัจจุบันและแผนการรดน้ำครั้งถัดไป",
+          "Name": "สถานะปัจจุบัน",
+          "Type": 2
+        },
+        {
+          "Description": "สถานะปัจจุบันสำหรับพื้นที่นี้หรือระบบที่เตรียมสำหรับฤดูหนาว",
+          "Name": "สถานะสปริงเกลอร์",
+          "Type": 3
+        },
+        {
+          "Description": "แสดงค่าประมาณน้ำ แผนการรดน้ำ และสถานะวาล์ว",
+          "Name": "ดูรายละเอียด",
+          "Type": 4
+        },
+        {
+          "Description": "ค่าประมาณน้ำ แผนการรดน้ำ และสถานะวาล์ว",
+          "Name": "รายละเอียดโซน",
+          "Type": 5
+        },
+        {
+          "Description": "แสดงปริมาณน้ำ ช่วงห้ามรดน้ำ และสถานะการใช้งาน",
+          "Name": "ดูการตั้งค่า",
+          "Type": 6
+        },
+        {
+          "Description": "ปริมาณน้ำ ช่วงห้ามรดน้ำ และสถานะการใช้งานปัจจุบัน การเปลี่ยนแปลงที่ยอมรับในภายหลังจะถูกส่งเป็นข้อมูลการสมัครรับก่อนการยืนยันขั้นสุดท้าย",
+          "Name": "การตั้งค่าโซน",
+          "Type": 7
+        },
+        {
+          "Description": "การตั้งค่าปัจจุบันสำหรับพื้นที่นี้",
+          "Name": "การตั้งค่า",
+          "Type": 8
+        },
+        {
+          "Description": "ใช้น้ำมากหรือน้อยกว่าปริมาณที่แนะนำ",
+          "Name": "เปลี่ยนปริมาณน้ำ",
+          "Type": 9
+        },
+        {
+          "Description": "Use more or less water than the recommended amount.",
+          "Name": "Change water amount",
+          "Type": 10
+        },
+        {
+          "Description": "Use 100% for the recommended amount, a lower value for less water, or a higher value for more water.",
+          "Name": "Water amount",
+          "Type": 11
+        },
+        {
+          "Description": "Replace the times when this area must not be watered.",
+          "Name": "Change no-watering periods",
+          "Type": 12
+        },
+        {
+          "Description": "The complete list of times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 13
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 14
+        },
+        {
+          "Description": "Turn automatic watering on or off.",
+          "Name": "Change active state",
+          "Type": 15
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 16
+        },
+        {
+          "Description": "Confirms that a requested setting was persisted and applied. The current subscribed configuration remains installed.",
+          "Name": "Change accepted",
+          "Type": 17
+        },
+        {
+          "Description": "Explains why a requested setting was not changed while preserving the current subscribed configuration for correction and retry.",
+          "Name": "Change rejected",
+          "Type": 18
+        },
+        {
+          "Description": "A localized explanation of the invalid setting.",
+          "Name": "Error message",
+          "Type": 19
+        },
+        {
+          "Description": "The reason the setting was rejected.",
+          "Name": "Error",
+          "Type": 20
+        }
+      ],
+      "Name": "SprinklerZoneProtocol"
+    },
+    {
+      "Description": "แสดงสถานะปัจจุบันและแผนการรดน้ำครั้งถัดไป",
+      "DisplayName": "สถานะสปริงเกลอร์",
+      "List": [
+        {
+          "Description": "แสดงสถานะปัจจุบันและแผนการรดน้ำครั้งถัดไป",
+          "Name": "สถานะสปริงเกลอร์",
+          "Type": 0
+        },
+        {
+          "Description": "เปิดใช้การรดน้ำอัตโนมัติ",
+          "Name": "ใช้งาน",
+          "Type": 1
+        },
+        {
+          "Description": "การตัดสินใจรดน้ำปัจจุบันหรือเหตุผลที่ล่าช้า",
+          "Name": "สถานะ",
+          "Type": 2
+        },
+        {
+          "Description": "เวลาเริ่มต้นและระยะเวลาที่วางแผนไว้",
+          "Name": "การรดน้ำครั้งถัดไป",
+          "Type": 3
+        },
+        {
+          "Description": "ปิดการรดน้ำอัตโนมัติสำหรับระบบสปริงเกลอร์ทั้งหมด และไม่มีการกำหนดช่วงเวลารดน้ำ",
+          "Name": "เตรียมสำหรับฤดูหนาว",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneStateV1"
+    },
+    {
+      "Description": "ตั้งค่าสนามหญ้า สวน หรือพื้นที่ปลูกหนึ่งแห่งที่รดน้ำแยกจากพื้นที่อื่น",
+      "DisplayName": "พื้นที่ที่รดน้ำ",
+      "List": [
+        {
+          "Description": "ตั้งค่าสนามหญ้า สวน หรือพื้นที่ปลูกหนึ่งแห่งที่รดน้ำแยกจากพื้นที่อื่น",
+          "Name": "พื้นที่ที่รดน้ำ",
+          "Type": 0
+        },
+        {
+          "Description": "เลือกวาล์วที่ควบคุมพื้นที่นี้",
+          "Name": "วาล์วน้ำ",
+          "Type": 1
+        },
+        {
+          "Description": "เลือกสิ่งที่ปลูกในพื้นที่นี้",
+          "Name": "ชนิดพืช",
+          "Type": 2
+        },
+        {
+          "Description": "เลือกวิธีจ่ายน้ำในพื้นที่นี้",
+          "Name": "วิธีการรดน้ำ",
+          "Type": 3
+        },
+        {
+          "Description": "เลือกตำแหน่งที่จะแสดงสถานะ การตั้งค่า และตัวควบคุมของพื้นที่นี้",
+          "Name": "ตัวควบคุมพื้นที่",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "System record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "System record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "ArchiveState",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "WateringMode",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WinterizationReminder",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "WeatherHistory",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "WeatherObservation",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 10
+        }
+      ],
+      "Name": "SystemRecord"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Valve record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Valve record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Memory",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "ActivityState",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "Restart",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WaterEvent",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Activity",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "DailyReport",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "ModeledWeatherGap",
+          "Type": 10
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 11
+        }
+      ],
+      "Name": "ZoneRecord"
+    }
+  ]
+}

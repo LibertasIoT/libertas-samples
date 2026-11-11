@@ -1,0 +1,50 @@
+{
+  "Description": "Fournit des données météorologiques locales aux applications d’arrosage telles que Smart Sprinkler afin qu’elles puissent planifier l’arrosage en fonction de la pluie, de la température, de l’humidité et du vent. Météo locale utilise l’emplacement du Hub pour obtenir auprès d’Open-Meteo les conditions actuelles, les données météorologiques horaires des sept derniers jours et les prévisions à sept jours. Le service actualise automatiquement les données météorologiques et conserve les dernières données valides après les redémarrages et pendant les interruptions temporaires d’Internet. L’obtention de données météorologiques à jour nécessite l’accès à l’emplacement et une connexion Internet. Chaque Hub peut exécuter un service Météo locale pour plusieurs applications d’arrosage.",
+  "DisplayName": "Météo locale",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Local weather",
+      "Description": "Météo locale fournit les conditions actuelles, les données météorologiques récentes et les prévisions afin d’aider les applications d’arrosage à déterminer quand arroser et en quelle quantité. Le service crée une source météorologique partagée pour des applications telles que Smart Sprinkler et utilise l’emplacement du Hub pour obtenir les données météorologiques auprès d’Open-Meteo. Météo locale fournit la température, l’humidité relative, les précipitations, la probabilité de pluie prévue, la perte d’eau estimée du sol et des plantes, la vitesse du vent et les rafales. Météo locale actualise automatiquement les conditions actuelles toutes les 15 minutes, ainsi que l’historique horaire et les prévisions toutes les heures. Le service conserve les données météorologiques horaires des sept derniers jours et les prévisions à sept jours, et transmet les changements météorologiques aux applications d’arrosage connectées. Les applications connectées peuvent obtenir les dernières données météorologiques enregistrées ou récupérer les mises à jour manquées après une interruption. Météo locale enregistre séparément le dernier emplacement valide, les conditions actuelles, l’historique récent et les prévisions, ce qui permet de conserver les données météorologiques disponibles après les redémarrages et pendant les interruptions temporaires d’Internet ou du service de localisation. Le service fournit l’heure et l’échéance de validité de chaque mise à jour afin que les applications d’arrosage puissent reconnaître les données météorologiques plus anciennes. Météo locale efface les données météorologiques du site précédent et récupère des données de remplacement lorsque le Hub signale un changement d’emplacement. L’obtention de données météorologiques à jour nécessite l’accès à l’emplacement et une connexion Internet. Les données météorologiques restent indisponibles tant que le service ne connaît pas l’emplacement du Hub. Un seul service Météo locale peut être exécuté sur un Hub, et plusieurs applications d’arrosage peuvent partager ce service. Développé par Smartonlabs Inc. (libertas).",
+      "DisplayName": "Météo locale",
+      "List": [
+        {
+          "Description": "La source météorologique locale partagée que ce service crée pour les applications d’arrosage sur le Hub. Les applications connectées utilisent les conditions actuelles, les données météorologiques récentes et les prévisions de ce service pour planifier l’arrosage.",
+          "Name": "Service météorologique pour l’arrosage",
+          "Type": 0
+        }
+      ],
+      "Name": "libertas_weather_server"
+    }
+  ],
+  "Locale": "fr-FR",
+  "StringResources": {
+    "SPRINKLER_CURRENT_WEATHER_V1": "Conditions météorologiques actuelles enregistrées pour l’arrosage de {0}.",
+    "SPRINKLER_WEATHER_FORECAST_V1": "Prévisions météorologiques enregistrées pour l’arrosage de {0}.",
+    "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "Heure de mise à jour des données météorologiques enregistrée pour l’arrosage de {0}.",
+    "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "Données météorologiques récentes enregistrées pour l’arrosage de {0}.",
+    "SPRINKLER_WEATHER_LOCATION_V1": "Emplacement enregistré utilisé pour les données météorologiques d’arrosage à {0}.",
+    "api.open-meteo.com": "Se connecter à Open-Meteo pour obtenir les conditions actuelles, l’historique récent et les prévisions nécessaires à la planification de l’arrosage.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Utiliser l’emplacement du Hub pour demander les prévisions météorologiques locales appropriées."
+  },
+  "Types": [
+    {
+      "Description": "Fournit les conditions actuelles, les données météorologiques horaires récentes et les prévisions aux applications d’arrosage en utilisant l’emplacement du Hub.",
+      "DisplayName": "Service météorologique pour l’arrosage",
+      "List": [
+        {
+          "Description": "Fournit les conditions actuelles, les données météorologiques horaires récentes et les prévisions aux applications d’arrosage en utilisant l’emplacement du Hub.",
+          "Name": "Service météorologique pour l’arrosage",
+          "Type": 0
+        },
+        {
+          "DefaultText": "Service météorologique pour l’arrosage",
+          "Description": "Météo locale crée ce service afin que les applications d’arrosage puissent obtenir les données météorologiques locales et recevoir des mises à jour automatiques pour prendre leurs décisions d’arrosage.",
+          "Name": "Service météorologique pour l’arrosage",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWeatherEndpointServerV1"
+    }
+  ]
+}

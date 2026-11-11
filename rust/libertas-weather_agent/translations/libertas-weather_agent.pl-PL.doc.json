@@ -1,0 +1,50 @@
+{
+  "Description": "Dostarcza aplikacjom do sterowania zraszaczami, takim jak Smart Sprinkler, lokalne dane pogodowe, aby mogły planować podlewanie z uwzględnieniem deszczu, temperatury, wilgotności i wiatru. Pogoda lokalna korzysta z lokalizacji urządzenia Hub, aby pobierać z Open-Meteo bieżące warunki, dane godzinowe z ostatnich siedmiu dni oraz prognozę na siedem dni. Usługa automatycznie odświeża dane pogodowe i zachowuje ostatnie prawidłowe dane po ponownym uruchomieniu oraz podczas tymczasowych przerw w dostępie do internetu. Aktualne dane pogodowe wymagają dostępu do lokalizacji i połączenia z internetem. Na każdym urządzeniu Hub może działać jedna usługa Pogoda lokalna obsługująca wiele aplikacji do sterowania zraszaczami.",
+  "DisplayName": "Pogoda lokalna",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Local weather",
+      "Description": "Pogoda lokalna dostarcza bieżące warunki, ostatnie dane pogodowe i prognozy, aby pomóc aplikacjom do sterowania zraszaczami planować czas oraz intensywność podlewania. Usługa tworzy współdzielone źródło danych pogodowych dla aplikacji takich jak Smart Sprinkler i korzysta z lokalizacji urządzenia Hub, aby pobierać dane pogodowe z Open-Meteo. Pogoda lokalna dostarcza informacje o temperaturze, wilgotności względnej, opadach, prognozowanym prawdopodobieństwie deszczu, szacowanej utracie wody z gleby i roślin, prędkości wiatru oraz porywach wiatru. Pogoda lokalna automatycznie odświeża bieżące warunki co 15 minut, a historię godzinową i prognozy — co godzinę. Usługa przechowuje dane godzinowe z ostatnich siedmiu dni oraz prognozę na siedem dni i wysyła zmiany danych pogodowych do połączonych aplikacji do sterowania zraszaczami. Połączone aplikacje mogą pobrać najnowsze zapisane dane pogodowe lub odzyskać aktualizacje pominięte wskutek przerwy. Pogoda lokalna zapisuje osobno ostatnią prawidłową lokalizację, bieżące warunki, ostatnie dane historyczne i prognozę, dzięki czemu dane pogodowe pozostają dostępne po ponownym uruchomieniu oraz podczas tymczasowych przerw w dostępie do internetu lub usług lokalizacyjnych. Usługa podaje czas i termin utraty aktualności każdej aktualizacji, aby aplikacje do sterowania zraszaczami mogły rozpoznać starsze dane pogodowe. Gdy urządzenie Hub zgłosi zmianę lokalizacji, Pogoda lokalna usuwa dane pogodowe dotyczące poprzedniego miejsca i pobiera dane zastępcze. Aktualne dane pogodowe wymagają dostępu do lokalizacji i połączenia z internetem. Dane pogodowe pozostają niedostępne, dopóki usługa nie pozna lokalizacji urządzenia Hub. Na urządzeniu Hub może działać tylko jedna usługa Pogoda lokalna, którą może współdzielić wiele aplikacji do sterowania zraszaczami. Opracowano przez Smartonlabs Inc. (libertas).",
+      "DisplayName": "Pogoda lokalna",
+      "List": [
+        {
+          "Description": "Współdzielone źródło lokalnych danych pogodowych tworzone przez tę usługę dla aplikacji do sterowania zraszaczami na urządzeniu Hub. Połączone aplikacje korzystają z bieżących warunków, ostatnich danych pogodowych i prognoz z tej usługi, aby planować podlewanie.",
+          "Name": "Usługa pogodowa dla zraszaczy",
+          "Type": 0
+        }
+      ],
+      "Name": "libertas_weather_server"
+    }
+  ],
+  "Locale": "pl-PL",
+  "StringResources": {
+    "SPRINKLER_CURRENT_WEATHER_V1": "Zapisano bieżące dane pogodowe dla zraszaczy dla {0}.",
+    "SPRINKLER_WEATHER_FORECAST_V1": "Zapisano prognozę pogody dla zraszaczy dla {0}.",
+    "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "Zapisano czas aktualizacji danych pogodowych dla zraszaczy dla {0}.",
+    "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "Zapisano ostatnie dane pogodowe dla zraszaczy dla {0}.",
+    "SPRINKLER_WEATHER_LOCATION_V1": "Zapisano lokalizację używaną do pobierania danych pogodowych dla zraszaczy w {0}.",
+    "api.open-meteo.com": "Połącz się z Open-Meteo, aby pobierać bieżące warunki, ostatnie dane historyczne i prognozy potrzebne do planowania pracy zraszaczy.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Użyj lokalizacji urządzenia Hub, aby pobrać właściwą lokalną prognozę pogody."
+  },
+  "Types": [
+    {
+      "Description": "Dostarcza aplikacjom do sterowania zraszaczami bieżące warunki, ostatnie godzinowe dane pogodowe i prognozy na podstawie lokalizacji urządzenia Hub.",
+      "DisplayName": "Usługa pogodowa dla zraszaczy",
+      "List": [
+        {
+          "Description": "Dostarcza aplikacjom do sterowania zraszaczami bieżące warunki, ostatnie godzinowe dane pogodowe i prognozy na podstawie lokalizacji urządzenia Hub.",
+          "Name": "Usługa pogodowa dla zraszaczy",
+          "Type": 0
+        },
+        {
+          "DefaultText": "Usługa pogodowa dla zraszaczy",
+          "Description": "Pogoda lokalna tworzy tę usługę, aby aplikacje do sterowania zraszaczami mogły pobierać lokalne dane pogodowe i otrzymywać automatyczne aktualizacje potrzebne do podejmowania decyzji dotyczących podlewania.",
+          "Name": "Usługa pogodowa dla zraszaczy",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWeatherEndpointServerV1"
+    }
+  ]
+}

@@ -1,0 +1,2555 @@
+{
+  "Description": "Podlewa każdą część ogrodu tylko wtedy, gdy potrzebuje ona wody. Wybierz, co rośnie w każdym obszarze, sposób nawadniania oraz okresy, w których nawadnianie musi być wstrzymane. Inteligentne nawadnianie wykorzystuje ostatnie opady, bieżącą pogodę i prognozę, aby dobrać bezpieczny czas i ilość nawadniania. Uwzględnia również ręczne nawadnianie, działa podczas krótkich przerw w dostępie do Internetu i przypomina o przygotowaniu systemu na mroźną pogodę.",
+  "DisplayName": "Inteligentne nawadnianie",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Smart sprinkler",
+      "Description": "Nawadnia każdy trawnik, ogród lub obszar z roślinnością zgodnie z potrzebami roślin, metodą nawadniania, ostatnimi opadami, prognozą pogody i ustawieniami wybranymi przez użytkownika. Użytkownik wybiera źródło pogody, miejsca, w których będą dostępne elementy sterowania obszarami i raporty, odbiorców przypomnień oraz zawór, typ roślin i metodę nawadniania dla każdego obszaru. Użytkownik może w dowolnym momencie ręcznie zmienić procent nawadniania oraz okresy bez nawadniania dla każdego obszaru, a także przygotować cały system do zimy i ponownie go aktywować. System automatycznie planuje i obsługuje każdy zawór z uwzględnieniem deszczu, prognozowanych opadów, wiatru, temperatur poniżej zera, potrzeb roślin i okresów bez nawadniania, a podczas krótkich przerw w dostępie do danych pogodowych korzysta z zapisanych oszacowań. System pokazuje bieżący stan każdego obszaru, oszacowanie ilości wody, stan zaworu i nadchodzący plan nawadniania. Udostępnia wykresy bilansu wody, dziennego zużycia wody oraz zarejestrowanej i prognozowanej pogody, a także wysyła wybranym osobom przypomnienia przed nadejściem mrozów. Dziennik zmian: zaktualizowano warianty protokołu.",
+      "DisplayName": "Inteligentne nawadnianie",
+      "List": [
+        {
+          "Description": "Wybierz lokalną usługę pogodową używaną do danych o deszczu, temperaturze, wietrze i prognozach. Inteligentne nawadnianie może podczas krótkich przerw korzystać z zapisanych oszacowań.",
+          "Name": "Usługa pogodowa",
+          "Type": 0
+        },
+        {
+          "Description": "Wybierz miejsce, w którym będą dostępne wykresy bilansu wody, zużycia wody i pogody.",
+          "Name": "Raporty nawadniania",
+          "Type": 1
+        },
+        {
+          "Description": "Wybierz osoby, które powinny otrzymywać przypomnienia o przygotowaniu systemu nawadniania do mroźnej pogody.",
+          "Name": "Odbiorcy przypomnień",
+          "Type": 2
+        },
+        {
+          "Description": "Jedna osoba, która powinna otrzymywać przypomnienia dotyczące nawadniania.",
+          "Name": "Osoba do powiadomienia",
+          "Type": 3
+        },
+        {
+          "Description": "Dodaj każdy trawnik, ogród lub obszar z roślinnością, który ma być nawadniany niezależnie.",
+          "Name": "Nawadniane obszary",
+          "Type": 4
+        },
+        {
+          "Description": "Jeden obszar z własnym zaworem, roślinami i metodą nawadniania.",
+          "Name": "Nawadniany obszar",
+          "Type": 5
+        }
+      ],
+      "Name": "libertas_sprinkler"
+    }
+  ],
+  "Locale": "pl-PL",
+  "StringResources": {
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "Zapisany dzienny bilans wody dla {0}.",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "Użyj nie więcej niż 64 okresów bez nawadniania, każdy z prawidłowym czasem rozpoczęcia i czasem trwania większym od zera.",
+    "SPRINKLER_INVALID_WATERING_PERCENT": "Ilość wody musi mieścić się w zakresie od 20% do 200% w krokach co 10%.",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "Zapisane oszacowania pogody używane podczas przerw w działaniu usługi o {0}.",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "Pierwsza data nie może być późniejsza niż ostatnia data.",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "Zapisana lokalizacja używana przez raporty pogody nawadniania o {0}.",
+    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "Zapisana szczegółowa historia pogody dla raportów nawadniania o {0}.",
+    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "Zapisane obserwacje bieżącej pogody dla raportów nawadniania o {0}.",
+    "SPRINKLER_SITE_LOCATION_V1": "Zapisana lokalizacja używana do pobierania pogody dla nawadniania o {0}.",
+    "SPRINKLER_UI_CHANGE_DATES": "Change dates",
+    "SPRINKLER_UI_SYSTEM_ACTIVE": "System active",
+    "SPRINKLER_UI_VALVE": "Valve",
+    "SPRINKLER_UI_WATERING_PLAN": "Watering plan",
+    "SPRINKLER_UI_WATER_BALANCE": "Water balance",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "Zapisana historia nawadniania dla {0}.",
+    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "Bieżąca aktywność nawadniania dla {0}.",
+    "SPRINKLER_WATERING_MODE_V1": "Zapisany tryb nawadniania dla {0}.",
+    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
+    "SPRINKLER_WATER_EVENTS_V1": "Zapisane ostatnie opady i nawadnianie dla {0}.",
+    "SPRINKLER_WATER_USAGE_RAIN_LANE": "Deszcz",
+    "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
+    "SPRINKLER_WINTERIZATION_REMINDER_V1": "Zapisana historia przypomnień o przygotowaniu do zimy dla {0}.",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "W tej lokalizacji zbliża się chłodna pora roku. Przygotuj system nawadniania do zimy, a następnie wyłącz opcję Aktywny.",
+    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "Mroźna pogoda ({0}) może uszkodzić system nawadniania. Przygotuj go do zimy, a następnie wyłącz opcję Aktywny.",
+    "SPRINKLER_ZONE_MEMORY_V1": "Zapisany bilans wody i ustawienia dla {0}.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Użyj lokalizacji tego Huba, aby pobierać lokalną pogodę na potrzeby automatycznego nawadniania."
+  },
+  "Types": [
+    {
+      "Description": "Bezterminowo przechowywany punkt kontrolny dnia UTC i podsumowanie rozliczenia wody. Umożliwia przeglądanie starego przedziału bilansu wody bez ponownego odtwarzania każdego zdarzenia od momentu instalacji.",
+      "DisplayName": "Dzienny raport nawadniania",
+      "List": [
+        {
+          "Description": "Bezterminowo przechowywany punkt kontrolny dnia UTC i podsumowanie rozliczenia wody. Umożliwia przeglądanie starego przedziału bilansu wody bez ponownego odtwarzania każdego zdarzenia od momentu instalacji.",
+          "Name": "Dzienny raport nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Włącznie uwzględniana granica dnia kalendarzowego UTC używana jako indeksowany klucz rekordu.",
+          "Name": "Początek dnia",
+          "Type": 1
+        },
+        {
+          "Description": "Wyłącznie uwzględniana granica dnia kalendarzowego UTC.",
+          "Name": "Koniec dnia",
+          "Type": 2
+        },
+        {
+          "Description": "Pierwsza chwila reprezentowana przez ten punkt kontrolny. W dniu instalacji lub zmiany lokalizacji może przypadać później niż granica dnia UTC.",
+          "Name": "Początek zakresu",
+          "Type": 3
+        },
+        {
+          "Description": "Wyłącznie uwzględniana ostatnia chwila reprezentowana przez ten punkt kontrolny. Dla bieżącego, niepełnego dnia może przypadać przed granicą dnia.",
+          "Name": "Koniec zakresu",
+          "Type": 4
+        },
+        {
+          "Description": "Modelowana pojemność profilu roślin w milimetrach.",
+          "Name": "Pojemność strefy korzeniowej",
+          "Type": 5
+        },
+        {
+          "Description": "Obliczony deficyt wody w strefie korzeniowej na początku reprezentowanego dnia.",
+          "Name": "Początkowy deficyt",
+          "Type": 6
+        },
+        {
+          "Description": "Obliczony deficyt wody w strefie korzeniowej na reprezentowanym końcu lub w ostatnim znanym czasie.",
+          "Name": "Końcowy deficyt",
+          "Type": 7
+        },
+        {
+          "Description": "Opad zarejestrowany przez dostawcę i przypisany do tego dnia UTC.",
+          "Name": "Deszcz",
+          "Type": 8
+        },
+        {
+          "Description": "Ewapotranspiracja referencyjna ET zarejestrowana przez dostawcę i przypisana do tego dnia UTC przed zastosowaniem współczynnika uprawowego właściwego dla roślin.",
+          "Name": "Ewapotranspiracja referencyjna",
+          "Type": 9
+        },
+        {
+          "Description": "Referencyjna ET używana do uzupełniania przedziałów nieobjętych historią dostawcy.",
+          "Name": "Modelowana ewapotranspiracja referencyjna",
+          "Type": 10
+        },
+        {
+          "Description": "Źródło modelowanej wartości ET, pomijane, gdy historia dostawcy obejmuje cały reprezentowany przedział.",
+          "Name": "Źródło modelowanego zapotrzebowania",
+          "Type": 11
+        },
+        {
+          "Description": "Liczba sekund w reprezentowanym przedziale objęta zaakceptowanymi okresami pogodowymi dostawcy.",
+          "Name": "Pokrycie danymi pogodowymi dostawcy",
+          "Type": 12
+        },
+        {
+          "Description": "Głębokość wody oszacowana na podstawie zaobserwowanych przedziałów otwarcia zaworu przypisanych do tego dnia UTC.",
+          "Name": "Nawadnianie",
+          "Type": 13
+        },
+        {
+          "Description": "Określa, czy punkt kontrolny reprezentuje pełny dzień UTC, a nie bieżący niepełny dzień.",
+          "Name": "Pełny dzień",
+          "Type": 14
+        },
+        {
+          "Description": "Czas UTC ostatniego przeliczenia tego punktu kontrolnego.",
+          "Name": "Obliczono",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerDailyReportV1"
+    },
+    {
+      "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+      "DisplayName": "Daily water use",
+      "List": [
+        {
+          "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+          "Name": "Daily water use",
+          "Type": 0
+        },
+        {
+          "Description": "Recorded and planned water amounts.",
+          "Name": "Rain and watering",
+          "Type": 1
+        },
+        {
+          "Description": "Areas with no rain or watering during the selected dates.",
+          "Name": "Areas with no recorded water",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerDailyWaterUsageChartV1"
+    },
+    {
+      "Description": "Definiuje każdą wartość zapisywaną przez aplikację nawadniania. Dane stref są przechowywane pod każdym zaworem Matter Valve, a wspólne dane systemowe używają punktu końcowego pogody.",
+      "DisplayName": "Trwałe dane nawadniania",
+      "List": [
+        {
+          "Description": "Definiuje każdą wartość zapisywaną przez aplikację nawadniania. Dane stref są przechowywane pod każdym zaworem Matter Valve, a wspólne dane systemowe używają punktu końcowego pogody.",
+          "Name": "Trwałe dane nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Przechowuje korektor czasu działania, ograniczenia i scaloną wartość bazową jednej strefy.",
+          "Name": "Pamięć strefy",
+          "Type": 1
+        },
+        {
+          "Description": "Pełny stan skonfigurowanego zaworu odporny na ponowne uruchomienie.",
+          "Name": "Pamięć strefy",
+          "Type": 2
+        },
+        {
+          "Description": "Przechowuje jedno niezależnie indeksowane zdarzenie pogodowe lub nawadniania.",
+          "Name": "Zdarzenie wodne",
+          "Type": 3
+        },
+        {
+          "Description": "Jeden zakończony okres pogodowy lub rozliczony przedział otwarcia zaworu.",
+          "Name": "Zdarzenie wodne",
+          "Type": 4
+        },
+        {
+          "Description": "Przechowuje ostatnią prawidłową lokalizację Huba do sezonowego szacowania offline.",
+          "Name": "Lokalizacja obiektu",
+          "Type": 5
+        },
+        {
+          "Description": "Buforowane współrzędne WGS84 lokalizacji systemu nawadniania.",
+          "Name": "Lokalizacja obiektu",
+          "Type": 6
+        },
+        {
+          "Description": "Przechowuje wspólny tryb Aktywny lub Zimowanie dla systemu nawadniania.",
+          "Name": "Tryb nawadniania",
+          "Type": 7
+        },
+        {
+          "Description": "Odporny na ponowne uruchomienie tryb działania współdzielony przez wszystkie strefy.",
+          "Name": "Tryb nawadniania",
+          "Type": 8
+        },
+        {
+          "Description": "Przechowuje czas i przyczynę ostatniego przypomnienia obejmującego cały system.",
+          "Name": "Przypomnienie o przygotowaniu do zimy",
+          "Type": 9
+        },
+        {
+          "Description": "Odporny na ponowne uruchomienie stan ograniczania częstotliwości powiadomień o przygotowaniu do zimy.",
+          "Name": "Pamięć przypomnienia",
+          "Type": 10
+        },
+        {
+          "Description": "Bezterminowo archiwizuje jeden dokładny przedział zastępczej wartości ET.",
+          "Name": "Modelowana luka pogodowa",
+          "Type": 11
+        },
+        {
+          "Description": "Dokładny przedział z niezmiennym pochodzeniem źródła i współczynnika.",
+          "Name": "Modelowana luka",
+          "Type": 12
+        },
+        {
+          "Description": "Bezterminowo archiwizuje jedną zaplanowaną, trwającą, zakończoną, pominiętą, nieudaną, zastąpioną, ręczną lub starszego typu aktywność nawadniania.",
+          "Name": "Aktywność nawadniania",
+          "Type": 13
+        },
+        {
+          "Description": "Pełne trwałe dane cyklu życia porównujące plan z rzeczywistym wykonaniem.",
+          "Name": "Aktywność",
+          "Type": 14
+        },
+        {
+          "Description": "Bezterminowo archiwizuje jeden punkt kontrolny dziennego rozliczenia i bilansu wody UTC, aby starsze zakresy nadal można było przeglądać.",
+          "Name": "Raport dzienny",
+          "Type": 15
+        },
+        {
+          "Description": "Deszcz, ET, szacowane nawadnianie oraz początkowy i końcowy modelowany deficyt.",
+          "Name": "Raport dzienny",
+          "Type": 16
+        },
+        {
+          "Description": "Its generation is bound only by explicit provider site messages.",
+          "Name": "Report weather archive state V2",
+          "Type": 17
+        },
+        {
+          "Description": "Active indefinitely retained provider-site generation.",
+          "Name": "Archive state",
+          "Type": 18
+        },
+        {
+          "Description": "Bezterminowo archiwizuje jedną zaakceptowaną próbkę bieżących warunków. Zachowuje 15-minutowe dane dowodowe decyzji bez podwójnego zliczania deszczu lub ET już uwzględnionych w zakończonej historii godzinowej.",
+          "Name": "Obserwacja pogody raportu",
+          "Type": 19
+        },
+        {
+          "Description": "Temperatura, wilgotność, wiatr, porywy i bezpośrednie dopływy wody w czasie reprezentowanym przez dostawcę.",
+          "Name": "Obserwacja pogody",
+          "Type": 20
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 21
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 22
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 23
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 24
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 25
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 26
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 27
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 28
+        }
+      ],
+      "Name": "SprinklerData"
+    },
+    {
+      "Description": "Zarejestrowana i prognozowana utrata wody przez parowanie i zużycie przez rośliny.",
+      "DisplayName": "Szacowana utrata wody",
+      "List": [
+        {
+          "Description": "Zarejestrowana i prognozowana utrata wody przez parowanie i zużycie przez rośliny.",
+          "Name": "Szacowana utrata wody",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerEtChartV1"
+    },
+    {
+      "Description": "Jedna zarejestrowana lub prognozowana ilość wody utraconej przez parowanie i rośliny.",
+      "DisplayName": "Dzienna utrata wody",
+      "List": [
+        {
+          "Description": "Jedna zarejestrowana lub prognozowana ilość wody utraconej przez parowanie i rośliny.",
+          "Name": "Dzienna utrata wody",
+          "Type": 0
+        },
+        {
+          "Description": "Czas rozpoczęcia tego okresu pogodowego.",
+          "Name": "Rozpoczyna się",
+          "Type": 1
+        },
+        {
+          "Description": "Czas zakończenia tego okresu pogodowego.",
+          "Name": "Kończy się",
+          "Type": 2
+        },
+        {
+          "Description": "Woda utracona przez parowanie i zużycie przez rośliny.",
+          "Name": "Szacowana utrata wody",
+          "Type": 3
+        },
+        {
+          "Description": "Określa, czy wartość została zarejestrowana, czy pochodzi z prognozy.",
+          "Name": "Źródło",
+          "Type": 4
+        },
+        {
+          "Description": "Tożsamość tego przedziału i źródła wygenerowana przez serwer.",
+          "Name": "Stabilny klucz",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerEtRowV1"
+    },
+    {
+      "Description": "Wybierz rodzaj zraszacza lub systemu kroplowego zainstalowanego w tym obszarze.",
+      "DisplayName": "Metoda nawadniania",
+      "List": [
+        {
+          "Description": "Wybierz rodzaj zraszacza lub systemu kroplowego zainstalowanego w tym obszarze.",
+          "Enum": [
+            {
+              "Description": "Powolne, precyzyjne dostarczanie wody przez powierzchniowe emitery kroplowe.",
+              "Name": "Nawadnianie kroplowe powierzchniowe",
+              "Type": 1
+            },
+            {
+              "Description": "Skoncentrowane dostarczanie wody wokół drzew, krzewów lub w nieckach nasadzeniowych.",
+              "Name": "Bublery",
+              "Type": 2
+            },
+            {
+              "Description": "Szerokie i stosunkowo szybkie dostarczanie wody przez stałe wynurzalne głowice zraszające.",
+              "Name": "Zraszacze wynurzalne",
+              "Type": 3
+            },
+            {
+              "Description": "Powolne nawadnianie dużych powierzchni za pomocą wysokowydajnych lub wielostrumieniowych rotorów.",
+              "Name": "Rotory o niskiej intensywności",
+              "Type": 4
+            },
+            {
+              "Description": "Szybsze nawadnianie dużych powierzchni za pomocą konwencjonalnych głowic rotorowych.",
+              "Name": "Rotory o wysokiej intensywności",
+              "Type": 5
+            }
+          ],
+          "Name": "Metoda nawadniania",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerHeadTypeV1"
+    },
+    {
+      "Description": "Zaobserwowana i prognozowana wilgotność na osobnej skali od 0 do 100 procent.",
+      "DisplayName": "Wilgotność względna",
+      "List": [
+        {
+          "Description": "Zaobserwowana i prognozowana wilgotność na osobnej skali od 0 do 100 procent.",
+          "Name": "Wilgotność względna",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerHumidityChartV1"
+    },
+    {
+      "Description": "Jedna zaobserwowana lub prognozowana próbka wilgotności względnej.",
+      "DisplayName": "Wiersz wilgotności",
+      "List": [
+        {
+          "Description": "Jedna zaobserwowana lub prognozowana próbka wilgotności względnej.",
+          "Name": "Wiersz wilgotności",
+          "Type": 0
+        },
+        {
+          "Description": "Początek okresu dostawcy.",
+          "Name": "Czas",
+          "Type": 1
+        },
+        {
+          "Description": "Procent wilgotności względnej.",
+          "Name": "Wilgotność względna",
+          "Type": 2
+        },
+        {
+          "Description": "Identyfikuje tę linię jako wilgotność względną w połączonym panelu.",
+          "Name": "Pomiar",
+          "Type": 3
+        },
+        {
+          "Description": "Zaobserwowane lub prognozowane.",
+          "Name": "Źródło",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerHumidityRowV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved sprinkler identities",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved sprinkler identities",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "System settings and weather archives",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "One valve's settings, accounting and reports",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerKey"
+    },
+    {
+      "Description": "Jeden dokładny przedział nieobjęty danymi dostawcy, którego zastępcze źródło i współczynnik referencyjnej ET są utrwalane przy pierwszym zapisaniu przedziału. Późniejszy zaakceptowany okres dostawcy może skrócić lub zastąpić ten przedział; późniejsze zmiany oszacowania zastępczego nie przepisują jego pochodzenia.",
+      "DisplayName": "Modelowana luka pogodowa",
+      "List": [
+        {
+          "Description": "Jeden dokładny przedział nieobjęty danymi dostawcy, którego zastępcze źródło i współczynnik referencyjnej ET są utrwalane przy pierwszym zapisaniu przedziału. Późniejszy zaakceptowany okres dostawcy może skrócić lub zastąpić ten przedział; późniejsze zmiany oszacowania zastępczego nie przepisują jego pochodzenia.",
+          "Name": "Modelowana luka pogodowa",
+          "Type": 0
+        },
+        {
+          "Description": "Włącznie uwzględniany początek przedziału nieobjętego danymi dostawcy.",
+          "Name": "Czas rozpoczęcia",
+          "Type": 1
+        },
+        {
+          "Description": "Wyłącznie uwzględniany koniec przedziału nieobjętego danymi dostawcy.",
+          "Name": "Czas zakończenia",
+          "Type": 2
+        },
+        {
+          "Description": "Utrwalony zastępczy współczynnik referencyjnej ET w milimetrach na dzień UTC.",
+          "Name": "Współczynnik ewapotranspiracji referencyjnej",
+          "Type": 3
+        },
+        {
+          "Description": "Utrwalone pochodzenie: ostatnia pogoda, lokalizacja i sezon lub oszacowanie zachowawcze.",
+          "Name": "Źródło zapotrzebowania",
+          "Type": 4
+        },
+        {
+          "Description": "Czas UTC, w którym ten przedział po raz pierwszy uzyskał swoje utrwalone pochodzenie.",
+          "Name": "Zarejestrowano",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerModeledWeatherGapV1"
+    },
+    {
+      "Description": "Wybierz, co rośnie w tym obszarze, aby dopasować nawadnianie do jego potrzeb.",
+      "DisplayName": "Typ roślin",
+      "List": [
+        {
+          "Description": "Wybierz, co rośnie w tym obszarze, aby dopasować nawadnianie do jego potrzeb.",
+          "Enum": [
+            {
+              "Description": "Gęsto rosnąca trawa o płytkich korzeniach i regularnym zapotrzebowaniu na wodę.",
+              "Name": "Trawnik",
+              "Type": 1
+            },
+            {
+              "Description": "Ozdobne rośliny kwitnące o umiarkowanej głębokości korzeni i zapotrzebowaniu na wodę.",
+              "Name": "Kwiaty",
+              "Type": 2
+            },
+            {
+              "Description": "Sezonowe rośliny jadalne o umiarkowanej głębokości korzeni i stosunkowo wysokim zapotrzebowaniu.",
+              "Name": "Warzywa",
+              "Type": 3
+            },
+            {
+              "Description": "Dojrzałe drzewa owocowe o głębszych korzeniach i umiarkowanym zapotrzebowaniu.",
+              "Name": "Drzewa owocowe",
+              "Type": 4
+            },
+            {
+              "Description": "Drzewa cytrusowe o głębokich korzeniach i umiarkowanym lub wysokim zapotrzebowaniu.",
+              "Name": "Cytrusy",
+              "Type": 5
+            },
+            {
+              "Description": "Dojrzałe zdrewniałe rośliny ogrodowe o głębokich korzeniach.",
+              "Name": "Drzewa i krzewy",
+              "Type": 6
+            },
+            {
+              "Description": "Nasadzenia przystosowane do suszy o niskim, zależnym od pogody zapotrzebowaniu na wodę.",
+              "Name": "Ogród kserotermiczny",
+              "Type": 7
+            }
+          ],
+          "Name": "Typ roślin",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerPlantTypeV1"
+    },
+    {
+      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+      "DisplayName": "Available report range",
+      "List": [
+        {
+          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+          "Name": "Available report range",
+          "Type": 0
+        },
+        {
+          "Description": "Earliest currently selectable date after applying this chart's maximum range length.",
+          "Name": "Earliest date",
+          "Type": 1
+        },
+        {
+          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts.",
+          "Name": "Latest date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportAvailableRangeV1"
+    },
+    {
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "DisplayName": "Effective report range",
+      "List": [
+        {
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+          "Name": "Effective report range",
+          "Type": 0
+        },
+        {
+          "Description": "First calendar date included in the generated report.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Last calendar date included in the generated report.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportEffectiveRangeV1"
+    },
+    {
+      "Description": "Wyjaśnia, dlaczego skonfigurowany obszar nie ma danych do pokazania dla wybranych dat.",
+      "DisplayName": "Brak danych raportu",
+      "List": [
+        {
+          "Description": "Wyjaśnia, dlaczego skonfigurowany obszar nie ma danych do pokazania dla wybranych dat.",
+          "Enum": [
+            {
+              "Description": "W wybranym zakresie dat dla tego obszaru nie zarejestrowano deszczu ani nawadniania.",
+              "Name": "Brak zarejestrowanego dopływu wody",
+              "Type": 1
+            }
+          ],
+          "Name": "Brak danych raportu",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerReportEmptyStateV1"
+    },
+    {
+      "Description": "Wyświetl bilans wody, zużycie wody lub pogodę dla każdego obszaru. Pozostaw daty puste, aby zobaczyć ostatni okres. Daty spoza dostępnej historii są automatycznie dostosowywane do najwcześniejszej lub najpóźniejszej dostępnej daty.",
+      "DisplayName": "Raporty nawadniania",
+      "List": [
+        {
+          "Description": "Wyświetl bilans wody, zużycie wody lub pogodę dla każdego obszaru. Pozostaw daty puste, aby zobaczyć ostatni okres. Daty spoza dostępnej historii są automatycznie dostosowywane do najwcześniejszej lub najpóźniejszej dostępnej daty.",
+          "Name": "Raporty nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Pokazuje szacowaną wodę dostępną dla roślin oraz zdarzenia nawadniania dla każdego obszaru. Wybrany okres może obejmować do 365 dni; w przypadku dłuższego zakresu zachowywane jest ostatnie 365 dni.",
+          "Name": "Wyświetl bilans wody",
+          "Type": 1
+        },
+        {
+          "Description": "Włącznie uwzględniane daty faktycznie użyte do wygenerowania tej odpowiedzi.",
+          "Name": "Efektywny zakres",
+          "Type": 2
+        },
+        {
+          "Description": "Water-balance chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 3
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 4
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 5
+        },
+        {
+          "Description": "Bieżące granice i wartości domyślne selektora dat dla następnego żądania.",
+          "Name": "Dostępny zakres",
+          "Type": 6
+        },
+        {
+          "Description": "Wykres zużycia wody dla efektywnego zakresu raportu.",
+          "Name": "Wykres",
+          "Type": 7
+        },
+        {
+          "Description": "Water-use chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 8
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 9
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 10
+        },
+        {
+          "Description": "Włącznie uwzględniane daty faktycznie użyte do wygenerowania tej odpowiedzi.",
+          "Name": "Efektywny zakres",
+          "Type": 11
+        },
+        {
+          "Description": "Zarejestrowana i prognozowana temperatura, wilgotność, wiatr oraz szacowana utrata wody.",
+          "Name": "Pogoda",
+          "Type": 12
+        },
+        {
+          "Description": "Weather chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 13
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 14
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerReportProtocol"
+    },
+    {
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "DisplayName": "Report date range",
+      "List": [
+        {
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+          "Name": "Report date range",
+          "Type": 0
+        },
+        {
+          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportRequestRangeV1"
+    },
+    {
+      "Description": "Wybiera aktywną generację fizycznej lokalizacji, podczas gdy starsze generacje pozostają zachowane, ale nie są mieszane z bieżącym raportem nawadniania. Jawna zmiana lokalizacji strumienia pogodowego lub reset powiązany z lokalizacją wiąże generację; wyczyszczenie sekcji nigdy nie stanowi potwierdzenia granicy lokalizacji.",
+      "DisplayName": "Stan archiwum pogody raportów",
+      "List": [
+        {
+          "Description": "Wybiera aktywną generację fizycznej lokalizacji, podczas gdy starsze generacje pozostają zachowane, ale nie są mieszane z bieżącym raportem nawadniania. Jawna zmiana lokalizacji strumienia pogodowego lub reset powiązany z lokalizacją wiąże generację; wyczyszczenie sekcji nigdy nie stanowi potwierdzenia granicy lokalizacji.",
+          "Name": "Stan archiwum pogody raportów",
+          "Type": 0
+        },
+        {
+          "Description": "Rośnie monotonicznie przy każdym zaakceptowanym przejściu między różnymi lokalizacjami dostawcy.",
+          "Name": "Generacja",
+          "Type": 1
+        },
+        {
+          "Description": "Lokalizacja dostawcy jawnie powiązana z tą generacją, jeśli jest znana.",
+          "Name": "Lokalizacja obiektu",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportWeatherArchiveStateV2"
+    },
+    {
+      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+      "DisplayName": "Restart accounting checkpoint",
+      "List": [
+        {
+          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+          "Name": "Restart accounting checkpoint",
+          "Type": 0
+        },
+        {
+          "Description": "Authoritative lifecycle snapshot at the checkpoint.",
+          "Name": "Activity",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusive end of the already accounted valve-open interval.",
+          "Name": "Accounted through",
+          "Type": 2
+        },
+        {
+          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted.",
+          "Name": "Ledger segment",
+          "Type": 3
+        },
+        {
+          "Description": "Expected end of an automatic timed run; manual runs have no known end.",
+          "Name": "Expected finish",
+          "Type": 4
+        },
+        {
+          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour.",
+          "Name": "Delivery rate",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerRestartAccountingV1"
+    },
+    {
+      "Description": "Wyjaśnia, co robi system nawadniania lub dlaczego nawadnianie jest opóźnione.",
+      "DisplayName": "Stan nawadniania",
+      "List": [
+        {
+          "Description": "Wyjaśnia, co robi system nawadniania lub dlaczego nawadnianie jest opóźnione.",
+          "Enum": [
+            {
+              "Description": "Trwa przygotowywanie najnowszych informacji.",
+              "Name": "Inicjowanie",
+              "Type": 1
+            },
+            {
+              "Description": "Rośliny mają obecnie wystarczającą ilość wody.",
+              "Name": "Woda nie jest potrzebna",
+              "Type": 2
+            },
+            {
+              "Description": "Oczekiwany deszcz powinien na razie dostarczyć wystarczającą ilość wody.",
+              "Name": "Prognozowany deszcz",
+              "Type": 3
+            },
+            {
+              "Description": "Nawadnianie jest opóźnione, ponieważ pada deszcz, temperatura jest bliska zera lub wieje zbyt silny wiatr.",
+              "Name": "Oczekiwanie na bezpieczną pogodę",
+              "Type": 4
+            },
+            {
+              "Description": "Rośliny mogą nadmiernie wyschnąć podczas okresu bez nawadniania, dlatego przed jego rozpoczęciem zaplanowano bezpieczne nawadnianie.",
+              "Name": "Nawadnianie przed przerwą",
+              "Type": 5
+            },
+            {
+              "Description": "Nawadnianie zostało przesunięte na czas po okresie bez nawadniania.",
+              "Name": "Wstrzymane",
+              "Type": 6
+            },
+            {
+              "Description": "Następny czas nawadniania został wybrany na podstawie potrzeb roślin i dostępnych informacji pogodowych.",
+              "Name": "Zaplanowane",
+              "Type": 7
+            },
+            {
+              "Description": "System nawadniania oczekuje na potwierdzenie zmiany przez zawór.",
+              "Name": "Uruchamianie lub zatrzymywanie",
+              "Type": 8
+            },
+            {
+              "Description": "Stan zaworu jest niedostępny, dlatego automatyczne nawadnianie nie zostanie uruchomione.",
+              "Name": "Stan zaworu niedostępny",
+              "Type": 9
+            },
+            {
+              "Description": "Ten obszar jest teraz nawadniany.",
+              "Name": "Zawór otwarty",
+              "Type": 10
+            },
+            {
+              "Description": "Zawór zgłosił problem, dlatego automatyczne nawadnianie zostało wstrzymane.",
+              "Name": "Usterka zaworu",
+              "Type": 11
+            },
+            {
+              "Description": "Bieżące dane pogodowe są niedostępne, dlatego harmonogram korzysta z najlepszego zapisanego lub sezonowego oszacowania.",
+              "Name": "Oszacowanie pogody offline",
+              "Type": 12
+            }
+          ],
+          "Name": "Stan nawadniania",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerScheduleConditionV1"
+    },
+    {
+      "Description": "Zaobserwowana i prognozowana temperatura bez łączenia jej skali z ET lub wiatrem.",
+      "DisplayName": "Temperatura",
+      "List": [
+        {
+          "Description": "Zaobserwowana i prognozowana temperatura bez łączenia jej skali z ET lub wiatrem.",
+          "Name": "Temperatura",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerTemperatureChartV1"
+    },
+    {
+      "Description": "Nakłada temperaturę i wilgotność na osi czasu, zachowując niezależne lewe i prawe osie Y dla ich niezgodnych jednostek.",
+      "DisplayName": "Temperatura i wilgotność względna",
+      "List": [
+        {
+          "Description": "Nakłada temperaturę i wilgotność na osi czasu, zachowując niezależne lewe i prawe osie Y dla ich niezgodnych jednostek.",
+          "Name": "Temperatura i wilgotność względna",
+          "Type": 0
+        },
+        {
+          "Description": "Temperatura korzysta z pierwszej automatycznej osi Y.",
+          "Name": "Temperatura",
+          "Type": 1
+        },
+        {
+          "Description": "Wilgotność względna korzysta z niezależnej drugiej osi Y.",
+          "Name": "Wilgotność względna",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityChartV1"
+    },
+    {
+      "Description": "Rozróżnia dwie niezależnie skalowane linie w połączonym panelu pogodowym.",
+      "DisplayName": "Pomiar temperatury i wilgotności",
+      "List": [
+        {
+          "Description": "Rozróżnia dwie niezależnie skalowane linie w połączonym panelu pogodowym.",
+          "Enum": [
+            {
+              "Description": "Temperatura powietrza w stopniach Celsjusza.",
+              "Name": "Temperatura",
+              "Type": 1
+            },
+            {
+              "Description": "Procent wilgotności względnej.",
+              "Name": "Wilgotność względna",
+              "Type": 2
+            }
+          ],
+          "Name": "Pomiar temperatury i wilgotności",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityMeasurementV1"
+    },
+    {
+      "Description": "Jedna zaobserwowana lub prognozowana próbka temperatury powietrza.",
+      "DisplayName": "Wiersz temperatury",
+      "List": [
+        {
+          "Description": "Jedna zaobserwowana lub prognozowana próbka temperatury powietrza.",
+          "Name": "Wiersz temperatury",
+          "Type": 0
+        },
+        {
+          "Description": "Początek okresu dostawcy.",
+          "Name": "Czas",
+          "Type": 1
+        },
+        {
+          "Description": "Temperatura powietrza w stopniach Celsjusza.",
+          "Name": "Temperatura",
+          "Type": 2
+        },
+        {
+          "Description": "Identyfikuje tę linię jako temperaturę w połączonym panelu.",
+          "Name": "Pomiar",
+          "Type": 3
+        },
+        {
+          "Description": "Zaobserwowane lub prognozowane.",
+          "Name": "Źródło",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerTemperatureRowV1"
+    },
+    {
+      "Description": "Czas rozpoczęcia i długość czasu nawadniania lub przerwy w nawadnianiu.",
+      "DisplayName": "Okres",
+      "List": [
+        {
+          "Description": "Czas rozpoczęcia i długość czasu nawadniania lub przerwy w nawadnianiu.",
+          "Name": "Okres",
+          "Type": 0
+        },
+        {
+          "Description": "Czas rozpoczęcia tego okresu.",
+          "Name": "Rozpoczyna się",
+          "Type": 1
+        },
+        {
+          "Description": "Jak długo trwa ten okres.",
+          "Name": "Czas trwania",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTimeSlotV1"
+    },
+    {
+      "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+      "DisplayName": "Valve problems",
+      "List": [
+        {
+          "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+          "Enum": [
+            {
+              "Description": "The valve reported a problem without a more specific classification.",
+              "Name": "General problem",
+              "Type": 1
+            },
+            {
+              "Description": "The valve cannot move because it is blocked.",
+              "Name": "Blocked",
+              "Type": 2
+            },
+            {
+              "Description": "The valve detected an unexpected water leak.",
+              "Name": "Leak detected",
+              "Type": 3
+            },
+            {
+              "Description": "The controller cannot detect a connected valve.",
+              "Name": "Not connected",
+              "Type": 4
+            },
+            {
+              "Description": "The valve or its wiring has a short circuit.",
+              "Name": "Short circuit",
+              "Type": 5
+            },
+            {
+              "Description": "The valve exceeded the available electrical current.",
+              "Name": "Too much current",
+              "Type": 6
+            }
+          ],
+          "Name": "Valve problems",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerValveFaultFlagsV1"
+    },
+    {
+      "Description": "Łączy szacowane poziomy wody ze zdarzeniami nawadniania dla każdego obszaru.",
+      "DisplayName": "Bilans wody",
+      "List": [
+        {
+          "Description": "Łączy szacowane poziomy wody ze zdarzeniami nawadniania dla każdego obszaru.",
+          "Name": "Bilans wody",
+          "Type": 0
+        },
+        {
+          "Description": "Szacowana ilość wody i ważne poziomy nawadniania dla każdego obszaru.",
+          "Name": "Dostępna woda i poziomy",
+          "Type": 1
+        },
+        {
+          "Description": "Zaplanowane, pominięte, nieudane, ręczne i zakończone cykle nawadniania.",
+          "Name": "Zdarzenia nawadniania",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterBalanceChartV1"
+    },
+    {
+      "Description": "Szacowana dostępna woda i ważne poziomy nawadniania dla każdego obszaru.",
+      "DisplayName": "Linie bilansu wody",
+      "List": [
+        {
+          "Description": "Szacowana dostępna woda i ważne poziomy nawadniania dla każdego obszaru.",
+          "Name": "Linie bilansu wody",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterBalanceLinesV1"
+    },
+    {
+      "Description": "Jeden punkt pokazujący szacowaną wodę dostępną dla roślin lub ważny poziom nawadniania. Dostępna woda jest oszacowaniem, a nie odczytem z czujnika wilgotności gleby.",
+      "DisplayName": "Punkt bilansu wody",
+      "List": [
+        {
+          "Description": "Jeden punkt pokazujący szacowaną wodę dostępną dla roślin lub ważny poziom nawadniania. Dostępna woda jest oszacowaniem, a nie odczytem z czujnika wilgotności gleby.",
+          "Name": "Punkt bilansu wody",
+          "Type": 0
+        },
+        {
+          "Description": "Czas, którego dotyczy ten poziom wody.",
+          "Name": "Czas",
+          "Type": 1
+        },
+        {
+          "Description": "Szacowana ilość wody dostępnej dla roślin, od 0 do 100 procent.",
+          "Name": "Dostępna woda",
+          "Type": 2
+        },
+        {
+          "Description": "Dostępna woda lub jeden z ważnych poziomów nawadniania.",
+          "Name": "Linia",
+          "Type": 3
+        },
+        {
+          "Description": "Nawadniany obszar reprezentowany przez tę część wykresu.",
+          "Name": "Obszar",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWaterBalancePointV1"
+    },
+    {
+      "Description": "Identyfikuje dostępną wodę i ważne poziomy nawadniania.",
+      "DisplayName": "Linia bilansu wody",
+      "List": [
+        {
+          "Description": "Identyfikuje dostępną wodę i ważne poziomy nawadniania.",
+          "Enum": [
+            {
+              "Description": "Szacowana ilość wody dostępnej dla roślin.",
+              "Name": "Dostępna woda",
+              "Type": 1
+            },
+            {
+              "Description": "Szacuje się, że gleba zatrzymuje całą wodę, którą może wykorzystać.",
+              "Name": "Pojemność polowa",
+              "Type": 2
+            },
+            {
+              "Description": "Poziom, przy którym nawadnianie zwykle staje się potrzebne.",
+              "Name": "Próg nawadniania",
+              "Type": 3
+            },
+            {
+              "Description": "Poziom, przy którym nawadnianie staje się pilne.",
+              "Name": "Próg krytyczny",
+              "Type": 4
+            }
+          ],
+          "Name": "Linia bilansu wody",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterBalanceSeriesV1"
+    },
+    {
+      "Description": "Pokazuje, jakich informacji użyto do oszacowania szybkości utraty wody przez rośliny.",
+      "DisplayName": "Oszacowanie zużycia wody",
+      "List": [
+        {
+          "Description": "Pokazuje, jakich informacji użyto do oszacowania szybkości utraty wody przez rośliny.",
+          "Enum": [
+            {
+              "Description": "Na podstawie ostatnich danych pogodowych w tej lokalizacji.",
+              "Name": "Ostatnia pogoda",
+              "Type": 1
+            },
+            {
+              "Description": "Na podstawie lokalizacji i pory roku.",
+              "Name": "Lokalizacja i pora roku",
+              "Type": 2
+            },
+            {
+              "Description": "Używane, gdy ostatnie dane pogodowe i informacje o lokalizacji są niedostępne.",
+              "Name": "Wbudowane oszacowanie",
+              "Type": 3
+            }
+          ],
+          "Name": "Oszacowanie zużycia wody",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterDemandSourceV1"
+    },
+    {
+      "Description": "Przechowuje jeden niezależnie indeksowany okres pogodowy lub zaobserwowany przedział nawadniania w siedmiodniowej historii wody.",
+      "DisplayName": "Zdarzenie wodne nawadniania",
+      "List": [
+        {
+          "Description": "Przechowuje jeden niezależnie indeksowany okres pogodowy lub zaobserwowany przedział nawadniania w siedmiodniowej historii wody.",
+          "Name": "Zdarzenie wodne nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Rejestruje opad dostawcy i ewapotranspirację referencyjną dla jednego zakończonego okresu historycznego.",
+          "Name": "Okres pogodowy",
+          "Type": 1
+        },
+        {
+          "Description": "Włącznie uwzględniany początek zakończonego okresu pogodowego.",
+          "Name": "Czas rozpoczęcia",
+          "Type": 2
+        },
+        {
+          "Description": "Długość zakończonego okresu pogodowego w sekundach.",
+          "Name": "Czas trwania",
+          "Type": 3
+        },
+        {
+          "Description": "Opad dostawcy zgromadzony w tym okresie, w milimetrach.",
+          "Name": "Opad",
+          "Type": 4
+        },
+        {
+          "Description": "Referencyjna ewapotranspiracja FAO-56 dostawcy zgromadzona w tym okresie, w milimetrach.",
+          "Name": "Ewapotranspiracja referencyjna",
+          "Type": 5
+        },
+        {
+          "Description": "Rejestruje wodę wywnioskowaną z rzeczywistego czasu otwarcia zaworu Matter Valve, w tym otwarć ręcznych, wraz z korektorem ilości wody strefy obowiązującym w obserwowanym przedziale.",
+          "Name": "Przedział nawadniania",
+          "Type": 6
+        },
+        {
+          "Description": "Włącznie uwzględniany początek rozliczanego przedziału otwarcia zaworu.",
+          "Name": "Czas rozpoczęcia",
+          "Type": 7
+        },
+        {
+          "Description": "Długość zaobserwowanego przedziału otwarcia zaworu w sekundach.",
+          "Name": "Czas trwania",
+          "Type": 8
+        },
+        {
+          "Description": "Skonfigurowany procent nawadniania strefy w czasie obserwacji tego przedziału otwarcia zaworu. Jeśli ustawienie zmieni się, gdy zawór jest otwarty, historia używa oddzielnych sąsiadujących przedziałów.",
+          "Name": "Korektor ilości wody",
+          "Type": 9
+        },
+        {
+          "Description": "Szacowana głębokość wody obliczona na podstawie zaobserwowanego czasu otwarcia i skonfigurowanego profilu głowicy zraszacza, w milimetrach.",
+          "Name": "Dostarczona woda",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWaterEventV1"
+    },
+    {
+      "Description": "Przechowuje najnowszą pełną migawkę cyklu życia przed zapisaniem odpowiadającego jej wiersza audytu. Jawna flaga bieżącego stanu odróżnia niekońcową aktywność możliwą do uzgodnienia po ponownym uruchomieniu od końcowej migawki wymagającej jedynie naprawy audytu.",
+      "DisplayName": "Autorytatywny stan aktywności nawadniania",
+      "List": [
+        {
+          "Description": "Przechowuje najnowszą pełną migawkę cyklu życia przed zapisaniem odpowiadającego jej wiersza audytu. Jawna flaga bieżącego stanu odróżnia niekońcową aktywność możliwą do uzgodnienia po ponownym uruchomieniu od końcowej migawki wymagającej jedynie naprawy audytu.",
+          "Name": "Autorytatywny stan aktywności nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Pełna najnowsza migawka cyklu życia lub brak wartości przed pierwszą aktywnością. Migawki końcowe pozostają tutaj do czasu rozpoczęcia nowszej aktywności.",
+          "Name": "Najnowsza aktywność",
+          "Type": 1
+        },
+        {
+          "Description": "Wartość prawda tylko wtedy, gdy najnowsza aktywność jest zaplanowana, oczekuje na wykonanie polecenia lub trwa i musi zostać uzgodniona podczas uruchamiania.",
+          "Name": "Aktywność jest bieżąca",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWateringActivityStateV2"
+    },
+    {
+      "Description": "Przechowuje planowany i rzeczywisty czas oddzielnie, dzięki czemu raport może wyjaśnić, co zaplanowano, co się wydarzyło i dlaczego cykl został pominięty lub nie powiódł się.",
+      "DisplayName": "Utrwalona aktywność nawadniania",
+      "List": [
+        {
+          "Description": "Przechowuje planowany i rzeczywisty czas oddzielnie, dzięki czemu raport może wyjaśnić, co zaplanowano, co się wydarzyło i dlaczego cykl został pominięty lub nie powiódł się.",
+          "Name": "Utrwalona aktywność nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Stabilny indeks bazy danych ze znakiem, ponownie używany przy każdej aktualizacji cyklu życia.",
+          "Name": "Indeks aktywności",
+          "Type": 1
+        },
+        {
+          "Description": "Sekwencja odporna na kolizje w obrębie tej samej sekundy kotwiczącej i tego samego źródła.",
+          "Name": "Numer porządkowy aktywności",
+          "Type": 2
+        },
+        {
+          "Description": "Aktywność automatyczna, ręczna lub starsza, której nie można sklasyfikować.",
+          "Name": "Pochodzenie",
+          "Type": 3
+        },
+        {
+          "Description": "Bieżący lub końcowy trwały stan cyklu życia.",
+          "Name": "Wynik",
+          "Type": 4
+        },
+        {
+          "Description": "Trwałe wyjaśnienie bieżącego lub końcowego wyniku.",
+          "Name": "Przyczyna",
+          "Type": 5
+        },
+        {
+          "Description": "Planowany początek automatyczny. Aktywności ręczne i starszego typu go nie zawierają.",
+          "Name": "Planowany początek",
+          "Type": 6
+        },
+        {
+          "Description": "Planowany automatyczny czas otwarcia zaworu w sekundach. Nigdy nie jest zastępowany rzeczywistym zaobserwowanym czasem trwania.",
+          "Name": "Planowany czas trwania",
+          "Type": 7
+        },
+        {
+          "Description": "Planowana automatyczna głębokość wody w milimetrach.",
+          "Name": "Planowana ilość wody",
+          "Type": 8
+        },
+        {
+          "Description": "Pierwszy zaobserwowany czas otwarcia zaworu, nieobecny do momentu zaobserwowania otwarcia.",
+          "Name": "Rzeczywisty początek",
+          "Type": 9
+        },
+        {
+          "Description": "Rozliczony zaobserwowany czas otwarcia zaworu w sekundach.",
+          "Name": "Rzeczywisty czas trwania",
+          "Type": 10
+        },
+        {
+          "Description": "Głębokość wody oszacowana na podstawie rzeczywistego czasu otwarcia i profilu głowicy zraszacza, a nie na podstawie przepływomierza.",
+          "Name": "Dostarczona woda",
+          "Type": 11
+        },
+        {
+          "Description": "Korektor strefy obowiązujący w chwili utworzenia tej aktywności.",
+          "Name": "Korektor ilości wody",
+          "Type": 12
+        },
+        {
+          "Description": "Czas UTC reprezentowany przez najnowszą utrwaloną aktualizację cyklu życia.",
+          "Name": "Zaktualizowano",
+          "Type": 13
+        }
+      ],
+      "Name": "SprinklerWateringActivityV1"
+    },
+    {
+      "Description": "Zaplanowany, pominięty, nieudany, ręczny lub zakończony cykl nawadniania.",
+      "DisplayName": "Zdarzenie nawadniania",
+      "List": [
+        {
+          "Description": "Zaplanowany, pominięty, nieudany, ręczny lub zakończony cykl nawadniania.",
+          "Name": "Zdarzenie nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Czas rozpoczęcia nawadniania lub planowany czas jego rozpoczęcia.",
+          "Name": "Czas",
+          "Type": 1
+        },
+        {
+          "Description": "Szacowana ilość wody dostępnej dla roślin w tym czasie.",
+          "Name": "Dostępna woda",
+          "Type": 2
+        },
+        {
+          "Description": "Nawadniany obszar dla tego zdarzenia.",
+          "Name": "Obszar",
+          "Type": 3
+        },
+        {
+          "Description": "Co stało się z tym planem lub cyklem nawadniania.",
+          "Name": "Wynik",
+          "Type": 4
+        },
+        {
+          "Description": "Określa, czy nawadnianie było automatyczne, ręczne czy nieznanego pochodzenia.",
+          "Name": "Uruchomione przez",
+          "Type": 5
+        },
+        {
+          "Description": "Dlaczego cykl został zaplanowany, zmieniony, zatrzymany lub nie powiódł się.",
+          "Name": "Przyczyna",
+          "Type": 6
+        },
+        {
+          "Description": "Jak długo miało trwać automatyczne nawadnianie.",
+          "Name": "Planowany czas trwania",
+          "Type": 7
+        },
+        {
+          "Description": "Jak długo zawór był zaobserwowany jako otwarty.",
+          "Name": "Rzeczywisty czas trwania",
+          "Type": 8
+        },
+        {
+          "Description": "Stabilny klucz fokusu unikatowy we wszystkich skonfigurowanych strefach.",
+          "Name": "Klucz decyzji",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWateringDecisionRowV1"
+    },
+    {
+      "Description": "Pokazuje automatyczne i ręczne nawadnianie na wykresie bilansu wody.",
+      "DisplayName": "Zdarzenia nawadniania",
+      "List": [
+        {
+          "Description": "Pokazuje automatyczne i ręczne nawadnianie na wykresie bilansu wody.",
+          "Name": "Zdarzenia nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWateringDecisionsV1"
+    },
+    {
+      "Description": "Określa, czy system nawadniania jest aktywny, czy przygotowany do zimy.",
+      "DisplayName": "Tryb nawadniania",
+      "List": [
+        {
+          "Description": "Określa, czy system nawadniania jest aktywny, czy przygotowany do zimy.",
+          "Enum": [
+            {
+              "Description": "Automatyczne nawadnianie jest włączone.",
+              "Name": "Aktywny",
+              "Type": 1
+            },
+            {
+              "Description": "Automatyczne nawadnianie jest wyłączone na chłodną porę roku.",
+              "Name": "Przygotowany do zimy",
+              "Type": 2
+            }
+          ],
+          "Name": "Tryb nawadniania",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringModeV1"
+    },
+    {
+      "Description": "Pokazuje, czy nawadnianie rozpoczęło się automatycznie, czy w inny sposób.",
+      "DisplayName": "Sposób rozpoczęcia nawadniania",
+      "List": [
+        {
+          "Description": "Pokazuje, czy nawadnianie rozpoczęło się automatycznie, czy w inny sposób.",
+          "Enum": [
+            {
+              "Description": "Inteligentne nawadnianie rozpoczęło ten cykl nawadniania.",
+              "Name": "Automatyczne",
+              "Type": 1
+            },
+            {
+              "Description": "Zawór został otwarty poza systemem Inteligentnego nawadniania.",
+              "Name": "Ręczne",
+              "Type": 2
+            },
+            {
+              "Description": "Starsze zapisane dane nie wskazują, w jaki sposób rozpoczął się ten cykl nawadniania.",
+              "Name": "Nieznane",
+              "Type": 3
+            }
+          ],
+          "Name": "Sposób rozpoczęcia nawadniania",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOriginV1"
+    },
+    {
+      "Description": "Pokazuje, co stało się z planem lub cyklem nawadniania.",
+      "DisplayName": "Wynik nawadniania",
+      "List": [
+        {
+          "Description": "Pokazuje, co stało się z planem lub cyklem nawadniania.",
+          "Enum": [
+            {
+              "Description": "Obliczony przyszły automatyczny cykl jest nadal zaplanowany.",
+              "Name": "Zaplanowane",
+              "Type": 1
+            },
+            {
+              "Description": "System nawadniania poprosił zawór o otwarcie i czeka na potwierdzenie.",
+              "Name": "Polecenie oczekuje",
+              "Type": 2
+            },
+            {
+              "Description": "Zawór jest otwarty, a nawadnianie jest zliczane.",
+              "Name": "W toku",
+              "Type": 3
+            },
+            {
+              "Description": "Nawadnianie zakończyło się po zamknięciu zaworu.",
+              "Name": "Zakończone",
+              "Type": 4
+            },
+            {
+              "Description": "Zaplanowany cykl nie rozpoczął się, ponieważ zatrzymała go pogoda, ustawienia lub warunki bezpieczeństwa.",
+              "Name": "Pominięte",
+              "Type": 5
+            },
+            {
+              "Description": "Problem z zaworem uniemożliwił zakończenie cyklu nawadniania.",
+              "Name": "Nieudane",
+              "Type": 6
+            },
+            {
+              "Description": "Nowszy plan nawadniania zastąpił ten plan przed jego rozpoczęciem.",
+              "Name": "Zastąpione",
+              "Type": 7
+            }
+          ],
+          "Name": "Wynik nawadniania",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOutcomeV1"
+    },
+    {
+      "Description": "Wyjaśnia, dlaczego cykl nawadniania został zaplanowany, zmieniony, zatrzymany lub zakończył się niepowodzeniem.",
+      "DisplayName": "Przyczyna nawadniania",
+      "List": [
+        {
+          "Description": "Wyjaśnia, dlaczego cykl nawadniania został zaplanowany, zmieniony, zatrzymany lub zakończył się niepowodzeniem.",
+          "Enum": [
+            {
+              "Description": "Inteligentne nawadnianie wybrało ten cykl na podstawie potrzeb roślin i pogody.",
+              "Name": "Inteligentny harmonogram",
+              "Type": 1
+            },
+            {
+              "Description": "Zawór został otwarty poza systemem Inteligentnego nawadniania.",
+              "Name": "Obsługa ręczna",
+              "Type": 2
+            },
+            {
+              "Description": "Oczekiwany deszcz opóźnił lub zastąpił planowane nawadnianie.",
+              "Name": "Prognozowany deszcz",
+              "Type": 3
+            },
+            {
+              "Description": "Zarejestrowany deszcz zatrzymał lub uniemożliwił nawadnianie.",
+              "Name": "Zaobserwowany deszcz",
+              "Type": 4
+            },
+            {
+              "Description": "Temperatura była zbyt niska, aby bezpiecznie nawadniać.",
+              "Name": "Mroźna pogoda",
+              "Type": 5
+            },
+            {
+              "Description": "Wiatr był zbyt silny dla tej metody nawadniania.",
+              "Name": "Nadmierny wiatr",
+              "Type": 6
+            },
+            {
+              "Description": "Warunki pogodowe nie były bezpieczne dla nawadniania.",
+              "Name": "Inna niebezpieczna pogoda",
+              "Type": 7
+            },
+            {
+              "Description": "Okres bez nawadniania uniemożliwił wykonanie zaplanowanego cyklu.",
+              "Name": "Wstrzymanie",
+              "Type": 8
+            },
+            {
+              "Description": "System był przygotowany do zimy, dlatego automatyczne nawadnianie było wyłączone.",
+              "Name": "Przygotowanie do zimy",
+              "Type": 9
+            },
+            {
+              "Description": "Stan zaworu był niedostępny.",
+              "Name": "Zawór niedostępny",
+              "Type": 10
+            },
+            {
+              "Description": "Zawór zgłosił problem.",
+              "Name": "Usterka zaworu",
+              "Type": 11
+            },
+            {
+              "Description": "Zawór nie przyjął żądania.",
+              "Name": "Polecenie nie powiodło się",
+              "Type": 12
+            },
+            {
+              "Description": "Zawór nie potwierdził żądania w wymaganym czasie.",
+              "Name": "Przekroczono czas polecenia",
+              "Type": 13
+            },
+            {
+              "Description": "Zawór otrzymał polecenie otwarcia, ale nie wykryto nawadniania.",
+              "Name": "Nie wykryto otwarcia",
+              "Type": 14
+            },
+            {
+              "Description": "Nowsze obliczenie zastąpiło zaplanowany cykl.",
+              "Name": "Przeliczono",
+              "Type": 15
+            },
+            {
+              "Description": "Starsze zapisane dane nie zawierają bardziej szczegółowej przyczyny.",
+              "Name": "Nieznane",
+              "Type": 16
+            },
+            {
+              "Description": "The valve was observed closed before its timed run was due to finish.",
+              "Name": "Stopped early",
+              "Type": 17
+            }
+          ],
+          "Name": "Przyczyna nawadniania",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringReasonV1"
+    },
+    {
+      "Description": "Pokazuje, skąd pochodzi woda lub czy jest oczekiwana później.",
+      "DisplayName": "Źródło wody",
+      "List": [
+        {
+          "Description": "Pokazuje, skąd pochodzi woda lub czy jest oczekiwana później.",
+          "Enum": [
+            {
+              "Description": "Deszcz już zarejestrowany przez usługę pogodową.",
+              "Name": "Deszcz",
+              "Type": 1
+            },
+            {
+              "Description": "Woda oszacowana na podstawie czasu otwarcia zaworu.",
+              "Name": "Nawadnianie",
+              "Type": 2
+            },
+            {
+              "Description": "Deszcz oczekiwany w prognozie.",
+              "Name": "Prognozowany deszcz",
+              "Type": 3
+            },
+            {
+              "Description": "Automatyczne nawadnianie, które jest zaplanowane, ale jeszcze się nie rozpoczęło.",
+              "Name": "Zaplanowane nawadnianie",
+              "Type": 4
+            }
+          ],
+          "Name": "Źródło wody",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterInputTypeV1"
+    },
+    {
+      "Description": "Łączy kompaktowe podsumowanie deszczu i nawadniania ze szczegółami dziennymi.",
+      "DisplayName": "Zużycie wody",
+      "List": [
+        {
+          "Description": "Łączy kompaktowe podsumowanie deszczu i nawadniania ze szczegółami dziennymi.",
+          "Name": "Zużycie wody",
+          "Type": 0
+        },
+        {
+          "Description": "Shared rain and per-area irrigation during the selected dates.",
+          "Name": "Summary",
+          "Type": 1
+        },
+        {
+          "Description": "Rain and watering amounts by local calendar date.",
+          "Name": "Daily details",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterUsageChartV1"
+    },
+    {
+      "Description": "Zachowuje widoczność obszaru, gdy w wybranym zakresie dat nie wystąpił deszcz ani nawadnianie.",
+      "DisplayName": "Obszar bez zarejestrowanej wody",
+      "List": [
+        {
+          "Description": "Zachowuje widoczność obszaru, gdy w wybranym zakresie dat nie wystąpił deszcz ani nawadnianie.",
+          "Name": "Obszar bez zarejestrowanej wody",
+          "Type": 0
+        },
+        {
+          "Description": "Wyśrodkowuje komunikat na wykresie.",
+          "Name": "Pozycja etykiety",
+          "Type": 1
+        },
+        {
+          "Description": "Nawadniany obszar bez zarejestrowanej wody.",
+          "Name": "Obszar",
+          "Type": 2
+        },
+        {
+          "Description": "Wyjaśnia, dlaczego ten obszar nie ma słupków na wykresie.",
+          "Name": "Komunikat",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZoneRowV1"
+    },
+    {
+      "Description": "Komunikaty dla obszarów bez deszczu ani nawadniania w wybranym zakresie dat.",
+      "DisplayName": "Obszary bez zarejestrowanej wody",
+      "List": [
+        {
+          "Description": "Komunikaty dla obszarów bez deszczu ani nawadniania w wybranym zakresie dat.",
+          "Name": "Obszary bez zarejestrowanej wody",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZonesV1"
+    },
+    {
+      "Description": "Pokazuje ilości deszczu i nawadniania według daty dla każdego obszaru.",
+      "DisplayName": "Zużycie wody",
+      "List": [
+        {
+          "Description": "Pokazuje ilości deszczu i nawadniania według daty dla każdego obszaru.",
+          "Name": "Zużycie wody",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageMarksV1"
+    },
+    {
+      "Description": "Jedna ilość deszczu lub nawadniania pokazana dla obszaru w określonym dniu.",
+      "DisplayName": "Pozycja zużycia wody",
+      "List": [
+        {
+          "Description": "Jedna ilość deszczu lub nawadniania pokazana dla obszaru w określonym dniu.",
+          "Name": "Pozycja zużycia wody",
+          "Type": 0
+        },
+        {
+          "Description": "Lokalna data kalendarzowa dla tej ilości deszczu lub nawadniania.",
+          "Name": "Data",
+          "Type": 1
+        },
+        {
+          "Description": "Miejsce, w którym ta ilość zaczyna się na wykresie.",
+          "Name": "Początek słupka",
+          "Type": 2
+        },
+        {
+          "Description": "Miejsce, w którym ta ilość kończy się na wykresie.",
+          "Name": "Koniec słupka",
+          "Type": 3
+        },
+        {
+          "Description": "Deszcz lub nawadnianie reprezentowane przez tę część słupka.",
+          "Name": "Ilość wody",
+          "Type": 4
+        },
+        {
+          "Description": "Zarejestrowany deszcz, nawadnianie, oczekiwany deszcz lub planowane nawadnianie.",
+          "Name": "Źródło wody",
+          "Type": 5
+        },
+        {
+          "Description": "Nawadniany obszar reprezentowany przez ten wiersz.",
+          "Name": "Obszar",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageRowV1"
+    },
+    {
+      "Description": "Shows shared rain and irrigation for every area together on one chart.",
+      "DisplayName": "Water-use summary",
+      "List": [
+        {
+          "Description": "Shows shared rain and irrigation for every area together on one chart.",
+          "Name": "Water-use summary",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryChartV1"
+    },
+    {
+      "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+      "DisplayName": "Water-use summary item",
+      "List": [
+        {
+          "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+          "Name": "Water-use summary item",
+          "Type": 0
+        },
+        {
+          "Description": "Millimeter scale for comparing rain and irrigation.",
+          "Name": "Water amount",
+          "Type": 1
+        },
+        {
+          "Description": "Where this contribution ends in its stacked total.",
+          "Name": "Amount end",
+          "Type": 2
+        },
+        {
+          "Description": "Total rain or irrigation represented by this part of the bar.",
+          "Name": "Amount",
+          "Type": 3
+        },
+        {
+          "Description": "Recorded rain, forecast rain, actual watering, or scheduled watering.",
+          "Name": "Water source",
+          "Type": 4
+        },
+        {
+          "Description": "Keeps shared rain first, followed by every configured area.",
+          "Name": "Lane",
+          "Type": 5
+        },
+        {
+          "Description": "Shows Rain or the configured area's name on the summary axis.",
+          "Name": "Rain or area",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryRowV1"
+    },
+    {
+      "Description": "Pokazuje, czy wartość została zarejestrowana, czy pochodzi z prognozy.",
+      "DisplayName": "Źródło pogody",
+      "List": [
+        {
+          "Description": "Pokazuje, czy wartość została zarejestrowana, czy pochodzi z prognozy.",
+          "Enum": [
+            {
+              "Description": "Zakończona obserwacja pogody.",
+              "Name": "Zarejestrowana historia",
+              "Type": 1
+            },
+            {
+              "Description": "Niedawna obserwacja bieżącej pogody.",
+              "Name": "Bieżące warunki",
+              "Type": 2
+            },
+            {
+              "Description": "Przyszła wartość z najnowszej prognozy.",
+              "Name": "Prognoza",
+              "Type": 3
+            }
+          ],
+          "Name": "Źródło pogody",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherChartSourceV1"
+    },
+    {
+      "Description": "Pokazuje razem szacowaną utratę wody, temperaturę, wilgotność i wiatr.",
+      "DisplayName": "Pogoda",
+      "List": [
+        {
+          "Description": "Pokazuje razem szacowaną utratę wody, temperaturę, wilgotność i wiatr.",
+          "Name": "Pogoda",
+          "Type": 0
+        },
+        {
+          "Description": "Zarejestrowana i prognozowana utrata wody przez parowanie i zużycie przez rośliny.",
+          "Name": "Szacowana utrata wody",
+          "Type": 1
+        },
+        {
+          "Description": "Zaobserwowane i prognozowane wartości z niezależnymi osiami Y.",
+          "Name": "Temperatura i wilgotność względna",
+          "Type": 2
+        },
+        {
+          "Description": "Zaobserwowany i prognozowany wiatr stały oraz porywy.",
+          "Name": "Wiatr",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherEtChartV1"
+    },
+    {
+      "Description": "Zaobserwowany i prognozowany wiatr stały oraz porywy na jednej porównywalnej skali.",
+      "DisplayName": "Wiatr i porywy",
+      "List": [
+        {
+          "Description": "Zaobserwowany i prognozowany wiatr stały oraz porywy na jednej porównywalnej skali.",
+          "Name": "Wiatr i porywy",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWindChartV1"
+    },
+    {
+      "Description": "Jedna próbka wiatru stałego lub porywu.",
+      "DisplayName": "Wiersz wiatru",
+      "List": [
+        {
+          "Description": "Jedna próbka wiatru stałego lub porywu.",
+          "Name": "Wiersz wiatru",
+          "Type": 0
+        },
+        {
+          "Description": "Początek okresu dostawcy.",
+          "Name": "Czas",
+          "Type": 1
+        },
+        {
+          "Description": "Prędkość wiatru stałego lub porywu w metrach na sekundę.",
+          "Name": "Prędkość wiatru",
+          "Type": 2
+        },
+        {
+          "Description": "Zaobserwowany lub prognozowany wiatr stały albo poryw.",
+          "Name": "Seria",
+          "Type": 3
+        },
+        {
+          "Description": "Tożsamość wygenerowana przez serwer dla tego czasu i serii wiatru.",
+          "Name": "Stabilny klucz",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWindRowV1"
+    },
+    {
+      "Description": "Rozdziela wiatr stały i porywy dla okresów zaobserwowanych i prognozowanych.",
+      "DisplayName": "Seria wiatru",
+      "List": [
+        {
+          "Description": "Rozdziela wiatr stały i porywy dla okresów zaobserwowanych i prognozowanych.",
+          "Enum": [
+            {
+              "Description": "Wiatr stały z zakończonego okresu historycznego.",
+              "Name": "Historyczny wiatr stały",
+              "Type": 1
+            },
+            {
+              "Description": "Maksymalny poryw z zakończonego okresu historycznego.",
+              "Name": "Historyczny poryw",
+              "Type": 2
+            },
+            {
+              "Description": "Wiatr stały z zachowanej bieżącej obserwacji.",
+              "Name": "Bieżący wiatr stały",
+              "Type": 3
+            },
+            {
+              "Description": "Maksymalny poryw z zachowanej bieżącej obserwacji.",
+              "Name": "Bieżący poryw",
+              "Type": 4
+            },
+            {
+              "Description": "Prognozowany wiatr stały.",
+              "Name": "Prognozowany wiatr stały",
+              "Type": 5
+            },
+            {
+              "Description": "Prognozowany maksymalny poryw.",
+              "Name": "Prognozowany poryw",
+              "Type": 6
+            }
+          ],
+          "Name": "Seria wiatru",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWindSeriesV1"
+    },
+    {
+      "Description": "Zapamiętuje najnowsze przypomnienie, aby nie zostało ponownie wysłane zbyt szybko.",
+      "DisplayName": "Najnowsze przypomnienie o przygotowaniu do zimy",
+      "List": [
+        {
+          "Description": "Zapamiętuje najnowsze przypomnienie, aby nie zostało ponownie wysłane zbyt szybko.",
+          "Name": "Najnowsze przypomnienie o przygotowaniu do zimy",
+          "Type": 0
+        },
+        {
+          "Description": "Czas wysłania najnowszego przypomnienia.",
+          "Name": "Wysłano",
+          "Type": 1
+        },
+        {
+          "Description": "Powód wysłania najnowszego przypomnienia.",
+          "Name": "Przyczyna",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderMemoryV1"
+    },
+    {
+      "Description": "Wyjaśnia, dlaczego wysłano najnowsze przypomnienie dotyczące chłodnej pogody.",
+      "DisplayName": "Przyczyna przypomnienia o przygotowaniu do zimy",
+      "List": [
+        {
+          "Description": "Wyjaśnia, dlaczego wysłano najnowsze przypomnienie dotyczące chłodnej pogody.",
+          "Enum": [
+            {
+              "Description": "Szerokość geograficzna lokalizacji i bieżąca pora roku wskazują, że zbliża się chłodna pogoda.",
+              "Name": "Lokalizacja i pora roku",
+              "Type": 1
+            },
+            {
+              "Description": "Świeże dane o bieżących warunkach lub prognozie wskazują temperaturę równą lub niższą od progu bezpieczeństwa systemu nawadniania dla chłodnej pogody.",
+              "Name": "Mroźna pogoda",
+              "Type": 2
+            }
+          ],
+          "Name": "Przyczyna przypomnienia o przygotowaniu do zimy",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderReasonV1"
+    },
+    {
+      "Description": "Pokazuje informacje, na których opiera się bieżący plan nawadniania.",
+      "DisplayName": "Szczegóły strefy",
+      "List": [
+        {
+          "Description": "Pokazuje informacje, na których opiera się bieżący plan nawadniania.",
+          "Name": "Szczegóły strefy",
+          "Type": 0
+        },
+        {
+          "Description": "Informacje używane do oszacowania, kiedy rośliny będą ponownie potrzebowały wody.",
+          "Name": "Oszacowanie zużycia wody",
+          "Type": 1
+        },
+        {
+          "Description": "Szacowana ilość wody traconej każdego dnia przez parowanie i zużycie przez rośliny.",
+          "Name": "Szacowana dzienna utrata wody",
+          "Type": 2
+        },
+        {
+          "Description": "Czas obliczenia tego planu nawadniania.",
+          "Name": "Ostatnia aktualizacja",
+          "Type": 3
+        },
+        {
+          "Description": "Bieżąca decyzja dotycząca nawadniania lub przyczyna opóźnienia.",
+          "Name": "Stan",
+          "Type": 4
+        },
+        {
+          "Description": "Planowany czas rozpoczęcia i czas trwania. Pogoda lub dostępność zaworu mogą jeszcze zmienić plan.",
+          "Name": "Następne nawadnianie",
+          "Type": 5
+        },
+        {
+          "Description": "Ilość wody zaplanowana dla następnego automatycznego cyklu.",
+          "Name": "Planowana ilość wody",
+          "Type": 6
+        },
+        {
+          "Description": "Szacowana ilość wody potrzebnej roślinom.",
+          "Name": "Szacowany niedobór wody",
+          "Type": 7
+        },
+        {
+          "Description": "Deszcz uwzględniony w ciągu ostatnich siedmiu dni.",
+          "Name": "Ostatni deszcz",
+          "Type": 8
+        },
+        {
+          "Description": "Nawadnianie uwzględnione w ciągu ostatnich siedmiu dni.",
+          "Name": "Ostatnie nawadnianie",
+          "Type": 9
+        },
+        {
+          "Description": "Określa, czy zawór jest obecnie otwarty.",
+          "Name": "Nawadnianie teraz",
+          "Type": 10
+        },
+        {
+          "Description": "Automatyczne nawadnianie czeka, aż stan zaworu będzie dostępny.",
+          "Name": "Stan zaworu dostępny",
+          "Type": 11
+        },
+        {
+          "Description": "Problemy zgłoszone przez zawór. Jednocześnie może występować więcej niż jeden problem.",
+          "Name": "Problemy z zaworem",
+          "Type": 12
+        }
+      ],
+      "Name": "SprinklerZoneActiveStateV1"
+    },
+    {
+      "Description": "Pokazuje pełny plan nawadniania lub informację, że system jest przygotowany do zimy.",
+      "DisplayName": "Szczegółowy stan nawadniania",
+      "List": [
+        {
+          "Description": "Pokazuje pełny plan nawadniania lub informację, że system jest przygotowany do zimy.",
+          "Name": "Szczegółowy stan nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Automatyczne nawadnianie jest włączone i wszystkie bieżące dane strefy są dostępne.",
+          "Name": "Aktywny",
+          "Type": 1
+        },
+        {
+          "Description": "Bieżący plan nawadniania, oszacowanie ilości wody i stan zaworu.",
+          "Name": "Szczegóły strefy",
+          "Type": 2
+        },
+        {
+          "Description": "Automatyczne nawadnianie jest wyłączone dla całego systemu i nie zaplanowano żadnego przedziału nawadniania.",
+          "Name": "Przygotowany do zimy",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerZoneAdvancedStateV1"
+    },
+    {
+      "Description": "Explains why a requested sprinkler setting was not changed.",
+      "DisplayName": "Configuration error",
+      "List": [
+        {
+          "Description": "Explains why a requested sprinkler setting was not changed.",
+          "Enum": [
+            {
+              "Description": "The percentage was outside the supported range or step.",
+              "Name": "Invalid water amount",
+              "Type": 1
+            },
+            {
+              "Description": "The replacement contained too many periods or an invalid interval.",
+              "Name": "Invalid no-watering periods",
+              "Type": 2
+            }
+          ],
+          "Name": "Configuration error",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationErrorV1"
+    },
+    {
+      "Description": "Dostosuj ilość wody, okresy bez nawadniania lub stan automatycznego nawadniania.",
+      "DisplayName": "Ustawienia strefy",
+      "List": [
+        {
+          "Description": "Dostosuj ilość wody, okresy bez nawadniania lub stan automatycznego nawadniania.",
+          "Name": "Ustawienia strefy",
+          "Type": 0
+        },
+        {
+          "Description": "Użyj 100% dla zalecanej ilości, niższej wartości dla mniejszej ilości wody lub wyższej wartości dla większej ilości wody.",
+          "Name": "Ilość wody",
+          "Type": 1
+        },
+        {
+          "Description": "Times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 2
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 3
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationV1"
+    },
+    {
+      "Description": "Trwale przechowuje kompaktowy, odporny na ponowne uruchomienie korektor ilości wody, ograniczenia i scaloną wartość bazową bilansu wody dla jednego skonfigurowanego zaworu. Zdarzenia wodne są przechowywane oddzielnie jako przyrostowe indeksowane rekordy.",
+      "DisplayName": "Pamięć strefy nawadniania",
+      "List": [
+        {
+          "Description": "Trwale przechowuje kompaktowy, odporny na ponowne uruchomienie korektor ilości wody, ograniczenia i scaloną wartość bazową bilansu wody dla jednego skonfigurowanego zaworu. Zdarzenia wodne są przechowywane oddzielnie jako przyrostowe indeksowane rekordy.",
+          "Name": "Pamięć strefy nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Procent adaptacyjnej ilości wody do zastosowania. Wartość domyślna to 100%.",
+          "Name": "Korektor ilości wody",
+          "Type": 1
+        },
+        {
+          "Description": "Znormalizowane ograniczenia harmonogramu w czasie działania.",
+          "Name": "Okresy wstrzymania",
+          "Type": 2
+        },
+        {
+          "Description": "Przedział półotwarty, w którym strefa nie może być nawadniana.",
+          "Name": "Okres wstrzymania",
+          "Type": 3
+        },
+        {
+          "Description": "Data i czas, do których starsze dopływy wody zostały włączone do `baseline_deficit_millimeters`.",
+          "Name": "Czas bazowy bilansu",
+          "Type": 4
+        },
+        {
+          "Description": "Deficyt wody w strefie korzeniowej w czasie `balance_baseline_at`, w milimetrach.",
+          "Name": "Deficyt bazowy",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerZoneMemoryV1"
+    },
+    {
+      "Description": "Wyświetl stan i szczegóły tego obszaru lub zmień jego ustawienia nawadniania.",
+      "DisplayName": "Sterowanie nawadnianiem",
+      "List": [
+        {
+          "Description": "Wyświetl stan i szczegóły tego obszaru lub zmień jego ustawienia nawadniania.",
+          "Name": "Sterowanie nawadnianiem",
+          "Type": 0
+        },
+        {
+          "Description": "Pokazuje, co dzieje się w tym obszarze i kiedy zostanie ponownie nawodniony.",
+          "Name": "Wyświetl stan",
+          "Type": 1
+        },
+        {
+          "Description": "Bieżący stan nawadniania i plan następnego nawadniania.",
+          "Name": "Bieżący stan",
+          "Type": 2
+        },
+        {
+          "Description": "Bieżący stan tego obszaru lub systemu przygotowanego do zimy.",
+          "Name": "Stan nawadniania",
+          "Type": 3
+        },
+        {
+          "Description": "Pokazuje oszacowanie ilości wody, plan nawadniania i stan zaworu.",
+          "Name": "Wyświetl szczegóły",
+          "Type": 4
+        },
+        {
+          "Description": "Oszacowanie ilości wody, plan nawadniania i stan zaworu.",
+          "Name": "Szczegóły strefy",
+          "Type": 5
+        },
+        {
+          "Description": "Pokazuje ilość wody, okresy bez nawadniania i stan aktywności.",
+          "Name": "Wyświetl ustawienia",
+          "Type": 6
+        },
+        {
+          "Description": "Bieżąca ilość wody, okresy bez nawadniania i stan aktywności. Później zaakceptowane zmiany są dostarczane jako dane subskrypcji przed ich końcowym potwierdzeniem.",
+          "Name": "Ustawienia strefy",
+          "Type": 7
+        },
+        {
+          "Description": "Bieżące ustawienia tego obszaru.",
+          "Name": "Ustawienia",
+          "Type": 8
+        },
+        {
+          "Description": "Użyj większej lub mniejszej ilości wody niż zalecana.",
+          "Name": "Zmień ilość wody",
+          "Type": 9
+        },
+        {
+          "Description": "Use more or less water than the recommended amount.",
+          "Name": "Change water amount",
+          "Type": 10
+        },
+        {
+          "Description": "Use 100% for the recommended amount, a lower value for less water, or a higher value for more water.",
+          "Name": "Water amount",
+          "Type": 11
+        },
+        {
+          "Description": "Replace the times when this area must not be watered.",
+          "Name": "Change no-watering periods",
+          "Type": 12
+        },
+        {
+          "Description": "The complete list of times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 13
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 14
+        },
+        {
+          "Description": "Turn automatic watering on or off.",
+          "Name": "Change active state",
+          "Type": 15
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 16
+        },
+        {
+          "Description": "Confirms that a requested setting was persisted and applied. The current subscribed configuration remains installed.",
+          "Name": "Change accepted",
+          "Type": 17
+        },
+        {
+          "Description": "Explains why a requested setting was not changed while preserving the current subscribed configuration for correction and retry.",
+          "Name": "Change rejected",
+          "Type": 18
+        },
+        {
+          "Description": "A localized explanation of the invalid setting.",
+          "Name": "Error message",
+          "Type": 19
+        },
+        {
+          "Description": "The reason the setting was rejected.",
+          "Name": "Error",
+          "Type": 20
+        }
+      ],
+      "Name": "SprinklerZoneProtocol"
+    },
+    {
+      "Description": "Pokazuje bieżący stan i plan następnego nawadniania.",
+      "DisplayName": "Stan nawadniania",
+      "List": [
+        {
+          "Description": "Pokazuje bieżący stan i plan następnego nawadniania.",
+          "Name": "Stan nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Automatyczne nawadnianie jest włączone.",
+          "Name": "Aktywny",
+          "Type": 1
+        },
+        {
+          "Description": "Bieżąca decyzja dotycząca nawadniania lub przyczyna opóźnienia.",
+          "Name": "Stan",
+          "Type": 2
+        },
+        {
+          "Description": "Planowany czas rozpoczęcia i czas trwania.",
+          "Name": "Następne nawadnianie",
+          "Type": 3
+        },
+        {
+          "Description": "Automatyczne nawadnianie jest wyłączone dla całego systemu i nie zaplanowano żadnego przedziału nawadniania.",
+          "Name": "Przygotowany do zimy",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneStateV1"
+    },
+    {
+      "Description": "Skonfiguruj jeden trawnik, ogród lub obszar z roślinnością, który jest nawadniany niezależnie.",
+      "DisplayName": "Nawadniany obszar",
+      "List": [
+        {
+          "Description": "Skonfiguruj jeden trawnik, ogród lub obszar z roślinnością, który jest nawadniany niezależnie.",
+          "Name": "Nawadniany obszar",
+          "Type": 0
+        },
+        {
+          "Description": "Wybierz zawór sterujący tym obszarem.",
+          "Name": "Zawór wody",
+          "Type": 1
+        },
+        {
+          "Description": "Wybierz, co rośnie w tym obszarze.",
+          "Name": "Typ roślin",
+          "Type": 2
+        },
+        {
+          "Description": "Wybierz sposób dostarczania wody w tym obszarze.",
+          "Name": "Metoda nawadniania",
+          "Type": 3
+        },
+        {
+          "Description": "Wybierz miejsce, w którym będą dostępne stan, ustawienia i elementy sterowania tego obszaru.",
+          "Name": "Sterowanie obszarem",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "System record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "System record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "ArchiveState",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "WateringMode",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WinterizationReminder",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "WeatherHistory",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "WeatherObservation",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 10
+        }
+      ],
+      "Name": "SystemRecord"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Valve record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Valve record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Memory",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "ActivityState",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "Restart",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WaterEvent",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Activity",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "DailyReport",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "ModeledWeatherGap",
+          "Type": 10
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 11
+        }
+      ],
+      "Name": "ZoneRecord"
+    }
+  ]
+}

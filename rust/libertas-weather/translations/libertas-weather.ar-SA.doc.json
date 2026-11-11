@@ -1,0 +1,1825 @@
+{
+  "Description": "يعرّف بيانات الطقس المصممة خصيصًا للقرارات التي تتخذها تطبيقات ليبرتاس. يحتفظ مخطط نظام الرش بموقعه الذي يوفره المحور بصورة منفصلة عن السجل الحديث والظروف الحالية وبيانات التوقعات. لكل قسم من أقسام الطقس فاصل زمني مختلف للتحديث، وقد ينجح أو يفشل بصورة مستقلة. قد تتضمن لقطات وقت التشغيل أي مجموعة من الأقسام. تحفظ التطبيقات كل قسم ناجح بصورة منفصلة، وتحتفظ بالأقسام الأقدم عند فشل تحديث بيانات الطقس. تستخدم الاشتراكات التزايدية مؤشرات تتكون من الطابع الزمني للحقبة والتسلسل، لكي يتمكن العملاء من تمييز إعادة تعيين مؤشر الخادم عن البيانات القديمة أو غير المرتبة، أو إعادة تشغيل التغييرات المحتفظ بها، أو استرداد نطاقات زمنية محددة من البيانات المخزنة مؤقتًا. لا يوفر مخطط نظام التدفئة والتهوية وتكييف الهواء في المبنى سوى المدخلات الخارجية اللازمة للتنبؤ بالحمل الحراري، وتشغيل المضخات الحرارية، واتخاذ قرارات المقتصد، والتهوية المتحكم بها بالهواء الخارجي. ويُبقي قسمي الطقس وجودة الهواء الخارجي مستقلين لأن لهما مزودين مختلفين وسلوكًا مختلفًا من حيث حداثة البيانات. يجب أن تواصل المعدات المحلية وأنظمة السلامة الحيوية استخدام مستشعراتها الخاصة؛ فالطقس المخزن مؤقتًا من الإنترنت مدخل إشرافي وليس إشارة سلامة.",
+  "DisplayName": "طقس ليبرتاس",
+  "DocumentVersion": "0.0.2",
+  "List": [],
+  "Locale": "ar-SA",
+  "StringResources": {},
+  "Types": [
+    {
+      "Description": "يتضمن أحدث الظروف الخارجية المنمذجة التي يستخدمها التحكم الإشرافي في نظام التدفئة والتهوية وتكييف الهواء. ولا يحل محل مستشعر خارجي محلي يُستخدم لحماية المعدات أو الحماية من التجمد.",
+      "DisplayName": "الطقس الحالي لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يتضمن أحدث الظروف الخارجية المنمذجة التي يستخدمها التحكم الإشرافي في نظام التدفئة والتهوية وتكييف الهواء. ولا يحل محل مستشعر خارجي محلي يُستخدم لحماية المعدات أو الحماية من التجمد.",
+          "Name": "الطقس الحالي لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
+          "Name": "Retrieved at",
+          "Type": 1
+        },
+        {
+          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
+          "Name": "Valid until",
+          "Type": 2
+        },
+        {
+          "Description": "The provider-supplied date and time represented by these current conditions.",
+          "Name": "Valid at",
+          "Type": 3
+        },
+        {
+          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
+          "Name": "Observation interval",
+          "Type": 4
+        },
+        {
+          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
+          "Name": "Outdoor conditions",
+          "Type": 5
+        }
+      ],
+      "Name": "BuildingHvacCurrentWeatherV1"
+    },
+    {
+      "Description": "تتضمن تركيزات ملوثات الهواء الخارجي المنمذجة والمستخدمة لتجنب زيادة سحب الهواء الخارجي ميكانيكيًا أثناء الظروف غير الصحية. ولا تحل قيم النماذج الإقليمية هذه محل مستشعرات السلامة المحلية أو تعليمات الطوارئ الرسمية.",
+      "DisplayName": "فترة جودة الهواء الخارجي لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "تتضمن تركيزات ملوثات الهواء الخارجي المنمذجة والمستخدمة لتجنب زيادة سحب الهواء الخارجي ميكانيكيًا أثناء الظروف غير الصحية. ولا تحل قيم النماذج الإقليمية هذه محل مستشعرات السلامة المحلية أو تعليمات الطوارئ الرسمية.",
+          "Name": "فترة جودة الهواء الخارجي لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت الشاملان اللذان تمثلهما فترة جودة الهواء هذه.",
+          "Name": "وقت البدء",
+          "Type": 1
+        },
+        {
+          "Description": "طول هذه الفترة بالثواني. تستخدم جودة الهواء الخارجي المنمذجة عادةً فترات مدتها 3,600 ثانية.",
+          "Name": "المدة",
+          "Type": 2
+        },
+        {
+          "Description": "تركيز جسيمات PM2.5 الخارجية المنمذجة بالميكروغرام لكل متر مكعب.",
+          "Name": "الجسيمات الدقيقة",
+          "Type": 3
+        },
+        {
+          "Description": "تركيز جسيمات PM10 الخارجية المنمذجة بالميكروغرام لكل متر مكعب.",
+          "Name": "الجسيمات العالقة",
+          "Type": 4
+        },
+        {
+          "Description": "تركيز الأوزون الخارجي المنمذج بالميكروغرام لكل متر مكعب.",
+          "Name": "الأوزون",
+          "Type": 5
+        },
+        {
+          "Description": "تركيز ثاني أكسيد النيتروجين الخارجي المنمذج بالميكروغرام لكل متر مكعب.",
+          "Name": "ثاني أكسيد النيتروجين",
+          "Type": 6
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityPeriodV1"
+    },
+    {
+      "Description": "تتضمن فترات تركيز ملوثات الهواء الخارجي المنمذجة الحالية والمتوقعة لتخطيط التهوية. وهي اختيارية بصورة مستقلة وتُخزن مؤقتًا بصورة مستقلة عن الطقس الفعلي.",
+      "DisplayName": "جودة الهواء الخارجي لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "تتضمن فترات تركيز ملوثات الهواء الخارجي المنمذجة الحالية والمتوقعة لتخطيط التهوية. وهي اختيارية بصورة مستقلة وتُخزن مؤقتًا بصورة مستقلة عن الطقس الفعلي.",
+          "Name": "جودة الهواء الخارجي لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت اللذان تم فيهما استرداد قسم جودة الهواء الكامل هذا والتحقق من صحته وقبوله.",
+          "Name": "وقت الاسترداد",
+          "Type": 1
+        },
+        {
+          "Description": "الموعد النهائي غير الشامل لحداثة البيانات. يجب عدم تفسير القيم المنمذجة القديمة على أنها دليل على أن الهواء الخارجي آمن.",
+          "Name": "صالح حتى",
+          "Type": 2
+        },
+        {
+          "Description": "الفترات الحالية والمستقبلية مرتبة من الأقدم إلى الأحدث. لا تغطي الاستجابة العادية أكثر من 48 ساعة.",
+          "Name": "فترات جودة الهواء",
+          "Type": 3
+        },
+        {
+          "Description": "تركيزات ملوثات الهواء الخارجي المنمذجة لفترة واحدة.",
+          "Name": "فترة جودة الهواء",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityV1"
+    },
+    {
+      "Description": "تتضمن المدخلات الخارجية الفعلية اللازمة للتنبؤ بأحمال نظام التدفئة والتهوية وتكييف الهواء، والحسابات السيكرومترية، واتخاذ قرارات المقتصد، وتقدير تسرب الهواء، وتشغيل المعدات المكشوفة مع مراعاة الطقس.",
+      "DisplayName": "الظروف الخارجية لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "تتضمن المدخلات الخارجية الفعلية اللازمة للتنبؤ بأحمال نظام التدفئة والتهوية وتكييف الهواء، والحسابات السيكرومترية، واتخاذ قرارات المقتصد، وتقدير تسرب الهواء، وتشغيل المعدات المكشوفة مع مراعاة الطقس.",
+          "Name": "الظروف الخارجية لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
+          "Name": "Dry-bulb temperature",
+          "Type": 1
+        },
+        {
+          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
+          "Name": "Dew-point temperature",
+          "Type": 2
+        },
+        {
+          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
+          "Name": "Relative humidity",
+          "Type": 3
+        },
+        {
+          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
+          "Name": "Surface pressure",
+          "Type": 4
+        },
+        {
+          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
+          "Name": "Wind speed",
+          "Type": 5
+        },
+        {
+          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
+          "Name": "Wind gust",
+          "Type": 6
+        },
+        {
+          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
+          "Name": "Wind direction",
+          "Type": 7
+        },
+        {
+          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
+          "Name": "Precipitation",
+          "Type": 8
+        },
+        {
+          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
+          "Name": "Precipitation kind",
+          "Type": 9
+        },
+        {
+          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
+          "Name": "Solar elevation",
+          "Type": 10
+        },
+        {
+          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
+          "Name": "Solar azimuth",
+          "Type": 11
+        },
+        {
+          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
+          "Name": "Global horizontal irradiance",
+          "Type": 12
+        },
+        {
+          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
+          "Name": "Direct normal irradiance",
+          "Type": 13
+        },
+        {
+          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
+          "Name": "Diffuse horizontal irradiance",
+          "Type": 14
+        }
+      ],
+      "Name": "BuildingHvacOutdoorConditionsV1"
+    },
+    {
+      "Description": "يصنف الهطول عندما يمكن أن تؤثر حالته في الملفات الخارجية أو مآخذ الهواء أو المخمدات أو غيرها من معدات التدفئة والتهوية وتكييف الهواء المكشوفة.",
+      "DisplayName": "نوع الهطول لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يصنف الهطول عندما يمكن أن تؤثر حالته في الملفات الخارجية أو مآخذ الهواء أو المخمدات أو غيرها من معدات التدفئة والتهوية وتكييف الهواء المكشوفة.",
+          "Enum": [
+            {
+              "Description": "لا يوجد هطول ممثل خلال الفترة.",
+              "Name": "لا يوجد هطول",
+              "Type": 1
+            },
+            {
+              "Description": "يُمثل خلال الفترة مطر سائل أو زخات مطر.",
+              "Name": "مطر",
+              "Type": 2
+            },
+            {
+              "Description": "يُمثل خلال الفترة هطول سائل فائق التبريد يمكن أن يتجمد على المعدات المكشوفة.",
+              "Name": "مطر متجمد",
+              "Type": 3
+            },
+            {
+              "Description": "يُمثل خلال الفترة هطول متجمد يغلب عليه الثلج.",
+              "Name": "ثلج",
+              "Type": 4
+            },
+            {
+              "Description": "تُمثل أكثر من حالة واحدة من الهطول السائل أو المتجمد.",
+              "Name": "هطول مختلط",
+              "Type": 5
+            },
+            {
+              "Description": "يوجد هطول، لكن يتعذر على المزود تصنيف حالته.",
+              "Name": "هطول غير معروف",
+              "Type": 6
+            }
+          ],
+          "Name": "نوع الهطول لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacPrecipitationKindV1"
+    },
+    {
+      "Description": "يعرّف تغييرًا ذريًا واحدًا في تدفق الطقس التزايدي لنظام التدفئة والتهوية وتكييف الهواء في المبنى. ويُعد ترتيب المتغيرات والحقول جزءًا من عقد النقل السلكي لـ Avro.",
+      "DisplayName": "تغيير طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يعرّف تغييرًا ذريًا واحدًا في تدفق الطقس التزايدي لنظام التدفئة والتهوية وتكييف الهواء في المبنى. ويُعد ترتيب المتغيرات والحقول جزءًا من عقد النقل السلكي لـ Avro.",
+          "Name": "تغيير طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
+          "Name": "Upsert historical periods",
+          "Type": 1
+        },
+        {
+          "Description": "The retrieval and validation time for the updated history section.",
+          "Name": "Retrieved at",
+          "Type": 2
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the history section.",
+          "Name": "Valid until",
+          "Type": 3
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from oldest to newest.",
+          "Name": "Historical periods",
+          "Type": 4
+        },
+        {
+          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
+          "Name": "Historical period",
+          "Type": 5
+        },
+        {
+          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove historical periods",
+          "Type": 6
+        },
+        {
+          "Description": "The half-open range of historical period start times to remove.",
+          "Name": "Time range",
+          "Type": 7
+        },
+        {
+          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
+          "Name": "Replace current conditions",
+          "Type": 8
+        },
+        {
+          "Description": "The complete newly accepted current-condition section.",
+          "Name": "Current conditions",
+          "Type": 9
+        },
+        {
+          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
+          "Name": "Upsert forecast periods",
+          "Type": 10
+        },
+        {
+          "Description": "The retrieval and validation time for the updated forecast section.",
+          "Name": "Retrieved at",
+          "Type": 11
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the forecast section.",
+          "Name": "Valid until",
+          "Type": 12
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Forecast periods",
+          "Type": 13
+        },
+        {
+          "Description": "One future outdoor-condition period keyed by `starts_at`.",
+          "Name": "Forecast period",
+          "Type": 14
+        },
+        {
+          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove forecast periods",
+          "Type": 15
+        },
+        {
+          "Description": "The half-open range of forecast period start times to remove.",
+          "Name": "Time range",
+          "Type": 16
+        },
+        {
+          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
+          "Name": "Upsert outdoor-air-quality periods",
+          "Type": 17
+        },
+        {
+          "Description": "The retrieval and validation time for the updated air-quality section.",
+          "Name": "Retrieved at",
+          "Type": 18
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the air-quality section.",
+          "Name": "Valid until",
+          "Type": 19
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Air-quality periods",
+          "Type": 20
+        },
+        {
+          "Description": "One modeled pollutant period keyed by `starts_at`.",
+          "Name": "Air-quality period",
+          "Type": 21
+        },
+        {
+          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove outdoor-air-quality periods",
+          "Type": 22
+        },
+        {
+          "Description": "The half-open range of air-quality period start times to remove.",
+          "Name": "Time range",
+          "Type": 23
+        },
+        {
+          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
+          "Name": "Clear weather section",
+          "Type": 24
+        },
+        {
+          "Description": "The independently cached section to clear.",
+          "Name": "Weather section",
+          "Type": 25
+        },
+        {
+          "Description": "Replaces the complete historical section after a successful refresh.",
+          "Name": "Replace history",
+          "Type": 26
+        },
+        {
+          "Description": "The complete newly accepted history section.",
+          "Name": "History",
+          "Type": 27
+        },
+        {
+          "Description": "Replaces the complete forecast section after a successful refresh.",
+          "Name": "Replace forecast",
+          "Type": 28
+        },
+        {
+          "Description": "The complete newly accepted forecast section.",
+          "Name": "Forecast",
+          "Type": 29
+        },
+        {
+          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
+          "Name": "Replace outdoor air quality",
+          "Type": 30
+        },
+        {
+          "Description": "The complete newly accepted outdoor-air-quality section.",
+          "Name": "Outdoor air quality",
+          "Type": 31
+        }
+      ],
+      "Name": "BuildingHvacWeatherChangeV1"
+    },
+    {
+      "Description": "يحدد حالة واحدة مطبقة بالكامل في تدفق الطقس التزايدي لنظام التدفئة والتهوية وتكييف الهواء في المبنى. يقارن العملاء الطابع الزمني للحقبة والتسلسل معًا.",
+      "DisplayName": "مؤشر طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يحدد حالة واحدة مطبقة بالكامل في تدفق الطقس التزايدي لنظام التدفئة والتهوية وتكييف الهواء في المبنى. يقارن العملاء الطابع الزمني للحقبة والتسلسل معًا.",
+          "Name": "مؤشر طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت اللذان عيّنهما الخادم لتحديد جيل التدفق. ويظلان ثابتين أثناء التقدم الطبيعي للتسلسل. يعيّن الخادم الذي يفقد حالة المؤشر المؤقتة طابعًا زمنيًا أحدث حتمًا.",
+          "Name": "الطابع الزمني للحقبة",
+          "Type": 1
+        },
+        {
+          "Description": "تسلسل أحدث تغيير ذري مطبّق. تؤدي إعادة تعيين مؤشر الخادم إلى بدء التسلسل مجددًا من الصفر، رغم أن العميل قد يرصد أولًا تسلسلًا لاحقًا لإعادة التعيين.",
+          "Name": "التسلسل",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherCursorV1"
+    },
+    {
+      "Description": "تحتوي على الظروف الخارجية المتوقعة لفترة تخطيط واحدة لنظام التدفئة والتهوية وتكييف الهواء باستخدام نموذج تنبؤي.",
+      "DisplayName": "فترة توقعات التدفئة والتهوية وتكييف الهواء للمبنى",
+      "List": [
+        {
+          "Description": "تحتوي على الظروف الخارجية المتوقعة لفترة تخطيط واحدة لنظام التدفئة والتهوية وتكييف الهواء باستخدام نموذج تنبؤي.",
+          "Name": "فترة توقعات التدفئة والتهوية وتكييف الهواء للمبنى",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت المشمولان اللذان تبدأ عندهما فترة التوقعات هذه.",
+          "Name": "وقت البدء",
+          "Type": 1
+        },
+        {
+          "Description": "طول فترة التوقعات هذه بالثواني. قد يوفّر المزوّدون فترات مدتها 900 ثانية للمدى الزمني القريب من الوقت الحالي، وفترات مدتها 3,600 ثانية للمدى الزمني الأبعد.",
+          "Name": "المدة",
+          "Type": 2
+        },
+        {
+          "Description": "احتمال حدوث هطول قابل للقياس خلال هذه الفترة، معبّرًا عنه بنسبة مئوية صحيحة من 0 إلى 100.",
+          "Name": "احتمال الهطول",
+          "Type": 3
+        },
+        {
+          "Description": "مدخلات درجة الحرارة والرطوبة والضغط والرياح والهطول والطاقة الشمسية المتوقعة للفترة.",
+          "Name": "الظروف الخارجية",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "تحتوي على الظروف الخارجية المستقبلية اللازمة للتنبؤ بالأحمال والتدفئة المسبقة والتبريد المسبق والتخزين الحراري وتخطيط التهوية المراعي للطقس.",
+      "DisplayName": "توقعات الطقس لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "تحتوي على الظروف الخارجية المستقبلية اللازمة للتنبؤ بالأحمال والتدفئة المسبقة والتبريد المسبق والتخزين الحراري وتخطيط التهوية المراعي للطقس.",
+          "Name": "توقعات الطقس لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت اللذان استُرد فيهما قسم التوقعات الكامل هذا وخضع للتحقق وتم قبوله.",
+          "Name": "وقت الاسترداد",
+          "Type": 1
+        },
+        {
+          "Description": "الموعد النهائي غير المشمول لحداثة البيانات. تظل التوقعات الأقدم متاحة للتخطيط في الوضع المتدهور، ولكن يجب ألا تجيز تشغيلًا حساسًا للسلامة.",
+          "Name": "صالح حتى",
+          "Type": 2
+        },
+        {
+          "Description": "فترات مستقبلية مرتبة من الأسبق إلى الأحدث. تغطي الاستجابة العادية 72 ساعة، ويمكن اختياريًا استخدام فترات مدتها 15 دقيقة للساعات الست الأولى وفترات مدتها ساعة واحدة بعد ذلك.",
+          "Name": "فترات التوقعات",
+          "Type": 3
+        },
+        {
+          "Description": "ظروف التدفئة والتهوية وتكييف الهواء الخارجية المتوقعة لفترة تخطيط واحدة.",
+          "Name": "فترة التوقعات",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastV1"
+    },
+    {
+      "Description": "تحتوي على الظروف الخارجية لفترة مكتملة واحدة تُستخدم لاستعادة تقدير الحالة الحرارية للمبنى أو تحديثه.",
+      "DisplayName": "فترة الطقس التاريخية لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "تحتوي على الظروف الخارجية لفترة مكتملة واحدة تُستخدم لاستعادة تقدير الحالة الحرارية للمبنى أو تحديثه.",
+          "Name": "فترة الطقس التاريخية لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت المشمولان اللذان تبدأ عندهما هذه الفترة التاريخية.",
+          "Name": "وقت البدء",
+          "Type": 1
+        },
+        {
+          "Description": "طول هذه الفترة المكتملة بالثواني. يستخدم السجل عادةً فترات مدتها 3,600 ثانية.",
+          "Name": "المدة",
+          "Type": 2
+        },
+        {
+          "Description": "ظروف درجة الحرارة والرطوبة والضغط والرياح والهطول والطاقة الشمسية التي تمثلها هذه الفترة المكتملة.",
+          "Name": "الظروف الخارجية",
+          "Type": 3
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryPeriodV1"
+    },
+    {
+      "Description": "يحتوي على فترات حديثة مكتملة من الظروف الخارجية تُستخدم لاستعادة الحالة الحرارية قصيرة المدى. يندرج التعلم طويل المدى للمبنى ضمن القياسات عن بُعد الخاصة بتطبيق التدفئة والتهوية وتكييف الهواء وآلية حفظ نموذجه.",
+      "DisplayName": "سجل الطقس لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يحتوي على فترات حديثة مكتملة من الظروف الخارجية تُستخدم لاستعادة الحالة الحرارية قصيرة المدى. يندرج التعلم طويل المدى للمبنى ضمن القياسات عن بُعد الخاصة بتطبيق التدفئة والتهوية وتكييف الهواء وآلية حفظ نموذجه.",
+          "Name": "سجل الطقس لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت اللذان استُرد فيهما قسم السجل الكامل هذا وخضع للتحقق وتم قبوله.",
+          "Name": "وقت الاسترداد",
+          "Type": 1
+        },
+        {
+          "Description": "الموعد النهائي غير المشمول لحداثة البيانات. يظل السجل الأقدم متاحًا بعد هذا الوقت كمدخل للنموذج في الوضع المتدهور.",
+          "Name": "صالح حتى",
+          "Type": 2
+        },
+        {
+          "Description": "فترات مكتملة مرتبة من الأقدم إلى الأحدث. تغطي الاستجابة العادية الساعات الـ72 السابقة؛ وتُعد القائمة الأقصر سجلًا جزئيًا صالحًا.",
+          "Name": "فترات السجل",
+          "Type": 3
+        },
+        {
+          "Description": "ظروف التدفئة والتهوية وتكييف الهواء الخارجية لفترة مكتملة واحدة.",
+          "Name": "فترة السجل",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryV1"
+    },
+    {
+      "Description": "ينقل نطاقًا مرتبًا وذريًا من تغييرات طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى. لا يطبّقه العميل إلا عندما يتطابق `from_cursor` مع آخر مؤشر لديه. يمثّل التقرير الفارغ استعادةً بعد اكتمال المزامنة؛ أما إشارات البقاء الدورية عند عدم وجود تغييرات فتستخدم PeerAlive.",
+      "DisplayName": "تقرير الطقس التزايدي لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "ينقل نطاقًا مرتبًا وذريًا من تغييرات طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى. لا يطبّقه العميل إلا عندما يتطابق `from_cursor` مع آخر مؤشر لديه. يمثّل التقرير الفارغ استعادةً بعد اكتمال المزامنة؛ أما إشارات البقاء الدورية عند عدم وجود تغييرات فتستخدم PeerAlive.",
+          "Name": "تقرير الطقس التزايدي لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "المؤشر الأدنى غير المشمول وحالة العميل الدقيقة المطلوبان قبل تطبيق التقرير.",
+          "Name": "من المؤشر",
+          "Type": 1
+        },
+        {
+          "Description": "المؤشر المشمول الذي يتم الوصول إليه بعد تطبيق كل تغيير ذريًا.",
+          "Name": "حتى المؤشر",
+          "Type": 2
+        },
+        {
+          "Description": "تغييرات مرتبة وفق تسلسل المؤشر. يقدّم كل تغيير التسلسل بمقدار واحد بالضبط؛ وتحافظ القائمة الفارغة على المؤشر.",
+          "Name": "تغييرات الطقس",
+          "Type": 3
+        },
+        {
+          "Description": "تعديل ذري واحد للحالة وفق ترتيب المؤشر.",
+          "Name": "تغيير الطقس",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "يخزّن موقع Libertas Hub المستخدم لاسترداد بيانات الطقس لمنزل أو مبنى كامل.",
+      "DisplayName": "موقع الطقس لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يخزّن موقع Libertas Hub المستخدم لاسترداد بيانات الطقس لمنزل أو مبنى كامل.",
+          "Name": "موقع الطقس لنظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "خط الطول وفق نظام WGS84 بالدرجات العشرية. تستخدم المواقع الواقعة غرب غرينتش قيمًا سالبة.",
+          "Name": "خط الطول",
+          "Type": 1
+        },
+        {
+          "Description": "خط العرض وفق نظام WGS84 بالدرجات العشرية.",
+          "Name": "خط العرض",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherLocationV1"
+    },
+    {
+      "Description": "يحدد كل قيمة يجوز لوكيل طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى كتابتها في قاعدة بيانات Libertas. يُخزَّن كل متغير تحت معرّف مورد ثابت خاص به حتى لا يؤدي تعطل جزئي لدى المزوّد إلى محو قسم آخر. مؤشرات الاشتراك والسجلات والنظراء والمواعيد النهائية لـ PeerAlive ليست دائمة.",
+      "DisplayName": "البيانات الدائمة لطقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يحدد كل قيمة يجوز لوكيل طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى كتابتها في قاعدة بيانات Libertas. يُخزَّن كل متغير تحت معرّف مورد ثابت خاص به حتى لا يؤدي تعطل جزئي لدى المزوّد إلى محو قسم آخر. مؤشرات الاشتراك والسجلات والنظراء والمواعيد النهائية لـ PeerAlive ليست دائمة.",
+          "Name": "البيانات الدائمة لطقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "يخزّن آخر إحداثيات صالحة للموقع تم استلامها من مركز Libertas.",
+          "Name": "موقع المبنى",
+          "Type": 1
+        },
+        {
+          "Description": "إحداثيات الموقع وفق نظام WGS84 والمستخدمة في طلبات المزوّد.",
+          "Name": "الموقع",
+          "Type": 2
+        },
+        {
+          "Description": "يخزّن آخر سجل للطقس الفعلي تم قبوله بنجاح.",
+          "Name": "السجل الحديث",
+          "Type": 3
+        },
+        {
+          "Description": "فترات حديثة لأحوال الطقس الخارجية مع طوابع زمنية للاسترداد وحداثة البيانات.",
+          "Name": "السجل",
+          "Type": 4
+        },
+        {
+          "Description": "يخزّن آخر بيانات للطقس الفعلي الحالي تم قبولها بنجاح.",
+          "Name": "الأحوال الحالية",
+          "Type": 5
+        },
+        {
+          "Description": "مدخلات الطقس الخارجية الحالية لنظام التدفئة والتهوية وتكييف الهواء، مع طوابع زمنية للصلاحية والاسترداد.",
+          "Name": "الأحوال الحالية",
+          "Type": 6
+        },
+        {
+          "Description": "يخزّن آخر توقعات للطقس الفعلي تم قبولها بنجاح.",
+          "Name": "التوقعات",
+          "Type": 7
+        },
+        {
+          "Description": "مدخلات الطقس الخارجية المستقبلية لنظام التدفئة والتهوية وتكييف الهواء، مع طوابع زمنية للاسترداد وحداثة البيانات.",
+          "Name": "التوقعات",
+          "Type": 8
+        },
+        {
+          "Description": "يخزّن آخر بيانات نمذجة للملوثات تم قبولها بنجاح، بصورة منفصلة عن الطقس الفعلي.",
+          "Name": "جودة الهواء الخارجي",
+          "Type": 9
+        },
+        {
+          "Description": "فترات الملوثات الخارجية الحالية والمستقبلية مع طوابع زمنية للاسترداد وحداثة البيانات.",
+          "Name": "جودة الهواء الخارجي",
+          "Type": 10
+        }
+      ],
+      "Name": "BuildingHvacWeatherPersistentData"
+    },
+    {
+      "Description": "يحدد معاملات الطلب لمرة واحدة والاشتراك الخاصة بطقس نظام التدفئة والتهوية وتكييف الهواء للمنزل بأكمله أو المبنى بأكمله. تحدد عملية نقطة نهاية Libertas سلوك الطلب لمرة واحدة أو الاشتراك، وليس أي حقل في عقد الرسائل العام هذا.",
+      "DisplayName": "بروتوكول طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يحدد معاملات الطلب لمرة واحدة والاشتراك الخاصة بطقس نظام التدفئة والتهوية وتكييف الهواء للمنزل بأكمله أو المبنى بأكمله. تحدد عملية نقطة نهاية Libertas سلوك الطلب لمرة واحدة أو الاشتراك، وليس أي حقل في عقد الرسائل العام هذا.",
+          "Name": "بروتوكول طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
+          "Name": "Get building HVAC weather",
+          "Type": 1
+        },
+        {
+          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
+          "Name": "Resume cursor",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
+          "Name": "Historical recovery range",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
+          "Name": "Include current conditions",
+          "Type": 4
+        },
+        {
+          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
+          "Name": "Forecast recovery range",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
+          "Name": "Outdoor-air-quality recovery range",
+          "NullText": "No outdoor air quality",
+          "SetText": "Include outdoor air quality for",
+          "Type": 6
+        },
+        {
+          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
+          "Name": "Building HVAC weather recovery",
+          "Type": 7
+        },
+        {
+          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
+          "Name": "Maximum wait interval",
+          "Type": 8
+        },
+        {
+          "Description": "The replay, reset snapshot, or typed error result.",
+          "Name": "Recovery",
+          "Type": 9
+        },
+        {
+          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
+          "Name": "Building HVAC weather increment",
+          "Type": 10
+        },
+        {
+          "Description": "The ordered, atomic cursor range and its weather changes.",
+          "Name": "Incremental report",
+          "Type": 11
+        }
+      ],
+      "Name": "BuildingHvacWeatherProtocol"
+    },
+    {
+      "Description": "يحدد طلب استرداد لا يمكن تلبيته بإعادة التشغيل أو بلقطة مخزنة مؤقتًا ومحدودة النطاق.",
+      "DisplayName": "خطأ استرداد طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يحدد طلب استرداد لا يمكن تلبيته بإعادة التشغيل أو بلقطة مخزنة مؤقتًا ومحدودة النطاق.",
+          "Enum": [
+            {
+              "Description": "يوجد نطاق واحد مطلوب على الأقل، نصف مفتوح، فارغ أو معكوس.",
+              "Name": "نطاق زمني غير صالح",
+              "Type": 1
+            },
+            {
+              "Description": "لا يمكن التوفيق بين المؤشر المقدَّم وحالة المؤشر الحالية أو السجل المحتفَظ به.",
+              "Name": "المؤشر متقدم",
+              "Type": 2
+            },
+            {
+              "Description": "يتجاوز نطاق استرداد مطلوب واحد على الأقل سعة الاستجابة المحدودة.",
+              "Name": "الطلب كبير جدًا",
+              "Type": 3
+            },
+            {
+              "Description": "أحد السجلات المخزنة مؤقتًا أو موارد الاسترداد المطلوبة غير متاح مؤقتًا.",
+              "Name": "غير متاح مؤقتًا",
+              "Type": 4
+            }
+          ],
+          "Name": "خطأ استرداد طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "يعيد تشغيل التغييرات المحتفَظ بها، أو ينشئ مؤشرًا ولقطة جديدين، أو يبلغ عن خطأ في الطلب قابل للاسترداد.",
+      "DisplayName": "استرداد طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يعيد تشغيل التغييرات المحتفَظ بها، أو ينشئ مؤشرًا ولقطة جديدين، أو يبلغ عن خطأ في الطلب قابل للاسترداد.",
+          "Name": "استرداد طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
+          "Name": "Replayed changes",
+          "Type": 1
+        },
+        {
+          "Description": "The contiguous retained change range beginning at the request cursor.",
+          "Name": "Incremental report",
+          "Type": 2
+        },
+        {
+          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
+          "Name": "Reset with snapshot",
+          "Type": 3
+        },
+        {
+          "Description": "The reason the response contains a snapshot rather than replay.",
+          "Name": "Reset reason",
+          "Type": 4
+        },
+        {
+          "Description": "The cursor representing the returned snapshot.",
+          "Name": "Current cursor",
+          "Type": 5
+        },
+        {
+          "Description": "The available cached sections constrained by requested ranges.",
+          "Name": "Weather snapshot",
+          "Type": 6
+        },
+        {
+          "Description": "Rejects the request without changing client cursor or cached weather.",
+          "Name": "Recovery error",
+          "Type": 7
+        },
+        {
+          "Description": "The reason recovery could not be completed.",
+          "Name": "Error",
+          "Type": 8
+        },
+        {
+          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
+          "Name": "Retry delay",
+          "Type": 9
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryV1"
+    },
+    {
+      "Description": "يوضح سبب إنشاء الاسترداد للحالة من لقطة محدودة النطاق بدلًا من إعادة تشغيل التغييرات التزايدية.",
+      "DisplayName": "سبب إعادة تعيين طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يوضح سبب إنشاء الاسترداد للحالة من لقطة محدودة النطاق بدلًا من إعادة تشغيل التغييرات التزايدية.",
+          "Enum": [
+            {
+              "Description": "لم يتم تقديم مؤشر سابق.",
+              "Name": "الاشتراك الأولي",
+              "Type": 1
+            },
+            {
+              "Description": "التسلسل المطلوب أقدم من سجل إعادة التشغيل المحتفَظ به.",
+              "Name": "انتهت صلاحية المؤشر",
+              "Type": 2
+            },
+            {
+              "Description": "فقد الخادم، أو تجاهل عمدًا، مؤشره المؤقت وسجل إعادة التشغيل الخاص به فقط؛ وتظل أقسام الطقس الدائمة بصورة مستقلة قابلة للاستخدام.",
+              "Name": "إعادة تعيين مؤشر الخادم",
+              "Type": 3
+            }
+          ],
+          "Name": "سبب إعادة تعيين طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherResetReasonV1"
+    },
+    {
+      "Description": "يحدد قسمًا واحدًا من أقسام طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى، مخزنًا مؤقتًا بصورة مستقلة.",
+      "DisplayName": "قسم طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يحدد قسمًا واحدًا من أقسام طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى، مخزنًا مؤقتًا بصورة مستقلة.",
+          "Enum": [
+            {
+              "Description": "يحدد السجل الحديث لأحوال الطقس الفعلية الخارجية.",
+              "Name": "السجل الحديث",
+              "Type": 1
+            },
+            {
+              "Description": "يحدد الظروف المادية الخارجية الحالية التي تمت نمذجتها.",
+              "Name": "الظروف الحالية",
+              "Type": 2
+            },
+            {
+              "Description": "يحدد توقعات الظروف المادية الخارجية المستقبلية.",
+              "Name": "توقعات الطقس",
+              "Type": 3
+            },
+            {
+              "Description": "يحدد تركيزات الملوثات الخارجية الحالية والمتوقعة التي تمت نمذجتها.",
+              "Name": "جودة الهواء الخارجي",
+              "Type": 4
+            }
+          ],
+          "Name": "قسم طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherSectionV1"
+    },
+    {
+      "Description": "يحتوي على آخر قيمة قُبلت بنجاح لكل قسم مطلوب. لا تحتوي الأقسام المفقودة على ذاكرة تخزين مؤقت قابلة للاستخدام؛ وتظل الأقسام القديمة موجودة بمواعيد انتهاء صلاحيتها الأصلية.",
+      "DisplayName": "لقطة طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يحتوي على آخر قيمة قُبلت بنجاح لكل قسم مطلوب. لا تحتوي الأقسام المفقودة على ذاكرة تخزين مؤقت قابلة للاستخدام؛ وتظل الأقسام القديمة موجودة بمواعيد انتهاء صلاحيتها الأصلية.",
+          "Name": "لقطة طقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "فترات الظروف الخارجية الحديثة المطلوبة عند توفر سجل مخزن مؤقتًا وقابل للاستخدام.",
+          "Name": "السجل الحديث",
+          "Type": 1
+        },
+        {
+          "Description": "آخر ظروف خارجية حالية مقبولة عند طلبها وتوفرها.",
+          "Name": "الظروف الحالية",
+          "Type": 2
+        },
+        {
+          "Description": "فترات الظروف الخارجية المستقبلية المطلوبة عند توفر بيانات توقعات مخزنة مؤقتًا وقابلة للاستخدام.",
+          "Name": "توقعات الطقس",
+          "Type": 3
+        },
+        {
+          "Description": "فترات الملوثات الحالية والمتوقعة المطلوبة عند توفر بيانات جودة هواء تمت نمذجتها وقابلة للاستخدام.",
+          "Name": "جودة الهواء الخارجي",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherSnapshotV1"
+    },
+    {
+      "Description": "يحدد فترة نصف مفتوحة من فترات السجل أو التوقعات أو جودة الهواء الخارجي وفق أوقات بدئها.",
+      "DisplayName": "النطاق الزمني لطقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+      "List": [
+        {
+          "Description": "يحدد فترة نصف مفتوحة من فترات السجل أو التوقعات أو جودة الهواء الخارجي وفق أوقات بدئها.",
+          "Name": "النطاق الزمني لطقس نظام التدفئة والتهوية وتكييف الهواء في المبنى",
+          "Type": 0
+        },
+        {
+          "Description": "الحد الأدنى الشامل لأوقات بدء الفترات المحددة.",
+          "Name": "وقت البدء",
+          "Type": 1
+        },
+        {
+          "Description": "الحد الأعلى غير الشامل لأوقات بدء الفترات المحددة. يجب أن يكون لاحقًا لـ `starts_at`.",
+          "Name": "وقت الانتهاء",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherTimeRangeV1"
+    },
+    {
+      "Description": "يحتوي على مدخلات المطر والتجمد والرطوبة والرياح والتوازن المائي الفورية المستخدمة لتحديد ما إذا كان يمكن لعملية ري مجدولة أن تبدأ أو تستمر بأمان.",
+      "DisplayName": "الطقس الحالي لنظام الرش",
+      "List": [
+        {
+          "Description": "يحتوي على مدخلات المطر والتجمد والرطوبة والرياح والتوازن المائي الفورية المستخدمة لتحديد ما إذا كان يمكن لعملية ري مجدولة أن تبدأ أو تستمر بأمان.",
+          "Name": "الطقس الحالي لنظام الرش",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت اللذان جرى فيهما آخر استرداد لقسم الطقس الحالي بالكامل والتحقق من صحته وقبوله.",
+          "Name": "وقت الاسترداد",
+          "Type": 1
+        },
+        {
+          "Description": "الموعد النهائي غير الشامل لحداثة البيانات. يظل الطقس الحالي حديثًا ما دام الوقت الحالي أسبق من هذه القيمة. وعند بلوغ هذه القيمة أو تجاوزها، يظل القسم مخزنًا مؤقتًا، ولكن يجب ألا يُعامل كدليل على أن الري آمن.",
+          "Name": "صالح حتى",
+          "Type": 2
+        },
+        {
+          "Description": "التاريخ والوقت المقدمان من موفر الخدمة واللذان تمثلهما قيم الظروف الحالية. قد يختلفان عن `retrieved_at`.",
+          "Name": "وقت سريان البيانات",
+          "Type": 3
+        },
+        {
+          "Description": "الفترة السابقة، بالثواني، التي يمثلها الهطول المتراكم والتبخر والنتح. يستخدم الطقس الحالي من Open-Meteo عادةً فترة قدرها 900 ثانية.",
+          "Name": "فترة الرصد",
+          "Type": 4
+        },
+        {
+          "Description": "درجة حرارة الهواء على ارتفاع مترين فوق سطح الأرض بالدرجات المئوية. يستخدمها نظام الرش لمنع الري عند درجات حرارة قريبة من التجمد أو دونه.",
+          "Name": "درجة الحرارة",
+          "Type": 5
+        },
+        {
+          "Description": "الرطوبة النسبية على ارتفاع مترين فوق سطح الأرض، معبرًا عنها بنسبة مئوية من 0 إلى 100. يستخدمها نظام الرش لتجنب فترات بلل أوراق النباتات الطويلة دون ضرورة عند الحاجة إلى الري العلوي.",
+          "Name": "الرطوبة النسبية",
+          "Type": 6
+        },
+        {
+          "Description": "إجمالي المطر والزخات والهطول المتجمد المكافئ للماء المتراكم خلال `interval_seconds`، بالملليمترات. يستخدم نظام الرش قيمة غير صفرية لمنع الري أثناء حدوث الهطول.",
+          "Name": "الهطول",
+          "Type": 7
+        },
+        {
+          "Description": "التبخر والنتح المرجعي وفق FAO-56 المتراكم خلال `interval_seconds`، بالملليمترات. يمكن أن يمدد التوازن المائي حتى تتوفر الفترة التاريخية المكتملة التالية.",
+          "Name": "التبخر والنتح المرجعي",
+          "Type": 8
+        },
+        {
+          "Description": "سرعة الرياح المستمرة على ارتفاع 10 أمتار فوق سطح الأرض بالأمتار في الثانية. يطبق نظام الرش المستهلك حد الرياح المُعدّ لديه.",
+          "Name": "سرعة الرياح",
+          "Type": 9
+        },
+        {
+          "Description": "أقصى سرعة لهبّة الرياح على ارتفاع 10 أمتار فوق سطح الأرض بالأمتار في الثانية. يستخدمها نظام الرش المستهلك مع الرياح المستمرة لتجنب انجراف الرذاذ.",
+          "Name": "هبّة الرياح",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerCurrentWeatherV1"
+    },
+    {
+      "Description": "يحدد تغييرًا ذريًا واحدًا في التدفق التزايدي لطقس نظام الرش. يُعد ترتيب المتغيرات وترتيب الحقول جزءًا من تنسيق Avro السلكي المخصص للإلحاق فقط.",
+      "DisplayName": "تغيير طقس نظام الرش",
+      "List": [
+        {
+          "Description": "يحدد تغييرًا ذريًا واحدًا في التدفق التزايدي لطقس نظام الرش. يُعد ترتيب المتغيرات وترتيب الحقول جزءًا من تنسيق Avro السلكي المخصص للإلحاق فقط.",
+          "Name": "تغيير طقس نظام الرش",
+          "Type": 0
+        },
+        {
+          "Description": "يزيل الفترات التاريخية المخزنة مؤقتًا التي تقع أوقات بدئها ضمن النطاق نصف المفتوح المقدم.",
+          "Name": "إزالة الفترات التاريخية",
+          "Type": 1
+        },
+        {
+          "Description": "النطاق نصف المفتوح لأوقات بدء الفترات التاريخية المراد إزالتها.",
+          "Name": "النطاق الزمني",
+          "Type": 2
+        },
+        {
+          "Description": "يستبدل قسم الظروف الحالية بالكامل بعد نجاح الاسترداد والتحقق من الصحة.",
+          "Name": "استبدال الظروف الحالية",
+          "Type": 3
+        },
+        {
+          "Description": "قسم الظروف الحالية المقبول حديثًا.",
+          "Name": "الظروف الحالية",
+          "Type": 4
+        },
+        {
+          "Description": "يشير إلى نجاح تحديث التوقعات ويدرج الفترات أو يستبدلها وفق `starts_at`. لا تحدّث قائمة الفترات الفارغة سوى بيانات الاسترداد وحداثة البيانات الوصفية.",
+          "Name": "إدراج فترات التوقعات أو تحديثها",
+          "Type": 5
+        },
+        {
+          "Description": "وقت استرداد قسم التنبؤات والتحقق من صحته بنجاح.",
+          "Name": "وقت الاسترداد",
+          "Type": 6
+        },
+        {
+          "Description": "الموعد النهائي الحصري الجديد لحداثة قسم التنبؤات.",
+          "Name": "صالح حتى",
+          "Type": 7
+        },
+        {
+          "Description": "الفترات المراد إدراجها أو استبدالها، مرتبة من الأقدم إلى الأحدث.",
+          "Name": "فترات التنبؤ",
+          "Type": 8
+        },
+        {
+          "Description": "فترة واحدة لتخطيط الري، مفتاحها `starts_at`.",
+          "Name": "فترة التنبؤ",
+          "Type": 9
+        },
+        {
+          "Description": "يزيل فترات التنبؤ المخزنة مؤقتًا التي تقع أوقات بدئها ضمن النطاق نصف المفتوح المحدد.",
+          "Name": "إزالة فترات التنبؤ",
+          "Type": 10
+        },
+        {
+          "Description": "النطاق نصف المفتوح لأوقات بدء فترات التنبؤ المراد إزالتها.",
+          "Name": "النطاق الزمني",
+          "Type": 11
+        },
+        {
+          "Description": "يمسح قسمًا واحدًا فقط عندما يكون من المعروف أن قيمته المخزنة مؤقتًا غير صالحة، كما يحدث بعد فشل التحقق أو ترحيل غير متوافق. يجب ألا يؤدي فشل تحديث المزوّد وحده إلى إصدار هذا التغيير.",
+          "Name": "مسح قسم الطقس",
+          "Type": 12
+        },
+        {
+          "Description": "القسم المخزن مؤقتًا بصورة مستقلة والمراد مسحه.",
+          "Name": "قسم الطقس",
+          "Type": 13
+        },
+        {
+          "Description": "يستبدل قسم التنبؤات بالكامل بعد تحديث ناجح من المزوّد. ولا تعود الفترات غير الموجودة في البديل مخزنة مؤقتًا.",
+          "Name": "استبدال التنبؤات",
+          "Type": 14
+        },
+        {
+          "Description": "قسم التنبؤات الجديد المقبول بالكامل.",
+          "Name": "التنبؤات",
+          "Type": 15
+        },
+        {
+          "Description": "يحدد الموقع الفعلي لكل تغيير طقس تالٍ. يستخدم العميل هذه القيمة للاحتفاظ بالسجل المحفوظ من مواقع Hub المختلفة ضمن أجيال منفصلة من دون الاعتماد على ترتيب الاستدعاءات الراجعة.",
+          "Name": "استبدال موقع الطقس",
+          "Type": 16
+        },
+        {
+          "Description": "الموقع وفق نظام WGS84 المستخدم لرصد المزوّد وتنبؤاته.",
+          "Name": "موقع المحطة",
+          "Type": 17
+        },
+        {
+          "Description": "يشير إلى تحديث ناجح للسجل ويدرج فترات الطقس الكاملة أو يستبدلها حسب `starts_at`.",
+          "Name": "إدراج فترات السجل أو تحديثها V2",
+          "Type": 18
+        },
+        {
+          "Description": "وقت استرداد قسم السجل والتحقق من صحته بنجاح.",
+          "Name": "وقت الاسترداد",
+          "Type": 19
+        },
+        {
+          "Description": "الموعد النهائي الحصري الجديد لحداثة قسم السجل.",
+          "Name": "صالح حتى",
+          "Type": 20
+        },
+        {
+          "Description": "فترات الطقس الكاملة المراد إدراجها أو استبدالها، مرتبة من الأقدم إلى الأحدث.",
+          "Name": "الفترات التاريخية",
+          "Type": 21
+        },
+        {
+          "Description": "عملية رصد مكتملة واحدة من V2، مفتاحها `starts_at`.",
+          "Name": "الفترة التاريخية",
+          "Type": 22
+        },
+        {
+          "Description": "يستبدل قسم سجل عمليات الرصد الكاملة بالكامل بعد تحديث ناجح من المزوّد.",
+          "Name": "استبدال السجل V2",
+          "Type": 23
+        },
+        {
+          "Description": "قسم السجل الجديد المقبول بالكامل من V2.",
+          "Name": "السجل",
+          "Type": 24
+        }
+      ],
+      "Name": "SprinklerWeatherChangeV1"
+    },
+    {
+      "Description": "يحدد حالة مطبقة واحدة في تدفق تزايدي لطقس المرشّات. يقارن العميل كلا الحقلين، ويجب ألا يفسر تسلسلاً أصغر وحده على أنه إعادة تعيين للخادم.",
+      "DisplayName": "مؤشر طقس المرشّات",
+      "List": [
+        {
+          "Description": "يحدد حالة مطبقة واحدة في تدفق تزايدي لطقس المرشّات. يقارن العميل كلا الحقلين، ويجب ألا يفسر تسلسلاً أصغر وحده على أنه إعادة تعيين للخادم.",
+          "Name": "مؤشر طقس المرشّات",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت اللذان يعيّنهما الخادم لتحديد جيل المؤشر. هذا الحقل المفرد هو عصر التدفق وطابع زمني مرتب في آنٍ واحد؛ ولا يوجد عصر مبهم منفصل. يظل من دون تغيير أثناء التقدم الطبيعي للتسلسل. عندما يفقد الخادم مؤشره المؤقت أو سجل إعادة التشغيل، فإنه يعيّن طابعًا زمنيًا للعصر أحدث حتمًا من سابقه ويبدأ `sequence` مجددًا من الصفر. قد يرصد العميل أولاً تسلسلاً لاحقًا لإعادة التعيين بدلاً من الصفر. يصف هذا الطابع الزمني حالة المؤشر، وليس وقت رصد قيم الطقس.",
+          "Name": "الطابع الزمني للعصر",
+          "Type": 1
+        },
+        {
+          "Description": "يحدد آخر تغيير مطبق في الحالة. يزيد الخادم هذه القيمة مرة واحدة لكل تغيير طقس مقبول. ويعيدها إلى الصفر عند إعادة تعيين مؤشر الخادم المؤقت، ثم يزيدها للتغييرات اللاحقة؛ ولا تؤدي إعادة التعيين إلى مسح بيانات الطقس التاريخية أو الحالية أو المتوقعة.",
+          "Name": "التسلسل",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherCursorV1"
+    },
+    {
+      "Description": "تتضمن مدخلات المياه وفقدانها ودرجة الحرارة والرطوبة ومخاطر الرياح المتوقعة، والمستخدمة لتحديد وقت الري وكميته خلال فترة تخطيط واحدة.",
+      "DisplayName": "فترة تنبؤ طقس المرشّات",
+      "List": [
+        {
+          "Description": "تتضمن مدخلات المياه وفقدانها ودرجة الحرارة والرطوبة ومخاطر الرياح المتوقعة، والمستخدمة لتحديد وقت الري وكميته خلال فترة تخطيط واحدة.",
+          "Name": "فترة تنبؤ طقس المرشّات",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت الشاملان اللذان تبدأ عندهما فترة التنبؤ هذه.",
+          "Name": "وقت البدء",
+          "Type": 1
+        },
+        {
+          "Description": "طول فترة التنبؤ هذه بالثواني. تستخدم تنبؤات Open-Meteo عادةً فترات مدتها 3,600 ثانية.",
+          "Name": "المدة",
+          "Type": 2
+        },
+        {
+          "Description": "درجة حرارة الهواء المتوقعة على ارتفاع مترين فوق سطح الأرض بالدرجات المئوية. يستخدمها نظام المرشّات لتجنب الري أثناء ظروف التجمد المتوقعة.",
+          "Name": "درجة الحرارة",
+          "Type": 3
+        },
+        {
+          "Description": "الرطوبة النسبية المتوقعة على ارتفاع مترين فوق سطح الأرض، معبرًا عنها بنسبة مئوية صحيحة من 0 إلى 100. يساعد ذلك، إلى جانب موضع الشمس ونوع رأس المرشّ، على تجنب بقاء أوراق النباتات مبتلة لفترات طويلة.",
+          "Name": "الرطوبة النسبية",
+          "Type": 4
+        },
+        {
+          "Description": "احتمال حدوث هطول قابل للقياس خلال هذه الفترة، معبرًا عنه بنسبة مئوية صحيحة من 0 إلى 100. يعبّر هذا عن عدم اليقين في التنبؤ بصورة منفصلة عن كمية الهطول المتوقعة.",
+          "Name": "احتمال الهطول",
+          "Type": 5
+        },
+        {
+          "Description": "إجمالي الأمطار والزخات والهطول المتجمد المكافئ مائيًا المتوقع تراكمه خلال هذه الفترة، بالملليمترات.",
+          "Name": "الهطول المتوقع",
+          "Type": 6
+        },
+        {
+          "Description": "التبخر والنتح المرجعي المتوقع وفق معيار FAO-56 والمتراكم خلال هذه الفترة، بالملليمترات.",
+          "Name": "التبخر والنتح المرجعي",
+          "Type": 7
+        },
+        {
+          "Description": "سرعة الرياح المستمرة المتوقعة على ارتفاع 10 أمتار فوق سطح الأرض، بالأمتار في الثانية.",
+          "Name": "سرعة الرياح",
+          "Type": 8
+        },
+        {
+          "Description": "أقصى سرعة متوقعة لهبّات الرياح على ارتفاع 10 أمتار فوق سطح الأرض، بالأمتار في الثانية. يستخدم نظام الرش هذه القيمة مع سرعة الرياح المستمرة لتجنب جدولة الري عندما يُحتمل انجراف الرذاذ.",
+          "Name": "هبّة الرياح",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "يتضمن مدخلات الطقس المستقبلية لكل ساعة والمستخدمة لتخطيط الري بالرش خلال الأيام السبعة المقبلة. تُحتفظ بآخر قيمة ناجحة عند فشل تحديث لاحق للتوقعات.",
+      "DisplayName": "توقعات الطقس لنظام الرش",
+      "List": [
+        {
+          "Description": "يتضمن مدخلات الطقس المستقبلية لكل ساعة والمستخدمة لتخطيط الري بالرش خلال الأيام السبعة المقبلة. تُحتفظ بآخر قيمة ناجحة عند فشل تحديث لاحق للتوقعات.",
+          "Name": "توقعات الطقس لنظام الرش",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت اللذان تم فيهما آخر استرداد لقسم التوقعات الكامل والتحقق من صحته وقبوله.",
+          "Name": "وقت الاسترداد",
+          "Type": 1
+        },
+        {
+          "Description": "الموعد النهائي الحصري لحداثة البيانات. تظل التوقعات حديثة ما دام الوقت الحالي أسبق من هذه القيمة، وتصبح قديمة عند بلوغ هذه القيمة أو تجاوزها. تظل التوقعات القديمة متاحة كمدخلات مخزنة مؤقتًا ذات جودة متدنية.",
+          "Name": "صالح حتى",
+          "Type": 2
+        },
+        {
+          "Description": "فترات مستقبلية مرتبة من الأسبق إلى الأحدث. تغطي الاستجابة العادية الأيام السبعة المقبلة بدقة ساعة واحدة؛ وتُعد القائمة الأقصر توقعات جزئية صالحة.",
+          "Name": "فترات التوقعات",
+          "Type": 3
+        },
+        {
+          "Description": "الهطول المتوقع، والتبخر النتحي المرجعي، ودرجة الحرارة، والرطوبة، والرياح لفترة تخطيط واحدة.",
+          "Name": "فترة التوقعات",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherForecastV1"
+    },
+    {
+      "Description": "يخزن الطوابع الزمنية لحداثة فترات السجل المفهرسة التي أُعيد إنشاؤها ديناميكيًا.",
+      "DisplayName": "بيانات تعريف سجل الطقس لنظام الرش",
+      "List": [
+        {
+          "Description": "يخزن الطوابع الزمنية لحداثة فترات السجل المفهرسة التي أُعيد إنشاؤها ديناميكيًا.",
+          "Name": "بيانات تعريف سجل الطقس لنظام الرش",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت اللذان تم فيهما آخر استرداد لمجموعة السجل المفهرسة الكاملة والتحقق من صحتها وقبولها.",
+          "Name": "وقت الاسترداد",
+          "Type": 1
+        },
+        {
+          "Description": "الموعد النهائي الحصري لحداثة قسم السجل المُعاد إنشاؤه.",
+          "Name": "صالح حتى",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryMetadataV1"
+    },
+    {
+      "Description": "يوسّع موازنة المياه للفترة المكتملة بإضافة ملاحظات درجة الحرارة والرطوبة والرياح المستمرة وهبّات الرياح اللازمة لتفسير قرارات الري.",
+      "DisplayName": "فترة سجل الطقس لنظام الرش، الإصدار 2",
+      "List": [
+        {
+          "Description": "يوسّع موازنة المياه للفترة المكتملة بإضافة ملاحظات درجة الحرارة والرطوبة والرياح المستمرة وهبّات الرياح اللازمة لتفسير قرارات الري.",
+          "Name": "فترة سجل الطقس لنظام الرش، الإصدار 2",
+          "Type": 0
+        },
+        {
+          "Description": "تاريخ ووقت بدء هذه الفترة التاريخية، وهما مشمولان فيها.",
+          "Name": "وقت البدء",
+          "Type": 1
+        },
+        {
+          "Description": "طول هذه الفترة التاريخية بالثواني. يستخدم سجل Open-Meteo عادةً فترات مدتها 3,600 ثانية.",
+          "Name": "المدة",
+          "Type": 2
+        },
+        {
+          "Description": "إجمالي الهطول، بما في ذلك المكافئ المائي للهطول المتجمد، والمتراكم خلال هذه الفترة بالملليمترات.",
+          "Name": "الهطول",
+          "Type": 3
+        },
+        {
+          "Description": "التبخر النتحي المرجعي وفق معيار FAO-56 والمتراكم خلال هذه الفترة بالملليمترات.",
+          "Name": "التبخر النتحي المرجعي",
+          "Type": 4
+        },
+        {
+          "Description": "درجة حرارة الهواء على ارتفاع مترين فوق سطح الأرض بالدرجات المئوية خلال هذه الفترة التاريخية.",
+          "Name": "درجة الحرارة",
+          "Type": 5
+        },
+        {
+          "Description": "الرطوبة النسبية على ارتفاع مترين فوق سطح الأرض، معبرًا عنها بنسبة مئوية صحيحة من 0 إلى 100 خلال هذه الفترة التاريخية.",
+          "Name": "الرطوبة النسبية",
+          "Type": 6
+        },
+        {
+          "Description": "سرعة الرياح المستمرة على ارتفاع 10 أمتار فوق سطح الأرض، بالأمتار في الثانية خلال هذه الفترة التاريخية.",
+          "Name": "سرعة الرياح",
+          "Type": 7
+        },
+        {
+          "Description": "أقصى سرعة لهبّات الرياح على ارتفاع 10 أمتار فوق سطح الأرض، بالأمتار في الثانية خلال هذه الفترة التاريخية.",
+          "Name": "هبّة الرياح",
+          "Type": 8
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryPeriodV2"
+    },
+    {
+      "Description": "يتضمن الفترات المكتملة حديثًا مع ملاحظات الطقس الكاملة المستخدمة في حسابات الري ومخططات تفسير القرارات.",
+      "DisplayName": "سجل الطقس لنظام الرش، الإصدار 2",
+      "List": [
+        {
+          "Description": "يتضمن الفترات المكتملة حديثًا مع ملاحظات الطقس الكاملة المستخدمة في حسابات الري ومخططات تفسير القرارات.",
+          "Name": "سجل الطقس لنظام الرش، الإصدار 2",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ والوقت اللذان تم فيهما آخر استرداد لقسم السجل الكامل والتحقق من صحته وقبوله.",
+          "Name": "وقت الاسترداد",
+          "Type": 1
+        },
+        {
+          "Description": "الموعد النهائي الحصري لحداثة البيانات. يظل السجل القديم متاحًا كمدخلات مخزنة مؤقتًا ذات جودة متدنية.",
+          "Name": "صالح حتى",
+          "Type": 2
+        },
+        {
+          "Description": "فترات مكتملة مرتبة من الأقدم إلى الأحدث.",
+          "Name": "فترات السجل",
+          "Type": 3
+        },
+        {
+          "Description": "درجة الحرارة والرطوبة والهطول والتبخر النتحي المرجعي والرياح لفترة مكتملة واحدة.",
+          "Name": "فترة السجل",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryV2"
+    },
+    {
+      "Description": "ينقل نطاقًا مرتبًا وذريًا من تغييرات الطقس. لا يطبق العميل التقرير إلا عندما يساوي المؤشر المخزن لديه `from_cursor`، ثم يخزن `through_cursor`. يُعد التقرير الفارغ نتيجة استرداد تدل على اكتمال المزامنة؛ ويستخدم التحقق الدوري من النشاط عند عدم وجود تغييرات PeerAlive.",
+      "DisplayName": "التقرير التزايدي لطقس نظام الرش",
+      "List": [
+        {
+          "Description": "ينقل نطاقًا مرتبًا وذريًا من تغييرات الطقس. لا يطبق العميل التقرير إلا عندما يساوي المؤشر المخزن لديه `from_cursor`، ثم يخزن `through_cursor`. يُعد التقرير الفارغ نتيجة استرداد تدل على اكتمال المزامنة؛ ويستخدم التحقق الدوري من النشاط عند عدم وجود تغييرات PeerAlive.",
+          "Name": "التقرير التزايدي لطقس نظام الرش",
+          "Type": 0
+        },
+        {
+          "Description": "المؤشر الأدنى الحصري لهذا التقرير، وهو المؤشر الدقيق الذي يجب أن يكون لدى العميل قبل تطبيق التقرير.",
+          "Name": "مؤشر البداية",
+          "Type": 1
+        },
+        {
+          "Description": "المؤشر الأعلى المشمول الذي يتم الوصول إليه بعد تطبيق كل تغيير في هذا التقرير. يجب أن يحتفظ بالطابع الزمني نفسه للعصر الموجود في `from_cursor`. لا تُنقل إعادة تعيين مؤشر الخادم مطلقًا كتقرير تزايدي؛ بل تتطلب إعادة تعيين كاملة.",
+          "Name": "مؤشر النهاية",
+          "Type": 2
+        },
+        {
+          "Description": "تغييرات مرتبة تُطبَّق ذريًا. يقدّم كل عنصر التسلسل بمقدار واحد تمامًا؛ وتشير القائمة الفارغة إلى اكتمال الاستدراك، ولا تقدّم المؤشر ولا تُستخدم كإشارة دورية لاستمرار الاتصال.",
+          "Name": "تغييرات الطقس",
+          "Type": 3
+        },
+        {
+          "Description": "تعديل ذري واحد للحالة وفق ترتيب المؤشر.",
+          "Name": "تغيير الطقس",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Records for one endpoint share a transaction and scan prefix.",
+      "DisplayName": "Saved weather keys",
+      "List": [
+        {
+          "Description": "Records for one endpoint share a transaction and scan prefix.",
+          "Name": "Saved weather keys",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Weather belonging to one service endpoint",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherKey"
+    },
+    {
+      "Description": "يخزّن موقع مركز Libertas المستخدم للحصول على بيانات الطقس لموقع واحد لمرشّات الري. ويُخزَّن مؤقتًا بصورة مستقلة عن بيانات المزوّد كي يتمكن وكيل الطقس من مواصلة التحديث أثناء انقطاع مؤقت في المركز.",
+      "DisplayName": "موقع طقس مرشّات الري",
+      "List": [
+        {
+          "Description": "يخزّن موقع مركز Libertas المستخدم للحصول على بيانات الطقس لموقع واحد لمرشّات الري. ويُخزَّن مؤقتًا بصورة مستقلة عن بيانات المزوّد كي يتمكن وكيل الطقس من مواصلة التحديث أثناء انقطاع مؤقت في المركز.",
+          "Name": "موقع طقس مرشّات الري",
+          "Type": 0
+        },
+        {
+          "Description": "خط الطول وفق WGS84 بالدرجات العشرية. تستخدم المواقع الواقعة غرب غرينتش قيمًا سالبة.",
+          "Name": "خط الطول",
+          "Type": 1
+        },
+        {
+          "Description": "خط العرض وفق WGS84 بالدرجات العشرية.",
+          "Name": "خط العرض",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherLocationV1"
+    },
+    {
+      "Description": "يحدد المجموعة الكاملة من القيم التي يجوز لوكيل طقس مرشّات الري كتابتها في قاعدة بيانات Libertas. بيانات تعريف السجل التاريخي والظروف الحالية والتوقعات والموقع سجلات مفردة مستقلة. وكل فترة تاريخية مكتملة هي سجل مفهرس مفتاحه الطابع الزمني لبدئها. وقد استُبعدت مؤشرات الاشتراك وسجلات إعادة التشغيل عمدًا: إذ يجب ألا تؤدي إعادة تعيينها إلى محو هذه السجلات.",
+      "DisplayName": "بيانات طقس مرشّات الري الدائمة",
+      "List": [
+        {
+          "Description": "يحدد المجموعة الكاملة من القيم التي يجوز لوكيل طقس مرشّات الري كتابتها في قاعدة بيانات Libertas. بيانات تعريف السجل التاريخي والظروف الحالية والتوقعات والموقع سجلات مفردة مستقلة. وكل فترة تاريخية مكتملة هي سجل مفهرس مفتاحه الطابع الزمني لبدئها. وقد استُبعدت مؤشرات الاشتراك وسجلات إعادة التشغيل عمدًا: إذ يجب ألا تؤدي إعادة تعيينها إلى محو هذه السجلات.",
+          "Name": "بيانات طقس مرشّات الري الدائمة",
+          "Type": 0
+        },
+        {
+          "Description": "يخزّن آخر موقع صالح أبلغ عنه مركز Libertas. وتتيح القيمة المخزنة مؤقتًا استمرار تحديثات المزوّد عندما يكون المركز غير متاح مؤقتًا.",
+          "Name": "موقع مرشّات الري",
+          "Type": 1
+        },
+        {
+          "Description": "إحداثيات WGS84 المستخدمة لطلبات المزوّد.",
+          "Name": "الموقع",
+          "Type": 2
+        },
+        {
+          "Description": "يخزّن معلومات حداثة السجل التاريخي المفهرس المُعاد إنشاؤه ديناميكيًا.",
+          "Name": "بيانات تعريف السجل التاريخي",
+          "Type": 3
+        },
+        {
+          "Description": "الطوابع الزمنية للاسترداد والحداثة للمجموعة المفهرسة المقبولة.",
+          "Name": "بيانات تعريف السجل التاريخي",
+          "Type": 4
+        },
+        {
+          "Description": "يخزّن فترة مكتملة واحدة تضم بيانات الطقس كاملة ضمن البيانات المفهرسة. وتشغل موضع الاتحاد الخاص بفترة V1 المحذوفة؛ ويُبقي اسم مورد السجل التاريخي V2 تلك السجلات المفهرسة غير المتوافقة منفصلة.",
+          "Name": "فترة السجل التاريخي V2",
+          "Type": 5
+        },
+        {
+          "Description": "درجة الحرارة والرطوبة والهطول والتبخر والنتح المرجعي والرياح وهبّاتها.",
+          "Name": "فترة السجل التاريخي",
+          "Type": 6
+        },
+        {
+          "Description": "يخزّن آخر قسم للظروف الحالية تم استرداده والتحقق منه بنجاح. ويُبقي فشل التحديث سجل قاعدة البيانات الحالي دون تغيير.",
+          "Name": "الظروف الحالية",
+          "Type": 7
+        },
+        {
+          "Description": "مدخلات المطر الفوري والتجمد والرطوبة والرياح والتوازن المائي، بما في ذلك طوابعها الزمنية للاسترداد والحداثة.",
+          "Name": "الظروف الحالية",
+          "Type": 8
+        },
+        {
+          "Description": "يخزّن آخر قسم للتوقعات تم استرداده والتحقق منه بنجاح. ويُبقي فشل التحديث سجل قاعدة البيانات الحالي دون تغيير.",
+          "Name": "التوقعات",
+          "Type": 9
+        },
+        {
+          "Description": "مدخلات الهطول المستقبلي والتبخر والنتح المرجعي ودرجة الحرارة والرطوبة والرياح، بما في ذلك طوابعها الزمنية للاسترداد والحداثة.",
+          "Name": "التوقعات",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherPersistentData"
+    },
+    {
+      "Description": "يحدد معاملة نقطة نهاية Libertas محددة النوع لطلب طقس مرشّات الري أو الاشتراك فيه. تعرض الاستجابات أقسام السجل التاريخي والظروف الحالية والتوقعات المتاحة بصورة مستقلة، بحيث لا يحجب الانقطاع البيانات المخزنة مؤقتًا والقابلة للاستخدام. يرفض عقد حالة نقطة نهاية Libertas بيانات Avro المشوهة والقيم المستخدمة في دور رسالة غير صحيح؛ وأخطاء النقل هذه ليست بدائل للاسترداد.",
+      "DisplayName": "بروتوكول طقس مرشّات الري",
+      "List": [
+        {
+          "Description": "يحدد معاملة نقطة نهاية Libertas محددة النوع لطلب طقس مرشّات الري أو الاشتراك فيه. تعرض الاستجابات أقسام السجل التاريخي والظروف الحالية والتوقعات المتاحة بصورة مستقلة، بحيث لا يحجب الانقطاع البيانات المخزنة مؤقتًا والقابلة للاستخدام. يرفض عقد حالة نقطة نهاية Libertas بيانات Avro المشوهة والقيم المستخدمة في دور رسالة غير صحيح؛ وأخطاء النقل هذه ليست بدائل للاسترداد.",
+          "Name": "بروتوكول طقس مرشّات الري",
+          "Type": 0
+        },
+        {
+          "Description": "ينفّذ قراءة تزايدية لمرة واحدة أو يبدأ اشتراكًا تزايديًا أو يستأنفه. تحدد عملية نقطة نهاية Libertas السلوك؛ فهو غير مرمّز في هذه الرسالة. يعيد الخادم تشغيل التغييرات المحتفظ بها بعد `after_cursor` متى أمكن، أو يعيد لقطة مخزنة مؤقتًا ومحدودة بنطاق.",
+          "Name": "الحصول على طقس مرشّات الري",
+          "Type": 1
+        },
+        {
+          "Description": "آخر مؤشر طبّقه العميل بالكامل وبصورة ذرية. تطلب `None` لقطة أولية محدودة بنطاق. يقارن الخادم كلا الحقلين؛ ولا يشير تسلسل أقل إلى إعادة تعيين إلا عندما يتضمن مؤشر الاستجابة أيضًا طابعًا زمنيًا أحدث للعصر.",
+          "Name": "مؤشر الاستئناف",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "النطاق نصف المفتوح لأوقات بدء الفترات التاريخية المطلوب تضمينها عندما تتعذر إعادة التشغيل. تستبعد `None` السجل التاريخي من لقطة إعادة التعيين.",
+          "Name": "نطاق استرداد السجل التاريخي",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "ما إذا كان ينبغي أن تتضمن لقطة إعادة التعيين الظروف الحالية المخزنة مؤقتًا.",
+          "Name": "تضمين الظروف الحالية",
+          "Type": 4
+        },
+        {
+          "Description": "النطاق نصف المفتوح لأوقات بدء فترات التوقعات المطلوب تضمينها عندما تتعذر إعادة التشغيل. تستبعد `None` بيانات التوقعات من لقطة إعادة التعيين.",
+          "Name": "نطاق استرداد التوقعات",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "يستجيب لطلب طقس بتغييرات معاد تشغيلها أو لقطة لإعادة التعيين أو خطأ قابل للاسترداد. توفر كل استجابة حدًا أقصى لفترة الانتظار. يستخدمه عميل الاشتراك بعد نجاح إعادة التشغيل أو إعادة التعيين؛ ويتجاهله عميل الطلب لمرة واحدة. وبعد حدوث خطأ، تكون الأولوية لخطأ الاسترداد ومهلة إعادة المحاولة.",
+          "Name": "استرداد طقس مرشّات الري",
+          "Type": 6
+        },
+        {
+          "Description": "الحد الأقصى لعدد الثواني التي ينتظرها عميل الاشتراك بعد نجاح الاسترداد أو التقرير التزايدي أو PeerAlive. يرسل الخادم البيانات المتغيرة أو PeerAlive أولًا. ويتجاهل عملاء الطلب لمرة واحدة هذه القيمة الإلزامية غير الصفرية.",
+          "Name": "الحد الأقصى لفترة الانتظار",
+          "Type": 7
+        },
+        {
+          "Description": "نتيجة إعادة التشغيل أو إعادة التعيين أو الخطأ لطلب الاستئناف.",
+          "Name": "الاسترداد",
+          "Type": 8
+        },
+        {
+          "Description": "يبلغ فقط عن تغييرات الحالة بعد نجاح طلب الطقس. يتطلب عدم تطابق المؤشر أو وجود نطاق غير متصل طلب اشتراك آخر؛ ويجب ألا يطبّق العميل التقرير جزئيًا. يعيد تقرير صالح أو PeerAlive تشغيل مؤقت انتظار استجابة الاسترداد؛ ولا يدخل PeerAlive مطلقًا في مخطط البيانات هذا ولا يغيّر المؤشر.",
+          "Name": "تغيير طقس مرشّات الري",
+          "Type": 9
+        },
+        {
+          "Description": "نطاق المؤشر الذري المرتب وتغييرات الطقس الخاصة به.",
+          "Name": "التقرير التزايدي",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherProtocol"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved weather record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved weather record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "HistoryMetadata",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "HistoryPeriod",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "starts_at",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "Current",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Forecast",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWeatherRecordKey"
+    },
+    {
+      "Description": "يحدد طلب استرداد لا يمكن تلبيته لا بتغييرات معاد تشغيلها ولا بلقطة مخزنة مؤقتًا ومحدودة بنطاق.",
+      "DisplayName": "خطأ استرداد طقس مرشّات الري",
+      "List": [
+        {
+          "Description": "يحدد طلب استرداد لا يمكن تلبيته لا بتغييرات معاد تشغيلها ولا بلقطة مخزنة مؤقتًا ومحدودة بنطاق.",
+          "Enum": [
+            {
+              "Description": "هناك نطاق زمني نصف مفتوح واحد على الأقل من النطاقات المطلوبة فارغ أو معكوس.",
+              "Name": "نطاق زمني غير صالح",
+              "Type": 1
+            },
+            {
+              "Description": "لا يمكن التوفيق بين المؤشر المُقدَّم، المكوّن من طابع زمني للعصر ورقم تسلسلي، وبين مؤشر الخادم الحالي أو سجل إعادة التشغيل المحتفَظ به.",
+              "Name": "المؤشر متقدم",
+              "Type": 2
+            },
+            {
+              "Description": "تتجاوز نطاقات الاسترداد المطلوبة سعة الاستجابة المحدودة للخادم.",
+              "Name": "الطلب كبير جدًا",
+              "Type": 3
+            },
+            {
+              "Description": "البيانات المخزنة مؤقتًا أو أحد موارد الاسترداد المطلوبة الأخرى غير متاح مؤقتًا؛ ويمكن للعميل إعادة المحاولة بعد مدة التأخير المقدَّمة.",
+              "Name": "غير متاح مؤقتًا",
+              "Type": 4
+            }
+          ],
+          "Name": "خطأ استرداد طقس مرشّات الري",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "يعيد التغييرات المعاد تشغيلها، أو ينشئ مؤشرًا جديدًا باستخدام لقطة محدودة النطاق، أو يبلغ عن خطأ طلب قابل للاسترداد.",
+      "DisplayName": "استرداد طقس نظام الرش",
+      "List": [
+        {
+          "Description": "يعيد التغييرات المعاد تشغيلها، أو ينشئ مؤشرًا جديدًا باستخدام لقطة محدودة النطاق، أو يبلغ عن خطأ طلب قابل للاسترداد.",
+          "Name": "استرداد طقس نظام الرش",
+          "Type": 0
+        },
+        {
+          "Description": "يواصل التدفق المطلوب بإعادة تشغيل كل تغيير محتفَظ به بعد المؤشر المقدَّم. ويعني التقرير الفارغ أن العميل متزامن بالفعل مع أحدث التغييرات.",
+          "Name": "التغييرات المعاد تشغيلها",
+          "Type": 1
+        },
+        {
+          "Description": "نطاق التغييرات المتصل الذي يبدأ عند المؤشر المطلوب.",
+          "Name": "تقرير تزايدي",
+          "Type": 2
+        },
+        {
+          "Description": "يرفض الطلب من دون تغيير مؤشر العميل أو حالة الطقس المحلية لديه.",
+          "Name": "خطأ في الاسترداد",
+          "Type": 3
+        },
+        {
+          "Description": "سبب تعذّر إكمال الاسترداد.",
+          "Name": "خطأ",
+          "Type": 4
+        },
+        {
+          "Description": "المهلة المقترحة بالثواني قبل إعادة المحاولة. تعني `None` أنه يجب تغيير معلمات الطلب قبل أن تنجح إعادة المحاولة.",
+          "Name": "مهلة إعادة المحاولة",
+          "Type": 5
+        },
+        {
+          "Description": "ينشئ مؤشرًا جديدًا ويربط لقطة لسجل الرصد الكامل بموقع المزوّد الخاص بها.",
+          "Name": "إعادة تعيين باستخدام لقطة الموقع V2",
+          "Type": 6
+        },
+        {
+          "Description": "سبب إحلال لقطة محل إعادة التشغيل التزايدية.",
+          "Name": "سبب إعادة التعيين",
+          "Type": 7
+        },
+        {
+          "Description": "المؤشر الذي يمثّل اللقطة المُعادة.",
+          "Name": "المؤشر الحالي",
+          "Type": 8
+        },
+        {
+          "Description": "الموقع وفق نظام WGS84 والمستخدَم للحصول على أقسام الطقس المُعادة.",
+          "Name": "موقع المحطة",
+          "Type": 9
+        },
+        {
+          "Description": "أقسام V2 المخزنة مؤقتًا والمتاحة، والمقيّدة بالنطاقات المطلوبة.",
+          "Name": "لقطة الطقس",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryV1"
+    },
+    {
+      "Description": "يوضح سبب إرجاع الاسترداد لقطة محدودة النطاق بدلًا من إعادة تشغيل التغييرات التزايدية بعد المؤشر المطلوب.",
+      "DisplayName": "سبب إعادة تعيين طقس نظام الرش",
+      "List": [
+        {
+          "Description": "يوضح سبب إرجاع الاسترداد لقطة محدودة النطاق بدلًا من إعادة تشغيل التغييرات التزايدية بعد المؤشر المطلوب.",
+          "Enum": [
+            {
+              "Description": "لم يُقدَّم مؤشر سابق، لذا تنشئ اللقطة الحالة الأولية.",
+              "Name": "الاشتراك الأولي",
+              "Type": 1
+            },
+            {
+              "Description": "التسلسل المطلوب أقدم من سجل إعادة التشغيل المحتفَظ به.",
+              "Name": "انتهت صلاحية المؤشر",
+              "Type": 2
+            },
+            {
+              "Description": "فقد الخادم مؤشره المؤقت وسجل إعادة التشغيل الخاص به فقط، أو تجاهلهما عمدًا. تظل أقسام الطقس المحفوظة قابلة للاستخدام، ويمكن استرداد البيانات التاريخية المفقودة مرة أخرى من Open-Meteo.",
+              "Name": "إعادة تعيين مؤشر الخادم",
+              "Type": 3
+            }
+          ],
+          "Name": "سبب إعادة تعيين طقس نظام الرش",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherResetReasonV1"
+    },
+    {
+      "Description": "يحدد قسمًا واحدًا من أقسام طقس نظام الرش المخزنة مؤقتًا بصورة مستقلة.",
+      "DisplayName": "قسم طقس نظام الرش",
+      "List": [
+        {
+          "Description": "يحدد قسمًا واحدًا من أقسام طقس نظام الرش المخزنة مؤقتًا بصورة مستقلة.",
+          "Enum": [
+            {
+              "Description": "يحدد قسم موازنة المياه التاريخية.",
+              "Name": "السجل الحديث",
+              "Type": 1
+            },
+            {
+              "Description": "يحدد قسم سلامة الري الفورية.",
+              "Name": "الظروف الحالية",
+              "Type": 2
+            },
+            {
+              "Description": "يحدد قسم التخطيط للري في المستقبل.",
+              "Name": "التوقعات",
+              "Type": 3
+            }
+          ],
+          "Name": "قسم طقس نظام الرش",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherSectionV1"
+    },
+    {
+      "Description": "تحتوي على أقسام متاحة بصورة مستقلة لسجل الرصد الكامل والظروف الحالية والتوقعات. لا تتضمن الأقسام المفقودة أي قيمة مخزنة مؤقتًا قابلة للاستخدام؛ بينما تحتفظ الأقسام القديمة بطوابعها الزمنية الأصلية للصلاحية.",
+      "DisplayName": "لقطة طقس نظام الرش V2",
+      "List": [
+        {
+          "Description": "تحتوي على أقسام متاحة بصورة مستقلة لسجل الرصد الكامل والظروف الحالية والتوقعات. لا تتضمن الأقسام المفقودة أي قيمة مخزنة مؤقتًا قابلة للاستخدام؛ بينما تحتفظ الأقسام القديمة بطوابعها الزمنية الأصلية للصلاحية.",
+          "Name": "لقطة طقس نظام الرش V2",
+          "Type": 0
+        },
+        {
+          "Description": "الفترات التاريخية المطلوبة من V2، عند وجود سجل مخزن مؤقتًا قابل للاستخدام.",
+          "Name": "السجل الحديث",
+          "Type": 1
+        },
+        {
+          "Description": "آخر ظروف حالية مقبولة عند طلبها وتوفرها.",
+          "Name": "الظروف الحالية",
+          "Type": 2
+        },
+        {
+          "Description": "فترات التوقعات المطلوبة عند وجود بيانات مخزنة مؤقتًا قابلة للاستخدام.",
+          "Name": "التوقعات",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherSnapshotV2"
+    },
+    {
+      "Description": "يحدد فترة نصف مفتوحة من الفترات التاريخية أو فترات التوقعات بغرض الاسترداد. تُحدَّد الفترة عندما يكون وقت بدايتها مساويًا لـ `starts_at` على الأقل وأسبق من `ends_before`.",
+      "DisplayName": "النطاق الزمني لطقس نظام الرش",
+      "List": [
+        {
+          "Description": "يحدد فترة نصف مفتوحة من الفترات التاريخية أو فترات التنبؤ بغرض الاسترجاع. تُحدد فترة عندما يكون وقت بدايتها عند `starts_at` أو بعده وقبل `ends_before`.",
+          "Name": "النطاق الزمني لطقس نظام الرش",
+          "Type": 0
+        },
+        {
+          "Description": "الحد الأدنى الشامل لأوقات بدء الفترات المحددة.",
+          "Name": "وقت البدء",
+          "Type": 1
+        },
+        {
+          "Description": "الحد الأعلى غير الشامل لأوقات بدء الفترات المحددة. يجب أن تكون هذه القيمة بعد `starts_at`.",
+          "Name": "وقت الانتهاء",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherTimeRangeV1"
+    }
+  ]
+}

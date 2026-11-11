@@ -1,0 +1,50 @@
+{
+  "Description": "Smart Sprinkler gibi sulama uygulamalarına yerel hava durumu sağlar; böylece bu uygulamalar sulamayı yağmur, sıcaklık, nem ve rüzgâra göre planlayabilir. Yerel Hava Durumu, mevcut koşulları, son yedi günlük saatlik hava durumu geçmişini ve yedi günlük tahmini Open-Meteo'dan almak için Hub'ın konumunu kullanır. Hizmet, hava durumunu otomatik olarak yeniler ve yeniden başlatmalar ile geçici internet kesintileri sırasında son geçerli hava durumu verilerini korur. Güncel hava durumu için konum erişimi ve internet bağlantısı gerekir. Her Hub'da, birden fazla sulama uygulamasına hizmet veren tek bir Yerel Hava Durumu hizmeti çalışabilir.",
+  "DisplayName": "Yerel Hava Durumu",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Local weather",
+      "Description": "Yerel Hava Durumu, sulama uygulamalarının ne zaman ve ne kadar sulama yapılacağını planlamasına yardımcı olmak için mevcut koşulları, yakın zamandaki hava durumunu ve tahminleri sağlar. Hizmet, Smart Sprinkler gibi uygulamalar için paylaşılan bir hava durumu kaynağı oluşturur ve Open-Meteo'dan hava durumu verilerini almak üzere Hub'ın konumunu kullanır. Yerel Hava Durumu; sıcaklık, bağıl nem, yağış, tahmini yağmur olasılığı, toprak ve bitkilerden tahmini su kaybı, rüzgâr hızı ve ani rüzgâr hızı verilerini sağlar. Yerel Hava Durumu, mevcut koşulları her 15 dakikada bir; saatlik geçmişi ve tahminleri ise her saat otomatik olarak yeniler. Hizmet, son yedi günlük saatlik hava durumu verilerini ve yedi günlük tahmini saklar ve hava durumu değişikliklerini bağlı sulama uygulamalarına gönderir. Bağlı uygulamalar, kaydedilmiş en son hava durumu verilerini alabilir veya bir kesintiden sonra kaçırılan güncellemeleri edinebilir. Yerel Hava Durumu; son geçerli konumu, mevcut koşulları, yakın geçmişi ve tahmini ayrı ayrı kaydederek hava durumu verilerini yeniden başlatmalar ile geçici internet veya konum hizmeti kesintileri sırasında kullanılabilir durumda tutar. Hizmet, sulama uygulamalarının eski hava durumu verilerini ayırt edebilmesi için her güncellemenin zamanını ve güncellik son tarihini sağlar. Hub bir konum değişikliği bildirdiğinde Yerel Hava Durumu, önceki konuma ait hava durumu verilerini temizler ve bunların yerine yeni hava durumu verilerini alır. Güncel hava durumu için konum erişimi ve internet bağlantısı gerekir. Hizmet Hub'ın konumunu öğrenene kadar hava durumu verileri kullanılamaz. Bir Hub'da yalnızca bir Yerel Hava Durumu hizmeti çalışabilir ve bu hizmeti birden fazla sulama uygulaması paylaşabilir. Smartonlabs Inc. (libertas) tarafından geliştirilmiştir.",
+      "DisplayName": "Yerel Hava Durumu",
+      "List": [
+        {
+          "Description": "Bu hizmetin Hub'daki sulama uygulamaları için oluşturduğu paylaşılan yerel hava durumu kaynağı. Bağlı uygulamalar, sulamayı planlamak için bu hizmetten mevcut koşulları, yakın zamandaki hava durumunu ve tahminleri kullanır.",
+          "Name": "Sulama hava durumu hizmeti",
+          "Type": 0
+        }
+      ],
+      "Name": "libertas_weather_server"
+    }
+  ],
+  "Locale": "tr-TR",
+  "StringResources": {
+    "SPRINKLER_CURRENT_WEATHER_V1": "{0} için mevcut sulama hava durumu kaydedildi.",
+    "SPRINKLER_WEATHER_FORECAST_V1": "{0} için sulama hava durumu tahmini kaydedildi.",
+    "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "{0} için sulama hava durumu güncelleme zamanı kaydedildi.",
+    "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "{0} için yakın zamandaki sulama hava durumu kaydedildi.",
+    "SPRINKLER_WEATHER_LOCATION_V1": "{0} konumundaki sulama hava durumu için kullanılan konum kaydedildi.",
+    "api.open-meteo.com": "Sulama planlaması için mevcut koşulları, yakın geçmişi ve tahminleri almak üzere Open-Meteo'ya bağlanın.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Doğru yerel hava durumu tahminini istemek için Hub'ın konumunu kullanın."
+  },
+  "Types": [
+    {
+      "Description": "Hub'ın konumunu kullanarak sulama uygulamaları için mevcut koşulları, yakın zamandaki saatlik hava durumunu ve tahminleri sağlar.",
+      "DisplayName": "Sulama hava durumu hizmeti",
+      "List": [
+        {
+          "Description": "Hub'ın konumunu kullanarak sulama uygulamaları için mevcut koşulları, yakın zamandaki saatlik hava durumunu ve tahminleri sağlar.",
+          "Name": "Sulama hava durumu hizmeti",
+          "Type": 0
+        },
+        {
+          "DefaultText": "Sulama hava durumu hizmeti",
+          "Description": "Yerel Hava Durumu, sulama uygulamalarının yerel hava durumu verilerini alabilmesi ve sulama kararları için otomatik güncellemelerden yararlanabilmesi amacıyla bu hizmeti oluşturur.",
+          "Name": "Sulama hava durumu hizmeti",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWeatherEndpointServerV1"
+    }
+  ]
+}

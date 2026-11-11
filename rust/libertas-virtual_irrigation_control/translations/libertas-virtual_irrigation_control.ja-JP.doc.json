@@ -1,0 +1,75 @@
+{
+  "Description": "実物の灌漑設備を設置せずに、スプリンクラーアプリを試せます。",
+  "DisplayName": "スプリンクラー制御シミュレーター",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Virtual sprinkler valves",
+      "Description": "実物の灌漑設備を設置せずに、スプリンクラーアプリを試せます。ユーザーは1つ以上の仮想バルブを選び、バルブごとに既定の散水時間を設定できます。ユーザーまたはスプリンクラーアプリは、時間制限なしでバルブを開く、指定した時間だけ開く、または閉じることができます。バルブコントローラーは、時間指定の散水が終了すると自動的にバルブを閉じます。また、新しいバルブを開く前に、開いている別のバルブを閉じるため、一度に散水するバルブは1つだけです。バルブコントローラーには、各バルブの開閉状態、選択した散水時間、既定の散水時間、残り時間が表示され、再起動後も既定の散水時間が保持されます。",
+      "DisplayName": "スプリンクラー制御シミュレーター",
+      "List": [
+        {
+          "Description": "試したいエリアごとに仮想バルブを1つ追加してください。",
+          "Name": "散水バルブ",
+          "Type": 0
+        },
+        {
+          "Description": "1つの仮想散水バルブです。",
+          "Name": "散水バルブ",
+          "Type": 1
+        }
+      ],
+      "Name": "virtual_irrigation_controller"
+    }
+  ],
+  "Locale": "ja-JP",
+  "StringResources": {
+    "DEFAULT_OPEN_DURATION": "{0}の散水時間を保存しました。"
+  },
+  "Types": [
+    {
+      "Description": "Libertasデータベースに書き込まれるすべてのデータ形式は、このユニオン内でインライン定義されます。",
+      "DisplayName": "永続的なバルブデータ。",
+      "List": [
+        {
+          "Description": "Libertasデータベースに書き込まれるすべてのデータ形式は、このユニオン内でインライン定義されます。",
+          "Name": "永続的なバルブデータ。",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "MatterのDefaultOpenDuration属性。",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "DefaultOpenDuration（秒単位）。",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved valve settings",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved valve settings",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Default watering duration for one valve",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveKey"
+    }
+  ]
+}

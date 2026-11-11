@@ -1,0 +1,75 @@
+{
+  "Description": "Ermöglicht das Ausprobieren von Sprinkler-Apps, ohne eine physische Bewässerungsanlage installieren zu müssen.",
+  "DisplayName": "Emulator für die Sprinklersteuerung",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Virtual sprinkler valves",
+      "Description": "Ermöglicht das Ausprobieren von Sprinkleranwendungen, ohne eine physische Bewässerungsanlage installieren zu müssen. Der Benutzer wählt ein oder mehrere virtuelle Ventile aus und kann für jedes Ventil die standardmäßige Bewässerungsdauer festlegen. Der Benutzer oder eine Sprinkleranwendung kann ein Ventil auf unbestimmte Zeit oder für eine ausgewählte Dauer öffnen oder es schließen. Die Ventilsteuerung beendet zeitgesteuerte Bewässerungsvorgänge automatisch und schließt vor dem Öffnen eines neuen Ventils jedes andere Ventil, sodass immer nur ein Ventil gleichzeitig bewässert. Die Ventilsteuerung zeigt für jedes Ventil an, ob es geöffnet oder geschlossen ist, sowie die ausgewählte Dauer, die Standarddauer und die verbleibende Zeit. Außerdem merkt sie sich die Standarddauer über Neustarts hinweg.",
+      "DisplayName": "Emulator für die Sprinklersteuerung",
+      "List": [
+        {
+          "Description": "Fügen Sie für jeden Bereich, den Sie ausprobieren möchten, ein virtuelles Ventil hinzu.",
+          "Name": "Sprinklerventile",
+          "Type": 0
+        },
+        {
+          "Description": "Ein virtuelles Wasserventil.",
+          "Name": "Sprinklerventil",
+          "Type": 1
+        }
+      ],
+      "Name": "virtual_irrigation_controller"
+    }
+  ],
+  "Locale": "de-DE",
+  "StringResources": {
+    "DEFAULT_OPEN_DURATION": "Gespeicherte Bewässerungsdauer für {0}."
+  },
+  "Types": [
+    {
+      "Description": "Jede Datenstruktur, die in die Libertas-Datenbank geschrieben wird, ist direkt in dieser Union definiert.",
+      "DisplayName": "Dauerhaft gespeicherte Ventildaten.",
+      "List": [
+        {
+          "Description": "Jede Datenstruktur, die in die Libertas-Datenbank geschrieben wird, ist direkt in dieser Union definiert.",
+          "Name": "Dauerhaft gespeicherte Ventildaten.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Matter-Attribut „DefaultOpenDuration“.",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "DefaultOpenDuration in Sekunden.",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved valve settings",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved valve settings",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Default watering duration for one valve",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveKey"
+    }
+  ]
+}

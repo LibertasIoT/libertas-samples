@@ -1,0 +1,1825 @@
+{
+  "Description": "Libertas अनुप्रयोगों द्वारा लिए जाने वाले निर्णयों के अनुरूप मौसम डेटा को परिभाषित करता है। स्प्रिंकलर स्कीमा, हब द्वारा प्रदान किए गए अपने स्थल स्थान को हाल के इतिहास, वर्तमान परिस्थितियों और पूर्वानुमान डेटा से अलग संग्रहीत करता है। प्रत्येक मौसम अनुभाग का रीफ़्रेश अंतराल अलग होता है और वह स्वतंत्र रूप से सफल या विफल हो सकता है। रनटाइम स्नैपशॉट में अनुभागों का कोई भी संयोजन हो सकता है। अनुप्रयोग प्रत्येक सफल अनुभाग को अलग से संग्रहीत करते हैं और मौसम-डेटा रीफ़्रेश विफल होने पर पुराने अनुभागों को बनाए रखते हैं। वृद्धिशील सदस्यताएँ युग-टाइमस्टैम्प-और-अनुक्रम कर्सर का उपयोग करती हैं, ताकि क्लाइंट सर्वर कर्सर रीसेट को पुराने या क्रम से बाहर डेटा से अलग पहचान सकें, बनाए रखे गए परिवर्तनों को फिर से चला सकें या कैश किए गए डेटा से चयनित समय-सीमाएँ पुनर्प्राप्त कर सकें। बिल्डिंग-HVAC स्कीमा केवल वे बाहरी इनपुट प्रदान करता है जिनकी तापीय भार के पूर्वानुमान, हीट-पंप संचालन, इकॉनमाइज़र निर्णयों और नियंत्रित बाहरी-वायु वेंटिलेशन के लिए आवश्यकता होती है। यह मौसम और बाहरी-वायु-गुणवत्ता अनुभागों को स्वतंत्र रखता है, क्योंकि उनके प्रदाता और ताज़गी संबंधी व्यवहार अलग-अलग हैं। स्थानीय उपकरण और जीवन-सुरक्षा नियंत्रणों को अपने स्वयं के सेंसरों का उपयोग जारी रखना चाहिए; कैश किया गया इंटरनेट मौसम पर्यवेक्षी इनपुट है, सुरक्षा संकेत नहीं।",
+  "DisplayName": "Libertas मौसम",
+  "DocumentVersion": "0.0.2",
+  "List": [],
+  "Locale": "hi-IN",
+  "StringResources": {},
+  "Types": [
+    {
+      "Description": "पर्यवेक्षी HVAC नियंत्रण द्वारा उपयोग की जाने वाली नवीनतम मॉडल-आधारित बाहरी परिस्थितियाँ समाहित करता है। यह उपकरण या जमाव से सुरक्षा के लिए उपयोग किए जाने वाले स्थानीय बाहरी सेंसर का स्थान नहीं लेता।",
+      "DisplayName": "बिल्डिंग HVAC का वर्तमान मौसम",
+      "List": [
+        {
+          "Description": "पर्यवेक्षी HVAC नियंत्रण द्वारा उपयोग की जाने वाली नवीनतम मॉडल-आधारित बाहरी परिस्थितियाँ समाहित करता है। यह उपकरण या जमाव से सुरक्षा के लिए उपयोग किए जाने वाले स्थानीय बाहरी सेंसर का स्थान नहीं लेता।",
+          "Name": "बिल्डिंग HVAC का वर्तमान मौसम",
+          "Type": 0
+        },
+        {
+          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
+          "Name": "Retrieved at",
+          "Type": 1
+        },
+        {
+          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
+          "Name": "Valid until",
+          "Type": 2
+        },
+        {
+          "Description": "The provider-supplied date and time represented by these current conditions.",
+          "Name": "Valid at",
+          "Type": 3
+        },
+        {
+          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
+          "Name": "Observation interval",
+          "Type": 4
+        },
+        {
+          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
+          "Name": "Outdoor conditions",
+          "Type": 5
+        }
+      ],
+      "Name": "BuildingHvacCurrentWeatherV1"
+    },
+    {
+      "Description": "अस्वास्थ्यकर परिस्थितियों में यांत्रिक बाहरी-वायु अंतर्ग्रहण बढ़ाने से बचने के लिए उपयोग की जाने वाली मॉडल-आधारित बाहरी प्रदूषक सांद्रताएँ समाहित करता है। ये क्षेत्रीय मॉडल मान स्थानीय सुरक्षा सेंसरों या आधिकारिक आपातकालीन निर्देशों का स्थान नहीं लेते।",
+      "DisplayName": "बिल्डिंग HVAC की बाहरी-वायु-गुणवत्ता अवधि",
+      "List": [
+        {
+          "Description": "अस्वास्थ्यकर परिस्थितियों में यांत्रिक बाहरी-वायु अंतर्ग्रहण बढ़ाने से बचने के लिए उपयोग की जाने वाली मॉडल-आधारित बाहरी प्रदूषक सांद्रताएँ समाहित करता है। ये क्षेत्रीय मॉडल मान स्थानीय सुरक्षा सेंसरों या आधिकारिक आपातकालीन निर्देशों का स्थान नहीं लेते।",
+          "Name": "बिल्डिंग HVAC की बाहरी-वायु-गुणवत्ता अवधि",
+          "Type": 0
+        },
+        {
+          "Description": "इस वायु-गुणवत्ता अवधि द्वारा दर्शाई गई समावेशी तिथि और समय।",
+          "Name": "आरंभ समय",
+          "Type": 1
+        },
+        {
+          "Description": "सेकंड में इस अवधि की लंबाई। मॉडल-आधारित बाहरी वायु गुणवत्ता सामान्यतः 3,600-सेकंड की अवधियों का उपयोग करती है।",
+          "Name": "अवधि",
+          "Type": 2
+        },
+        {
+          "Description": "प्रति घन मीटर माइक्रोग्राम में मॉडल-आधारित बाहरी PM2.5 सांद्रता।",
+          "Name": "सूक्ष्म कणीय पदार्थ",
+          "Type": 3
+        },
+        {
+          "Description": "प्रति घन मीटर माइक्रोग्राम में मॉडल-आधारित बाहरी PM10 सांद्रता।",
+          "Name": "कणीय पदार्थ",
+          "Type": 4
+        },
+        {
+          "Description": "प्रति घन मीटर माइक्रोग्राम में मॉडल-आधारित बाहरी ओज़ोन सांद्रता।",
+          "Name": "ओज़ोन",
+          "Type": 5
+        },
+        {
+          "Description": "प्रति घन मीटर माइक्रोग्राम में मॉडल-आधारित बाहरी नाइट्रोजन-डाइऑक्साइड सांद्रता।",
+          "Name": "नाइट्रोजन डाइऑक्साइड",
+          "Type": 6
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityPeriodV1"
+    },
+    {
+      "Description": "वेंटिलेशन योजना के लिए वर्तमान और पूर्वानुमानित मॉडल-आधारित बाहरी प्रदूषक अवधियाँ समाहित करता है। यह भौतिक मौसम से स्वतंत्र रूप से वैकल्पिक है और स्वतंत्र रूप से कैश किया जाता है।",
+      "DisplayName": "बिल्डिंग HVAC की बाहरी वायु गुणवत्ता",
+      "List": [
+        {
+          "Description": "वेंटिलेशन योजना के लिए वर्तमान और पूर्वानुमानित मॉडल-आधारित बाहरी प्रदूषक अवधियाँ समाहित करता है। यह भौतिक मौसम से स्वतंत्र रूप से वैकल्पिक है और स्वतंत्र रूप से कैश किया जाता है।",
+          "Name": "बिल्डिंग HVAC की बाहरी वायु गुणवत्ता",
+          "Type": 0
+        },
+        {
+          "Description": "वह तिथि और समय जब इस संपूर्ण वायु-गुणवत्ता अनुभाग को पुनर्प्राप्त, सत्यापित और स्वीकार किया गया था।",
+          "Name": "पुनर्प्राप्ति समय",
+          "Type": 1
+        },
+        {
+          "Description": "ताज़गी की अपवर्जी समय-सीमा। पुराने मॉडल-आधारित मानों को इस प्रमाण के रूप में नहीं समझा जाना चाहिए कि बाहरी वायु सुरक्षित है।",
+          "Name": "तक मान्य",
+          "Type": 2
+        },
+        {
+          "Description": "वर्तमान और भावी अवधियाँ, सबसे पहले से सबसे बाद के क्रम में। एक सामान्य प्रतिक्रिया अधिकतम 48 घंटे की अवधि को समाहित करती है।",
+          "Name": "वायु-गुणवत्ता अवधियाँ",
+          "Type": 3
+        },
+        {
+          "Description": "एक अवधि के लिए मॉडल-आधारित बाहरी प्रदूषक सांद्रताएँ।",
+          "Name": "वायु-गुणवत्ता अवधि",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityV1"
+    },
+    {
+      "Description": "HVAC भार पूर्वानुमान, साइक्रोमेट्रिक गणनाओं, इकॉनमाइज़र निर्णयों, अंतःस्यंदन आकलन और खुले में स्थित उपकरणों के मौसम-जागरूक संचालन के लिए आवश्यक भौतिक बाहरी इनपुट समाहित करता है।",
+      "DisplayName": "बिल्डिंग HVAC की बाहरी परिस्थितियाँ",
+      "List": [
+        {
+          "Description": "HVAC भार पूर्वानुमान, साइक्रोमेट्रिक गणनाओं, इकॉनमाइज़र निर्णयों, अंतःस्यंदन आकलन और खुले में स्थित उपकरणों के मौसम-जागरूक संचालन के लिए आवश्यक भौतिक बाहरी इनपुट समाहित करता है।",
+          "Name": "बिल्डिंग HVAC की बाहरी परिस्थितियाँ",
+          "Type": 0
+        },
+        {
+          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
+          "Name": "Dry-bulb temperature",
+          "Type": 1
+        },
+        {
+          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
+          "Name": "Dew-point temperature",
+          "Type": 2
+        },
+        {
+          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
+          "Name": "Relative humidity",
+          "Type": 3
+        },
+        {
+          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
+          "Name": "Surface pressure",
+          "Type": 4
+        },
+        {
+          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
+          "Name": "Wind speed",
+          "Type": 5
+        },
+        {
+          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
+          "Name": "Wind gust",
+          "Type": 6
+        },
+        {
+          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
+          "Name": "Wind direction",
+          "Type": 7
+        },
+        {
+          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
+          "Name": "Precipitation",
+          "Type": 8
+        },
+        {
+          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
+          "Name": "Precipitation kind",
+          "Type": 9
+        },
+        {
+          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
+          "Name": "Solar elevation",
+          "Type": 10
+        },
+        {
+          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
+          "Name": "Solar azimuth",
+          "Type": 11
+        },
+        {
+          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
+          "Name": "Global horizontal irradiance",
+          "Type": 12
+        },
+        {
+          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
+          "Name": "Direct normal irradiance",
+          "Type": 13
+        },
+        {
+          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
+          "Name": "Diffuse horizontal irradiance",
+          "Type": 14
+        }
+      ],
+      "Name": "BuildingHvacOutdoorConditionsV1"
+    },
+    {
+      "Description": "वर्षण को तब वर्गीकृत करता है जब उसका प्रावस्था बाहरी कॉइलों, वायु प्रवेशों, डैम्परों या खुले में स्थित अन्य HVAC उपकरणों को प्रभावित कर सकता है।",
+      "DisplayName": "बिल्डिंग HVAC वर्षण प्रकार",
+      "List": [
+        {
+          "Description": "वर्षण को तब वर्गीकृत करता है जब उसका प्रावस्था बाहरी कॉइलों, वायु प्रवेशों, डैम्परों या खुले में स्थित अन्य HVAC उपकरणों को प्रभावित कर सकता है।",
+          "Enum": [
+            {
+              "Description": "इस अवधि के लिए कोई वर्षण दर्शाया नहीं गया है।",
+              "Name": "कोई वर्षण नहीं",
+              "Type": 1
+            },
+            {
+              "Description": "इस अवधि के लिए तरल वर्षा या बौछारें दर्शाई गई हैं।",
+              "Name": "वर्षा",
+              "Type": 2
+            },
+            {
+              "Description": "इस अवधि के लिए ऐसा अतिशीतित तरल वर्षण दर्शाया गया है जो खुले में स्थित उपकरणों पर जम सकता है।",
+              "Name": "जमने वाली वर्षा",
+              "Type": 3
+            },
+            {
+              "Description": "इस अवधि के लिए मुख्यतः हिम वाला जमा हुआ वर्षण दर्शाया गया है।",
+              "Name": "हिमपात",
+              "Type": 4
+            },
+            {
+              "Description": "तरल या जमे हुए वर्षण की एक से अधिक प्रावस्थाएँ दर्शाई गई हैं।",
+              "Name": "मिश्रित वर्षण",
+              "Type": 5
+            },
+            {
+              "Description": "वर्षण मौजूद है, लेकिन प्रदाता उसकी प्रावस्था को वर्गीकृत नहीं कर सकता।",
+              "Name": "अज्ञात वर्षण",
+              "Type": 6
+            }
+          ],
+          "Name": "बिल्डिंग HVAC वर्षण प्रकार",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacPrecipitationKindV1"
+    },
+    {
+      "Description": "वृद्धिशील बिल्डिंग-HVAC मौसम स्ट्रीम में एक परमाण्विक परिवर्तन को परिभाषित करता है। वैरिएंट और फ़ील्ड का क्रम Avro वायर अनुबंध का हिस्सा हैं।",
+      "DisplayName": "बिल्डिंग HVAC मौसम परिवर्तन",
+      "List": [
+        {
+          "Description": "वृद्धिशील बिल्डिंग-HVAC मौसम स्ट्रीम में एक परमाण्विक परिवर्तन को परिभाषित करता है। वैरिएंट और फ़ील्ड का क्रम Avro वायर अनुबंध का हिस्सा हैं।",
+          "Name": "बिल्डिंग HVAC मौसम परिवर्तन",
+          "Type": 0
+        },
+        {
+          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
+          "Name": "Upsert historical periods",
+          "Type": 1
+        },
+        {
+          "Description": "The retrieval and validation time for the updated history section.",
+          "Name": "Retrieved at",
+          "Type": 2
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the history section.",
+          "Name": "Valid until",
+          "Type": 3
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from oldest to newest.",
+          "Name": "Historical periods",
+          "Type": 4
+        },
+        {
+          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
+          "Name": "Historical period",
+          "Type": 5
+        },
+        {
+          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove historical periods",
+          "Type": 6
+        },
+        {
+          "Description": "The half-open range of historical period start times to remove.",
+          "Name": "Time range",
+          "Type": 7
+        },
+        {
+          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
+          "Name": "Replace current conditions",
+          "Type": 8
+        },
+        {
+          "Description": "The complete newly accepted current-condition section.",
+          "Name": "Current conditions",
+          "Type": 9
+        },
+        {
+          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
+          "Name": "Upsert forecast periods",
+          "Type": 10
+        },
+        {
+          "Description": "The retrieval and validation time for the updated forecast section.",
+          "Name": "Retrieved at",
+          "Type": 11
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the forecast section.",
+          "Name": "Valid until",
+          "Type": 12
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Forecast periods",
+          "Type": 13
+        },
+        {
+          "Description": "One future outdoor-condition period keyed by `starts_at`.",
+          "Name": "Forecast period",
+          "Type": 14
+        },
+        {
+          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove forecast periods",
+          "Type": 15
+        },
+        {
+          "Description": "The half-open range of forecast period start times to remove.",
+          "Name": "Time range",
+          "Type": 16
+        },
+        {
+          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
+          "Name": "Upsert outdoor-air-quality periods",
+          "Type": 17
+        },
+        {
+          "Description": "The retrieval and validation time for the updated air-quality section.",
+          "Name": "Retrieved at",
+          "Type": 18
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the air-quality section.",
+          "Name": "Valid until",
+          "Type": 19
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Air-quality periods",
+          "Type": 20
+        },
+        {
+          "Description": "One modeled pollutant period keyed by `starts_at`.",
+          "Name": "Air-quality period",
+          "Type": 21
+        },
+        {
+          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove outdoor-air-quality periods",
+          "Type": 22
+        },
+        {
+          "Description": "The half-open range of air-quality period start times to remove.",
+          "Name": "Time range",
+          "Type": 23
+        },
+        {
+          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
+          "Name": "Clear weather section",
+          "Type": 24
+        },
+        {
+          "Description": "The independently cached section to clear.",
+          "Name": "Weather section",
+          "Type": 25
+        },
+        {
+          "Description": "Replaces the complete historical section after a successful refresh.",
+          "Name": "Replace history",
+          "Type": 26
+        },
+        {
+          "Description": "The complete newly accepted history section.",
+          "Name": "History",
+          "Type": 27
+        },
+        {
+          "Description": "Replaces the complete forecast section after a successful refresh.",
+          "Name": "Replace forecast",
+          "Type": 28
+        },
+        {
+          "Description": "The complete newly accepted forecast section.",
+          "Name": "Forecast",
+          "Type": 29
+        },
+        {
+          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
+          "Name": "Replace outdoor air quality",
+          "Type": 30
+        },
+        {
+          "Description": "The complete newly accepted outdoor-air-quality section.",
+          "Name": "Outdoor air quality",
+          "Type": 31
+        }
+      ],
+      "Name": "BuildingHvacWeatherChangeV1"
+    },
+    {
+      "Description": "वृद्धिशील बिल्डिंग-HVAC मौसम स्ट्रीम में पूर्णतः लागू की गई एक स्थिति की पहचान करता है। क्लाइंट युग टाइमस्टैम्प और अनुक्रम की एक साथ तुलना करते हैं।",
+      "DisplayName": "बिल्डिंग HVAC मौसम कर्सर",
+      "List": [
+        {
+          "Description": "वृद्धिशील बिल्डिंग-HVAC मौसम स्ट्रीम में पूर्णतः लागू की गई एक स्थिति की पहचान करता है। क्लाइंट युग टाइमस्टैम्प और अनुक्रम की एक साथ तुलना करते हैं।",
+          "Name": "बिल्डिंग HVAC मौसम कर्सर",
+          "Type": 0
+        },
+        {
+          "Description": "स्ट्रीम जनरेशन की पहचान करने वाली सर्वर द्वारा निर्धारित तिथि और समय। सामान्य अनुक्रम प्रगति के दौरान यह स्थिर रहता है। अस्थायी कर्सर स्थिति खो देने वाला सर्वर पूर्णतः नया टाइमस्टैम्प निर्धारित करता है।",
+          "Name": "युग टाइमस्टैम्प",
+          "Type": 1
+        },
+        {
+          "Description": "नवीनतम लागू किए गए परमाण्विक परिवर्तन का अनुक्रम। सर्वर कर्सर रीसेट इसे फिर से शून्य पर आरंभ करता है, हालांकि क्लाइंट रीसेट के बाद के किसी बाद वाले अनुक्रम को पहले देख सकता है।",
+          "Name": "अनुक्रम",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherCursorV1"
+    },
+    {
+      "Description": "मॉडल-पूर्वानुमानित HVAC योजना की एक अवधि के लिए अनुमानित बाहरी परिस्थितियां समाहित करता है।",
+      "DisplayName": "भवन HVAC पूर्वानुमान अवधि",
+      "List": [
+        {
+          "Description": "मॉडल-पूर्वानुमानित HVAC योजना की एक अवधि के लिए अनुमानित बाहरी परिस्थितियां समाहित करता है।",
+          "Name": "भवन HVAC पूर्वानुमान अवधि",
+          "Type": 0
+        },
+        {
+          "Description": "वह समावेशी दिनांक और समय, जब यह पूर्वानुमान अवधि आरंभ होती है।",
+          "Name": "आरंभ समय",
+          "Type": 1
+        },
+        {
+          "Description": "इस पूर्वानुमान अवधि की लंबाई सेकंड में। प्रदाता वर्तमान समय के निकट 900-सेकंड की अवधियां और बाद के लिए 3,600-सेकंड की अवधियां प्रदान कर सकते हैं।",
+          "Name": "अवधि",
+          "Type": 2
+        },
+        {
+          "Description": "इस अवधि के दौरान मापने योग्य वर्षण की प्रायिकता, 0 से 100 तक के पूर्णांक प्रतिशत के रूप में।",
+          "Name": "वर्षण की प्रायिकता",
+          "Type": 3
+        },
+        {
+          "Description": "इस अवधि के लिए अनुमानित तापमान, आर्द्रता, दबाव, पवन, वर्षण और सौर इनपुट।",
+          "Name": "बाहरी परिस्थितियां",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "भार पूर्वानुमान, पूर्वतापन, पूर्वशीतलन, तापीय भंडारण और मौसम-सजग वेंटिलेशन योजना के लिए भविष्य की बाहरी परिस्थितियां समाहित करता है।",
+      "DisplayName": "भवन HVAC मौसम पूर्वानुमान",
+      "List": [
+        {
+          "Description": "भार पूर्वानुमान, पूर्वतापन, पूर्वशीतलन, तापीय भंडारण और मौसम-सजग वेंटिलेशन योजना के लिए भविष्य की बाहरी परिस्थितियां समाहित करता है।",
+          "Name": "भवन HVAC मौसम पूर्वानुमान",
+          "Type": 0
+        },
+        {
+          "Description": "वह दिनांक और समय, जब यह संपूर्ण पूर्वानुमान अनुभाग प्राप्त, सत्यापित और स्वीकार किया गया था।",
+          "Name": "प्राप्ति समय",
+          "Type": 1
+        },
+        {
+          "Description": "ताज़गी की अपवर्जी समय-सीमा। पुराने पूर्वानुमान निम्नीकृत योजना के लिए उपलब्ध रहते हैं, लेकिन उनका उपयोग सुरक्षा-संवेदी संचालन को अधिकृत करने के लिए नहीं किया जाना चाहिए।",
+          "Name": "तक मान्य",
+          "Type": 2
+        },
+        {
+          "Description": "सबसे पहले से सबसे बाद तक क्रमबद्ध भावी अवधियां। सामान्य प्रतिक्रिया 72 घंटे समाहित करती है और वैकल्पिक रूप से पहले छह घंटों के लिए 15-मिनट की अवधियों तथा उसके बाद प्रति घंटे की अवधियों का उपयोग कर सकती है।",
+          "Name": "पूर्वानुमान अवधियां",
+          "Type": 3
+        },
+        {
+          "Description": "योजना की एक अवधि के लिए अनुमानित बाहरी HVAC परिस्थितियां।",
+          "Name": "पूर्वानुमान अवधि",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastV1"
+    },
+    {
+      "Description": "भवन की तापीय-अवस्था के अनुमान को पुनर्स्थापित या अद्यतन करने के लिए उपयोग की जाने वाली एक पूर्ण अवधि की बाहरी परिस्थितियां समाहित करता है।",
+      "DisplayName": "भवन HVAC ऐतिहासिक मौसम अवधि",
+      "List": [
+        {
+          "Description": "भवन की तापीय-अवस्था के अनुमान को पुनर्स्थापित या अद्यतन करने के लिए उपयोग की जाने वाली एक पूर्ण अवधि की बाहरी परिस्थितियां समाहित करता है।",
+          "Name": "भवन HVAC ऐतिहासिक मौसम अवधि",
+          "Type": 0
+        },
+        {
+          "Description": "वह समावेशी दिनांक और समय, जब यह ऐतिहासिक अवधि आरंभ होती है।",
+          "Name": "आरंभ समय",
+          "Type": 1
+        },
+        {
+          "Description": "इस पूर्ण अवधि की लंबाई सेकंड में। इतिहास सामान्यतः 3,600-सेकंड की अवधियों का उपयोग करता है।",
+          "Name": "अवधि",
+          "Type": 2
+        },
+        {
+          "Description": "इस पूर्ण अवधि द्वारा निरूपित तापमान, आर्द्रता, दबाव, पवन, वर्षण और सौर परिस्थितियां।",
+          "Name": "बाहरी परिस्थितियां",
+          "Type": 3
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryPeriodV1"
+    },
+    {
+      "Description": "अल्पकालिक तापीय-अवस्था पुनर्प्राप्ति के लिए उपयोग की जाने वाली हाल की पूर्ण बाहरी-परिस्थिति अवधियां समाहित करता है। भवन का दीर्घकालिक अधिगम HVAC अनुप्रयोग के अपने टेलीमेट्री और मॉडल स्थायित्व के अंतर्गत आता है।",
+      "DisplayName": "भवन HVAC मौसम इतिहास",
+      "List": [
+        {
+          "Description": "अल्पकालिक तापीय-अवस्था पुनर्प्राप्ति के लिए उपयोग की जाने वाली हाल की पूर्ण बाहरी-परिस्थिति अवधियां समाहित करता है। भवन का दीर्घकालिक अधिगम HVAC अनुप्रयोग के अपने टेलीमेट्री और मॉडल स्थायित्व के अंतर्गत आता है।",
+          "Name": "भवन HVAC मौसम इतिहास",
+          "Type": 0
+        },
+        {
+          "Description": "वह दिनांक और समय, जब यह संपूर्ण इतिहास अनुभाग प्राप्त, सत्यापित और स्वीकार किया गया था।",
+          "Name": "प्राप्ति समय",
+          "Type": 1
+        },
+        {
+          "Description": "ताज़गी की अपवर्जी समय-सीमा। इस समय के बाद पुराना इतिहास निम्नीकृत मॉडल इनपुट के रूप में उपलब्ध रहता है।",
+          "Name": "तक मान्य",
+          "Type": 2
+        },
+        {
+          "Description": "सबसे पुरानी से नवीनतम तक क्रमबद्ध पूर्ण अवधियां। सामान्य प्रतिक्रिया पिछले 72 घंटे समाहित करती है; इससे छोटी सूची मान्य आंशिक इतिहास है।",
+          "Name": "इतिहास अवधियां",
+          "Type": 3
+        },
+        {
+          "Description": "एक पूर्ण अवधि की बाहरी HVAC परिस्थितियां।",
+          "Name": "इतिहास अवधि",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryV1"
+    },
+    {
+      "Description": "भवन-HVAC मौसम परिवर्तनों की एक क्रमबद्ध, परमाण्विक सीमा वहन करती है। क्लाइंट इसे केवल तभी लागू करता है, जब `from_cursor` उसके अंतिम कर्सर से मेल खाता है। खाली रिपोर्ट पूरी तरह अद्यतन पुनर्प्राप्ति है; परिवर्तन न होने पर आवधिक सक्रियता के लिए PeerAlive का उपयोग किया जाता है।",
+      "DisplayName": "भवन HVAC मौसम वृद्धिशील रिपोर्ट",
+      "List": [
+        {
+          "Description": "भवन-HVAC मौसम परिवर्तनों की एक क्रमबद्ध, परमाण्विक सीमा वहन करती है। क्लाइंट इसे केवल तभी लागू करता है, जब `from_cursor` उसके अंतिम कर्सर से मेल खाता है। खाली रिपोर्ट पूरी तरह अद्यतन पुनर्प्राप्ति है; परिवर्तन न होने पर आवधिक सक्रियता के लिए PeerAlive का उपयोग किया जाता है।",
+          "Name": "भवन HVAC मौसम वृद्धिशील रिपोर्ट",
+          "Type": 0
+        },
+        {
+          "Description": "रिपोर्ट लागू करने से पहले आवश्यक अपवर्जी निचला कर्सर और क्लाइंट की सटीक अवस्था।",
+          "Name": "आरंभिक कर्सर",
+          "Type": 1
+        },
+        {
+          "Description": "प्रत्येक परिवर्तन को परमाण्विक रूप से लागू करने के बाद प्राप्त समावेशी कर्सर।",
+          "Name": "अंतिम कर्सर",
+          "Type": 2
+        },
+        {
+          "Description": "कर्सर अनुक्रम में क्रमबद्ध परिवर्तन। प्रत्येक परिवर्तन अनुक्रम को ठीक एक से आगे बढ़ाता है; खाली सूची कर्सर को अपरिवर्तित रखती है।",
+          "Name": "मौसम परिवर्तन",
+          "Type": 3
+        },
+        {
+          "Description": "कर्सर क्रम में एक परमाण्विक अवस्था परिवर्तन।",
+          "Name": "मौसम परिवर्तन",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "किसी एक पूरे घर या भवन के लिए मौसम प्राप्त करने हेतु उपयोग किया जाने वाला Libertas Hub स्थान संग्रहीत करता है।",
+      "DisplayName": "भवन HVAC मौसम स्थान",
+      "List": [
+        {
+          "Description": "किसी एक पूरे घर या भवन के लिए मौसम प्राप्त करने हेतु उपयोग किया जाने वाला Libertas Hub स्थान संग्रहीत करता है।",
+          "Name": "भवन HVAC मौसम स्थान",
+          "Type": 0
+        },
+        {
+          "Description": "दशमलव डिग्री में WGS84 देशांतर। ग्रीनविच के पश्चिम में स्थित स्थानों के लिए ऋणात्मक मानों का उपयोग किया जाता है।",
+          "Name": "देशांतर",
+          "Type": 1
+        },
+        {
+          "Description": "दशमलव डिग्री में WGS84 अक्षांश।",
+          "Name": "अक्षांश",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherLocationV1"
+    },
+    {
+      "Description": "ऐसे प्रत्येक मान को परिभाषित करता है जिसे भवन-HVAC मौसम एजेंट Libertas डेटाबेस में लिख सकता है। प्रत्येक प्रकार को उसके अपने स्थिर संसाधन पहचानकर्ता के अंतर्गत संग्रहीत किया जाता है, ताकि प्रदाता की आंशिक विफलता किसी अन्य अनुभाग को मिटा न सके। सदस्यता कर्सर, जर्नल, पीयर और PeerAlive की समय-सीमाएँ स्थायी नहीं हैं।",
+      "DisplayName": "भवन HVAC मौसम का स्थायी डेटा",
+      "List": [
+        {
+          "Description": "ऐसे प्रत्येक मान को परिभाषित करता है जिसे भवन-HVAC मौसम एजेंट Libertas डेटाबेस में लिख सकता है। प्रत्येक प्रकार को उसके अपने स्थिर संसाधन पहचानकर्ता के अंतर्गत संग्रहीत किया जाता है, ताकि प्रदाता की आंशिक विफलता किसी अन्य अनुभाग को मिटा न सके। सदस्यता कर्सर, जर्नल, पीयर और PeerAlive की समय-सीमाएँ स्थायी नहीं हैं।",
+          "Name": "भवन HVAC मौसम का स्थायी डेटा",
+          "Type": 0
+        },
+        {
+          "Description": "Libertas Hub से प्राप्त अंतिम मान्य साइट निर्देशांकों को संग्रहीत करता है।",
+          "Name": "भवन का स्थान",
+          "Type": 1
+        },
+        {
+          "Description": "प्रदाता अनुरोधों के लिए उपयोग किए जाने वाले WGS84 साइट निर्देशांक।",
+          "Name": "स्थान",
+          "Type": 2
+        },
+        {
+          "Description": "अंतिम सफलतापूर्वक स्वीकृत भौतिक मौसम इतिहास को संग्रहीत करता है।",
+          "Name": "हाल का इतिहास",
+          "Type": 3
+        },
+        {
+          "Description": "पुनर्प्राप्ति और ताज़गी की समय-मुद्राओं सहित हाल की बाहरी परिस्थितियों की अवधियाँ।",
+          "Name": "इतिहास",
+          "Type": 4
+        },
+        {
+          "Description": "अंतिम सफलतापूर्वक स्वीकृत वर्तमान भौतिक मौसम को संग्रहीत करता है।",
+          "Name": "वर्तमान परिस्थितियाँ",
+          "Type": 5
+        },
+        {
+          "Description": "वैधता और पुनर्प्राप्ति की समय-मुद्राओं सहित वर्तमान बाहरी HVAC इनपुट।",
+          "Name": "वर्तमान परिस्थितियाँ",
+          "Type": 6
+        },
+        {
+          "Description": "अंतिम सफलतापूर्वक स्वीकृत भौतिक मौसम पूर्वानुमान को संग्रहीत करता है।",
+          "Name": "पूर्वानुमान",
+          "Type": 7
+        },
+        {
+          "Description": "पुनर्प्राप्ति और ताज़गी की समय-मुद्राओं सहित भावी बाहरी HVAC इनपुट।",
+          "Name": "पूर्वानुमान",
+          "Type": 8
+        },
+        {
+          "Description": "अंतिम सफलतापूर्वक स्वीकृत मॉडल-आधारित प्रदूषक डेटा को भौतिक मौसम से अलग संग्रहीत करता है।",
+          "Name": "बाहरी वायु गुणवत्ता",
+          "Type": 9
+        },
+        {
+          "Description": "पुनर्प्राप्ति और ताज़गी की समय-मुद्राओं सहित वर्तमान और भावी बाहरी प्रदूषक अवधियाँ।",
+          "Name": "बाहरी वायु गुणवत्ता",
+          "Type": 10
+        }
+      ],
+      "Name": "BuildingHvacWeatherPersistentData"
+    },
+    {
+      "Description": "पूरे घर या पूरे भवन के HVAC मौसम के लिए एकल और सदस्यता लेन-देन को परिभाषित करता है। एकल या सदस्यता व्यवहार का चयन Libertas एंडपॉइंट संक्रिया करती है, न कि इस मनमाने संदेश अनुबंध का कोई फ़ील्ड।",
+      "DisplayName": "भवन HVAC मौसम प्रोटोकॉल",
+      "List": [
+        {
+          "Description": "पूरे घर या पूरे भवन के HVAC मौसम के लिए एकल और सदस्यता लेन-देन को परिभाषित करता है। एकल या सदस्यता व्यवहार का चयन Libertas एंडपॉइंट संक्रिया करती है, न कि इस मनमाने संदेश अनुबंध का कोई फ़ील्ड।",
+          "Name": "भवन HVAC मौसम प्रोटोकॉल",
+          "Type": 0
+        },
+        {
+          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
+          "Name": "Get building HVAC weather",
+          "Type": 1
+        },
+        {
+          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
+          "Name": "Resume cursor",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
+          "Name": "Historical recovery range",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
+          "Name": "Include current conditions",
+          "Type": 4
+        },
+        {
+          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
+          "Name": "Forecast recovery range",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
+          "Name": "Outdoor-air-quality recovery range",
+          "NullText": "No outdoor air quality",
+          "SetText": "Include outdoor air quality for",
+          "Type": 6
+        },
+        {
+          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
+          "Name": "Building HVAC weather recovery",
+          "Type": 7
+        },
+        {
+          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
+          "Name": "Maximum wait interval",
+          "Type": 8
+        },
+        {
+          "Description": "The replay, reset snapshot, or typed error result.",
+          "Name": "Recovery",
+          "Type": 9
+        },
+        {
+          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
+          "Name": "Building HVAC weather increment",
+          "Type": 10
+        },
+        {
+          "Description": "The ordered, atomic cursor range and its weather changes.",
+          "Name": "Incremental report",
+          "Type": 11
+        }
+      ],
+      "Name": "BuildingHvacWeatherProtocol"
+    },
+    {
+      "Description": "ऐसे पुनर्प्राप्ति अनुरोध की पहचान करता है जिसे रीप्ले या परास-सीमित कैश किए गए स्नैपशॉट द्वारा पूरा नहीं किया जा सकता।",
+      "DisplayName": "भवन HVAC मौसम पुनर्प्राप्ति त्रुटि",
+      "List": [
+        {
+          "Description": "ऐसे पुनर्प्राप्ति अनुरोध की पहचान करता है जिसे रीप्ले या परास-सीमित कैश किए गए स्नैपशॉट द्वारा पूरा नहीं किया जा सकता।",
+          "Enum": [
+            {
+              "Description": "अनुरोधित अर्ध-खुले परासों में से कम-से-कम एक रिक्त या उलटा है।",
+              "Name": "अमान्य समय परास",
+              "Type": 1
+            },
+            {
+              "Description": "दिए गए कर्सर का वर्तमान कर्सर स्थिति या बनाए रखे गए जर्नल से सामंजस्य नहीं किया जा सकता।",
+              "Name": "कर्सर आगे है",
+              "Type": 2
+            },
+            {
+              "Description": "अनुरोधित पुनर्प्राप्ति परासों में से कम-से-कम एक सीमित प्रतिक्रिया क्षमता से अधिक है।",
+              "Name": "अनुरोध बहुत बड़ा है",
+              "Type": 3
+            },
+            {
+              "Description": "कोई आवश्यक कैश किया गया रिकॉर्ड या पुनर्प्राप्ति संसाधन अस्थायी रूप से अनुपलब्ध है।",
+              "Name": "अस्थायी रूप से अनुपलब्ध",
+              "Type": 4
+            }
+          ],
+          "Name": "भवन HVAC मौसम पुनर्प्राप्ति त्रुटि",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "बनाए रखे गए परिवर्तनों को रीप्ले करता है, नया कर्सर और स्नैपशॉट स्थापित करता है या सुधार योग्य अनुरोध त्रुटि की रिपोर्ट करता है।",
+      "DisplayName": "भवन HVAC मौसम पुनर्प्राप्ति",
+      "List": [
+        {
+          "Description": "बनाए रखे गए परिवर्तनों को रीप्ले करता है, नया कर्सर और स्नैपशॉट स्थापित करता है या सुधार योग्य अनुरोध त्रुटि की रिपोर्ट करता है।",
+          "Name": "भवन HVAC मौसम पुनर्प्राप्ति",
+          "Type": 0
+        },
+        {
+          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
+          "Name": "Replayed changes",
+          "Type": 1
+        },
+        {
+          "Description": "The contiguous retained change range beginning at the request cursor.",
+          "Name": "Incremental report",
+          "Type": 2
+        },
+        {
+          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
+          "Name": "Reset with snapshot",
+          "Type": 3
+        },
+        {
+          "Description": "The reason the response contains a snapshot rather than replay.",
+          "Name": "Reset reason",
+          "Type": 4
+        },
+        {
+          "Description": "The cursor representing the returned snapshot.",
+          "Name": "Current cursor",
+          "Type": 5
+        },
+        {
+          "Description": "The available cached sections constrained by requested ranges.",
+          "Name": "Weather snapshot",
+          "Type": 6
+        },
+        {
+          "Description": "Rejects the request without changing client cursor or cached weather.",
+          "Name": "Recovery error",
+          "Type": 7
+        },
+        {
+          "Description": "The reason recovery could not be completed.",
+          "Name": "Error",
+          "Type": 8
+        },
+        {
+          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
+          "Name": "Retry delay",
+          "Type": 9
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryV1"
+    },
+    {
+      "Description": "बताता है कि पुनर्प्राप्ति ने वृद्धिशील परिवर्तनों को रीप्ले करने के बजाय परास-सीमित स्नैपशॉट से स्थिति क्यों स्थापित की।",
+      "DisplayName": "भवन HVAC मौसम रीसेट का कारण",
+      "List": [
+        {
+          "Description": "बताता है कि पुनर्प्राप्ति ने वृद्धिशील परिवर्तनों को रीप्ले करने के बजाय परास-सीमित स्नैपशॉट से स्थिति क्यों स्थापित की।",
+          "Enum": [
+            {
+              "Description": "कोई पिछला कर्सर प्रदान नहीं किया गया था।",
+              "Name": "आरंभिक सदस्यता",
+              "Type": 1
+            },
+            {
+              "Description": "अनुरोधित अनुक्रम बनाए रखे गए रीप्ले जर्नल से पुराना है।",
+              "Name": "कर्सर की समय-सीमा समाप्त",
+              "Type": 2
+            },
+            {
+              "Description": "सर्वर ने केवल अपना अस्थायी कर्सर और रीप्ले जर्नल खो दिया या जानबूझकर त्याग दिया; स्वतंत्र रूप से स्थायी किए गए मौसम अनुभाग उपयोग योग्य बने रहते हैं।",
+              "Name": "सर्वर कर्सर रीसेट",
+              "Type": 3
+            }
+          ],
+          "Name": "भवन HVAC मौसम रीसेट का कारण",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherResetReasonV1"
+    },
+    {
+      "Description": "स्वतंत्र रूप से कैश किए गए भवन-HVAC मौसम अनुभाग की पहचान करता है।",
+      "DisplayName": "भवन HVAC मौसम अनुभाग",
+      "List": [
+        {
+          "Description": "स्वतंत्र रूप से कैश किए गए भवन-HVAC मौसम अनुभाग की पहचान करता है।",
+          "Enum": [
+            {
+              "Description": "हाल की भौतिक बाहरी परिस्थितियों के इतिहास का चयन करता है।",
+              "Name": "हाल का इतिहास",
+              "Type": 1
+            },
+            {
+              "Description": "मॉडल की गई वर्तमान भौतिक बाहरी स्थितियों का चयन करता है।",
+              "Name": "वर्तमान स्थितियाँ",
+              "Type": 2
+            },
+            {
+              "Description": "भविष्य की भौतिक बाहरी स्थितियों के पूर्वानुमान का चयन करता है।",
+              "Name": "मौसम पूर्वानुमान",
+              "Type": 3
+            },
+            {
+              "Description": "मॉडल की गई वर्तमान और पूर्वानुमानित बाहरी प्रदूषक सांद्रताओं का चयन करता है।",
+              "Name": "बाहरी वायु गुणवत्ता",
+              "Type": 4
+            }
+          ],
+          "Name": "भवन HVAC मौसम अनुभाग",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherSectionV1"
+    },
+    {
+      "Description": "प्रत्येक अनुरोधित अनुभाग का अंतिम सफलतापूर्वक स्वीकृत मान समाहित करता है। अनुपस्थित अनुभागों के लिए कोई उपयोग योग्य कैश नहीं होता; पुराने अनुभाग अपनी मूल ताज़गी समय-सीमाओं के साथ मौजूद रहते हैं।",
+      "DisplayName": "भवन HVAC मौसम स्नैपशॉट",
+      "List": [
+        {
+          "Description": "प्रत्येक अनुरोधित अनुभाग का अंतिम सफलतापूर्वक स्वीकृत मान समाहित करता है। अनुपस्थित अनुभागों के लिए कोई उपयोग योग्य कैश नहीं होता; पुराने अनुभाग अपनी मूल ताज़गी समय-सीमाओं के साथ मौजूद रहते हैं।",
+          "Name": "भवन HVAC मौसम स्नैपशॉट",
+          "Type": 0
+        },
+        {
+          "Description": "उपयोग योग्य कैश किया गया इतिहास उपलब्ध होने पर अनुरोधित हाल की बाहरी स्थितियों की अवधियाँ।",
+          "Name": "हाल का इतिहास",
+          "Type": 1
+        },
+        {
+          "Description": "अनुरोध किए जाने और उपलब्ध होने पर अंतिम स्वीकृत वर्तमान बाहरी स्थितियाँ।",
+          "Name": "वर्तमान स्थितियाँ",
+          "Type": 2
+        },
+        {
+          "Description": "उपयोग योग्य कैश किया गया पूर्वानुमान डेटा उपलब्ध होने पर अनुरोधित भविष्य की बाहरी स्थितियों की अवधियाँ।",
+          "Name": "मौसम पूर्वानुमान",
+          "Type": 3
+        },
+        {
+          "Description": "उपयोग योग्य मॉडल किया गया वायु-गुणवत्ता डेटा उपलब्ध होने पर अनुरोधित वर्तमान और पूर्वानुमानित प्रदूषक अवधियाँ।",
+          "Name": "बाहरी वायु गुणवत्ता",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherSnapshotV1"
+    },
+    {
+      "Description": "इतिहास, पूर्वानुमान या बाहरी वायु-गुणवत्ता अवधियों के प्रारंभ समय के आधार पर उनका अर्ध-खुला अंतराल चुनता है।",
+      "DisplayName": "भवन HVAC मौसम समय-सीमा",
+      "List": [
+        {
+          "Description": "इतिहास, पूर्वानुमान या बाहरी वायु-गुणवत्ता अवधियों के प्रारंभ समय के आधार पर उनका अर्ध-खुला अंतराल चुनता है।",
+          "Name": "भवन HVAC मौसम समय-सीमा",
+          "Type": 0
+        },
+        {
+          "Description": "चयनित अवधियों के प्रारंभ समय की समावेशी निचली सीमा।",
+          "Name": "प्रारंभ समय",
+          "Type": 1
+        },
+        {
+          "Description": "चयनित अवधियों के प्रारंभ समय की अपवर्जी ऊपरी सीमा। यह `starts_at` से बाद की होनी चाहिए।",
+          "Name": "समाप्ति समय",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherTimeRangeV1"
+    },
+    {
+      "Description": "तत्काल वर्षा, हिमांक, आर्द्रता, हवा और जल-संतुलन संबंधी इनपुट समाहित करता है, जिनका उपयोग यह तय करने के लिए किया जाता है कि अन्यथा निर्धारित सिंचाई कार्य सुरक्षित रूप से शुरू या जारी हो सकता है या नहीं।",
+      "DisplayName": "स्प्रिंकलर का वर्तमान मौसम",
+      "List": [
+        {
+          "Description": "तत्काल वर्षा, हिमांक, आर्द्रता, हवा और जल-संतुलन संबंधी इनपुट समाहित करता है, जिनका उपयोग यह तय करने के लिए किया जाता है कि अन्यथा निर्धारित सिंचाई कार्य सुरक्षित रूप से शुरू या जारी हो सकता है या नहीं।",
+          "Name": "स्प्रिंकलर का वर्तमान मौसम",
+          "Type": 0
+        },
+        {
+          "Description": "वह दिनांक और समय जब संपूर्ण वर्तमान-मौसम अनुभाग को पिछली बार प्राप्त, सत्यापित और स्वीकृत किया गया था।",
+          "Name": "प्राप्ति का समय",
+          "Type": 1
+        },
+        {
+          "Description": "ताज़गी की अपवर्जी समय-सीमा। वर्तमान समय के इस मान से पहले होने तक वर्तमान मौसम ताज़ा है। इस मान पर या इसके बाद अनुभाग कैश में रहता है, लेकिन इसे इस बात का प्रमाण नहीं माना जाना चाहिए कि सिंचाई सुरक्षित है।",
+          "Name": "तक मान्य",
+          "Type": 2
+        },
+        {
+          "Description": "प्रदाता द्वारा दिया गया वह दिनांक और समय जिसे वर्तमान-स्थिति के मान दर्शाते हैं। यह `retrieved_at` से भिन्न हो सकता है।",
+          "Name": "के समय मान्य",
+          "Type": 3
+        },
+        {
+          "Description": "संचित वर्षण और वाष्पोत्सर्जन द्वारा दर्शाया गया, पीछे की ओर देखने वाला सेकंडों में अंतराल। Open-Meteo का वर्तमान मौसम सामान्यतः 900 सेकंड के अंतराल का उपयोग करता है।",
+          "Name": "प्रेक्षण अंतराल",
+          "Type": 4
+        },
+        {
+          "Description": "भूमि से दो मीटर ऊपर वायु का तापमान, डिग्री सेल्सियस में। स्प्रिंकलर इसका उपयोग हिमांक के निकट या उससे नीचे सिंचाई रोकने के लिए करता है।",
+          "Name": "तापमान",
+          "Type": 5
+        },
+        {
+          "Description": "भूमि से दो मीटर ऊपर सापेक्ष आर्द्रता, जिसे 0 से 100 तक प्रतिशत के रूप में व्यक्त किया जाता है। ऊपर से सिंचाई आवश्यक होने पर स्प्रिंकलर इसका उपयोग पत्तियों के अनावश्यक रूप से लंबे समय तक गीले रहने से बचने के लिए करता है।",
+          "Name": "सापेक्ष आर्द्रता",
+          "Type": 6
+        },
+        {
+          "Description": "`interval_seconds` के दौरान संचित कुल वर्षा, बौछारें और जमे हुए वर्षण के जल-समतुल्य की मात्रा, मिलीमीटर में। वर्षण होने के दौरान स्प्रिंकलर सिंचाई रोकने के लिए शून्य से भिन्न मान का उपयोग करता है।",
+          "Name": "वर्षण",
+          "Type": 7
+        },
+        {
+          "Description": "`interval_seconds` के दौरान संचित FAO-56 संदर्भ वाष्पोत्सर्जन, मिलीमीटर में। यह अगली पूर्ण ऐतिहासिक अवधि उपलब्ध होने तक जल संतुलन को आगे बढ़ा सकता है।",
+          "Name": "संदर्भ वाष्पोत्सर्जन",
+          "Type": 8
+        },
+        {
+          "Description": "भूमि से 10 मीटर ऊपर निरंतर हवा की गति, मीटर प्रति सेकंड में। इसका उपयोग करने वाला स्प्रिंकलर अपनी कॉन्फ़िगर की गई हवा की सीमा लागू करता है।",
+          "Name": "हवा की गति",
+          "Type": 9
+        },
+        {
+          "Description": "भूमि से 10 मीटर ऊपर हवा के सबसे तेज़ झोंके की गति, मीटर प्रति सेकंड में। इसका उपयोग करने वाला स्प्रिंकलर फुहार के बहाव से बचने के लिए इसे निरंतर हवा के साथ उपयोग करता है।",
+          "Name": "हवा का झोंका",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerCurrentWeatherV1"
+    },
+    {
+      "Description": "वृद्धिशील स्प्रिंकलर-मौसम स्ट्रीम में एक परमाण्विक परिवर्तन को परिभाषित करता है। वेरिएंट का क्रम और फ़ील्ड का क्रम केवल-जोड़ने योग्य Avro वायर प्रारूप का हिस्सा हैं।",
+      "DisplayName": "स्प्रिंकलर मौसम परिवर्तन",
+      "List": [
+        {
+          "Description": "वृद्धिशील स्प्रिंकलर-मौसम स्ट्रीम में एक परमाण्विक परिवर्तन को परिभाषित करता है। वेरिएंट का क्रम और फ़ील्ड का क्रम केवल-जोड़ने योग्य Avro वायर प्रारूप का हिस्सा हैं।",
+          "Name": "स्प्रिंकलर मौसम परिवर्तन",
+          "Type": 0
+        },
+        {
+          "Description": "उन कैश की गई ऐतिहासिक अवधियों को हटाता है जिनके प्रारंभ समय दी गई अर्ध-खुली सीमा में आते हैं।",
+          "Name": "ऐतिहासिक अवधियाँ हटाएँ",
+          "Type": 1
+        },
+        {
+          "Description": "हटाई जाने वाली ऐतिहासिक अवधियों के प्रारंभ समय की अर्ध-खुली सीमा।",
+          "Name": "समय-सीमा",
+          "Type": 2
+        },
+        {
+          "Description": "सफल प्राप्ति और सत्यापन के बाद संपूर्ण वर्तमान-स्थिति अनुभाग को बदलता है।",
+          "Name": "वर्तमान स्थितियाँ बदलें",
+          "Type": 3
+        },
+        {
+          "Description": "नया स्वीकृत वर्तमान-स्थिति अनुभाग।",
+          "Name": "वर्तमान स्थितियाँ",
+          "Type": 4
+        },
+        {
+          "Description": "सफल पूर्वानुमान रीफ़्रेश को चिह्नित करता है और `starts_at` के आधार पर अवधियाँ सम्मिलित करता है या बदलता है। अवधियों की खाली सूची केवल प्राप्ति और ताज़गी मेटाडेटा को अद्यतन करती है।",
+          "Name": "पूर्वानुमान अवधियाँ सम्मिलित या अद्यतन करें",
+          "Type": 5
+        },
+        {
+          "Description": "पूर्वानुमान अनुभाग की सफल प्राप्ति और सत्यापन का समय।",
+          "Name": "प्राप्ति समय",
+          "Type": 6
+        },
+        {
+          "Description": "पूर्वानुमान अनुभाग की नवीनता के लिए नई अपवर्जी समय-सीमा।",
+          "Name": "तक मान्य",
+          "Type": 7
+        },
+        {
+          "Description": "सम्मिलित या प्रतिस्थापित की जाने वाली अवधियाँ, सबसे पहले वाली से सबसे बाद वाली के क्रम में।",
+          "Name": "पूर्वानुमान अवधियाँ",
+          "Type": 8
+        },
+        {
+          "Description": "`starts_at` द्वारा कुंजीबद्ध एक सिंचाई-नियोजन अवधि।",
+          "Name": "पूर्वानुमान अवधि",
+          "Type": 9
+        },
+        {
+          "Description": "उन कैश की गई पूर्वानुमान अवधियों को हटाता है जिनके आरंभ समय दी गई अर्ध-खुली सीमा में आते हैं।",
+          "Name": "पूर्वानुमान अवधियाँ हटाएँ",
+          "Type": 10
+        },
+        {
+          "Description": "हटाए जाने वाले पूर्वानुमान अवधि आरंभ समयों की अर्ध-खुली सीमा।",
+          "Name": "समय-सीमा",
+          "Type": 11
+        },
+        {
+          "Description": "केवल तभी किसी एक अनुभाग को साफ़ करता है जब उसका कैश किया गया मान अमान्य ज्ञात हो, जैसे कि सत्यापन विफल होने या असंगत माइग्रेशन के बाद। केवल प्रदाता रीफ़्रेश की विफलता के कारण यह परिवर्तन उत्सर्जित नहीं होना चाहिए।",
+          "Name": "मौसम अनुभाग साफ़ करें",
+          "Type": 12
+        },
+        {
+          "Description": "स्वतंत्र रूप से कैश किया गया वह अनुभाग जिसे साफ़ करना है।",
+          "Name": "मौसम अनुभाग",
+          "Type": 13
+        },
+        {
+          "Description": "प्रदाता के सफल रीफ़्रेश के बाद संपूर्ण पूर्वानुमान अनुभाग को प्रतिस्थापित करता है। प्रतिस्थापन में अनुपस्थित अवधियाँ अब कैश में नहीं रहतीं।",
+          "Name": "पूर्वानुमान प्रतिस्थापित करें",
+          "Type": 14
+        },
+        {
+          "Description": "नया स्वीकृत संपूर्ण पूर्वानुमान अनुभाग।",
+          "Name": "पूर्वानुमान",
+          "Type": 15
+        },
+        {
+          "Description": "इसके बाद होने वाले प्रत्येक मौसम परिवर्तन के लिए भौतिक स्थल की पहचान करता है। क्लाइंट इस मान का उपयोग अलग-अलग हब स्थानों के सुरक्षित रखे गए इतिहास को कॉलबैक क्रम पर निर्भर हुए बिना अलग-अलग पीढ़ियों में रखने के लिए करता है।",
+          "Name": "मौसम स्थल प्रतिस्थापित करें",
+          "Type": 16
+        },
+        {
+          "Description": "प्रदाता के प्रेक्षणों और पूर्वानुमानों के लिए उपयोग किया जाने वाला WGS84 स्थान।",
+          "Name": "स्थल का स्थान",
+          "Type": 17
+        },
+        {
+          "Description": "इतिहास के सफल रीफ़्रेश को चिह्नित करता है और `starts_at` के आधार पर संपूर्ण-मौसम अवधियाँ सम्मिलित या प्रतिस्थापित करता है।",
+          "Name": "ऐतिहासिक अवधियाँ अपसर्ट करें V2",
+          "Type": 18
+        },
+        {
+          "Description": "इतिहास अनुभाग की सफल प्राप्ति और सत्यापन का समय।",
+          "Name": "प्राप्ति समय",
+          "Type": 19
+        },
+        {
+          "Description": "इतिहास अनुभाग की नवीनता के लिए नई अपवर्जी समय-सीमा।",
+          "Name": "तक मान्य",
+          "Type": 20
+        },
+        {
+          "Description": "सम्मिलित या प्रतिस्थापित की जाने वाली संपूर्ण-मौसम अवधियाँ, सबसे पुरानी से सबसे नई के क्रम में।",
+          "Name": "ऐतिहासिक अवधियाँ",
+          "Type": 21
+        },
+        {
+          "Description": "`starts_at` द्वारा कुंजीबद्ध एक पूर्ण V2 प्रेक्षण।",
+          "Name": "ऐतिहासिक अवधि",
+          "Type": 22
+        },
+        {
+          "Description": "प्रदाता के सफल रीफ़्रेश के बाद संपूर्ण पूर्ण-प्रेक्षण इतिहास अनुभाग को प्रतिस्थापित करता है।",
+          "Name": "इतिहास प्रतिस्थापित करें V2",
+          "Type": 23
+        },
+        {
+          "Description": "नया स्वीकृत संपूर्ण V2 ऐतिहासिक अनुभाग।",
+          "Name": "इतिहास",
+          "Type": 24
+        }
+      ],
+      "Name": "SprinklerWeatherChangeV1"
+    },
+    {
+      "Description": "वृद्धिशील स्प्रिंकलर-मौसम स्ट्रीम में लागू की गई एक स्थिति की पहचान करता है। क्लाइंट दोनों फ़ील्ड की तुलना करता है और केवल छोटी अनुक्रम संख्या को सर्वर रीसेट नहीं मानना चाहिए।",
+      "DisplayName": "स्प्रिंकलर मौसम कर्सर",
+      "List": [
+        {
+          "Description": "वृद्धिशील स्प्रिंकलर-मौसम स्ट्रीम में लागू की गई एक स्थिति की पहचान करता है। क्लाइंट दोनों फ़ील्ड की तुलना करता है और केवल छोटी अनुक्रम संख्या को सर्वर रीसेट नहीं मानना चाहिए।",
+          "Name": "स्प्रिंकलर मौसम कर्सर",
+          "Type": 0
+        },
+        {
+          "Description": "सर्वर द्वारा निर्दिष्ट दिनांक और समय, जो कर्सर पीढ़ी की पहचान करता है। यह एकल फ़ील्ड स्ट्रीम युग और क्रमबद्ध टाइमस्टैम्प दोनों है; कोई अलग अपारदर्शी युग मौजूद नहीं है। सामान्य अनुक्रम प्रगति के दौरान यह अपरिवर्तित रहता है। जब सर्वर अपना अस्थायी कर्सर या रीप्ले जर्नल खो देता है, तो वह पिछले टाइमस्टैम्प से निश्चित रूप से नया युग टाइमस्टैम्प निर्दिष्ट करता है और `sequence` को फिर से शून्य से आरंभ करता है। क्लाइंट पहले शून्य के बजाय रीसेट के बाद का कोई बाद वाला अनुक्रम देख सकता है। यह टाइमस्टैम्प कर्सर स्थिति का वर्णन करता है, मौसम मानों के प्रेक्षण समय का नहीं।",
+          "Name": "युग टाइमस्टैम्प",
+          "Type": 1
+        },
+        {
+          "Description": "लागू किए गए नवीनतम स्थिति परिवर्तन की पहचान करता है। सर्वर प्रत्येक स्वीकृत मौसम परिवर्तन के लिए इस मान को एक बार बढ़ाता है। अस्थायी सर्वर कर्सर रीसेट होने पर यह इस मान को शून्य पर रीसेट करता है और फिर बाद के परिवर्तनों के लिए इसे बढ़ाता है; रीसेट ऐतिहासिक, वर्तमान या पूर्वानुमानित मौसम डेटा को साफ़ नहीं करता।",
+          "Name": "अनुक्रम",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherCursorV1"
+    },
+    {
+      "Description": "एक नियोजन अवधि के दौरान कब और कितना पानी देना है, यह तय करने के लिए उपयोग किए जाने वाले अनुमानित जल निवेश, जल हानि, तापमान, आर्द्रता और पवन खतरों को समाहित करता है।",
+      "DisplayName": "स्प्रिंकलर मौसम पूर्वानुमान अवधि",
+      "List": [
+        {
+          "Description": "एक नियोजन अवधि के दौरान कब और कितना पानी देना है, यह तय करने के लिए उपयोग किए जाने वाले अनुमानित जल निवेश, जल हानि, तापमान, आर्द्रता और पवन खतरों को समाहित करता है।",
+          "Name": "स्प्रिंकलर मौसम पूर्वानुमान अवधि",
+          "Type": 0
+        },
+        {
+          "Description": "वह सम्मिलित दिनांक और समय जब यह पूर्वानुमान अवधि आरंभ होती है।",
+          "Name": "आरंभ समय",
+          "Type": 1
+        },
+        {
+          "Description": "सेकंड में इस पूर्वानुमान अवधि की लंबाई। Open-Meteo पूर्वानुमान सामान्यतः 3,600-सेकंड की अवधियों का उपयोग करते हैं।",
+          "Name": "अवधि",
+          "Type": 2
+        },
+        {
+          "Description": "ज़मीन से दो मीटर ऊपर डिग्री सेल्सियस में अनुमानित वायु तापमान। स्प्रिंकलर इसका उपयोग पूर्वानुमानित हिमकारी परिस्थितियों में पानी देने से बचने के लिए करता है।",
+          "Name": "तापमान",
+          "Type": 3
+        },
+        {
+          "Description": "ज़मीन से दो मीटर ऊपर अनुमानित सापेक्ष आर्द्रता, जिसे 0 से 100 तक पूर्णांक प्रतिशत के रूप में व्यक्त किया जाता है। सौर स्थिति और स्प्रिंकलर-हेड के प्रकार के साथ मिलकर, यह पत्तियों को लंबे समय तक गीला रहने से बचाने में सहायता करता है।",
+          "Name": "सापेक्ष आर्द्रता",
+          "Type": 4
+        },
+        {
+          "Description": "इस अवधि के दौरान मापने योग्य वर्षण की संभावना, जिसे 0 से 100 तक पूर्णांक प्रतिशत के रूप में व्यक्त किया जाता है। यह पूर्वानुमान की अनिश्चितता को अपेक्षित वर्षण मात्रा से अलग व्यक्त करता है।",
+          "Name": "वर्षण की संभावना",
+          "Type": 5
+        },
+        {
+          "Description": "इस अवधि के दौरान संचित अनुमानित कुल वर्षा, बौछारें और जमे हुए वर्षण का जल-समतुल्य, मिलीमीटर में।",
+          "Name": "अपेक्षित वर्षण",
+          "Type": 6
+        },
+        {
+          "Description": "इस अवधि के दौरान मिलीमीटर में संचित अनुमानित FAO-56 संदर्भ वाष्पोत्सर्जन।",
+          "Name": "संदर्भ वाष्पोत्सर्जन",
+          "Type": 7
+        },
+        {
+          "Description": "भूमि से 10 मीटर ऊपर हवा की अनुमानित स्थिर गति, मीटर प्रति सेकंड में।",
+          "Name": "हवा की गति",
+          "Type": 8
+        },
+        {
+          "Description": "भूमि से 10 मीटर ऊपर हवा के झोंके की अनुमानित अधिकतम गति, मीटर प्रति सेकंड में। संभावित जल-फुहार विचलन के दौरान सिंचाई निर्धारित करने से बचने के लिए स्प्रिंकलर इसका उपयोग हवा की स्थिर गति के साथ करता है।",
+          "Name": "हवा का झोंका",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "अगले सात दिनों के लिए स्प्रिंकलर सिंचाई की योजना बनाने में प्रयुक्त भविष्य के प्रति घंटा मौसम इनपुट शामिल करता है। बाद में पूर्वानुमान रीफ़्रेश विफल होने पर अंतिम सफल मान बनाए रखा जाता है।",
+      "DisplayName": "स्प्रिंकलर मौसम पूर्वानुमान",
+      "List": [
+        {
+          "Description": "अगले सात दिनों के लिए स्प्रिंकलर सिंचाई की योजना बनाने में प्रयुक्त भविष्य के प्रति घंटा मौसम इनपुट शामिल करता है। बाद में पूर्वानुमान रीफ़्रेश विफल होने पर अंतिम सफल मान बनाए रखा जाता है।",
+          "Name": "स्प्रिंकलर मौसम पूर्वानुमान",
+          "Type": 0
+        },
+        {
+          "Description": "वह दिनांक और समय जब संपूर्ण पूर्वानुमान अनुभाग को अंतिम बार प्राप्त, सत्यापित और स्वीकार किया गया था।",
+          "Name": "प्राप्ति समय",
+          "Type": 1
+        },
+        {
+          "Description": "ताज़गी की अपवर्जी समय-सीमा। जब तक वर्तमान समय इस मान से पहले है, पूर्वानुमान ताज़ा रहता है और इस मान पर या इसके बाद अप्रचलित हो जाता है। अप्रचलित पूर्वानुमान निम्नीकृत कैश किए गए इनपुट के रूप में उपलब्ध रहता है।",
+          "Name": "तक मान्य",
+          "Type": 2
+        },
+        {
+          "Description": "भविष्य की अवधियाँ, सबसे पहले से सबसे बाद के क्रम में। सामान्य प्रतिक्रिया अगले सात दिनों को एक घंटे के रिज़ॉल्यूशन पर समाहित करती है; छोटी सूची भी एक मान्य आंशिक पूर्वानुमान है।",
+          "Name": "पूर्वानुमान अवधियाँ",
+          "Type": 3
+        },
+        {
+          "Description": "एक नियोजन अवधि के लिए अनुमानित वर्षण, संदर्भ वाष्पोत्सर्जन, तापमान, आर्द्रता और हवा।",
+          "Name": "पूर्वानुमान अवधि",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherForecastV1"
+    },
+    {
+      "Description": "गतिशील रूप से पुनर्निर्मित अनुक्रमित इतिहास अवधियों के ताज़गी टाइमस्टैम्प संग्रहीत करता है।",
+      "DisplayName": "स्प्रिंकलर मौसम इतिहास मेटाडेटा",
+      "List": [
+        {
+          "Description": "गतिशील रूप से पुनर्निर्मित अनुक्रमित इतिहास अवधियों के ताज़गी टाइमस्टैम्प संग्रहीत करता है।",
+          "Name": "स्प्रिंकलर मौसम इतिहास मेटाडेटा",
+          "Type": 0
+        },
+        {
+          "Description": "वह दिनांक और समय जब संपूर्ण अनुक्रमित इतिहास समुच्चय को अंतिम बार प्राप्त, सत्यापित और स्वीकार किया गया था।",
+          "Name": "प्राप्ति समय",
+          "Type": 1
+        },
+        {
+          "Description": "पुनर्निर्मित इतिहास अनुभाग के लिए ताज़गी की अपवर्जी समय-सीमा।",
+          "Name": "तक मान्य",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryMetadataV1"
+    },
+    {
+      "Description": "सिंचाई संबंधी निर्णयों को स्पष्ट करने के लिए आवश्यक तापमान, आर्द्रता, स्थिर हवा और हवा के झोंकों के प्रेक्षणों के साथ पूर्ण अवधि के जल संतुलन का विस्तार करता है।",
+      "DisplayName": "स्प्रिंकलर मौसम इतिहास अवधि V2",
+      "List": [
+        {
+          "Description": "सिंचाई संबंधी निर्णयों को स्पष्ट करने के लिए आवश्यक तापमान, आर्द्रता, स्थिर हवा और हवा के झोंकों के प्रेक्षणों के साथ पूर्ण अवधि के जल संतुलन का विस्तार करता है।",
+          "Name": "स्प्रिंकलर मौसम इतिहास अवधि V2",
+          "Type": 0
+        },
+        {
+          "Description": "वह समावेशी दिनांक और समय जब यह ऐतिहासिक अवधि आरंभ होती है।",
+          "Name": "आरंभ समय",
+          "Type": 1
+        },
+        {
+          "Description": "इस ऐतिहासिक अवधि की लंबाई, सेकंड में। Open-Meteo इतिहास सामान्यतः 3,600-सेकंड की अवधियों का उपयोग करता है।",
+          "Name": "अवधि",
+          "Type": 2
+        },
+        {
+          "Description": "इस अवधि के दौरान संचित कुल वर्षण, जिसमें जमे हुए वर्षण का जल समतुल्य भी शामिल है, मिलीमीटर में।",
+          "Name": "वर्षण",
+          "Type": 3
+        },
+        {
+          "Description": "इस अवधि के दौरान संचित FAO-56 संदर्भ वाष्पोत्सर्जन, मिलीमीटर में।",
+          "Name": "संदर्भ वाष्पोत्सर्जन",
+          "Type": 4
+        },
+        {
+          "Description": "इस ऐतिहासिक अवधि के दौरान भूमि से दो मीटर ऊपर वायु का तापमान, डिग्री सेल्सियस में।",
+          "Name": "तापमान",
+          "Type": 5
+        },
+        {
+          "Description": "इस ऐतिहासिक अवधि के दौरान भूमि से दो मीटर ऊपर सापेक्ष आर्द्रता, जिसे 0 से 100 तक के पूर्णांक प्रतिशत के रूप में व्यक्त किया गया है।",
+          "Name": "सापेक्ष आर्द्रता",
+          "Type": 6
+        },
+        {
+          "Description": "इस ऐतिहासिक अवधि के दौरान भूमि से 10 मीटर ऊपर हवा की स्थिर गति, मीटर प्रति सेकंड में।",
+          "Name": "हवा की गति",
+          "Type": 7
+        },
+        {
+          "Description": "इस ऐतिहासिक अवधि के दौरान भूमि से 10 मीटर ऊपर हवा के झोंके की अधिकतम गति, मीटर प्रति सेकंड में।",
+          "Name": "हवा का झोंका",
+          "Type": 8
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryPeriodV2"
+    },
+    {
+      "Description": "सिंचाई गणनाओं और निर्णय-व्याख्या चार्ट, दोनों के लिए प्रयुक्त संपूर्ण मौसम प्रेक्षणों वाली हाल की पूर्ण अवधियाँ शामिल करता है।",
+      "DisplayName": "स्प्रिंकलर मौसम इतिहास V2",
+      "List": [
+        {
+          "Description": "सिंचाई गणनाओं और निर्णय-व्याख्या चार्ट, दोनों के लिए प्रयुक्त संपूर्ण मौसम प्रेक्षणों वाली हाल की पूर्ण अवधियाँ शामिल करता है।",
+          "Name": "स्प्रिंकलर मौसम इतिहास V2",
+          "Type": 0
+        },
+        {
+          "Description": "वह दिनांक और समय जब संपूर्ण इतिहास अनुभाग को अंतिम बार प्राप्त, सत्यापित और स्वीकार किया गया था।",
+          "Name": "प्राप्ति समय",
+          "Type": 1
+        },
+        {
+          "Description": "ताज़गी की अपवर्जी समय-सीमा। अप्रचलित इतिहास निम्नीकृत कैश किए गए इनपुट के रूप में उपलब्ध रहता है।",
+          "Name": "तक मान्य",
+          "Type": 2
+        },
+        {
+          "Description": "पूर्ण अवधियाँ, सबसे पुरानी से सबसे नई के क्रम में।",
+          "Name": "इतिहास अवधियाँ",
+          "Type": 3
+        },
+        {
+          "Description": "एक पूर्ण अवधि के लिए तापमान, आर्द्रता, वर्षण, संदर्भ वाष्पोत्सर्जन और हवा।",
+          "Name": "इतिहास अवधि",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryV2"
+    },
+    {
+      "Description": "मौसम परिवर्तनों की एक क्रमबद्ध, परमाण्विक परास वहन करती है। क्लाइंट रिपोर्ट को केवल तभी लागू करता है जब उसका संग्रहीत कर्सर `from_cursor` के बराबर हो, फिर `through_cursor` को संग्रहीत करता है। रिक्त रिपोर्ट पूरी तरह अद्यतित पुनर्प्राप्ति परिणाम होती है; बिना परिवर्तन वाली आवधिक सक्रियता के लिए PeerAlive का उपयोग किया जाता है।",
+      "DisplayName": "स्प्रिंकलर मौसम वृद्धिशील रिपोर्ट",
+      "List": [
+        {
+          "Description": "मौसम परिवर्तनों की एक क्रमबद्ध, परमाण्विक परास वहन करती है। क्लाइंट रिपोर्ट को केवल तभी लागू करता है जब उसका संग्रहीत कर्सर `from_cursor` के बराबर हो, फिर `through_cursor` को संग्रहीत करता है। रिक्त रिपोर्ट पूरी तरह अद्यतित पुनर्प्राप्ति परिणाम होती है; बिना परिवर्तन वाली आवधिक सक्रियता के लिए PeerAlive का उपयोग किया जाता है।",
+          "Name": "स्प्रिंकलर मौसम वृद्धिशील रिपोर्ट",
+          "Type": 0
+        },
+        {
+          "Description": "इस रिपोर्ट का अपवर्जी निचला कर्सर और वह सटीक कर्सर जो रिपोर्ट लागू करने से पहले क्लाइंट के पास पहले से होना चाहिए।",
+          "Name": "आरंभिक कर्सर",
+          "Type": 1
+        },
+        {
+          "Description": "इस रिपोर्ट के प्रत्येक परिवर्तन को लागू करने के बाद पहुँचा गया समावेशी ऊपरी कर्सर। इसे `from_cursor` वाला वही युग टाइमस्टैम्प बनाए रखना चाहिए। सर्वर कर्सर रीसेट को कभी भी वृद्धिशील रिपोर्ट के रूप में नहीं भेजा जाता; इसके लिए पूर्ण रीसेट आवश्यक है।",
+          "Name": "अंतिम कर्सर",
+          "Type": 2
+        },
+        {
+          "Description": "परमाण्विक रूप से लागू किए जाने वाले क्रमबद्ध बदलाव। प्रत्येक आइटम अनुक्रम को ठीक एक से आगे बढ़ाता है; खाली सूची पूरी तरह अद्यतन पुनर्प्राप्ति दर्शाती है और न तो कर्सर को आगे बढ़ाती है, न ही आवधिक सक्रियता संकेत के रूप में काम करती है।",
+          "Name": "मौसम के बदलाव",
+          "Type": 3
+        },
+        {
+          "Description": "कर्सर क्रम में एक परमाण्विक स्थिति परिवर्तन।",
+          "Name": "मौसम में बदलाव",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Records for one endpoint share a transaction and scan prefix.",
+      "DisplayName": "Saved weather keys",
+      "List": [
+        {
+          "Description": "Records for one endpoint share a transaction and scan prefix.",
+          "Name": "Saved weather keys",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Weather belonging to one service endpoint",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherKey"
+    },
+    {
+      "Description": "एक स्प्रिंकलर साइट का मौसम प्राप्त करने के लिए उपयोग किए जाने वाले Libertas Hub स्थान को संग्रहीत करता है। इसे प्रदाता डेटा से स्वतंत्र रूप से कैश किया जाता है, ताकि Hub के अस्थायी रूप से बंद होने के दौरान मौसम एजेंट डेटा को ताज़ा करना जारी रख सके।",
+      "DisplayName": "स्प्रिंकलर मौसम स्थान",
+      "List": [
+        {
+          "Description": "एक स्प्रिंकलर साइट का मौसम प्राप्त करने के लिए उपयोग किए जाने वाले Libertas Hub स्थान को संग्रहीत करता है। इसे प्रदाता डेटा से स्वतंत्र रूप से कैश किया जाता है, ताकि Hub के अस्थायी रूप से बंद होने के दौरान मौसम एजेंट डेटा को ताज़ा करना जारी रख सके।",
+          "Name": "स्प्रिंकलर मौसम स्थान",
+          "Type": 0
+        },
+        {
+          "Description": "दशमलव डिग्री में WGS84 देशांतर। ग्रीनविच के पश्चिम के स्थानों के लिए ऋणात्मक मान उपयोग किए जाते हैं।",
+          "Name": "देशांतर",
+          "Type": 1
+        },
+        {
+          "Description": "दशमलव डिग्री में WGS84 अक्षांश।",
+          "Name": "अक्षांश",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherLocationV1"
+    },
+    {
+      "Description": "उन सभी मानों के पूर्ण समुच्चय को परिभाषित करता है जिन्हें स्प्रिंकलर मौसम एजेंट Libertas डेटाबेस में लिख सकता है। इतिहास मेटाडेटा, वर्तमान स्थितियाँ, पूर्वानुमान और स्थान स्वतंत्र एकल रिकॉर्ड हैं। इतिहास की प्रत्येक पूर्ण अवधि एक अनुक्रमित रिकॉर्ड है, जिसकी कुंजी उसका आरंभ टाइमस्टैम्प है। सदस्यता कर्सर और रीप्ले जर्नल जानबूझकर अनुपस्थित हैं: उन्हें रीसेट करने से ये रिकॉर्ड मिटने नहीं चाहिए।",
+      "DisplayName": "स्प्रिंकलर मौसम स्थायी डेटा",
+      "List": [
+        {
+          "Description": "उन सभी मानों के पूर्ण समुच्चय को परिभाषित करता है जिन्हें स्प्रिंकलर मौसम एजेंट Libertas डेटाबेस में लिख सकता है। इतिहास मेटाडेटा, वर्तमान स्थितियाँ, पूर्वानुमान और स्थान स्वतंत्र एकल रिकॉर्ड हैं। इतिहास की प्रत्येक पूर्ण अवधि एक अनुक्रमित रिकॉर्ड है, जिसकी कुंजी उसका आरंभ टाइमस्टैम्प है। सदस्यता कर्सर और रीप्ले जर्नल जानबूझकर अनुपस्थित हैं: उन्हें रीसेट करने से ये रिकॉर्ड मिटने नहीं चाहिए।",
+          "Name": "स्प्रिंकलर मौसम स्थायी डेटा",
+          "Type": 0
+        },
+        {
+          "Description": "Libertas Hub द्वारा रिपोर्ट किए गए अंतिम मान्य स्थान को संग्रहीत करता है। कैश किया गया मान Hub के अस्थायी रूप से अनुपलब्ध रहने के दौरान प्रदाता डेटा को ताज़ा करना जारी रखने देता है।",
+          "Name": "स्प्रिंकलर साइट का स्थान",
+          "Type": 1
+        },
+        {
+          "Description": "प्रदाता अनुरोधों के लिए उपयोग किए जाने वाले WGS84 निर्देशांक।",
+          "Name": "स्थान",
+          "Type": 2
+        },
+        {
+          "Description": "गतिशील रूप से पुनर्निर्मित अनुक्रमित इतिहास की नवीनता संग्रहीत करता है।",
+          "Name": "इतिहास मेटाडेटा",
+          "Type": 3
+        },
+        {
+          "Description": "स्वीकृत अनुक्रमित समुच्चय के पुनर्प्राप्ति और नवीनता टाइमस्टैम्प।",
+          "Name": "इतिहास मेटाडेटा",
+          "Type": 4
+        },
+        {
+          "Description": "अनुक्रमित डेटा में पूर्ण मौसम की एक समाप्त अवधि संग्रहीत करता है। यह हटाई गई V1 अवधि के यूनियन स्थान पर स्थित है; V2 इतिहास संसाधन का नाम उन असंगत अनुक्रमित रिकॉर्डों को अलग रखता है।",
+          "Name": "इतिहास अवधि V2",
+          "Type": 5
+        },
+        {
+          "Description": "तापमान, आर्द्रता, वर्षण, संदर्भ वाष्पोत्सर्जन, हवा और हवा के झोंके।",
+          "Name": "इतिहास अवधि",
+          "Type": 6
+        },
+        {
+          "Description": "अंतिम सफलतापूर्वक पुनर्प्राप्त और सत्यापित वर्तमान-स्थिति अनुभाग को संग्रहीत करता है। ताज़ा करने का असफल प्रयास मौजूदा डेटाबेस रिकॉर्ड को अपरिवर्तित छोड़ देता है।",
+          "Name": "वर्तमान स्थितियाँ",
+          "Type": 7
+        },
+        {
+          "Description": "तात्कालिक वर्षा, पाला, आर्द्रता, हवा और जल-संतुलन इनपुट, जिनमें उनके पुनर्प्राप्ति और नवीनता टाइमस्टैम्प शामिल हैं।",
+          "Name": "वर्तमान स्थितियाँ",
+          "Type": 8
+        },
+        {
+          "Description": "अंतिम सफलतापूर्वक पुनर्प्राप्त और सत्यापित पूर्वानुमान अनुभाग को संग्रहीत करता है। ताज़ा करने का असफल प्रयास मौजूदा डेटाबेस रिकॉर्ड को अपरिवर्तित छोड़ देता है।",
+          "Name": "पूर्वानुमान",
+          "Type": 9
+        },
+        {
+          "Description": "भावी वर्षण, संदर्भ वाष्पोत्सर्जन, तापमान, आर्द्रता और हवा के इनपुट, जिनमें उनके पुनर्प्राप्ति और नवीनता टाइमस्टैम्प शामिल हैं।",
+          "Name": "पूर्वानुमान",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherPersistentData"
+    },
+    {
+      "Description": "स्प्रिंकलर मौसम का अनुरोध करने या उसकी सदस्यता लेने के लिए टाइपयुक्त Libertas एंडपॉइंट लेन-देन को परिभाषित करता है। प्रतिक्रियाएँ स्वतंत्र रूप से उपलब्ध इतिहास, वर्तमान और पूर्वानुमान अनुभाग उपलब्ध कराती हैं, ताकि सेवा बाधित होने पर उपयोगी कैश डेटा छिप न जाए। Libertas एंडपॉइंट स्थिति अनुबंध विकृत Avro और गलत संदेश भूमिका में उपयोग किए गए मानों को अस्वीकार करता है; वे परिवहन त्रुटियाँ पुनर्प्राप्ति विकल्प नहीं हैं।",
+      "DisplayName": "स्प्रिंकलर मौसम प्रोटोकॉल",
+      "List": [
+        {
+          "Description": "स्प्रिंकलर मौसम का अनुरोध करने या उसकी सदस्यता लेने के लिए टाइपयुक्त Libertas एंडपॉइंट लेन-देन को परिभाषित करता है। प्रतिक्रियाएँ स्वतंत्र रूप से उपलब्ध इतिहास, वर्तमान और पूर्वानुमान अनुभाग उपलब्ध कराती हैं, ताकि सेवा बाधित होने पर उपयोगी कैश डेटा छिप न जाए। Libertas एंडपॉइंट स्थिति अनुबंध विकृत Avro और गलत संदेश भूमिका में उपयोग किए गए मानों को अस्वीकार करता है; वे परिवहन त्रुटियाँ पुनर्प्राप्ति विकल्प नहीं हैं।",
+          "Name": "स्प्रिंकलर मौसम प्रोटोकॉल",
+          "Type": 0
+        },
+        {
+          "Description": "एकबारगी वृद्धिशील पठन करता है या वृद्धिशील सदस्यता आरंभ अथवा फिर से शुरू करता है। Libertas एंडपॉइंट संचालन व्यवहार चुनता है; इसे इस संदेश में एन्कोड नहीं किया गया है। संभव होने पर सर्वर `after_cursor` के बाद के सुरक्षित रखे गए बदलावों को फिर से चलाता है, अन्यथा सीमा-निर्धारित कैश स्नैपशॉट लौटाता है।",
+          "Name": "स्प्रिंकलर मौसम प्राप्त करें",
+          "Type": 1
+        },
+        {
+          "Description": "क्लाइंट द्वारा पूर्णतः और परमाण्विक रूप से लागू किया गया अंतिम कर्सर। `None` प्रारंभिक सीमा-निर्धारित स्नैपशॉट का अनुरोध करता है। सर्वर दोनों फ़ील्ड की तुलना करता है; निम्नतर अनुक्रम केवल तभी रीसेट दर्शाता है जब प्रतिक्रिया कर्सर का युग टाइमस्टैम्प भी अधिक नया हो।",
+          "Name": "पुनरारंभ कर्सर",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "रीप्ले असंभव होने पर शामिल किए जाने वाले ऐतिहासिक अवधियों के आरंभ समयों की अर्ध-खुली सीमा। `None` रीसेट स्नैपशॉट से इतिहास को बाहर रखता है।",
+          "Name": "ऐतिहासिक पुनर्प्राप्ति सीमा",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "क्या रीसेट स्नैपशॉट में कैश की गई वर्तमान स्थितियाँ शामिल होनी चाहिए।",
+          "Name": "वर्तमान स्थितियाँ शामिल करें",
+          "Type": 4
+        },
+        {
+          "Description": "रीप्ले असंभव होने पर शामिल किए जाने वाले पूर्वानुमान अवधियों के आरंभ समयों की अर्ध-खुली सीमा। `None` रीसेट स्नैपशॉट से पूर्वानुमान डेटा को बाहर रखता है।",
+          "Name": "पूर्वानुमान पुनर्प्राप्ति सीमा",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "मौसम अनुरोध के उत्तर में रीप्ले किए गए बदलाव, रीसेट स्नैपशॉट या पुनर्प्राप्ति योग्य त्रुटि देता है। प्रत्येक प्रतिक्रिया अधिकतम प्रतीक्षा अंतराल प्रदान करती है। सदस्यता क्लाइंट सफल रीप्ले या रीसेट के बाद इसका उपयोग करता है; एकबारगी क्लाइंट इसे अनदेखा करता है। त्रुटि के बाद पुनर्प्राप्ति त्रुटि और पुनः प्रयास विलंब को प्राथमिकता मिलती है।",
+          "Name": "स्प्रिंकलर मौसम पुनर्प्राप्ति",
+          "Type": 6
+        },
+        {
+          "Description": "सफल पुनर्प्राप्ति, वृद्धिशील रिपोर्ट या PeerAlive के बाद सदस्यता क्लाइंट द्वारा प्रतीक्षा किए जाने वाले सेकंड की अधिकतम संख्या। सर्वर पहले बदला हुआ डेटा या PeerAlive भेजता है। एकबारगी क्लाइंट इस अनिवार्य, शून्येतर मान को अनदेखा करते हैं।",
+          "Name": "अधिकतम प्रतीक्षा अंतराल",
+          "Type": 7
+        },
+        {
+          "Description": "पुनरारंभ अनुरोध के लिए रीप्ले, रीसेट या त्रुटि परिणाम।",
+          "Name": "पुनर्प्राप्ति",
+          "Type": 8
+        },
+        {
+          "Description": "सफल मौसम अनुरोध के बाद केवल स्थिति बदलावों की रिपोर्ट करता है। कर्सर बेमेल होने या सीमा के सतत न होने पर एक और सदस्यता अनुरोध आवश्यक होता है; क्लाइंट को रिपोर्ट आंशिक रूप से लागू नहीं करनी चाहिए। मान्य रिपोर्ट या PeerAlive पुनर्प्राप्ति प्रतिक्रिया के प्रतीक्षा टाइमर को फिर से शुरू करता है; PeerAlive कभी भी इस डेटा स्कीमा में प्रवेश नहीं करता या कर्सर को नहीं बदलता।",
+          "Name": "स्प्रिंकलर मौसम वृद्धि",
+          "Type": 9
+        },
+        {
+          "Description": "क्रमबद्ध परमाण्विक कर्सर सीमा और उसमें हुए मौसम के बदलाव।",
+          "Name": "वृद्धिशील रिपोर्ट",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherProtocol"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved weather record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved weather record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "HistoryMetadata",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "HistoryPeriod",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "starts_at",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "Current",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Forecast",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWeatherRecordKey"
+    },
+    {
+      "Description": "ऐसे पुनर्प्राप्ति अनुरोध की पहचान करता है जिसे न तो रीप्ले किए गए बदलावों से और न ही सीमा-निर्धारित कैश स्नैपशॉट से पूरा किया जा सकता है।",
+      "DisplayName": "स्प्रिंकलर मौसम पुनर्प्राप्ति त्रुटि",
+      "List": [
+        {
+          "Description": "ऐसे पुनर्प्राप्ति अनुरोध की पहचान करता है जिसे न तो रीप्ले किए गए बदलावों से और न ही सीमा-निर्धारित कैश स्नैपशॉट से पूरा किया जा सकता है।",
+          "Enum": [
+            {
+              "Description": "अनुरोध की गई कम-से-कम एक अर्ध-खुली समय-सीमा खाली या उलटी है।",
+              "Name": "अमान्य समय-सीमा",
+              "Type": 1
+            },
+            {
+              "Description": "दिए गए युग-टाइमस्टैम्प-और-अनुक्रम कर्सर का सर्वर के वर्तमान कर्सर या सुरक्षित रखे गए रीप्ले जर्नल से मिलान नहीं किया जा सकता।",
+              "Name": "कर्सर आगे है",
+              "Type": 2
+            },
+            {
+              "Description": "अनुरोध की गई पुनर्प्राप्ति सीमाएँ सर्वर की सीमित प्रतिक्रिया क्षमता से अधिक हैं।",
+              "Name": "अनुरोध बहुत बड़ा है",
+              "Type": 3
+            },
+            {
+              "Description": "कैश किया गया डेटा या पुनर्प्राप्ति के लिए आवश्यक कोई अन्य संसाधन अस्थायी रूप से अनुपलब्ध है; क्लाइंट दी गई देरी के बाद फिर से प्रयास कर सकता है।",
+              "Name": "अस्थायी रूप से अनुपलब्ध",
+              "Type": 4
+            }
+          ],
+          "Name": "स्प्रिंकलर मौसम पुनर्प्राप्ति त्रुटि",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "रीप्ले किए गए परिवर्तन लौटाता है, सीमा-सीमित स्नैपशॉट के साथ नया कर्सर स्थापित करता है या पुनर्प्राप्ति योग्य अनुरोध त्रुटि की सूचना देता है।",
+      "DisplayName": "स्प्रिंकलर मौसम पुनर्प्राप्ति",
+      "List": [
+        {
+          "Description": "रीप्ले किए गए परिवर्तन लौटाता है, सीमा-सीमित स्नैपशॉट के साथ नया कर्सर स्थापित करता है या पुनर्प्राप्ति योग्य अनुरोध त्रुटि की सूचना देता है।",
+          "Name": "स्प्रिंकलर मौसम पुनर्प्राप्ति",
+          "Type": 0
+        },
+        {
+          "Description": "दिए गए कर्सर के बाद सुरक्षित रखे गए प्रत्येक परिवर्तन को रीप्ले करके अनुरोधित स्ट्रीम जारी रखता है। खाली रिपोर्ट का अर्थ है कि क्लाइंट पहले से ही अद्यतित है।",
+          "Name": "रीप्ले किए गए परिवर्तन",
+          "Type": 1
+        },
+        {
+          "Description": "अनुरोधित कर्सर से आरंभ होने वाली सतत परिवर्तन-सीमा।",
+          "Name": "वृद्धिशील रिपोर्ट",
+          "Type": 2
+        },
+        {
+          "Description": "क्लाइंट के कर्सर या स्थानीय मौसम स्थिति को बदले बिना अनुरोध अस्वीकार करता है।",
+          "Name": "पुनर्प्राप्ति त्रुटि",
+          "Type": 3
+        },
+        {
+          "Description": "पुनर्प्राप्ति पूरी न हो पाने का कारण।",
+          "Name": "त्रुटि",
+          "Type": 4
+        },
+        {
+          "Description": "पुनः प्रयास करने से पहले सुझाई गई देरी, सेकंड में। `None` का अर्थ है कि पुनः प्रयास सफल होने से पहले अनुरोध पैरामीटर बदलने होंगे।",
+          "Name": "पुनः प्रयास में देरी",
+          "Type": 5
+        },
+        {
+          "Description": "नया कर्सर स्थापित करता है और पूर्ण-प्रेक्षण इतिहास स्नैपशॉट को उसकी प्रदाता साइट से संबद्ध करता है।",
+          "Name": "साइट स्नैपशॉट V2 के साथ रीसेट",
+          "Type": 6
+        },
+        {
+          "Description": "किसी स्नैपशॉट द्वारा वृद्धिशील रीप्ले को प्रतिस्थापित करने का कारण।",
+          "Name": "रीसेट का कारण",
+          "Type": 7
+        },
+        {
+          "Description": "लौटाए गए स्नैपशॉट को दर्शाने वाला कर्सर।",
+          "Name": "वर्तमान कर्सर",
+          "Type": 8
+        },
+        {
+          "Description": "लौटाए गए मौसम अनुभाग प्राप्त करने के लिए प्रयुक्त WGS84 स्थान।",
+          "Name": "साइट का स्थान",
+          "Type": 9
+        },
+        {
+          "Description": "अनुरोधित सीमाओं से प्रतिबंधित उपलब्ध V2 कैश किए गए अनुभाग।",
+          "Name": "मौसम स्नैपशॉट",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryV1"
+    },
+    {
+      "Description": "बताता है कि पुनर्प्राप्ति ने अनुरोधित कर्सर के बाद वृद्धिशील परिवर्तनों को रीप्ले करने के बजाय सीमा-सीमित स्नैपशॉट क्यों लौटाया।",
+      "DisplayName": "स्प्रिंकलर मौसम रीसेट का कारण",
+      "List": [
+        {
+          "Description": "बताता है कि पुनर्प्राप्ति ने अनुरोधित कर्सर के बाद वृद्धिशील परिवर्तनों को रीप्ले करने के बजाय सीमा-सीमित स्नैपशॉट क्यों लौटाया।",
+          "Enum": [
+            {
+              "Description": "कोई पूर्व कर्सर नहीं दिया गया था, इसलिए स्नैपशॉट आरंभिक स्थिति स्थापित करता है।",
+              "Name": "आरंभिक सदस्यता",
+              "Type": 1
+            },
+            {
+              "Description": "अनुरोधित अनुक्रम सुरक्षित रखे गए रीप्ले जर्नल से पुराना है।",
+              "Name": "कर्सर की समय-सीमा समाप्त",
+              "Type": 2
+            },
+            {
+              "Description": "सर्वर ने केवल अपना अस्थायी कर्सर और रीप्ले जर्नल खो दिया या जानबूझकर हटा दिया। स्थायी रूप से संग्रहीत मौसम अनुभाग उपयोग योग्य बने रहते हैं और अनुपलब्ध ऐतिहासिक डेटा को Open-Meteo से फिर से प्राप्त किया जा सकता है।",
+              "Name": "सर्वर कर्सर रीसेट",
+              "Type": 3
+            }
+          ],
+          "Name": "स्प्रिंकलर मौसम रीसेट का कारण",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherResetReasonV1"
+    },
+    {
+      "Description": "स्वतंत्र रूप से कैश किए गए एक स्प्रिंकलर-मौसम अनुभाग की पहचान करता है।",
+      "DisplayName": "स्प्रिंकलर मौसम अनुभाग",
+      "List": [
+        {
+          "Description": "स्वतंत्र रूप से कैश किए गए एक स्प्रिंकलर-मौसम अनुभाग की पहचान करता है।",
+          "Enum": [
+            {
+              "Description": "ऐतिहासिक जल-संतुलन अनुभाग चुनता है।",
+              "Name": "हाल का इतिहास",
+              "Type": 1
+            },
+            {
+              "Description": "तत्काल सिंचाई-सुरक्षा अनुभाग चुनता है।",
+              "Name": "वर्तमान परिस्थितियाँ",
+              "Type": 2
+            },
+            {
+              "Description": "भावी सिंचाई-नियोजन अनुभाग चुनता है।",
+              "Name": "पूर्वानुमान",
+              "Type": 3
+            }
+          ],
+          "Name": "स्प्रिंकलर मौसम अनुभाग",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherSectionV1"
+    },
+    {
+      "Description": "इसमें स्वतंत्र रूप से उपलब्ध पूर्ण-प्रेक्षण इतिहास, वर्तमान परिस्थितियाँ और पूर्वानुमान अनुभाग होते हैं। अनुपलब्ध अनुभागों में कोई उपयोग योग्य कैश किया गया मान नहीं होता; पुराने अनुभाग अपने मूल वैधता टाइमस्टैम्प बनाए रखते हैं।",
+      "DisplayName": "स्प्रिंकलर मौसम स्नैपशॉट V2",
+      "List": [
+        {
+          "Description": "इसमें स्वतंत्र रूप से उपलब्ध पूर्ण-प्रेक्षण इतिहास, वर्तमान परिस्थितियाँ और पूर्वानुमान अनुभाग होते हैं। अनुपलब्ध अनुभागों में कोई उपयोग योग्य कैश किया गया मान नहीं होता; पुराने अनुभाग अपने मूल वैधता टाइमस्टैम्प बनाए रखते हैं।",
+          "Name": "स्प्रिंकलर मौसम स्नैपशॉट V2",
+          "Type": 0
+        },
+        {
+          "Description": "अनुरोधित V2 ऐतिहासिक अवधियाँ, जब उपयोग योग्य कैश किया गया इतिहास मौजूद हो।",
+          "Name": "हाल का इतिहास",
+          "Type": 1
+        },
+        {
+          "Description": "अनुरोध किए जाने और उपलब्ध होने पर अंतिम स्वीकृत वर्तमान परिस्थितियाँ।",
+          "Name": "वर्तमान परिस्थितियाँ",
+          "Type": 2
+        },
+        {
+          "Description": "अनुरोधित पूर्वानुमान अवधियाँ, जब उपयोग योग्य कैश किया गया डेटा मौजूद हो।",
+          "Name": "पूर्वानुमान",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherSnapshotV2"
+    },
+    {
+      "Description": "पुनर्प्राप्ति के लिए ऐतिहासिक या पूर्वानुमान अवधियों का अर्ध-खुला अंतराल चुनता है। कोई अवधि तब चुनी जाती है, जब उसका आरंभ समय कम-से-कम `starts_at` हो और `ends_before` से पहले हो।",
+      "DisplayName": "स्प्रिंकलर मौसम समय-सीमा",
+      "List": [
+        {
+          "Description": "पुनर्प्राप्ति के लिए ऐतिहासिक या पूर्वानुमान अवधियों का एक अर्ध-खुला अंतराल चुनता है। किसी अवधि का चयन तब किया जाता है, जब उसका प्रारंभ समय कम-से-कम `starts_at` हो और `ends_before` से पहले हो।",
+          "Name": "स्प्रिंकलर के मौसम की समय-सीमा",
+          "Type": 0
+        },
+        {
+          "Description": "चयनित अवधियों के प्रारंभ समयों की समावेशी निचली सीमा।",
+          "Name": "प्रारंभ समय",
+          "Type": 1
+        },
+        {
+          "Description": "चयनित अवधियों के प्रारंभ समयों की अपवर्जी ऊपरी सीमा। यह मान `starts_at` के बाद का होना चाहिए।",
+          "Name": "समाप्ति समय",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherTimeRangeV1"
+    }
+  ]
+}

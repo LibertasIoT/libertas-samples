@@ -1,0 +1,2555 @@
+{
+  "Description": "Riega cada parte del jardín solo cuando necesita agua. Elige qué crece en cada zona, cómo se riega y los periodos en los que debe pausarse el riego. Riego inteligente utiliza la lluvia reciente, el tiempo actual y la previsión para elegir una hora y una cantidad de riego seguras. También tiene en cuenta el riego manual, sigue funcionando durante interrupciones breves de Internet y te recuerda que prepares el sistema para las heladas.",
+  "DisplayName": "Riego inteligente",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Smart sprinkler",
+      "Description": "Riega cada césped, jardín o zona plantada según sus plantas, el método de riego, la lluvia reciente, la previsión meteorológica y los ajustes seleccionados por el usuario. El usuario elige el proveedor meteorológico, dónde estarán disponibles los controles e informes de las zonas, los destinatarios de los recordatorios y la válvula, el tipo de planta y el método de riego de cada zona. El usuario puede modificar manualmente en cualquier momento el porcentaje de riego y los periodos sin riego de cada zona, o preparar todo el sistema para el invierno y volver a activarlo. El sistema programa y acciona automáticamente cada válvula teniendo en cuenta la lluvia, la precipitación prevista, el viento, las temperaturas de congelación, las necesidades de las plantas y los periodos sin riego, y utiliza estimaciones guardadas durante interrupciones breves del servicio meteorológico. El sistema muestra el estado actual de cada zona, la estimación de agua, el estado de la válvula y el próximo plan de riego. Proporciona gráficos de balance hídrico, consumo diario de agua y datos meteorológicos registrados y previstos, y envía a las personas seleccionadas recordatorios antes de que lleguen las heladas. Registro de cambios: se han actualizado las variantes del protocolo.",
+      "DisplayName": "Riego inteligente",
+      "List": [
+        {
+          "Description": "Elige el servicio meteorológico local utilizado para la lluvia, la temperatura, el viento y las previsiones. Riego inteligente puede utilizar estimaciones guardadas durante interrupciones breves.",
+          "Name": "Servicio meteorológico",
+          "Type": 0
+        },
+        {
+          "Description": "Elige dónde estarán disponibles los gráficos de balance hídrico, consumo de agua y meteorología.",
+          "Name": "Informes de riego",
+          "Type": 1
+        },
+        {
+          "Description": "Elige las personas que deben recibir recordatorios para preparar el sistema de riego ante las heladas.",
+          "Name": "Destinatarios de recordatorios",
+          "Type": 2
+        },
+        {
+          "Description": "Una persona que debe recibir recordatorios del sistema de riego.",
+          "Name": "Persona a la que avisar",
+          "Type": 3
+        },
+        {
+          "Description": "Añade cada césped, jardín o zona plantada que deba regarse de forma independiente.",
+          "Name": "Zonas regadas",
+          "Type": 4
+        },
+        {
+          "Description": "Una zona con su propia válvula, plantas y método de riego.",
+          "Name": "Zona regada",
+          "Type": 5
+        }
+      ],
+      "Name": "libertas_sprinkler"
+    }
+  ],
+  "Locale": "es-ES",
+  "StringResources": {
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "Balance hídrico diario guardado para {0}.",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "Utiliza como máximo 64 periodos sin riego, cada uno con un inicio válido y una duración superior a cero.",
+    "SPRINKLER_INVALID_WATERING_PERCENT": "La cantidad de agua debe estar entre el 20 % y el 200 %, en incrementos del 10 %.",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "Estimaciones meteorológicas guardadas utilizadas durante interrupciones del servicio en {0}.",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "La primera fecha no puede ser posterior a la última.",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "Ubicación guardada utilizada por los informes meteorológicos del riego en {0}.",
+    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "Historial meteorológico detallado guardado para los informes de riego en {0}.",
+    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "Observaciones meteorológicas actuales guardadas para los informes de riego en {0}.",
+    "SPRINKLER_SITE_LOCATION_V1": "Ubicación guardada utilizada para la información meteorológica del riego en {0}.",
+    "SPRINKLER_UI_CHANGE_DATES": "Change dates",
+    "SPRINKLER_UI_SYSTEM_ACTIVE": "System active",
+    "SPRINKLER_UI_VALVE": "Valve",
+    "SPRINKLER_UI_WATERING_PLAN": "Watering plan",
+    "SPRINKLER_UI_WATER_BALANCE": "Water balance",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "Historial de riego guardado para {0}.",
+    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "Actividad de riego actual para {0}.",
+    "SPRINKLER_WATERING_MODE_V1": "Modo de riego guardado para {0}.",
+    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
+    "SPRINKLER_WATER_EVENTS_V1": "Lluvia y riego recientes guardados para {0}.",
+    "SPRINKLER_WATER_USAGE_RAIN_LANE": "Lluvia",
+    "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
+    "SPRINKLER_WINTERIZATION_REMINDER_V1": "Historial de recordatorios de preparación para el invierno guardado para {0}.",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "Se acerca la temporada fría en esta ubicación. Prepara el sistema de riego para el invierno y, después, desactiva Activo.",
+    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "Las heladas ({0}) pueden dañar el sistema de riego. Prepáralo para el invierno y, después, desactiva Activo.",
+    "SPRINKLER_ZONE_MEMORY_V1": "Balance hídrico y ajustes guardados para {0}.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Utiliza la ubicación de este Hub para obtener el tiempo local para el riego automático."
+  },
+  "Types": [
+    {
+      "Description": "Un punto de control de día UTC y un resumen de contabilización de agua conservados indefinidamente. Permite consultar un intervalo antiguo del balance hídrico sin reproducir todos los eventos desde la instalación.",
+      "DisplayName": "Informe diario de riego",
+      "List": [
+        {
+          "Description": "Un punto de control de día UTC y un resumen de contabilización de agua conservados indefinidamente. Permite consultar un intervalo antiguo del balance hídrico sin reproducir todos los eventos desde la instalación.",
+          "Name": "Informe diario de riego",
+          "Type": 0
+        },
+        {
+          "Description": "Límite inclusivo del día natural UTC utilizado como clave del registro indexado.",
+          "Name": "Inicio del día",
+          "Type": 1
+        },
+        {
+          "Description": "Límite exclusivo del día natural UTC.",
+          "Name": "Fin del día",
+          "Type": 2
+        },
+        {
+          "Description": "Primer instante representado por este punto de control. Puede ser posterior al límite del día UTC en el día de instalación o de cambio de emplazamiento.",
+          "Name": "Inicio de cobertura",
+          "Type": 3
+        },
+        {
+          "Description": "Último instante exclusivo representado por este punto de control. Puede ser anterior al límite del día para el día parcial actual.",
+          "Name": "Fin de cobertura",
+          "Type": 4
+        },
+        {
+          "Description": "Capacidad modelada del perfil de la planta en milímetros.",
+          "Name": "Capacidad de la zona radicular",
+          "Type": 5
+        },
+        {
+          "Description": "Déficit calculado de la zona radicular al comienzo del día representado.",
+          "Name": "Déficit inicial",
+          "Type": 6
+        },
+        {
+          "Description": "Déficit calculado de la zona radicular al final representado o en el último momento conocido.",
+          "Name": "Déficit final",
+          "Type": 7
+        },
+        {
+          "Description": "Precipitación registrada por el proveedor y asignada a este día UTC.",
+          "Name": "Lluvia",
+          "Type": 8
+        },
+        {
+          "Description": "ET de referencia registrada por el proveedor y asignada a este día UTC antes de aplicar el coeficiente de cultivo específico de la planta.",
+          "Name": "Evapotranspiración de referencia",
+          "Type": 9
+        },
+        {
+          "Description": "ET de referencia utilizada para completar intervalos no cubiertos por el historial del proveedor.",
+          "Name": "Evapotranspiración de referencia modelada",
+          "Type": 10
+        },
+        {
+          "Description": "Origen de la cantidad de ET modelada; se omite cuando el historial del proveedor cubre todo el intervalo representado.",
+          "Name": "Origen de la demanda modelada",
+          "Type": 11
+        },
+        {
+          "Description": "Número de segundos del intervalo representado cubiertos por periodos meteorológicos aceptados del proveedor.",
+          "Name": "Cobertura meteorológica del proveedor",
+          "Type": 12
+        },
+        {
+          "Description": "Profundidad de agua estimada a partir de intervalos observados con la válvula abierta y asignada a este día UTC.",
+          "Name": "Riego",
+          "Type": 13
+        },
+        {
+          "Description": "Indica si el punto de control representa el día UTC completo en lugar del día parcial actual.",
+          "Name": "Día completo",
+          "Type": 14
+        },
+        {
+          "Description": "Hora UTC en la que se reconstruyó por última vez este punto de control.",
+          "Name": "Calculado en",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerDailyReportV1"
+    },
+    {
+      "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+      "DisplayName": "Daily water use",
+      "List": [
+        {
+          "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+          "Name": "Daily water use",
+          "Type": 0
+        },
+        {
+          "Description": "Recorded and planned water amounts.",
+          "Name": "Rain and watering",
+          "Type": 1
+        },
+        {
+          "Description": "Areas with no rain or watering during the selected dates.",
+          "Name": "Areas with no recorded water",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerDailyWaterUsageChartV1"
+    },
+    {
+      "Description": "Define todos los valores escritos por la aplicación de riego. Los datos de las zonas se almacenan bajo cada válvula Matter; los datos compartidos del sistema utilizan el endpoint meteorológico.",
+      "DisplayName": "Datos persistentes del sistema de riego",
+      "List": [
+        {
+          "Description": "Define todos los valores escritos por la aplicación de riego. Los datos de las zonas se almacenan bajo cada válvula Matter; los datos compartidos del sistema utilizan el endpoint meteorológico.",
+          "Name": "Datos persistentes del sistema de riego",
+          "Type": 0
+        },
+        {
+          "Description": "Almacena el ajustador de ejecución, las restricciones y la línea base consolidada de una zona.",
+          "Name": "Memoria de zona",
+          "Type": 1
+        },
+        {
+          "Description": "Estado completo y seguro frente a reinicios de la válvula configurada.",
+          "Name": "Memoria de zona",
+          "Type": 2
+        },
+        {
+          "Description": "Almacena un evento meteorológico o de riego indexado de forma independiente.",
+          "Name": "Evento de agua",
+          "Type": 3
+        },
+        {
+          "Description": "Un periodo meteorológico completado o un intervalo contabilizado con la válvula abierta.",
+          "Name": "Evento de agua",
+          "Type": 4
+        },
+        {
+          "Description": "Almacena la última ubicación válida del Hub para realizar estimaciones estacionales sin conexión.",
+          "Name": "Ubicación del emplazamiento",
+          "Type": 5
+        },
+        {
+          "Description": "Las coordenadas WGS84 almacenadas en caché del emplazamiento del sistema de riego.",
+          "Name": "Ubicación del emplazamiento",
+          "Type": 6
+        },
+        {
+          "Description": "Almacena el modo compartido Activo o Preparado para el invierno del sistema de riego.",
+          "Name": "Modo de riego",
+          "Type": 7
+        },
+        {
+          "Description": "Modo de funcionamiento compartido por todas las zonas y seguro frente a reinicios.",
+          "Name": "Modo de riego",
+          "Type": 8
+        },
+        {
+          "Description": "Almacena la hora y el motivo del último recordatorio de todo el sistema.",
+          "Name": "Recordatorio de preparación para el invierno",
+          "Type": 9
+        },
+        {
+          "Description": "Estado de limitación de frecuencia de las notificaciones de preparación para el invierno, seguro frente a reinicios.",
+          "Name": "Memoria de recordatorios",
+          "Type": 10
+        },
+        {
+          "Description": "Archiva indefinidamente un intervalo exacto de ET de respaldo.",
+          "Name": "Intervalo meteorológico modelado",
+          "Type": 11
+        },
+        {
+          "Description": "Intervalo exacto con procedencia inmutable del origen y la tasa.",
+          "Name": "Intervalo modelado",
+          "Type": 12
+        },
+        {
+          "Description": "Archiva indefinidamente una actividad de riego programada, en curso, completada, omitida, fallida, sustituida, manual o heredada.",
+          "Name": "Actividad de riego",
+          "Type": 13
+        },
+        {
+          "Description": "Datos duraderos completos del ciclo de vida de lo programado frente a lo que ocurrió realmente.",
+          "Name": "Actividad",
+          "Type": 14
+        },
+        {
+          "Description": "Archiva indefinidamente un punto de control de contabilización y balance hídrico de un día UTC para que los intervalos antiguos sigan siendo consultables.",
+          "Name": "Informe diario",
+          "Type": 15
+        },
+        {
+          "Description": "Lluvia, ET, riego estimado y déficit modelado inicial y final.",
+          "Name": "Informe diario",
+          "Type": 16
+        },
+        {
+          "Description": "Its generation is bound only by explicit provider site messages.",
+          "Name": "Report weather archive state V2",
+          "Type": 17
+        },
+        {
+          "Description": "Active indefinitely retained provider-site generation.",
+          "Name": "Archive state",
+          "Type": 18
+        },
+        {
+          "Description": "Archiva indefinidamente una muestra aceptada de las condiciones actuales. Conserva evidencia de decisión de 15 minutos sin contabilizar dos veces la lluvia o la ET ya representadas por el historial horario completado.",
+          "Name": "Observación meteorológica de informe",
+          "Type": 19
+        },
+        {
+          "Description": "Temperatura, humedad, viento, ráfagas y aportes inmediatos de agua en la hora representada por el proveedor.",
+          "Name": "Observación meteorológica",
+          "Type": 20
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 21
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 22
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 23
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 24
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 25
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 26
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 27
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 28
+        }
+      ],
+      "Name": "SprinklerData"
+    },
+    {
+      "Description": "Pérdida de agua registrada y prevista por evaporación y uso de las plantas.",
+      "DisplayName": "Pérdida de agua estimada",
+      "List": [
+        {
+          "Description": "Pérdida de agua registrada y prevista por evaporación y uso de las plantas.",
+          "Name": "Pérdida de agua estimada",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerEtChartV1"
+    },
+    {
+      "Description": "Una cantidad registrada o prevista de agua perdida por evaporación y por las plantas.",
+      "DisplayName": "Pérdida diaria de agua",
+      "List": [
+        {
+          "Description": "Una cantidad registrada o prevista de agua perdida por evaporación y por las plantas.",
+          "Name": "Pérdida diaria de agua",
+          "Type": 0
+        },
+        {
+          "Description": "Cuándo comienza este periodo meteorológico.",
+          "Name": "Comienza en",
+          "Type": 1
+        },
+        {
+          "Description": "Cuándo termina este periodo meteorológico.",
+          "Name": "Termina en",
+          "Type": 2
+        },
+        {
+          "Description": "Agua perdida por evaporación y uso de las plantas.",
+          "Name": "Pérdida de agua estimada",
+          "Type": 3
+        },
+        {
+          "Description": "Indica si este valor se registró o se previó.",
+          "Name": "Origen",
+          "Type": 4
+        },
+        {
+          "Description": "Identidad generada por el servidor para este intervalo y origen.",
+          "Name": "Clave estable",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerEtRowV1"
+    },
+    {
+      "Description": "Elige el tipo de aspersor o sistema de goteo instalado en esta zona.",
+      "DisplayName": "Método de riego",
+      "List": [
+        {
+          "Description": "Elige el tipo de aspersor o sistema de goteo instalado en esta zona.",
+          "Enum": [
+            {
+              "Description": "Aplicación lenta y localizada mediante emisores de goteo en superficie.",
+              "Name": "Goteo superficial",
+              "Type": 1
+            },
+            {
+              "Description": "Aplicación concentrada alrededor de árboles, arbustos o alcorques de plantación.",
+              "Name": "Borboteadores",
+              "Type": 2
+            },
+            {
+              "Description": "Aplicación amplia y relativamente rápida mediante cabezales de pulverización emergentes fijos.",
+              "Name": "Aspersores emergentes",
+              "Type": 3
+            },
+            {
+              "Description": "Aplicación lenta en superficies amplias mediante rotores de alta eficiencia o de múltiples chorros.",
+              "Name": "Rotores de bajo caudal",
+              "Type": 4
+            },
+            {
+              "Description": "Aplicación más rápida en superficies amplias mediante cabezales de rotor convencionales.",
+              "Name": "Rotores de alto caudal",
+              "Type": 5
+            }
+          ],
+          "Name": "Método de riego",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerHeadTypeV1"
+    },
+    {
+      "Description": "Humedad observada y prevista en su propia escala de cero a cien por cien.",
+      "DisplayName": "Humedad relativa",
+      "List": [
+        {
+          "Description": "Humedad observada y prevista en su propia escala de cero a cien por cien.",
+          "Name": "Humedad relativa",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerHumidityChartV1"
+    },
+    {
+      "Description": "Una muestra de humedad relativa observada o prevista.",
+      "DisplayName": "Fila de humedad",
+      "List": [
+        {
+          "Description": "Una muestra de humedad relativa observada o prevista.",
+          "Name": "Fila de humedad",
+          "Type": 0
+        },
+        {
+          "Description": "Inicio del periodo del proveedor.",
+          "Name": "Hora",
+          "Type": 1
+        },
+        {
+          "Description": "Porcentaje de humedad relativa.",
+          "Name": "Humedad relativa",
+          "Type": 2
+        },
+        {
+          "Description": "Identifica esta línea como humedad relativa en el panel combinado.",
+          "Name": "Medición",
+          "Type": 3
+        },
+        {
+          "Description": "Observado o previsto.",
+          "Name": "Origen",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerHumidityRowV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved sprinkler identities",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved sprinkler identities",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "System settings and weather archives",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "One valve's settings, accounting and reports",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerKey"
+    },
+    {
+      "Description": "Un intervalo exacto no cubierto por el proveedor cuyo origen y tasa de ET de referencia de respaldo quedan fijados cuando se registra el intervalo por primera vez. Un periodo posterior aceptado del proveedor puede recortar o sustituir este intervalo; los cambios posteriores en las estimaciones de respaldo no reescriben su procedencia.",
+      "DisplayName": "Intervalo meteorológico modelado",
+      "List": [
+        {
+          "Description": "Un intervalo exacto no cubierto por el proveedor cuyo origen y tasa de ET de referencia de respaldo quedan fijados cuando se registra el intervalo por primera vez. Un periodo posterior aceptado del proveedor puede recortar o sustituir este intervalo; los cambios posteriores en las estimaciones de respaldo no reescriben su procedencia.",
+          "Name": "Intervalo meteorológico modelado",
+          "Type": 0
+        },
+        {
+          "Description": "Inicio inclusivo del intervalo no cubierto por el proveedor.",
+          "Name": "Hora de inicio",
+          "Type": 1
+        },
+        {
+          "Description": "Fin exclusivo del intervalo no cubierto por el proveedor.",
+          "Name": "Hora de fin",
+          "Type": 2
+        },
+        {
+          "Description": "Tasa fijada de ET de referencia de respaldo en milímetros por día UTC.",
+          "Name": "Tasa de evapotranspiración de referencia",
+          "Type": 3
+        },
+        {
+          "Description": "Procedencia fijada de tiempo reciente, ubicación/estación o estimación conservadora.",
+          "Name": "Origen de la demanda",
+          "Type": 4
+        },
+        {
+          "Description": "Hora UTC en la que este intervalo adquirió por primera vez su procedencia fijada.",
+          "Name": "Registrado en",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerModeledWeatherGapV1"
+    },
+    {
+      "Description": "Elige lo que crece en esta zona para que el riego pueda adaptarse a sus necesidades.",
+      "DisplayName": "Tipo de planta",
+      "List": [
+        {
+          "Description": "Elige lo que crece en esta zona para que el riego pueda adaptarse a sus necesidades.",
+          "Enum": [
+            {
+              "Description": "Césped de plantación densa, raíces poco profundas y demanda regular de agua.",
+              "Name": "Césped",
+              "Type": 1
+            },
+            {
+              "Description": "Plantas ornamentales con flor, raíces moderadas y demanda de agua media.",
+              "Name": "Flores",
+              "Type": 2
+            },
+            {
+              "Description": "Cultivos alimentarios de temporada con raíces moderadas y una demanda relativamente alta.",
+              "Name": "Hortalizas",
+              "Type": 3
+            },
+            {
+              "Description": "Árboles frutales establecidos, con raíces más profundas y demanda moderada.",
+              "Name": "Árboles frutales",
+              "Type": 4
+            },
+            {
+              "Description": "Árboles cítricos con raíces profundas y una demanda de moderada a alta.",
+              "Name": "Cítricos",
+              "Type": 5
+            },
+            {
+              "Description": "Plantas leñosas de jardín establecidas con raíces profundas.",
+              "Name": "Árboles y arbustos",
+              "Type": 6
+            },
+            {
+              "Description": "Plantación adaptada a la sequía con una baja demanda de agua determinada por el tiempo.",
+              "Name": "Xerojardinería",
+              "Type": 7
+            }
+          ],
+          "Name": "Tipo de planta",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerPlantTypeV1"
+    },
+    {
+      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+      "DisplayName": "Available report range",
+      "List": [
+        {
+          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+          "Name": "Available report range",
+          "Type": 0
+        },
+        {
+          "Description": "Earliest currently selectable date after applying this chart's maximum range length.",
+          "Name": "Earliest date",
+          "Type": 1
+        },
+        {
+          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts.",
+          "Name": "Latest date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportAvailableRangeV1"
+    },
+    {
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "DisplayName": "Effective report range",
+      "List": [
+        {
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+          "Name": "Effective report range",
+          "Type": 0
+        },
+        {
+          "Description": "First calendar date included in the generated report.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Last calendar date included in the generated report.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportEffectiveRangeV1"
+    },
+    {
+      "Description": "Explica por qué una zona configurada no tiene nada que mostrar para las fechas seleccionadas.",
+      "DisplayName": "Sin datos de informe",
+      "List": [
+        {
+          "Description": "Explica por qué una zona configurada no tiene nada que mostrar para las fechas seleccionadas.",
+          "Enum": [
+            {
+              "Description": "No se registró lluvia ni riego para esta zona durante las fechas seleccionadas.",
+              "Name": "Sin aporte de agua registrado",
+              "Type": 1
+            }
+          ],
+          "Name": "Sin datos de informe",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerReportEmptyStateV1"
+    },
+    {
+      "Description": "Consulta el balance hídrico, el consumo de agua o la meteorología de todas las zonas. Deja las fechas en blanco para ver el periodo reciente. Las fechas fuera del historial disponible se ajustan automáticamente a la fecha disponible más antigua o más reciente.",
+      "DisplayName": "Informes de riego",
+      "List": [
+        {
+          "Description": "Consulta el balance hídrico, el consumo de agua o la meteorología de todas las zonas. Deja las fechas en blanco para ver el periodo reciente. Las fechas fuera del historial disponible se ajustan automáticamente a la fecha disponible más antigua o más reciente.",
+          "Name": "Informes de riego",
+          "Type": 0
+        },
+        {
+          "Description": "Muestra el agua estimada disponible para las plantas y los eventos de riego de todas las zonas. Un periodo seleccionado puede abarcar hasta 365 días; una selección más larga conserva sus últimos 365 días.",
+          "Name": "Ver balance hídrico",
+          "Type": 1
+        },
+        {
+          "Description": "Fechas inclusivas utilizadas realmente para generar esta respuesta.",
+          "Name": "Intervalo efectivo",
+          "Type": 2
+        },
+        {
+          "Description": "Water-balance chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 3
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 4
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 5
+        },
+        {
+          "Description": "Límites actuales del selector de fechas y valores predeterminados para la siguiente solicitud.",
+          "Name": "Intervalo disponible",
+          "Type": 6
+        },
+        {
+          "Description": "Gráfico de consumo de agua para el intervalo efectivo del informe.",
+          "Name": "Gráfico",
+          "Type": 7
+        },
+        {
+          "Description": "Water-use chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 8
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 9
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 10
+        },
+        {
+          "Description": "Fechas inclusivas utilizadas realmente para generar esta respuesta.",
+          "Name": "Intervalo efectivo",
+          "Type": 11
+        },
+        {
+          "Description": "Temperatura, humedad, viento y pérdida de agua estimada registrados y previstos.",
+          "Name": "Meteorología",
+          "Type": 12
+        },
+        {
+          "Description": "Weather chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 13
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 14
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerReportProtocol"
+    },
+    {
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "DisplayName": "Report date range",
+      "List": [
+        {
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+          "Name": "Report date range",
+          "Type": 0
+        },
+        {
+          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportRequestRangeV1"
+    },
+    {
+      "Description": "Selecciona la generación activa del emplazamiento físico mientras se conservan las generaciones anteriores sin mezclarlas con el informe de riego actual. Una sustitución explícita del emplazamiento del flujo meteorológico o un restablecimiento vinculado al emplazamiento asocia una generación; el borrado de secciones nunca actúa como confirmación de un límite de emplazamiento.",
+      "DisplayName": "Estado del archivo meteorológico de informes",
+      "List": [
+        {
+          "Description": "Selecciona la generación activa del emplazamiento físico mientras se conservan las generaciones anteriores sin mezclarlas con el informe de riego actual. Una sustitución explícita del emplazamiento del flujo meteorológico o un restablecimiento vinculado al emplazamiento asocia una generación; el borrado de secciones nunca actúa como confirmación de un límite de emplazamiento.",
+          "Name": "Estado del archivo meteorológico de informes",
+          "Type": 0
+        },
+        {
+          "Description": "Aumenta monótonamente para cada transición aceptada entre emplazamientos distintos del proveedor.",
+          "Name": "Generación",
+          "Type": 1
+        },
+        {
+          "Description": "Ubicación del proveedor vinculada explícitamente a esta generación, cuando se conoce.",
+          "Name": "Ubicación del emplazamiento",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportWeatherArchiveStateV2"
+    },
+    {
+      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+      "DisplayName": "Restart accounting checkpoint",
+      "List": [
+        {
+          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+          "Name": "Restart accounting checkpoint",
+          "Type": 0
+        },
+        {
+          "Description": "Authoritative lifecycle snapshot at the checkpoint.",
+          "Name": "Activity",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusive end of the already accounted valve-open interval.",
+          "Name": "Accounted through",
+          "Type": 2
+        },
+        {
+          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted.",
+          "Name": "Ledger segment",
+          "Type": 3
+        },
+        {
+          "Description": "Expected end of an automatic timed run; manual runs have no known end.",
+          "Name": "Expected finish",
+          "Type": 4
+        },
+        {
+          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour.",
+          "Name": "Delivery rate",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerRestartAccountingV1"
+    },
+    {
+      "Description": "Explica qué está haciendo el sistema de riego o por qué se retrasa el riego.",
+      "DisplayName": "Estado del riego",
+      "List": [
+        {
+          "Description": "Explica qué está haciendo el sistema de riego o por qué se retrasa el riego.",
+          "Enum": [
+            {
+              "Description": "Preparando la información más reciente.",
+              "Name": "Inicializando",
+              "Type": 1
+            },
+            {
+              "Description": "Las plantas tienen suficiente agua en este momento.",
+              "Name": "No es necesario regar",
+              "Type": 2
+            },
+            {
+              "Description": "La lluvia prevista debería aportar suficiente agua por ahora.",
+              "Name": "Lluvia prevista",
+              "Type": 3
+            },
+            {
+              "Description": "El riego se retrasa porque está lloviendo, la temperatura está cerca del punto de congelación o hace demasiado viento.",
+              "Name": "Esperando condiciones seguras",
+              "Type": 4
+            },
+            {
+              "Description": "Las plantas podrían secarse demasiado durante un periodo sin riego, por lo que se programa un riego seguro antes de que comience.",
+              "Name": "Riego antes de una pausa",
+              "Type": 5
+            },
+            {
+              "Description": "El riego se ha pospuesto hasta después de un periodo sin riego.",
+              "Name": "Aplazado",
+              "Type": 6
+            },
+            {
+              "Description": "La próxima hora de riego se ha elegido utilizando las necesidades de las plantas y la información meteorológica disponible.",
+              "Name": "Programado",
+              "Type": 7
+            },
+            {
+              "Description": "El sistema de riego está esperando a que la válvula confirme un cambio.",
+              "Name": "Iniciando o deteniendo",
+              "Type": 8
+            },
+            {
+              "Description": "El estado de la válvula no está disponible, por lo que el riego automático no se iniciará.",
+              "Name": "Estado de la válvula no disponible",
+              "Type": 9
+            },
+            {
+              "Description": "Esta zona se está regando ahora.",
+              "Name": "Válvula abierta",
+              "Type": 10
+            },
+            {
+              "Description": "La válvula ha indicado un problema, por lo que el riego automático está en pausa.",
+              "Name": "Fallo de la válvula",
+              "Type": 11
+            },
+            {
+              "Description": "La información meteorológica en directo no está disponible, por lo que la programación utiliza la mejor estimación guardada o estacional.",
+              "Name": "Estimación meteorológica sin conexión",
+              "Type": 12
+            }
+          ],
+          "Name": "Estado del riego",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerScheduleConditionV1"
+    },
+    {
+      "Description": "Temperatura observada y prevista sin mezclar su escala con la ET ni el viento.",
+      "DisplayName": "Temperatura",
+      "List": [
+        {
+          "Description": "Temperatura observada y prevista sin mezclar su escala con la ET ni el viento.",
+          "Name": "Temperatura",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerTemperatureChartV1"
+    },
+    {
+      "Description": "Superpone la temperatura y la humedad a lo largo del tiempo, manteniendo ejes Y izquierdo y derecho independientes para sus unidades incompatibles.",
+      "DisplayName": "Temperatura y humedad relativa",
+      "List": [
+        {
+          "Description": "Superpone la temperatura y la humedad a lo largo del tiempo, manteniendo ejes Y izquierdo y derecho independientes para sus unidades incompatibles.",
+          "Name": "Temperatura y humedad relativa",
+          "Type": 0
+        },
+        {
+          "Description": "La temperatura utiliza la primera guía Y automática.",
+          "Name": "Temperatura",
+          "Type": 1
+        },
+        {
+          "Description": "La humedad relativa utiliza la segunda guía Y independiente.",
+          "Name": "Humedad relativa",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityChartV1"
+    },
+    {
+      "Description": "Distingue las dos líneas con escalas independientes del panel meteorológico combinado.",
+      "DisplayName": "Medición de temperatura y humedad",
+      "List": [
+        {
+          "Description": "Distingue las dos líneas con escalas independientes del panel meteorológico combinado.",
+          "Enum": [
+            {
+              "Description": "Temperatura del aire en grados Celsius.",
+              "Name": "Temperatura",
+              "Type": 1
+            },
+            {
+              "Description": "Porcentaje de humedad relativa.",
+              "Name": "Humedad relativa",
+              "Type": 2
+            }
+          ],
+          "Name": "Medición de temperatura y humedad",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityMeasurementV1"
+    },
+    {
+      "Description": "Una muestra de temperatura del aire observada o prevista.",
+      "DisplayName": "Fila de temperatura",
+      "List": [
+        {
+          "Description": "Una muestra de temperatura del aire observada o prevista.",
+          "Name": "Fila de temperatura",
+          "Type": 0
+        },
+        {
+          "Description": "Inicio del periodo del proveedor.",
+          "Name": "Hora",
+          "Type": 1
+        },
+        {
+          "Description": "Temperatura del aire en grados Celsius.",
+          "Name": "Temperatura",
+          "Type": 2
+        },
+        {
+          "Description": "Identifica esta línea como temperatura en el panel combinado.",
+          "Name": "Medición",
+          "Type": 3
+        },
+        {
+          "Description": "Observado o previsto.",
+          "Name": "Origen",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerTemperatureRowV1"
+    },
+    {
+      "Description": "Una hora de inicio y una duración para un riego o una pausa de riego.",
+      "DisplayName": "Periodo de tiempo",
+      "List": [
+        {
+          "Description": "Una hora de inicio y una duración para un riego o una pausa de riego.",
+          "Name": "Periodo de tiempo",
+          "Type": 0
+        },
+        {
+          "Description": "Cuándo comienza este periodo.",
+          "Name": "Comienza en",
+          "Type": 1
+        },
+        {
+          "Description": "Cuánto dura este periodo.",
+          "Name": "Duración",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTimeSlotV1"
+    },
+    {
+      "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+      "DisplayName": "Valve problems",
+      "List": [
+        {
+          "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+          "Enum": [
+            {
+              "Description": "The valve reported a problem without a more specific classification.",
+              "Name": "General problem",
+              "Type": 1
+            },
+            {
+              "Description": "The valve cannot move because it is blocked.",
+              "Name": "Blocked",
+              "Type": 2
+            },
+            {
+              "Description": "The valve detected an unexpected water leak.",
+              "Name": "Leak detected",
+              "Type": 3
+            },
+            {
+              "Description": "The controller cannot detect a connected valve.",
+              "Name": "Not connected",
+              "Type": 4
+            },
+            {
+              "Description": "The valve or its wiring has a short circuit.",
+              "Name": "Short circuit",
+              "Type": 5
+            },
+            {
+              "Description": "The valve exceeded the available electrical current.",
+              "Name": "Too much current",
+              "Type": 6
+            }
+          ],
+          "Name": "Valve problems",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerValveFaultFlagsV1"
+    },
+    {
+      "Description": "Combina los niveles de agua estimados con los eventos de riego de todas las zonas.",
+      "DisplayName": "Balance hídrico",
+      "List": [
+        {
+          "Description": "Combina los niveles de agua estimados con los eventos de riego de todas las zonas.",
+          "Name": "Balance hídrico",
+          "Type": 0
+        },
+        {
+          "Description": "Agua estimada y niveles de riego importantes para todas las zonas.",
+          "Name": "Agua disponible y niveles",
+          "Type": 1
+        },
+        {
+          "Description": "Riegos programados, omitidos, fallidos, manuales y completados.",
+          "Name": "Eventos de riego",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterBalanceChartV1"
+    },
+    {
+      "Description": "Agua disponible estimada y niveles de riego importantes para todas las zonas.",
+      "DisplayName": "Líneas del balance hídrico",
+      "List": [
+        {
+          "Description": "Agua disponible estimada y niveles de riego importantes para todas las zonas.",
+          "Name": "Líneas del balance hídrico",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterBalanceLinesV1"
+    },
+    {
+      "Description": "Un punto que muestra el agua estimada disponible para las plantas o un nivel de riego importante. El agua disponible es una estimación, no una lectura de un sensor de humedad del suelo.",
+      "DisplayName": "Punto del balance hídrico",
+      "List": [
+        {
+          "Description": "Un punto que muestra el agua estimada disponible para las plantas o un nivel de riego importante. El agua disponible es una estimación, no una lectura de un sensor de humedad del suelo.",
+          "Name": "Punto del balance hídrico",
+          "Type": 0
+        },
+        {
+          "Description": "Cuándo se aplica este nivel de agua.",
+          "Name": "Hora",
+          "Type": 1
+        },
+        {
+          "Description": "Agua estimada disponible para las plantas, del 0 al 100 por cien.",
+          "Name": "Agua disponible",
+          "Type": 2
+        },
+        {
+          "Description": "Agua disponible o uno de los niveles de riego importantes.",
+          "Name": "Línea",
+          "Type": 3
+        },
+        {
+          "Description": "La zona regada representada por esta parte del gráfico.",
+          "Name": "Zona",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWaterBalancePointV1"
+    },
+    {
+      "Description": "Identifica el agua disponible y los niveles de riego importantes.",
+      "DisplayName": "Línea del balance hídrico",
+      "List": [
+        {
+          "Description": "Identifica el agua disponible y los niveles de riego importantes.",
+          "Enum": [
+            {
+              "Description": "Agua estimada disponible para las plantas.",
+              "Name": "Agua disponible",
+              "Type": 1
+            },
+            {
+              "Description": "Se estima que el suelo contiene toda el agua utilizable que puede retener.",
+              "Name": "Capacidad de campo",
+              "Type": 2
+            },
+            {
+              "Description": "Nivel en el que normalmente es necesario regar.",
+              "Name": "Umbral de riego",
+              "Type": 3
+            },
+            {
+              "Description": "Nivel en el que el riego pasa a ser urgente.",
+              "Name": "Umbral crítico",
+              "Type": 4
+            }
+          ],
+          "Name": "Línea del balance hídrico",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterBalanceSeriesV1"
+    },
+    {
+      "Description": "Muestra qué información se utilizó para estimar la rapidez con la que las plantas pierden agua.",
+      "DisplayName": "Estimación del consumo de agua",
+      "List": [
+        {
+          "Description": "Muestra qué información se utilizó para estimar la rapidez con la que las plantas pierden agua.",
+          "Enum": [
+            {
+              "Description": "Basado en el tiempo reciente de esta ubicación.",
+              "Name": "Tiempo reciente",
+              "Type": 1
+            },
+            {
+              "Description": "Basado en la ubicación y la época del año.",
+              "Name": "Ubicación y estación",
+              "Type": 2
+            },
+            {
+              "Description": "Se utiliza cuando no se dispone de información meteorológica reciente ni de la ubicación.",
+              "Name": "Estimación integrada",
+              "Type": 3
+            }
+          ],
+          "Name": "Estimación del consumo de agua",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterDemandSourceV1"
+    },
+    {
+      "Description": "Almacena un periodo meteorológico o un intervalo de riego observado e indexado de forma independiente en el historial de agua de siete días.",
+      "DisplayName": "Evento de agua del sistema de riego",
+      "List": [
+        {
+          "Description": "Almacena un periodo meteorológico o un intervalo de riego observado e indexado de forma independiente en el historial de agua de siete días.",
+          "Name": "Evento de agua del sistema de riego",
+          "Type": 0
+        },
+        {
+          "Description": "Registra la precipitación y la evapotranspiración de referencia del proveedor para un periodo histórico completado.",
+          "Name": "Periodo meteorológico",
+          "Type": 1
+        },
+        {
+          "Description": "Inicio inclusivo del periodo meteorológico completado.",
+          "Name": "Hora de inicio",
+          "Type": 2
+        },
+        {
+          "Description": "Duración del periodo meteorológico completado en segundos.",
+          "Name": "Duración",
+          "Type": 3
+        },
+        {
+          "Description": "Precipitación del proveedor acumulada durante el periodo, en milímetros.",
+          "Name": "Precipitación",
+          "Type": 4
+        },
+        {
+          "Description": "Evapotranspiración de referencia FAO-56 del proveedor acumulada durante el periodo, en milímetros.",
+          "Name": "Evapotranspiración de referencia",
+          "Type": 5
+        },
+        {
+          "Description": "Registra el agua inferida a partir del tiempo real de apertura de la válvula Matter, incluidas las aperturas manuales, junto con el ajustador de cantidad de agua de la zona durante ese intervalo observado.",
+          "Name": "Intervalo de riego",
+          "Type": 6
+        },
+        {
+          "Description": "Inicio inclusivo del intervalo contabilizado con la válvula abierta.",
+          "Name": "Hora de inicio",
+          "Type": 7
+        },
+        {
+          "Description": "Duración observada del intervalo con la válvula abierta, en segundos.",
+          "Name": "Duración",
+          "Type": 8
+        },
+        {
+          "Description": "Porcentaje de riego configurado para la zona mientras se observó este intervalo con la válvula abierta. Si el ajuste cambia mientras la válvula está abierta, el historial utiliza intervalos adyacentes separados.",
+          "Name": "Ajustador de cantidad de agua",
+          "Type": 9
+        },
+        {
+          "Description": "Profundidad de agua estimada calculada a partir del tiempo de apertura observado y el perfil configurado del cabezal de riego, en milímetros.",
+          "Name": "Agua aplicada",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWaterEventV1"
+    },
+    {
+      "Description": "Almacena la última instantánea completa del ciclo de vida antes de escribir su fila de auditoría correspondiente. El indicador explícito de actividad actual distingue una actividad no terminal que puede reconciliarse tras un reinicio de una instantánea terminal que solo necesita reparar la auditoría.",
+      "DisplayName": "Estado autoritativo de la actividad de riego",
+      "List": [
+        {
+          "Description": "Almacena la última instantánea completa del ciclo de vida antes de escribir su fila de auditoría correspondiente. El indicador explícito de actividad actual distingue una actividad no terminal que puede reconciliarse tras un reinicio de una instantánea terminal que solo necesita reparar la auditoría.",
+          "Name": "Estado autoritativo de la actividad de riego",
+          "Type": 0
+        },
+        {
+          "Description": "Última instantánea completa del ciclo de vida, o ningún valor antes de la primera actividad. Las instantáneas terminales permanecen aquí hasta que comienza una actividad más reciente.",
+          "Name": "Última actividad",
+          "Type": 1
+        },
+        {
+          "Description": "Verdadero solo cuando la última actividad está programada, tiene un comando pendiente o está en ejecución y debe reconciliarse al iniciar.",
+          "Name": "La actividad es actual",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWateringActivityStateV2"
+    },
+    {
+      "Description": "Mantiene separados los tiempos programados y reales para que el informe pueda explicar qué estaba previsto, qué ocurrió y por qué se omitió o falló un riego.",
+      "DisplayName": "Actividad de riego persistida",
+      "List": [
+        {
+          "Description": "Mantiene separados los tiempos programados y reales para que el informe pueda explicar qué estaba previsto, qué ocurrió y por qué se omitió o falló un riego.",
+          "Name": "Actividad de riego persistida",
+          "Type": 0
+        },
+        {
+          "Description": "Índice de base de datos con signo y estable reutilizado para cada actualización del ciclo de vida.",
+          "Name": "Índice de actividad",
+          "Type": 1
+        },
+        {
+          "Description": "Secuencia segura frente a colisiones dentro del mismo segundo de anclaje y origen.",
+          "Name": "Ordinal de actividad",
+          "Type": 2
+        },
+        {
+          "Description": "Actividad automática, manual o heredada que no puede clasificarse.",
+          "Name": "Origen",
+          "Type": 3
+        },
+        {
+          "Description": "Estado duradero actual o terminal del ciclo de vida.",
+          "Name": "Resultado",
+          "Type": 4
+        },
+        {
+          "Description": "Explicación duradera del resultado actual o terminal.",
+          "Name": "Motivo",
+          "Type": 5
+        },
+        {
+          "Description": "Inicio automático previsto. Las actividades manuales y heredadas lo omiten.",
+          "Name": "Inicio programado",
+          "Type": 6
+        },
+        {
+          "Description": "Duración prevista de apertura automática de la válvula en segundos. Nunca se sustituye por la duración observada real.",
+          "Name": "Duración programada",
+          "Type": 7
+        },
+        {
+          "Description": "Profundidad prevista de agua del riego automático en milímetros.",
+          "Name": "Agua prevista",
+          "Type": 8
+        },
+        {
+          "Description": "Primera hora observada de apertura de la válvula; ausente hasta que se observa una apertura.",
+          "Name": "Inicio real",
+          "Type": 9
+        },
+        {
+          "Description": "Duración contabilizada y observada de apertura de la válvula en segundos.",
+          "Name": "Duración real",
+          "Type": 10
+        },
+        {
+          "Description": "Profundidad de agua estimada a partir del tiempo real de apertura y del perfil del cabezal de riego, no de un caudalímetro.",
+          "Name": "Agua aplicada",
+          "Type": 11
+        },
+        {
+          "Description": "Ajustador de la zona vigente cuando se creó esta actividad.",
+          "Name": "Ajustador de cantidad de agua",
+          "Type": 12
+        },
+        {
+          "Description": "Hora UTC representada por la última actualización persistida del ciclo de vida.",
+          "Name": "Actualizado en",
+          "Type": 13
+        }
+      ],
+      "Name": "SprinklerWateringActivityV1"
+    },
+    {
+      "Description": "Un riego programado, omitido, fallido, manual o completado.",
+      "DisplayName": "Evento de riego",
+      "List": [
+        {
+          "Description": "Un riego programado, omitido, fallido, manual o completado.",
+          "Name": "Evento de riego",
+          "Type": 0
+        },
+        {
+          "Description": "Cuándo comenzó el riego o cuándo estaba previsto que comenzara.",
+          "Name": "Hora",
+          "Type": 1
+        },
+        {
+          "Description": "Agua estimada disponible para las plantas en ese momento.",
+          "Name": "Agua disponible",
+          "Type": 2
+        },
+        {
+          "Description": "La zona regada correspondiente a este evento.",
+          "Name": "Zona",
+          "Type": 3
+        },
+        {
+          "Description": "Qué ocurrió con este plan o ejecución de riego.",
+          "Name": "Resultado",
+          "Type": 4
+        },
+        {
+          "Description": "Indica si el riego fue automático, manual o desconocido.",
+          "Name": "Iniciado por",
+          "Type": 5
+        },
+        {
+          "Description": "Por qué se programó, modificó, detuvo o no pudo completarse el riego.",
+          "Name": "Motivo",
+          "Type": 6
+        },
+        {
+          "Description": "Cuánto tiempo estaba previsto que durara el riego automático.",
+          "Name": "Duración prevista",
+          "Type": 7
+        },
+        {
+          "Description": "Cuánto tiempo se observó abierta la válvula.",
+          "Name": "Duración real",
+          "Type": 8
+        },
+        {
+          "Description": "Clave de enfoque estable y única entre todas las zonas configuradas.",
+          "Name": "Clave de decisión",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWateringDecisionRowV1"
+    },
+    {
+      "Description": "Muestra el riego automático y manual en el gráfico del balance hídrico.",
+      "DisplayName": "Eventos de riego",
+      "List": [
+        {
+          "Description": "Muestra el riego automático y manual en el gráfico del balance hídrico.",
+          "Name": "Eventos de riego",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWateringDecisionsV1"
+    },
+    {
+      "Description": "Selecciona si el sistema de riego está activo o preparado para el invierno.",
+      "DisplayName": "Modo de riego",
+      "List": [
+        {
+          "Description": "Selecciona si el sistema de riego está activo o preparado para el invierno.",
+          "Enum": [
+            {
+              "Description": "El riego automático está activado.",
+              "Name": "Activo",
+              "Type": 1
+            },
+            {
+              "Description": "El riego automático está desactivado durante la temporada fría.",
+              "Name": "Preparado para el invierno",
+              "Type": 2
+            }
+          ],
+          "Name": "Modo de riego",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringModeV1"
+    },
+    {
+      "Description": "Muestra si el riego se inició automáticamente o de otra forma.",
+      "DisplayName": "Cómo se inició el riego",
+      "List": [
+        {
+          "Description": "Muestra si el riego se inició automáticamente o de otra forma.",
+          "Enum": [
+            {
+              "Description": "Riego inteligente inició este riego.",
+              "Name": "Automático",
+              "Type": 1
+            },
+            {
+              "Description": "La válvula se abrió fuera de Riego inteligente.",
+              "Name": "Manual",
+              "Type": 2
+            },
+            {
+              "Description": "Los datos guardados antiguos no indican cómo se inició este riego.",
+              "Name": "Desconocido",
+              "Type": 3
+            }
+          ],
+          "Name": "Cómo se inició el riego",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOriginV1"
+    },
+    {
+      "Description": "Muestra qué ocurrió con un plan o ejecución de riego.",
+      "DisplayName": "Resultado del riego",
+      "List": [
+        {
+          "Description": "Muestra qué ocurrió con un plan o ejecución de riego.",
+          "Enum": [
+            {
+              "Description": "Un riego automático futuro calculado sigue previsto.",
+              "Name": "Programado",
+              "Type": 1
+            },
+            {
+              "Description": "El sistema de riego ha pedido a la válvula que se abra y está esperando confirmación.",
+              "Name": "Comando pendiente",
+              "Type": 2
+            },
+            {
+              "Description": "La válvula está abierta y se está contabilizando el riego.",
+              "Name": "En curso",
+              "Type": 3
+            },
+            {
+              "Description": "El riego terminó después de que se cerrara la válvula.",
+              "Name": "Completado",
+              "Type": 4
+            },
+            {
+              "Description": "Un riego previsto no se inició porque lo impidieron el tiempo, los ajustes o las condiciones de seguridad.",
+              "Name": "Omitido",
+              "Type": 5
+            },
+            {
+              "Description": "Un problema de la válvula impidió completar el riego.",
+              "Name": "Fallido",
+              "Type": 6
+            },
+            {
+              "Description": "Un plan de riego más reciente sustituyó a este antes de que comenzara.",
+              "Name": "Sustituido",
+              "Type": 7
+            }
+          ],
+          "Name": "Resultado del riego",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOutcomeV1"
+    },
+    {
+      "Description": "Explica por qué se programó, modificó, detuvo o no pudo completarse un riego.",
+      "DisplayName": "Motivo del riego",
+      "List": [
+        {
+          "Description": "Explica por qué se programó, modificó, detuvo o no pudo completarse un riego.",
+          "Enum": [
+            {
+              "Description": "Riego inteligente seleccionó este riego según las necesidades de las plantas y el tiempo.",
+              "Name": "Programación inteligente",
+              "Type": 1
+            },
+            {
+              "Description": "La válvula se abrió fuera de Riego inteligente.",
+              "Name": "Funcionamiento manual",
+              "Type": 2
+            },
+            {
+              "Description": "La lluvia prevista retrasó o sustituyó el riego programado.",
+              "Name": "Lluvia prevista",
+              "Type": 3
+            },
+            {
+              "Description": "La lluvia registrada detuvo o impidió el riego.",
+              "Name": "Lluvia observada",
+              "Type": 4
+            },
+            {
+              "Description": "La temperatura era demasiado baja para regar con seguridad.",
+              "Name": "Heladas",
+              "Type": 5
+            },
+            {
+              "Description": "El viento era demasiado fuerte para este método de riego.",
+              "Name": "Viento excesivo",
+              "Type": 6
+            },
+            {
+              "Description": "Las condiciones meteorológicas no eran seguras para regar.",
+              "Name": "Otras condiciones meteorológicas inseguras",
+              "Type": 7
+            },
+            {
+              "Description": "Un periodo sin riego impidió el riego programado.",
+              "Name": "Periodo de suspensión",
+              "Type": 8
+            },
+            {
+              "Description": "El sistema estaba preparado para el invierno, por lo que el riego automático estaba desactivado.",
+              "Name": "Preparación para el invierno",
+              "Type": 9
+            },
+            {
+              "Description": "El estado de la válvula no estaba disponible.",
+              "Name": "Válvula no disponible",
+              "Type": 10
+            },
+            {
+              "Description": "La válvula ha indicado un problema.",
+              "Name": "Fallo de la válvula",
+              "Type": 11
+            },
+            {
+              "Description": "La válvula no aceptó la solicitud.",
+              "Name": "Comando fallido",
+              "Type": 12
+            },
+            {
+              "Description": "La válvula no confirmó la solicitud a tiempo.",
+              "Name": "Tiempo de espera del comando agotado",
+              "Type": 13
+            },
+            {
+              "Description": "Se pidió a la válvula que se abriera, pero no se detectó riego.",
+              "Name": "No se observó apertura",
+              "Type": 14
+            },
+            {
+              "Description": "Un cálculo más reciente sustituyó al riego programado.",
+              "Name": "Recalculado",
+              "Type": 15
+            },
+            {
+              "Description": "Los datos guardados antiguos no contienen un motivo más específico.",
+              "Name": "Desconocido",
+              "Type": 16
+            },
+            {
+              "Description": "The valve was observed closed before its timed run was due to finish.",
+              "Name": "Stopped early",
+              "Type": 17
+            }
+          ],
+          "Name": "Motivo del riego",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringReasonV1"
+    },
+    {
+      "Description": "Muestra de dónde procede el agua o si se espera más adelante.",
+      "DisplayName": "Origen del agua",
+      "List": [
+        {
+          "Description": "Muestra de dónde procede el agua o si se espera más adelante.",
+          "Enum": [
+            {
+              "Description": "Lluvia ya registrada por el servicio meteorológico.",
+              "Name": "Lluvia",
+              "Type": 1
+            },
+            {
+              "Description": "Agua estimada a partir del tiempo que permaneció abierta la válvula.",
+              "Name": "Riego",
+              "Type": 2
+            },
+            {
+              "Description": "Lluvia prevista en el pronóstico.",
+              "Name": "Lluvia prevista",
+              "Type": 3
+            },
+            {
+              "Description": "Riego automático previsto que aún no ha comenzado.",
+              "Name": "Riego programado",
+              "Type": 4
+            }
+          ],
+          "Name": "Origen del agua",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterInputTypeV1"
+    },
+    {
+      "Description": "Combina un resumen compacto de lluvia frente a riego con detalles diarios.",
+      "DisplayName": "Consumo de agua",
+      "List": [
+        {
+          "Description": "Combina un resumen compacto de lluvia frente a riego con detalles diarios.",
+          "Name": "Consumo de agua",
+          "Type": 0
+        },
+        {
+          "Description": "Shared rain and per-area irrigation during the selected dates.",
+          "Name": "Summary",
+          "Type": 1
+        },
+        {
+          "Description": "Rain and watering amounts by local calendar date.",
+          "Name": "Daily details",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterUsageChartV1"
+    },
+    {
+      "Description": "Mantiene visible una zona cuando no tuvo lluvia ni riego durante las fechas seleccionadas.",
+      "DisplayName": "Zona sin agua registrada",
+      "List": [
+        {
+          "Description": "Mantiene visible una zona cuando no tuvo lluvia ni riego durante las fechas seleccionadas.",
+          "Name": "Zona sin agua registrada",
+          "Type": 0
+        },
+        {
+          "Description": "Centra el mensaje en el gráfico.",
+          "Name": "Posición de la etiqueta",
+          "Type": 1
+        },
+        {
+          "Description": "La zona regada sin agua registrada.",
+          "Name": "Zona",
+          "Type": 2
+        },
+        {
+          "Description": "Explica por qué esta zona no tiene barras en el gráfico.",
+          "Name": "Mensaje",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZoneRowV1"
+    },
+    {
+      "Description": "Mensajes para las zonas sin lluvia ni riego durante las fechas seleccionadas.",
+      "DisplayName": "Zonas sin agua registrada",
+      "List": [
+        {
+          "Description": "Mensajes para las zonas sin lluvia ni riego durante las fechas seleccionadas.",
+          "Name": "Zonas sin agua registrada",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZonesV1"
+    },
+    {
+      "Description": "Muestra las cantidades de lluvia y riego por fecha para todas las zonas.",
+      "DisplayName": "Consumo de agua",
+      "List": [
+        {
+          "Description": "Muestra las cantidades de lluvia y riego por fecha para todas las zonas.",
+          "Name": "Consumo de agua",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageMarksV1"
+    },
+    {
+      "Description": "Una cantidad de lluvia o riego mostrada para una zona en una fecha concreta.",
+      "DisplayName": "Elemento de consumo de agua",
+      "List": [
+        {
+          "Description": "Una cantidad de lluvia o riego mostrada para una zona en una fecha concreta.",
+          "Name": "Elemento de consumo de agua",
+          "Type": 0
+        },
+        {
+          "Description": "Fecha natural local correspondiente a esta cantidad de lluvia o riego.",
+          "Name": "Fecha",
+          "Type": 1
+        },
+        {
+          "Description": "Dónde comienza esta cantidad en el gráfico.",
+          "Name": "Inicio de la barra",
+          "Type": 2
+        },
+        {
+          "Description": "Dónde termina esta cantidad en el gráfico.",
+          "Name": "Fin de la barra",
+          "Type": 3
+        },
+        {
+          "Description": "Lluvia o riego representado por esta parte de la barra.",
+          "Name": "Cantidad de agua",
+          "Type": 4
+        },
+        {
+          "Description": "Lluvia registrada, riego, lluvia prevista o riego programado.",
+          "Name": "Origen del agua",
+          "Type": 5
+        },
+        {
+          "Description": "La zona regada representada por esta fila.",
+          "Name": "Zona",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageRowV1"
+    },
+    {
+      "Description": "Shows shared rain and irrigation for every area together on one chart.",
+      "DisplayName": "Water-use summary",
+      "List": [
+        {
+          "Description": "Shows shared rain and irrigation for every area together on one chart.",
+          "Name": "Water-use summary",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryChartV1"
+    },
+    {
+      "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+      "DisplayName": "Water-use summary item",
+      "List": [
+        {
+          "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+          "Name": "Water-use summary item",
+          "Type": 0
+        },
+        {
+          "Description": "Millimeter scale for comparing rain and irrigation.",
+          "Name": "Water amount",
+          "Type": 1
+        },
+        {
+          "Description": "Where this contribution ends in its stacked total.",
+          "Name": "Amount end",
+          "Type": 2
+        },
+        {
+          "Description": "Total rain or irrigation represented by this part of the bar.",
+          "Name": "Amount",
+          "Type": 3
+        },
+        {
+          "Description": "Recorded rain, forecast rain, actual watering, or scheduled watering.",
+          "Name": "Water source",
+          "Type": 4
+        },
+        {
+          "Description": "Keeps shared rain first, followed by every configured area.",
+          "Name": "Lane",
+          "Type": 5
+        },
+        {
+          "Description": "Shows Rain or the configured area's name on the summary axis.",
+          "Name": "Rain or area",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryRowV1"
+    },
+    {
+      "Description": "Muestra si un valor se registró o se previó.",
+      "DisplayName": "Origen meteorológico",
+      "List": [
+        {
+          "Description": "Muestra si un valor se registró o se previó.",
+          "Enum": [
+            {
+              "Description": "Una observación meteorológica completada.",
+              "Name": "Historial registrado",
+              "Type": 1
+            },
+            {
+              "Description": "Una observación reciente del tiempo actual.",
+              "Name": "Condiciones actuales",
+              "Type": 2
+            },
+            {
+              "Description": "Un valor futuro de la previsión más reciente.",
+              "Name": "Previsión",
+              "Type": 3
+            }
+          ],
+          "Name": "Origen meteorológico",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherChartSourceV1"
+    },
+    {
+      "Description": "Muestra conjuntamente la pérdida de agua estimada, la temperatura, la humedad y el viento.",
+      "DisplayName": "Meteorología",
+      "List": [
+        {
+          "Description": "Muestra conjuntamente la pérdida de agua estimada, la temperatura, la humedad y el viento.",
+          "Name": "Meteorología",
+          "Type": 0
+        },
+        {
+          "Description": "Pérdida de agua registrada y prevista por evaporación y uso de las plantas.",
+          "Name": "Pérdida de agua estimada",
+          "Type": 1
+        },
+        {
+          "Description": "Valores observados y previstos con ejes Y independientes.",
+          "Name": "Temperatura y humedad relativa",
+          "Type": 2
+        },
+        {
+          "Description": "Viento sostenido y ráfagas observados y previstos.",
+          "Name": "Viento",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherEtChartV1"
+    },
+    {
+      "Description": "Viento sostenido y ráfagas observados y previstos en una única escala comparable.",
+      "DisplayName": "Viento y ráfagas",
+      "List": [
+        {
+          "Description": "Viento sostenido y ráfagas observados y previstos en una única escala comparable.",
+          "Name": "Viento y ráfagas",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWindChartV1"
+    },
+    {
+      "Description": "Una muestra de viento sostenido o ráfaga.",
+      "DisplayName": "Fila de viento",
+      "List": [
+        {
+          "Description": "Una muestra de viento sostenido o ráfaga.",
+          "Name": "Fila de viento",
+          "Type": 0
+        },
+        {
+          "Description": "Inicio del periodo del proveedor.",
+          "Name": "Hora",
+          "Type": 1
+        },
+        {
+          "Description": "Velocidad del viento sostenido o de la ráfaga en metros por segundo.",
+          "Name": "Velocidad del viento",
+          "Type": 2
+        },
+        {
+          "Description": "Viento sostenido o ráfaga observados o previstos.",
+          "Name": "Serie",
+          "Type": 3
+        },
+        {
+          "Description": "Identidad generada por el servidor para esta hora y serie de viento.",
+          "Name": "Clave estable",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWindRowV1"
+    },
+    {
+      "Description": "Separa el viento sostenido y las ráfagas de los periodos observados y previstos.",
+      "DisplayName": "Serie de viento",
+      "List": [
+        {
+          "Description": "Separa el viento sostenido y las ráfagas de los periodos observados y previstos.",
+          "Enum": [
+            {
+              "Description": "Viento sostenido de un periodo histórico completado.",
+              "Name": "Viento sostenido histórico",
+              "Type": 1
+            },
+            {
+              "Description": "Ráfaga máxima de un periodo histórico completado.",
+              "Name": "Ráfaga histórica",
+              "Type": 2
+            },
+            {
+              "Description": "Viento sostenido de una observación actual conservada.",
+              "Name": "Viento sostenido actual",
+              "Type": 3
+            },
+            {
+              "Description": "Ráfaga máxima de una observación actual conservada.",
+              "Name": "Ráfaga actual",
+              "Type": 4
+            },
+            {
+              "Description": "Viento sostenido previsto.",
+              "Name": "Viento sostenido previsto",
+              "Type": 5
+            },
+            {
+              "Description": "Ráfaga máxima prevista.",
+              "Name": "Ráfaga prevista",
+              "Type": 6
+            }
+          ],
+          "Name": "Serie de viento",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWindSeriesV1"
+    },
+    {
+      "Description": "Recuerda el último aviso para que no vuelva a enviarse demasiado pronto.",
+      "DisplayName": "Último recordatorio de preparación para el invierno",
+      "List": [
+        {
+          "Description": "Recuerda el último aviso para que no vuelva a enviarse demasiado pronto.",
+          "Name": "Último recordatorio de preparación para el invierno",
+          "Type": 0
+        },
+        {
+          "Description": "Cuándo se envió el último recordatorio.",
+          "Name": "Enviado en",
+          "Type": 1
+        },
+        {
+          "Description": "Por qué se envió el último recordatorio.",
+          "Name": "Motivo",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderMemoryV1"
+    },
+    {
+      "Description": "Explica por qué se envió el último recordatorio por frío.",
+      "DisplayName": "Motivo del recordatorio de preparación para el invierno",
+      "List": [
+        {
+          "Description": "Explica por qué se envió el último recordatorio por frío.",
+          "Enum": [
+            {
+              "Description": "La latitud del emplazamiento y la estación actual indican que se acerca el frío.",
+              "Name": "Ubicación y estación",
+              "Type": 1
+            },
+            {
+              "Description": "Las condiciones actuales recientes o los datos de previsión muestran una temperatura igual o inferior al umbral de seguridad por frío del sistema de riego.",
+              "Name": "Heladas",
+              "Type": 2
+            }
+          ],
+          "Name": "Motivo del recordatorio de preparación para el invierno",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderReasonV1"
+    },
+    {
+      "Description": "Muestra la información en la que se basa el plan de riego actual.",
+      "DisplayName": "Detalles de la zona",
+      "List": [
+        {
+          "Description": "Muestra la información en la que se basa el plan de riego actual.",
+          "Name": "Detalles de la zona",
+          "Type": 0
+        },
+        {
+          "Description": "La información utilizada para estimar cuándo volverán a necesitar agua las plantas.",
+          "Name": "Estimación del consumo de agua",
+          "Type": 1
+        },
+        {
+          "Description": "Agua estimada que se pierde cada día por evaporación y uso de las plantas.",
+          "Name": "Pérdida diaria de agua estimada",
+          "Type": 2
+        },
+        {
+          "Description": "Cuándo se calculó este plan de riego.",
+          "Name": "Última actualización",
+          "Type": 3
+        },
+        {
+          "Description": "La decisión de riego actual o el motivo de un retraso.",
+          "Name": "Estado",
+          "Type": 4
+        },
+        {
+          "Description": "La hora de inicio y la duración previstas. Las condiciones meteorológicas o la disponibilidad de la válvula todavía pueden modificar el plan.",
+          "Name": "Próximo riego",
+          "Type": 5
+        },
+        {
+          "Description": "La cantidad de agua prevista para el siguiente riego automático.",
+          "Name": "Agua prevista",
+          "Type": 6
+        },
+        {
+          "Description": "Cantidad de agua que se estima que necesitan las plantas.",
+          "Name": "Déficit de agua estimado",
+          "Type": 7
+        },
+        {
+          "Description": "Lluvia contabilizada durante los últimos siete días.",
+          "Name": "Lluvia reciente",
+          "Type": 8
+        },
+        {
+          "Description": "Riego contabilizado durante los últimos siete días.",
+          "Name": "Riego reciente",
+          "Type": 9
+        },
+        {
+          "Description": "Indica si la válvula está abierta actualmente.",
+          "Name": "Regando ahora",
+          "Type": 10
+        },
+        {
+          "Description": "El riego automático espera hasta que esté disponible el estado de la válvula.",
+          "Name": "Estado de la válvula disponible",
+          "Type": 11
+        },
+        {
+          "Description": "Problemas indicados por la válvula. Puede haber más de un problema a la vez.",
+          "Name": "Problemas de la válvula",
+          "Type": 12
+        }
+      ],
+      "Name": "SprinklerZoneActiveStateV1"
+    },
+    {
+      "Description": "Muestra el plan de riego completo o indica que el sistema está preparado para el invierno.",
+      "DisplayName": "Estado detallado del sistema de riego",
+      "List": [
+        {
+          "Description": "Muestra el plan de riego completo o indica que el sistema está preparado para el invierno.",
+          "Name": "Estado detallado del sistema de riego",
+          "Type": 0
+        },
+        {
+          "Description": "El riego automático está activado y están disponibles todos los datos actuales de la zona.",
+          "Name": "Activo",
+          "Type": 1
+        },
+        {
+          "Description": "El plan de riego actual, la estimación de agua y el estado de la válvula.",
+          "Name": "Detalles de la zona",
+          "Type": 2
+        },
+        {
+          "Description": "El riego automático está desactivado para todo el sistema y no hay ningún periodo de riego programado.",
+          "Name": "Preparado para el invierno",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerZoneAdvancedStateV1"
+    },
+    {
+      "Description": "Explains why a requested sprinkler setting was not changed.",
+      "DisplayName": "Configuration error",
+      "List": [
+        {
+          "Description": "Explains why a requested sprinkler setting was not changed.",
+          "Enum": [
+            {
+              "Description": "The percentage was outside the supported range or step.",
+              "Name": "Invalid water amount",
+              "Type": 1
+            },
+            {
+              "Description": "The replacement contained too many periods or an invalid interval.",
+              "Name": "Invalid no-watering periods",
+              "Type": 2
+            }
+          ],
+          "Name": "Configuration error",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationErrorV1"
+    },
+    {
+      "Description": "Ajusta la cantidad de agua, los periodos sin riego o si está activo el riego automático.",
+      "DisplayName": "Ajustes de la zona",
+      "List": [
+        {
+          "Description": "Ajusta la cantidad de agua, los periodos sin riego o si está activo el riego automático.",
+          "Name": "Ajustes de la zona",
+          "Type": 0
+        },
+        {
+          "Description": "Utiliza el 100 % para la cantidad recomendada, un valor inferior para usar menos agua o un valor superior para usar más.",
+          "Name": "Cantidad de agua",
+          "Type": 1
+        },
+        {
+          "Description": "Times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 2
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 3
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationV1"
+    },
+    {
+      "Description": "Conserva el ajustador compacto de cantidad de agua, las restricciones y la línea base consolidada del balance hídrico de una válvula configurada, de forma segura frente a reinicios. Los eventos de agua se almacenan por separado como registros indexados incrementales.",
+      "DisplayName": "Memoria de la zona de riego",
+      "List": [
+        {
+          "Description": "Conserva el ajustador compacto de cantidad de agua, las restricciones y la línea base consolidada del balance hídrico de una válvula configurada, de forma segura frente a reinicios. Los eventos de agua se almacenan por separado como registros indexados incrementales.",
+          "Name": "Memoria de la zona de riego",
+          "Type": 0
+        },
+        {
+          "Description": "Porcentaje de la cantidad de riego adaptativa que se aplicará. El valor predeterminado es 100 %.",
+          "Name": "Ajustador de cantidad de agua",
+          "Type": 1
+        },
+        {
+          "Description": "Las restricciones normalizadas de programación en tiempo de ejecución.",
+          "Name": "Periodos de suspensión",
+          "Type": 2
+        },
+        {
+          "Description": "Un intervalo semiabierto durante el cual la zona no puede regarse.",
+          "Name": "Periodo de suspensión",
+          "Type": 3
+        },
+        {
+          "Description": "La fecha y hora hasta las que los aportes de agua anteriores se han consolidado en `baseline_deficit_millimeters`.",
+          "Name": "Hora de la línea base del balance",
+          "Type": 4
+        },
+        {
+          "Description": "Déficit de agua de la zona radicular en `balance_baseline_at`, en milímetros.",
+          "Name": "Déficit de referencia",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerZoneMemoryV1"
+    },
+    {
+      "Description": "Consulta el estado y los detalles de esta zona o modifica sus ajustes de riego.",
+      "DisplayName": "Controles de riego",
+      "List": [
+        {
+          "Description": "Consulta el estado y los detalles de esta zona o modifica sus ajustes de riego.",
+          "Name": "Controles de riego",
+          "Type": 0
+        },
+        {
+          "Description": "Muestra qué está haciendo esta zona y cuándo se regará la próxima vez.",
+          "Name": "Ver estado",
+          "Type": 1
+        },
+        {
+          "Description": "El estado de riego actual y el próximo plan de riego.",
+          "Name": "Estado actual",
+          "Type": 2
+        },
+        {
+          "Description": "El estado actual de esta zona o del sistema preparado para el invierno.",
+          "Name": "Estado del sistema de riego",
+          "Type": 3
+        },
+        {
+          "Description": "Muestra la estimación de agua, el plan de riego y el estado de la válvula.",
+          "Name": "Ver detalles",
+          "Type": 4
+        },
+        {
+          "Description": "La estimación de agua, el plan de riego y el estado de la válvula.",
+          "Name": "Detalles de la zona",
+          "Type": 5
+        },
+        {
+          "Description": "Muestra la cantidad de agua, los periodos sin riego y el estado activo.",
+          "Name": "Ver ajustes",
+          "Type": 6
+        },
+        {
+          "Description": "La cantidad de agua actual, los periodos sin riego y el estado activo. Los cambios posteriores aceptados se entregan como datos de suscripción antes de su confirmación terminal.",
+          "Name": "Ajustes de la zona",
+          "Type": 7
+        },
+        {
+          "Description": "Los ajustes actuales de esta zona.",
+          "Name": "Ajustes",
+          "Type": 8
+        },
+        {
+          "Description": "Utiliza más o menos agua que la cantidad recomendada.",
+          "Name": "Cambiar cantidad de agua",
+          "Type": 9
+        },
+        {
+          "Description": "Use more or less water than the recommended amount.",
+          "Name": "Change water amount",
+          "Type": 10
+        },
+        {
+          "Description": "Use 100% for the recommended amount, a lower value for less water, or a higher value for more water.",
+          "Name": "Water amount",
+          "Type": 11
+        },
+        {
+          "Description": "Replace the times when this area must not be watered.",
+          "Name": "Change no-watering periods",
+          "Type": 12
+        },
+        {
+          "Description": "The complete list of times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 13
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 14
+        },
+        {
+          "Description": "Turn automatic watering on or off.",
+          "Name": "Change active state",
+          "Type": 15
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 16
+        },
+        {
+          "Description": "Confirms that a requested setting was persisted and applied. The current subscribed configuration remains installed.",
+          "Name": "Change accepted",
+          "Type": 17
+        },
+        {
+          "Description": "Explains why a requested setting was not changed while preserving the current subscribed configuration for correction and retry.",
+          "Name": "Change rejected",
+          "Type": 18
+        },
+        {
+          "Description": "A localized explanation of the invalid setting.",
+          "Name": "Error message",
+          "Type": 19
+        },
+        {
+          "Description": "The reason the setting was rejected.",
+          "Name": "Error",
+          "Type": 20
+        }
+      ],
+      "Name": "SprinklerZoneProtocol"
+    },
+    {
+      "Description": "Muestra el estado actual y el próximo plan de riego.",
+      "DisplayName": "Estado del sistema de riego",
+      "List": [
+        {
+          "Description": "Muestra el estado actual y el próximo plan de riego.",
+          "Name": "Estado del sistema de riego",
+          "Type": 0
+        },
+        {
+          "Description": "El riego automático está activado.",
+          "Name": "Activo",
+          "Type": 1
+        },
+        {
+          "Description": "La decisión de riego actual o el motivo de un retraso.",
+          "Name": "Estado",
+          "Type": 2
+        },
+        {
+          "Description": "La hora de inicio y la duración previstas.",
+          "Name": "Próximo riego",
+          "Type": 3
+        },
+        {
+          "Description": "El riego automático está desactivado para todo el sistema y no hay ningún periodo de riego programado.",
+          "Name": "Preparado para el invierno",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneStateV1"
+    },
+    {
+      "Description": "Configura un césped, jardín o zona plantada que se riegue de forma independiente.",
+      "DisplayName": "Zona regada",
+      "List": [
+        {
+          "Description": "Configura un césped, jardín o zona plantada que se riegue de forma independiente.",
+          "Name": "Zona regada",
+          "Type": 0
+        },
+        {
+          "Description": "Elige la válvula que controla esta zona.",
+          "Name": "Válvula de agua",
+          "Type": 1
+        },
+        {
+          "Description": "Elige lo que crece en esta zona.",
+          "Name": "Tipo de planta",
+          "Type": 2
+        },
+        {
+          "Description": "Elige cómo se suministra el agua en esta zona.",
+          "Name": "Método de riego",
+          "Type": 3
+        },
+        {
+          "Description": "Elige dónde estarán disponibles el estado, los ajustes y los controles de esta zona.",
+          "Name": "Controles de la zona",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "System record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "System record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "ArchiveState",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "WateringMode",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WinterizationReminder",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "WeatherHistory",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "WeatherObservation",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 10
+        }
+      ],
+      "Name": "SystemRecord"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Valve record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Valve record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Memory",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "ActivityState",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "Restart",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WaterEvent",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Activity",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "DailyReport",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "ModeledWeatherGap",
+          "Type": 10
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 11
+        }
+      ],
+      "Name": "ZoneRecord"
+    }
+  ]
+}

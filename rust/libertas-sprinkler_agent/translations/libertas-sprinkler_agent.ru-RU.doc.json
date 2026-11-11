@@ -1,0 +1,2555 @@
+{
+  "Description": "Поливает каждый участок двора только тогда, когда ему нужна вода. Выберите, что растет на каждом участке, как он поливается и в какие периоды полив должен быть приостановлен. Умный полив использует данные о недавнем дожде, текущей погоде и прогнозе, чтобы выбрать безопасное время и объем полива. Он также учитывает ручной полив, продолжает работать при кратковременных перебоях с интернетом и напоминает подготовить систему к морозам.",
+  "DisplayName": "Умный полив",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Smart sprinkler",
+      "Description": "Поливает каждый газон, сад или засаженный участок с учетом растений, способа полива, недавнего дождя, прогноза погоды и выбранных пользователем корректировок. Пользователь выбирает источник погоды, где будут доступны элементы управления участками и отчеты, получателей напоминаний, а также клапан, тип растений и способ полива для каждого участка. Пользователь в любое время может вручную изменить процент полива и периоды без полива для каждого участка либо подготовить всю систему к зиме и снова активировать ее. Система автоматически планирует и управляет каждым клапаном с учетом дождя, прогнозируемых осадков, ветра, морозов, потребностей растений и периодов без полива, а при кратковременных перебоях в погодном сервисе использует сохраненные оценки. Она показывает текущее состояние каждого участка, оценку запасов воды, состояние клапана и предстоящий план полива. Система предоставляет графики водного баланса, суточного использования воды и наблюдаемой и прогнозируемой погоды, а также отправляет выбранным людям напоминания перед морозами. Журнал изменений: обновлены варианты протокола.",
+      "DisplayName": "Умный полив",
+      "List": [
+        {
+          "Description": "Выберите локальный погодный сервис, используемый для данных о дожде, температуре, ветре и прогнозах. Умный полив может использовать сохраненные оценки при кратковременных сбоях.",
+          "Name": "Погодный сервис",
+          "Type": 0
+        },
+        {
+          "Description": "Выберите, где будут доступны графики водного баланса, использования воды и погоды.",
+          "Name": "Отчеты о поливе",
+          "Type": 1
+        },
+        {
+          "Description": "Выберите людей, которые должны получать напоминания о подготовке системы полива к морозам.",
+          "Name": "Получатели напоминаний",
+          "Type": 2
+        },
+        {
+          "Description": "Один человек, который должен получать напоминания о системе полива.",
+          "Name": "Получатель уведомлений",
+          "Type": 3
+        },
+        {
+          "Description": "Добавьте каждый газон, сад или засаженный участок, который должен поливаться независимо.",
+          "Name": "Поливаемые участки",
+          "Type": 4
+        },
+        {
+          "Description": "Один участок со своим клапаном, растениями и способом полива.",
+          "Name": "Поливаемый участок",
+          "Type": 5
+        }
+      ],
+      "Name": "libertas_sprinkler"
+    }
+  ],
+  "Locale": "ru-RU",
+  "StringResources": {
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "Сохраненный суточный водный баланс для {0}.",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "Используйте не более 64 периодов без полива; у каждого должно быть допустимое время начала и длительность больше нуля.",
+    "SPRINKLER_INVALID_WATERING_PERCENT": "Объем полива должен быть от 20% до 200% с шагом 10%.",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "Сохраненные оценки погоды, используемые при перебоях в работе сервиса, в {0}.",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "Первая дата не может быть позже последней даты.",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "Сохраненное местоположение, используемое отчетами о погоде системы полива, в {0}.",
+    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "Сохраненная подробная история погоды для отчетов о поливе в {0}.",
+    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "Сохраненные наблюдения за текущей погодой для отчетов о поливе в {0}.",
+    "SPRINKLER_SITE_LOCATION_V1": "Сохраненное местоположение, используемое для погоды системы полива, в {0}.",
+    "SPRINKLER_UI_CHANGE_DATES": "Change dates",
+    "SPRINKLER_UI_SYSTEM_ACTIVE": "System active",
+    "SPRINKLER_UI_VALVE": "Valve",
+    "SPRINKLER_UI_WATERING_PLAN": "Watering plan",
+    "SPRINKLER_UI_WATER_BALANCE": "Water balance",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "Сохраненная история полива для {0}.",
+    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "Текущая активность полива для {0}.",
+    "SPRINKLER_WATERING_MODE_V1": "Сохраненный режим полива для {0}.",
+    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
+    "SPRINKLER_WATER_EVENTS_V1": "Сохраненные данные о недавнем дожде и поливе для {0}.",
+    "SPRINKLER_WATER_USAGE_RAIN_LANE": "Дождь",
+    "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
+    "SPRINKLER_WINTERIZATION_REMINDER_V1": "Сохраненная история напоминаний о подготовке к зиме для {0}.",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "В этом месте приближается холодный сезон. Подготовьте систему полива к зиме, затем отключите «Активно».",
+    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "Морозная погода ({0}) может повредить систему полива. Подготовьте ее к зиме, затем отключите «Активно».",
+    "SPRINKLER_ZONE_MEMORY_V1": "Сохраненные водный баланс и настройки для {0}.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Использовать местоположение этого хаба для получения локальной погоды для автоматического полива."
+  },
+  "Types": [
+    {
+      "Description": "Бессрочно сохраняемая контрольная точка за сутки UTC и сводка учета воды. Она позволяет запрашивать старый интервал водного баланса без повторного воспроизведения всех событий с момента установки.",
+      "DisplayName": "Суточный отчет о поливе",
+      "List": [
+        {
+          "Description": "Бессрочно сохраняемая контрольная точка за сутки UTC и сводка учета воды. Она позволяет запрашивать старый интервал водного баланса без повторного воспроизведения всех событий с момента установки.",
+          "Name": "Суточный отчет о поливе",
+          "Type": 0
+        },
+        {
+          "Description": "Включительная граница календарных суток UTC, используемая как ключ индексированной записи.",
+          "Name": "Начало суток",
+          "Type": 1
+        },
+        {
+          "Description": "Исключительная граница календарных суток UTC.",
+          "Name": "Конец суток",
+          "Type": 2
+        },
+        {
+          "Description": "Первый момент времени, представленный этой контрольной точкой. В день установки или смены площадки он может быть позже границы суток UTC.",
+          "Name": "Начало охвата",
+          "Type": 3
+        },
+        {
+          "Description": "Исключительный последний момент времени, представленный этой контрольной точкой. Для текущих неполных суток он может быть раньше границы суток.",
+          "Name": "Конец охвата",
+          "Type": 4
+        },
+        {
+          "Description": "Моделируемая емкость профиля растений в миллиметрах.",
+          "Name": "Емкость корневой зоны",
+          "Type": 5
+        },
+        {
+          "Description": "Расчетный дефицит воды в корневой зоне в начале представленных суток.",
+          "Name": "Начальный дефицит",
+          "Type": 6
+        },
+        {
+          "Description": "Расчетный дефицит воды в корневой зоне на представленном конце или в последний известный момент времени.",
+          "Name": "Конечный дефицит",
+          "Type": 7
+        },
+        {
+          "Description": "Осадки, зарегистрированные поставщиком и отнесенные к этим суткам UTC.",
+          "Name": "Дождь",
+          "Type": 8
+        },
+        {
+          "Description": "Эталонная ET, зарегистрированная поставщиком и отнесенная к этим суткам UTC до применения коэффициента культуры для конкретного растения.",
+          "Name": "Эталонная эвапотранспирация",
+          "Type": 9
+        },
+        {
+          "Description": "Эталонная ET, используемая для заполнения интервалов, не покрытых историей поставщика.",
+          "Name": "Моделируемая эталонная эвапотранспирация",
+          "Type": 10
+        },
+        {
+          "Description": "Источник моделируемого объема ET; отсутствует, если история поставщика полностью покрывает представленный интервал.",
+          "Name": "Источник моделируемой потребности",
+          "Type": 11
+        },
+        {
+          "Description": "Количество секунд представленного интервала, покрытых принятыми погодными периодами поставщика.",
+          "Name": "Охват погодными данными поставщика",
+          "Type": 12
+        },
+        {
+          "Description": "Глубина слоя воды, оцененная по наблюдаемым интервалам открытого клапана и отнесенная к этим суткам UTC.",
+          "Name": "Орошение",
+          "Type": 13
+        },
+        {
+          "Description": "Указывает, представляет ли контрольная точка полные сутки UTC, а не текущие неполные сутки.",
+          "Name": "Полные сутки",
+          "Type": 14
+        },
+        {
+          "Description": "Время UTC, когда эта контрольная точка была последний раз пересоздана.",
+          "Name": "Рассчитано в",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerDailyReportV1"
+    },
+    {
+      "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+      "DisplayName": "Daily water use",
+      "List": [
+        {
+          "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+          "Name": "Daily water use",
+          "Type": 0
+        },
+        {
+          "Description": "Recorded and planned water amounts.",
+          "Name": "Rain and watering",
+          "Type": 1
+        },
+        {
+          "Description": "Areas with no rain or watering during the selected dates.",
+          "Name": "Areas with no recorded water",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerDailyWaterUsageChartV1"
+    },
+    {
+      "Description": "Определяет каждое значение, записываемое приложением системы полива. Данные зоны хранятся под каждым клапаном Matter; общие системные данные используют конечную точку погоды.",
+      "DisplayName": "Постоянные данные системы полива",
+      "List": [
+        {
+          "Description": "Определяет каждое значение, записываемое приложением системы полива. Данные зоны хранятся под каждым клапаном Matter; общие системные данные используют конечную точку погоды.",
+          "Name": "Постоянные данные системы полива",
+          "Type": 0
+        },
+        {
+          "Description": "Хранит корректировщик времени выполнения, ограничения и свернутую базовую линию одной зоны.",
+          "Name": "Память зоны",
+          "Type": 1
+        },
+        {
+          "Description": "Полное устойчивое к перезапуску состояние настроенного клапана.",
+          "Name": "Память зоны",
+          "Type": 2
+        },
+        {
+          "Description": "Хранит одно независимо индексируемое событие погоды или орошения.",
+          "Name": "Событие воды",
+          "Type": 3
+        },
+        {
+          "Description": "Один завершенный погодный период или учтенный интервал открытого клапана.",
+          "Name": "Событие воды",
+          "Type": 4
+        },
+        {
+          "Description": "Хранит последнее допустимое местоположение хаба для сезонной оценки без подключения к сети.",
+          "Name": "Местоположение площадки",
+          "Type": 5
+        },
+        {
+          "Description": "Кэшированные координаты WGS84 площадки системы полива.",
+          "Name": "Местоположение площадки",
+          "Type": 6
+        },
+        {
+          "Description": "Хранит общий для системы полива режим «Активно» или «Подготовка к зиме».",
+          "Name": "Режим полива",
+          "Type": 7
+        },
+        {
+          "Description": "Устойчивый к перезапуску режим работы, общий для всех зон.",
+          "Name": "Режим полива",
+          "Type": 8
+        },
+        {
+          "Description": "Хранит время и причину последнего общесистемного напоминания.",
+          "Name": "Напоминание о подготовке к зиме",
+          "Type": 9
+        },
+        {
+          "Description": "Устойчивое к перезапуску состояние ограничения частоты уведомлений о подготовке к зиме.",
+          "Name": "Память напоминаний",
+          "Type": 10
+        },
+        {
+          "Description": "Бессрочно архивирует один точный интервал резервной ET.",
+          "Name": "Моделируемый пробел в погодных данных",
+          "Type": 11
+        },
+        {
+          "Description": "Точный интервал с неизменяемым происхождением источника и скорости.",
+          "Name": "Моделируемый пробел",
+          "Type": 12
+        },
+        {
+          "Description": "Бессрочно архивирует одну запланированную, выполняемую, завершенную, пропущенную, неудачную, замененную, ручную или устаревшую активность полива.",
+          "Name": "Активность полива",
+          "Type": 13
+        },
+        {
+          "Description": "Полные долговременные данные жизненного цикла «запланировано и фактически».",
+          "Name": "Активность",
+          "Type": 14
+        },
+        {
+          "Description": "Бессрочно архивирует одну контрольную точку учета воды и баланса за сутки UTC, чтобы старые диапазоны оставались доступными для запросов.",
+          "Name": "Суточный отчет",
+          "Type": 15
+        },
+        {
+          "Description": "Дождь, ET, оцененное орошение и моделируемый начальный/конечный дефицит.",
+          "Name": "Суточный отчет",
+          "Type": 16
+        },
+        {
+          "Description": "Its generation is bound only by explicit provider site messages.",
+          "Name": "Report weather archive state V2",
+          "Type": 17
+        },
+        {
+          "Description": "Active indefinitely retained provider-site generation.",
+          "Name": "Archive state",
+          "Type": 18
+        },
+        {
+          "Description": "Бессрочно архивирует один принятый образец текущих условий. Он сохраняет 15-минутные данные, подтверждающие решения, без двойного учета дождя или ET, уже представленных завершенной почасовой историей.",
+          "Name": "Наблюдение погоды для отчета",
+          "Type": 19
+        },
+        {
+          "Description": "Температура, влажность, ветер, порывы и непосредственные поступления воды на представленное поставщиком время.",
+          "Name": "Наблюдение погоды",
+          "Type": 20
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 21
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 22
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 23
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 24
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 25
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 26
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 27
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 28
+        }
+      ],
+      "Name": "SprinklerData"
+    },
+    {
+      "Description": "Зарегистрированная и прогнозируемая потеря воды из-за испарения и потребления растениями.",
+      "DisplayName": "Оцененная потеря воды",
+      "List": [
+        {
+          "Description": "Зарегистрированная и прогнозируемая потеря воды из-за испарения и потребления растениями.",
+          "Name": "Оцененная потеря воды",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerEtChartV1"
+    },
+    {
+      "Description": "Один зарегистрированный или прогнозируемый объем воды, потерянной из-за испарения и растений.",
+      "DisplayName": "Суточная потеря воды",
+      "List": [
+        {
+          "Description": "Один зарегистрированный или прогнозируемый объем воды, потерянной из-за испарения и растений.",
+          "Name": "Суточная потеря воды",
+          "Type": 0
+        },
+        {
+          "Description": "Время начала этого погодного периода.",
+          "Name": "Начинается в",
+          "Type": 1
+        },
+        {
+          "Description": "Время окончания этого погодного периода.",
+          "Name": "Заканчивается в",
+          "Type": 2
+        },
+        {
+          "Description": "Вода, потерянная из-за испарения и потребления растениями.",
+          "Name": "Оцененная потеря воды",
+          "Type": 3
+        },
+        {
+          "Description": "Указывает, было ли это значение зарегистрировано или спрогнозировано.",
+          "Name": "Источник",
+          "Type": 4
+        },
+        {
+          "Description": "Созданный сервером идентификатор этого интервала и источника.",
+          "Name": "Стабильный ключ",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerEtRowV1"
+    },
+    {
+      "Description": "Выберите тип дождевателя или капельной системы, установленной на этом участке.",
+      "DisplayName": "Способ полива",
+      "List": [
+        {
+          "Description": "Выберите тип дождевателя или капельной системы, установленной на этом участке.",
+          "Enum": [
+            {
+              "Description": "Медленная точечная подача воды поверхностными капельными эмиттерами.",
+              "Name": "Поверхностный капельный полив",
+              "Type": 1
+            },
+            {
+              "Description": "Концентрированная подача воды вокруг деревьев, кустарников или в посадочные лунки.",
+              "Name": "Бабблеры",
+              "Type": 2
+            },
+            {
+              "Description": "Широкая и относительно быстрая подача воды фиксированными выдвижными распылителями.",
+              "Name": "Выдвижные распылители",
+              "Type": 3
+            },
+            {
+              "Description": "Медленная подача воды на большую площадь высокоэффективными или многоструйными роторами.",
+              "Name": "Роторы с низкой интенсивностью",
+              "Type": 4
+            },
+            {
+              "Description": "Более быстрая подача воды на большую площадь обычными роторными дождевателями.",
+              "Name": "Роторы с высокой интенсивностью",
+              "Type": 5
+            }
+          ],
+          "Name": "Способ полива",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerHeadTypeV1"
+    },
+    {
+      "Description": "Наблюдаемая и прогнозируемая влажность на собственной шкале от 0 до 100 процентов.",
+      "DisplayName": "Относительная влажность",
+      "List": [
+        {
+          "Description": "Наблюдаемая и прогнозируемая влажность на собственной шкале от 0 до 100 процентов.",
+          "Name": "Относительная влажность",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerHumidityChartV1"
+    },
+    {
+      "Description": "Один наблюдаемый или прогнозируемый образец относительной влажности.",
+      "DisplayName": "Строка влажности",
+      "List": [
+        {
+          "Description": "Один наблюдаемый или прогнозируемый образец относительной влажности.",
+          "Name": "Строка влажности",
+          "Type": 0
+        },
+        {
+          "Description": "Начало периода поставщика.",
+          "Name": "Время",
+          "Type": 1
+        },
+        {
+          "Description": "Относительная влажность в процентах.",
+          "Name": "Относительная влажность",
+          "Type": 2
+        },
+        {
+          "Description": "Определяет эту линию как относительную влажность на совмещенной панели.",
+          "Name": "Измерение",
+          "Type": 3
+        },
+        {
+          "Description": "Наблюдаемое или прогнозируемое.",
+          "Name": "Источник",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerHumidityRowV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved sprinkler identities",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved sprinkler identities",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "System settings and weather archives",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "One valve's settings, accounting and reports",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerKey"
+    },
+    {
+      "Description": "Один точный интервал, не покрытый данными поставщика, для которого источник и скорость резервной эталонной ET фиксируются при первой записи интервала. Позже принятый период поставщика может обрезать или заменить этот интервал; последующие изменения резервной оценки не переписывают его происхождение.",
+      "DisplayName": "Моделируемый пробел в погодных данных",
+      "List": [
+        {
+          "Description": "Один точный интервал, не покрытый данными поставщика, для которого источник и скорость резервной эталонной ET фиксируются при первой записи интервала. Позже принятый период поставщика может обрезать или заменить этот интервал; последующие изменения резервной оценки не переписывают его происхождение.",
+          "Name": "Моделируемый пробел в погодных данных",
+          "Type": 0
+        },
+        {
+          "Description": "Включительное начало интервала, не покрытого поставщиком.",
+          "Name": "Время начала",
+          "Type": 1
+        },
+        {
+          "Description": "Исключительный конец интервала, не покрытого поставщиком.",
+          "Name": "Время окончания",
+          "Type": 2
+        },
+        {
+          "Description": "Зафиксированная резервная скорость эталонной ET в миллиметрах за сутки UTC.",
+          "Name": "Скорость эталонной эвапотранспирации",
+          "Type": 3
+        },
+        {
+          "Description": "Зафиксированное происхождение: недавняя погода, местоположение/сезон или консервативная оценка.",
+          "Name": "Источник потребности",
+          "Type": 4
+        },
+        {
+          "Description": "Время UTC, когда этот интервал впервые получил зафиксированное происхождение.",
+          "Name": "Записано в",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerModeledWeatherGapV1"
+    },
+    {
+      "Description": "Выберите, что растет на этом участке, чтобы полив соответствовал потребностям растений.",
+      "DisplayName": "Тип растений",
+      "List": [
+        {
+          "Description": "Выберите, что растет на этом участке, чтобы полив соответствовал потребностям растений.",
+          "Enum": [
+            {
+              "Description": "Плотно посаженный дерн с неглубокими корнями и регулярной потребностью в воде.",
+              "Name": "Газон",
+              "Type": 1
+            },
+            {
+              "Description": "Декоративные цветущие растения с корнями средней глубины и умеренной потребностью в воде.",
+              "Name": "Цветы",
+              "Type": 2
+            },
+            {
+              "Description": "Сезонные пищевые культуры с корнями средней глубины и относительно высокой потребностью в воде.",
+              "Name": "Овощи",
+              "Type": 3
+            },
+            {
+              "Description": "Укоренившиеся плодовые деревья с более глубокими корнями и умеренной потребностью в воде.",
+              "Name": "Плодовые деревья",
+              "Type": 4
+            },
+            {
+              "Description": "Цитрусовые деревья с глубокими корнями и умеренной или высокой потребностью в воде.",
+              "Name": "Цитрусовые",
+              "Type": 5
+            },
+            {
+              "Description": "Укоренившиеся древесные ландшафтные растения с глубокими корнями.",
+              "Name": "Деревья и кустарники",
+              "Type": 6
+            },
+            {
+              "Description": "Засухоустойчивые посадки с низкой зависимой от погоды потребностью в воде.",
+              "Name": "Ксерискейп",
+              "Type": 7
+            }
+          ],
+          "Name": "Тип растений",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerPlantTypeV1"
+    },
+    {
+      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+      "DisplayName": "Available report range",
+      "List": [
+        {
+          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+          "Name": "Available report range",
+          "Type": 0
+        },
+        {
+          "Description": "Earliest currently selectable date after applying this chart's maximum range length.",
+          "Name": "Earliest date",
+          "Type": 1
+        },
+        {
+          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts.",
+          "Name": "Latest date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportAvailableRangeV1"
+    },
+    {
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "DisplayName": "Effective report range",
+      "List": [
+        {
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+          "Name": "Effective report range",
+          "Type": 0
+        },
+        {
+          "Description": "First calendar date included in the generated report.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Last calendar date included in the generated report.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportEffectiveRangeV1"
+    },
+    {
+      "Description": "Объясняет, почему для настроенного участка нечего показывать за выбранные даты.",
+      "DisplayName": "Нет данных отчета",
+      "List": [
+        {
+          "Description": "Объясняет, почему для настроенного участка нечего показывать за выбранные даты.",
+          "Enum": [
+            {
+              "Description": "За выбранные даты для этого участка не было зарегистрировано ни дождя, ни полива.",
+              "Name": "Нет зарегистрированного поступления воды",
+              "Type": 1
+            }
+          ],
+          "Name": "Нет данных отчета",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerReportEmptyStateV1"
+    },
+    {
+      "Description": "Просматривайте водный баланс, использование воды или погоду для каждого участка. Оставьте даты пустыми, чтобы увидеть недавний период. Даты вне доступной истории автоматически корректируются до самой ранней или самой поздней доступной даты.",
+      "DisplayName": "Отчеты о поливе",
+      "List": [
+        {
+          "Description": "Просматривайте водный баланс, использование воды или погоду для каждого участка. Оставьте даты пустыми, чтобы увидеть недавний период. Даты вне доступной истории автоматически корректируются до самой ранней или самой поздней доступной даты.",
+          "Name": "Отчеты о поливе",
+          "Type": 0
+        },
+        {
+          "Description": "Показывает оценку доступной растениям воды и события полива для каждого участка. Выбранный период может охватывать до 365 дней; при более длинном выборе сохраняются последние 365 дней.",
+          "Name": "Просмотреть водный баланс",
+          "Type": 1
+        },
+        {
+          "Description": "Включительные даты, фактически использованные для формирования этого ответа.",
+          "Name": "Фактический диапазон",
+          "Type": 2
+        },
+        {
+          "Description": "Water-balance chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 3
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 4
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 5
+        },
+        {
+          "Description": "Текущие границы выбора дат и значения по умолчанию для следующего запроса.",
+          "Name": "Доступный диапазон",
+          "Type": 6
+        },
+        {
+          "Description": "График использования воды для фактического диапазона отчета.",
+          "Name": "График",
+          "Type": 7
+        },
+        {
+          "Description": "Water-use chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 8
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 9
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 10
+        },
+        {
+          "Description": "Включительные даты, фактически использованные для формирования этого ответа.",
+          "Name": "Фактический диапазон",
+          "Type": 11
+        },
+        {
+          "Description": "Зарегистрированные и прогнозируемые температура, влажность, ветер и оцененная потеря воды.",
+          "Name": "Погода",
+          "Type": 12
+        },
+        {
+          "Description": "Weather chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 13
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 14
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerReportProtocol"
+    },
+    {
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "DisplayName": "Report date range",
+      "List": [
+        {
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+          "Name": "Report date range",
+          "Type": 0
+        },
+        {
+          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportRequestRangeV1"
+    },
+    {
+      "Description": "Выбирает активное поколение физической площадки; более старые поколения сохраняются, но не смешиваются с текущим отчетом о поливе. Явная замена площадки в потоке погоды или сброс, привязанный к площадке, привязывает поколение; очистка разделов никогда не считается подтверждением границы площадки.",
+      "DisplayName": "Состояние архива погоды отчета",
+      "List": [
+        {
+          "Description": "Выбирает активное поколение физической площадки; более старые поколения сохраняются, но не смешиваются с текущим отчетом о поливе. Явная замена площадки в потоке погоды или сброс, привязанный к площадке, привязывает поколение; очистка разделов никогда не считается подтверждением границы площадки.",
+          "Name": "Состояние архива погоды отчета",
+          "Type": 0
+        },
+        {
+          "Description": "Монотонно увеличивается при каждом принятом переходе между различными площадками поставщика.",
+          "Name": "Поколение",
+          "Type": 1
+        },
+        {
+          "Description": "Местоположение поставщика, явно привязанное к этому поколению, если оно известно.",
+          "Name": "Местоположение площадки",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportWeatherArchiveStateV2"
+    },
+    {
+      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+      "DisplayName": "Restart accounting checkpoint",
+      "List": [
+        {
+          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+          "Name": "Restart accounting checkpoint",
+          "Type": 0
+        },
+        {
+          "Description": "Authoritative lifecycle snapshot at the checkpoint.",
+          "Name": "Activity",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusive end of the already accounted valve-open interval.",
+          "Name": "Accounted through",
+          "Type": 2
+        },
+        {
+          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted.",
+          "Name": "Ledger segment",
+          "Type": 3
+        },
+        {
+          "Description": "Expected end of an automatic timed run; manual runs have no known end.",
+          "Name": "Expected finish",
+          "Type": 4
+        },
+        {
+          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour.",
+          "Name": "Delivery rate",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerRestartAccountingV1"
+    },
+    {
+      "Description": "Объясняет, что делает система полива или почему полив отложен.",
+      "DisplayName": "Состояние полива",
+      "List": [
+        {
+          "Description": "Объясняет, что делает система полива или почему полив отложен.",
+          "Enum": [
+            {
+              "Description": "Подготовка актуальной информации.",
+              "Name": "Инициализация",
+              "Type": 1
+            },
+            {
+              "Description": "Сейчас растениям достаточно воды.",
+              "Name": "Полив не требуется",
+              "Type": 2
+            },
+            {
+              "Description": "Ожидаемый дождь должен обеспечить достаточно воды на данный момент.",
+              "Name": "Прогнозируемый дождь",
+              "Type": 3
+            },
+            {
+              "Description": "Полив отложен, потому что идет дождь, температура близка к нулю или ветер слишком сильный.",
+              "Name": "Ожидание безопасной погоды",
+              "Type": 4
+            },
+            {
+              "Description": "Во время периода без полива растения могут пересохнуть, поэтому безопасный полив планируется до его начала.",
+              "Name": "Полив перед паузой",
+              "Type": 5
+            },
+            {
+              "Description": "Полив перенесен на время после периода без полива.",
+              "Name": "Отложено",
+              "Type": 6
+            },
+            {
+              "Description": "Следующее время полива выбрано с учетом потребностей растений и доступной информации о погоде.",
+              "Name": "Запланировано",
+              "Type": 7
+            },
+            {
+              "Description": "Система полива ожидает подтверждения изменения от клапана.",
+              "Name": "Запуск или остановка",
+              "Type": 8
+            },
+            {
+              "Description": "Состояние клапана недоступно, поэтому автоматический полив не начнется.",
+              "Name": "Состояние клапана недоступно",
+              "Type": 9
+            },
+            {
+              "Description": "Сейчас этот участок поливается.",
+              "Name": "Клапан открыт",
+              "Type": 10
+            },
+            {
+              "Description": "Клапан сообщил о проблеме, поэтому автоматический полив приостановлен.",
+              "Name": "Неисправность клапана",
+              "Type": 11
+            },
+            {
+              "Description": "Актуальная погода недоступна, поэтому расписание использует лучшую сохраненную или сезонную оценку.",
+              "Name": "Оценка погоды без подключения",
+              "Type": 12
+            }
+          ],
+          "Name": "Состояние полива",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerScheduleConditionV1"
+    },
+    {
+      "Description": "Наблюдаемая и прогнозируемая температура на отдельной шкале, без объединения с ET или ветром.",
+      "DisplayName": "Температура",
+      "List": [
+        {
+          "Description": "Наблюдаемая и прогнозируемая температура на отдельной шкале, без объединения с ET или ветром.",
+          "Name": "Температура",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerTemperatureChartV1"
+    },
+    {
+      "Description": "Накладывает температуру и влажность по времени, сохраняя независимые левую и правую оси Y для несовместимых единиц измерения.",
+      "DisplayName": "Температура и относительная влажность",
+      "List": [
+        {
+          "Description": "Накладывает температуру и влажность по времени, сохраняя независимые левую и правую оси Y для несовместимых единиц измерения.",
+          "Name": "Температура и относительная влажность",
+          "Type": 0
+        },
+        {
+          "Description": "Температура использует первую автоматически масштабируемую ось Y.",
+          "Name": "Температура",
+          "Type": 1
+        },
+        {
+          "Description": "Относительная влажность использует независимую вторую ось Y.",
+          "Name": "Относительная влажность",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityChartV1"
+    },
+    {
+      "Description": "Различает две независимо масштабируемые линии на совмещенной погодной панели.",
+      "DisplayName": "Измерение температуры и влажности",
+      "List": [
+        {
+          "Description": "Различает две независимо масштабируемые линии на совмещенной погодной панели.",
+          "Enum": [
+            {
+              "Description": "Температура воздуха в градусах Цельсия.",
+              "Name": "Температура",
+              "Type": 1
+            },
+            {
+              "Description": "Относительная влажность в процентах.",
+              "Name": "Относительная влажность",
+              "Type": 2
+            }
+          ],
+          "Name": "Измерение температуры и влажности",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityMeasurementV1"
+    },
+    {
+      "Description": "Один наблюдаемый или прогнозируемый образец температуры воздуха.",
+      "DisplayName": "Строка температуры",
+      "List": [
+        {
+          "Description": "Один наблюдаемый или прогнозируемый образец температуры воздуха.",
+          "Name": "Строка температуры",
+          "Type": 0
+        },
+        {
+          "Description": "Начало периода поставщика.",
+          "Name": "Время",
+          "Type": 1
+        },
+        {
+          "Description": "Температура воздуха в градусах Цельсия.",
+          "Name": "Температура",
+          "Type": 2
+        },
+        {
+          "Description": "Определяет эту линию как температуру на совмещенной панели.",
+          "Name": "Измерение",
+          "Type": 3
+        },
+        {
+          "Description": "Наблюдаемое или прогнозируемое.",
+          "Name": "Источник",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerTemperatureRowV1"
+    },
+    {
+      "Description": "Время начала и длительность полива или паузы в поливе.",
+      "DisplayName": "Период времени",
+      "List": [
+        {
+          "Description": "Время начала и длительность полива или паузы в поливе.",
+          "Name": "Период времени",
+          "Type": 0
+        },
+        {
+          "Description": "Время начала этого периода.",
+          "Name": "Начинается в",
+          "Type": 1
+        },
+        {
+          "Description": "Продолжительность этого периода.",
+          "Name": "Длительность",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTimeSlotV1"
+    },
+    {
+      "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+      "DisplayName": "Valve problems",
+      "List": [
+        {
+          "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+          "Enum": [
+            {
+              "Description": "The valve reported a problem without a more specific classification.",
+              "Name": "General problem",
+              "Type": 1
+            },
+            {
+              "Description": "The valve cannot move because it is blocked.",
+              "Name": "Blocked",
+              "Type": 2
+            },
+            {
+              "Description": "The valve detected an unexpected water leak.",
+              "Name": "Leak detected",
+              "Type": 3
+            },
+            {
+              "Description": "The controller cannot detect a connected valve.",
+              "Name": "Not connected",
+              "Type": 4
+            },
+            {
+              "Description": "The valve or its wiring has a short circuit.",
+              "Name": "Short circuit",
+              "Type": 5
+            },
+            {
+              "Description": "The valve exceeded the available electrical current.",
+              "Name": "Too much current",
+              "Type": 6
+            }
+          ],
+          "Name": "Valve problems",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerValveFaultFlagsV1"
+    },
+    {
+      "Description": "Объединяет оцененные уровни воды с событиями полива для каждого участка.",
+      "DisplayName": "Водный баланс",
+      "List": [
+        {
+          "Description": "Объединяет оцененные уровни воды с событиями полива для каждого участка.",
+          "Name": "Водный баланс",
+          "Type": 0
+        },
+        {
+          "Description": "Оцененная вода и важные уровни полива для каждого участка.",
+          "Name": "Доступная вода и уровни",
+          "Type": 1
+        },
+        {
+          "Description": "Запланированные, пропущенные, неудачные, ручные и завершенные сеансы полива.",
+          "Name": "События полива",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterBalanceChartV1"
+    },
+    {
+      "Description": "Оцененная доступная вода и важные уровни полива для каждого участка.",
+      "DisplayName": "Линии водного баланса",
+      "List": [
+        {
+          "Description": "Оцененная доступная вода и важные уровни полива для каждого участка.",
+          "Name": "Линии водного баланса",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterBalanceLinesV1"
+    },
+    {
+      "Description": "Одна точка, показывающая оцененную доступную растениям воду или важный уровень полива. Доступная вода — это оценка, а не показание датчика влажности почвы.",
+      "DisplayName": "Точка водного баланса",
+      "List": [
+        {
+          "Description": "Одна точка, показывающая оцененную доступную растениям воду или важный уровень полива. Доступная вода — это оценка, а не показание датчика влажности почвы.",
+          "Name": "Точка водного баланса",
+          "Type": 0
+        },
+        {
+          "Description": "Время, к которому относится этот уровень воды.",
+          "Name": "Время",
+          "Type": 1
+        },
+        {
+          "Description": "Оцененное количество воды, доступной растениям, от 0 до 100 процентов.",
+          "Name": "Доступная вода",
+          "Type": 2
+        },
+        {
+          "Description": "Доступная вода или один важный уровень полива.",
+          "Name": "Линия",
+          "Type": 3
+        },
+        {
+          "Description": "Поливаемый участок, представленный этой частью графика.",
+          "Name": "Участок",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWaterBalancePointV1"
+    },
+    {
+      "Description": "Определяет доступную воду и важные уровни полива.",
+      "DisplayName": "Линия водного баланса",
+      "List": [
+        {
+          "Description": "Определяет доступную воду и важные уровни полива.",
+          "Enum": [
+            {
+              "Description": "Оцененное количество воды, доступной растениям.",
+              "Name": "Доступная вода",
+              "Type": 1
+            },
+            {
+              "Description": "Предполагается, что почва удерживает весь объем воды, который может использовать.",
+              "Name": "Полевая влагоемкость",
+              "Type": 2
+            },
+            {
+              "Description": "Уровень, при котором обычно наступает необходимость полива.",
+              "Name": "Порог полива",
+              "Type": 3
+            },
+            {
+              "Description": "Уровень, при котором полив становится срочно необходимым.",
+              "Name": "Критический порог",
+              "Type": 4
+            }
+          ],
+          "Name": "Линия водного баланса",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterBalanceSeriesV1"
+    },
+    {
+      "Description": "Показывает, какие данные использовались для оценки скорости потери воды растениями.",
+      "DisplayName": "Оценка расхода воды",
+      "List": [
+        {
+          "Description": "Показывает, какие данные использовались для оценки скорости потери воды растениями.",
+          "Enum": [
+            {
+              "Description": "На основе недавней погоды в этом месте.",
+              "Name": "Недавняя погода",
+              "Type": 1
+            },
+            {
+              "Description": "На основе местоположения и времени года.",
+              "Name": "Местоположение и сезон",
+              "Type": 2
+            },
+            {
+              "Description": "Используется, когда недоступны данные о недавней погоде и местоположении.",
+              "Name": "Встроенная оценка",
+              "Type": 3
+            }
+          ],
+          "Name": "Оценка расхода воды",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterDemandSourceV1"
+    },
+    {
+      "Description": "Хранит один независимо индексируемый погодный период или наблюдаемый интервал орошения в семидневной истории воды.",
+      "DisplayName": "Событие воды системы полива",
+      "List": [
+        {
+          "Description": "Хранит один независимо индексируемый погодный период или наблюдаемый интервал орошения в семидневной истории воды.",
+          "Name": "Событие воды системы полива",
+          "Type": 0
+        },
+        {
+          "Description": "Записывает осадки поставщика и эталонную эвапотранспирацию за один завершенный исторический период.",
+          "Name": "Погодный период",
+          "Type": 1
+        },
+        {
+          "Description": "Включительное начало завершенного погодного периода.",
+          "Name": "Время начала",
+          "Type": 2
+        },
+        {
+          "Description": "Длительность завершенного погодного периода в секундах.",
+          "Name": "Длительность",
+          "Type": 3
+        },
+        {
+          "Description": "Осадки поставщика, накопленные за период, в миллиметрах.",
+          "Name": "Осадки",
+          "Type": 4
+        },
+        {
+          "Description": "Эталонная эвапотранспирация FAO-56 поставщика, накопленная за период, в миллиметрах.",
+          "Name": "Эталонная эвапотранспирация",
+          "Type": 5
+        },
+        {
+          "Description": "Записывает воду, рассчитанную по фактическому времени открытия клапана Matter, включая ручные открытия, вместе с корректировщиком объема полива зоны в течение наблюдаемого интервала.",
+          "Name": "Интервал орошения",
+          "Type": 6
+        },
+        {
+          "Description": "Включительное начало учтенного интервала открытого клапана.",
+          "Name": "Время начала",
+          "Type": 7
+        },
+        {
+          "Description": "Длительность наблюдаемого интервала открытого клапана в секундах.",
+          "Name": "Длительность",
+          "Type": 8
+        },
+        {
+          "Description": "Настроенный процент полива зоны во время наблюдаемого интервала открытого клапана. Если настройка меняется, пока клапан открыт, история использует отдельные смежные интервалы.",
+          "Name": "Корректировщик объема полива",
+          "Type": 9
+        },
+        {
+          "Description": "Оцененная глубина слоя воды, рассчитанная по наблюдаемому времени открытия и настроенному профилю дождевальной головки, в миллиметрах.",
+          "Name": "Поданная вода",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWaterEventV1"
+    },
+    {
+      "Description": "Хранит последний полный снимок жизненного цикла перед записью соответствующей строки аудита. Явный признак текущего состояния отличает неконечную активность, которую можно согласовать после перезапуска, от конечного снимка, которому требуется только восстановление аудиторской записи.",
+      "DisplayName": "Авторитетное состояние активности полива",
+      "List": [
+        {
+          "Description": "Хранит последний полный снимок жизненного цикла перед записью соответствующей строки аудита. Явный признак текущего состояния отличает неконечную активность, которую можно согласовать после перезапуска, от конечного снимка, которому требуется только восстановление аудиторской записи.",
+          "Name": "Авторитетное состояние активности полива",
+          "Type": 0
+        },
+        {
+          "Description": "Полный последний снимок жизненного цикла либо отсутствие значения до первой активности. Конечные снимки остаются здесь до начала более новой активности.",
+          "Name": "Последняя активность",
+          "Type": 1
+        },
+        {
+          "Description": "Истина только тогда, когда последняя активность запланирована, ожидает выполнения команды или выполняется и должна быть согласована при запуске.",
+          "Name": "Активность является текущей",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWateringActivityStateV2"
+    },
+    {
+      "Description": "Хранит запланированное и фактическое время отдельно, чтобы отчет мог объяснить, что было запланировано, что произошло и почему сеанс был пропущен или завершился неудачно.",
+      "DisplayName": "Сохраненная активность полива",
+      "List": [
+        {
+          "Description": "Хранит запланированное и фактическое время отдельно, чтобы отчет мог объяснить, что было запланировано, что произошло и почему сеанс был пропущен или завершился неудачно.",
+          "Name": "Сохраненная активность полива",
+          "Type": 0
+        },
+        {
+          "Description": "Стабильный знаковый индекс базы данных, повторно используемый при каждом обновлении жизненного цикла.",
+          "Name": "Индекс активности",
+          "Type": 1
+        },
+        {
+          "Description": "Последовательность без коллизий в пределах одной опорной секунды и одного источника.",
+          "Name": "Порядковый номер активности",
+          "Type": 2
+        },
+        {
+          "Description": "Автоматическая, ручная или неклассифицируемая устаревшая активность.",
+          "Name": "Источник",
+          "Type": 3
+        },
+        {
+          "Description": "Текущее или конечное долговременное состояние жизненного цикла.",
+          "Name": "Результат",
+          "Type": 4
+        },
+        {
+          "Description": "Долговременное объяснение текущего или конечного результата.",
+          "Name": "Причина",
+          "Type": 5
+        },
+        {
+          "Description": "Запланированное автоматическое начало. Для ручных и устаревших активностей отсутствует.",
+          "Name": "Запланированное начало",
+          "Type": 6
+        },
+        {
+          "Description": "Запланированная длительность автоматического открытия клапана в секундах. Она никогда не заменяется фактически наблюдаемой длительностью.",
+          "Name": "Запланированная длительность",
+          "Type": 7
+        },
+        {
+          "Description": "Запланированная автоматическая глубина слоя воды в миллиметрах.",
+          "Name": "Запланированная вода",
+          "Type": 8
+        },
+        {
+          "Description": "Первое наблюдаемое время открытия клапана; отсутствует, пока открытие не наблюдалось.",
+          "Name": "Фактическое начало",
+          "Type": 9
+        },
+        {
+          "Description": "Учтенная наблюдаемая длительность открытия клапана в секундах.",
+          "Name": "Фактическая длительность",
+          "Type": 10
+        },
+        {
+          "Description": "Глубина слоя воды, оцененная по фактическому времени открытия и профилю дождевальной головки, а не по расходомеру.",
+          "Name": "Поданная вода",
+          "Type": 11
+        },
+        {
+          "Description": "Корректировщик зоны, действовавший при создании этой активности.",
+          "Name": "Корректировщик объема полива",
+          "Type": 12
+        },
+        {
+          "Description": "Время UTC, представленное последним сохраненным обновлением жизненного цикла.",
+          "Name": "Обновлено в",
+          "Type": 13
+        }
+      ],
+      "Name": "SprinklerWateringActivityV1"
+    },
+    {
+      "Description": "Запланированный, пропущенный, неудачный, ручной или завершенный сеанс полива.",
+      "DisplayName": "Событие полива",
+      "List": [
+        {
+          "Description": "Запланированный, пропущенный, неудачный, ручной или завершенный сеанс полива.",
+          "Name": "Событие полива",
+          "Type": 0
+        },
+        {
+          "Description": "Время начала полива или запланированное время его начала.",
+          "Name": "Время",
+          "Type": 1
+        },
+        {
+          "Description": "Оцененная доступная растениям вода в этот момент.",
+          "Name": "Доступная вода",
+          "Type": 2
+        },
+        {
+          "Description": "Поливаемый участок для этого события.",
+          "Name": "Участок",
+          "Type": 3
+        },
+        {
+          "Description": "Что произошло с этим планом или сеансом полива.",
+          "Name": "Результат",
+          "Type": 4
+        },
+        {
+          "Description": "Указывает, был ли полив автоматическим, ручным или неизвестного происхождения.",
+          "Name": "Запущено",
+          "Type": 5
+        },
+        {
+          "Description": "Почему сеанс был запланирован, изменен, остановлен или завершился неудачно.",
+          "Name": "Причина",
+          "Type": 6
+        },
+        {
+          "Description": "Как долго должен был выполняться автоматический полив.",
+          "Name": "Запланированная длительность",
+          "Type": 7
+        },
+        {
+          "Description": "Как долго клапан наблюдался открытым.",
+          "Name": "Фактическая длительность",
+          "Type": 8
+        },
+        {
+          "Description": "Стабильный ключ фокуса, уникальный для всех настроенных зон.",
+          "Name": "Ключ решения",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWateringDecisionRowV1"
+    },
+    {
+      "Description": "Показывает автоматический и ручной полив на графике водного баланса.",
+      "DisplayName": "События полива",
+      "List": [
+        {
+          "Description": "Показывает автоматический и ручной полив на графике водного баланса.",
+          "Name": "События полива",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWateringDecisionsV1"
+    },
+    {
+      "Description": "Выбирает, находится ли система полива в активном режиме или подготовлена к зиме.",
+      "DisplayName": "Режим полива",
+      "List": [
+        {
+          "Description": "Выбирает, находится ли система полива в активном режиме или подготовлена к зиме.",
+          "Enum": [
+            {
+              "Description": "Автоматический полив включен.",
+              "Name": "Активно",
+              "Type": 1
+            },
+            {
+              "Description": "Автоматический полив отключен на холодный сезон.",
+              "Name": "Подготовлено к зиме",
+              "Type": 2
+            }
+          ],
+          "Name": "Режим полива",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringModeV1"
+    },
+    {
+      "Description": "Показывает, был ли полив автоматическим или запущен другим способом.",
+      "DisplayName": "Как начался полив",
+      "List": [
+        {
+          "Description": "Показывает, был ли полив автоматическим или запущен другим способом.",
+          "Enum": [
+            {
+              "Description": "Умный полив запустил этот сеанс полива.",
+              "Name": "Автоматически",
+              "Type": 1
+            },
+            {
+              "Description": "Клапан был открыт вне системы «Умный полив».",
+              "Name": "Вручную",
+              "Type": 2
+            },
+            {
+              "Description": "В старых сохраненных данных не указано, как начался этот сеанс полива.",
+              "Name": "Неизвестно",
+              "Type": 3
+            }
+          ],
+          "Name": "Как начался полив",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOriginV1"
+    },
+    {
+      "Description": "Показывает, что произошло с планом или сеансом полива.",
+      "DisplayName": "Результат полива",
+      "List": [
+        {
+          "Description": "Показывает, что произошло с планом или сеансом полива.",
+          "Enum": [
+            {
+              "Description": "Рассчитанный будущий автоматический сеанс по-прежнему запланирован.",
+              "Name": "Запланировано",
+              "Type": 1
+            },
+            {
+              "Description": "Система полива отправила клапану команду открытия и ожидает подтверждения.",
+              "Name": "Ожидание команды",
+              "Type": 2
+            },
+            {
+              "Description": "Клапан открыт, и полив учитывается.",
+              "Name": "Выполняется",
+              "Type": 3
+            },
+            {
+              "Description": "Полив завершился после закрытия клапана.",
+              "Name": "Завершено",
+              "Type": 4
+            },
+            {
+              "Description": "Запланированный сеанс не начался из-за погоды, настроек или требований безопасности.",
+              "Name": "Пропущено",
+              "Type": 5
+            },
+            {
+              "Description": "Проблема клапана не позволила завершить сеанс полива.",
+              "Name": "Неудачно",
+              "Type": 6
+            },
+            {
+              "Description": "Более новый план полива заменил этот до его начала.",
+              "Name": "Заменено",
+              "Type": 7
+            }
+          ],
+          "Name": "Результат полива",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOutcomeV1"
+    },
+    {
+      "Description": "Объясняет, почему сеанс полива был запланирован, изменен, остановлен или завершился неудачно.",
+      "DisplayName": "Причина полива",
+      "List": [
+        {
+          "Description": "Объясняет, почему сеанс полива был запланирован, изменен, остановлен или завершился неудачно.",
+          "Enum": [
+            {
+              "Description": "Умный полив выбрал этот сеанс на основе потребностей растений и погоды.",
+              "Name": "Умное расписание",
+              "Type": 1
+            },
+            {
+              "Description": "Клапан был открыт вне системы «Умный полив».",
+              "Name": "Ручное управление",
+              "Type": 2
+            },
+            {
+              "Description": "Ожидаемый дождь отложил или заменил запланированный полив.",
+              "Name": "Прогнозируемый дождь",
+              "Type": 3
+            },
+            {
+              "Description": "Зарегистрированный дождь остановил или предотвратил полив.",
+              "Name": "Наблюдаемый дождь",
+              "Type": 4
+            },
+            {
+              "Description": "Температура была слишком низкой для безопасного полива.",
+              "Name": "Морозная погода",
+              "Type": 5
+            },
+            {
+              "Description": "Ветер был слишком сильным для этого способа полива.",
+              "Name": "Сильный ветер",
+              "Type": 6
+            },
+            {
+              "Description": "Погода была небезопасной для полива.",
+              "Name": "Другие небезопасные погодные условия",
+              "Type": 7
+            },
+            {
+              "Description": "Период без полива не позволил запустить запланированный сеанс.",
+              "Name": "Запрет на полив",
+              "Type": 8
+            },
+            {
+              "Description": "Система была подготовлена к зиме, поэтому автоматический полив был отключен.",
+              "Name": "Подготовка к зиме",
+              "Type": 9
+            },
+            {
+              "Description": "Состояние клапана было недоступно.",
+              "Name": "Клапан недоступен",
+              "Type": 10
+            },
+            {
+              "Description": "Клапан сообщил о проблеме.",
+              "Name": "Неисправность клапана",
+              "Type": 11
+            },
+            {
+              "Description": "Клапан не принял запрос.",
+              "Name": "Ошибка команды",
+              "Type": 12
+            },
+            {
+              "Description": "Клапан не подтвердил запрос вовремя.",
+              "Name": "Тайм-аут команды",
+              "Type": 13
+            },
+            {
+              "Description": "Клапану была отправлена команда открытия, но полив не был обнаружен.",
+              "Name": "Открытие не обнаружено",
+              "Type": 14
+            },
+            {
+              "Description": "Более новый расчет заменил запланированный сеанс.",
+              "Name": "Пересчитано",
+              "Type": 15
+            },
+            {
+              "Description": "В старых сохраненных данных нет более конкретной причины.",
+              "Name": "Неизвестно",
+              "Type": 16
+            },
+            {
+              "Description": "The valve was observed closed before its timed run was due to finish.",
+              "Name": "Stopped early",
+              "Type": 17
+            }
+          ],
+          "Name": "Причина полива",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringReasonV1"
+    },
+    {
+      "Description": "Показывает, откуда поступила вода или ожидается ли она позже.",
+      "DisplayName": "Источник воды",
+      "List": [
+        {
+          "Description": "Показывает, откуда поступила вода или ожидается ли она позже.",
+          "Enum": [
+            {
+              "Description": "Дождь, уже зарегистрированный погодным сервисом.",
+              "Name": "Дождь",
+              "Type": 1
+            },
+            {
+              "Description": "Вода, оцененная по длительности открытия клапана.",
+              "Name": "Орошение",
+              "Type": 2
+            },
+            {
+              "Description": "Дождь, ожидаемый по прогнозу.",
+              "Name": "Прогнозируемый дождь",
+              "Type": 3
+            },
+            {
+              "Description": "Автоматический полив, который запланирован, но еще не начался.",
+              "Name": "Запланированная вода",
+              "Type": 4
+            }
+          ],
+          "Name": "Источник воды",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterInputTypeV1"
+    },
+    {
+      "Description": "Объединяет компактную сводку «дождь и орошение» с суточными деталями.",
+      "DisplayName": "Использование воды",
+      "List": [
+        {
+          "Description": "Объединяет компактную сводку «дождь и орошение» с суточными деталями.",
+          "Name": "Использование воды",
+          "Type": 0
+        },
+        {
+          "Description": "Shared rain and per-area irrigation during the selected dates.",
+          "Name": "Summary",
+          "Type": 1
+        },
+        {
+          "Description": "Rain and watering amounts by local calendar date.",
+          "Name": "Daily details",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterUsageChartV1"
+    },
+    {
+      "Description": "Сохраняет участок видимым, если за выбранные даты на нем не было дождя или полива.",
+      "DisplayName": "Участок без зарегистрированной воды",
+      "List": [
+        {
+          "Description": "Сохраняет участок видимым, если за выбранные даты на нем не было дождя или полива.",
+          "Name": "Участок без зарегистрированной воды",
+          "Type": 0
+        },
+        {
+          "Description": "Центрирует сообщение на графике.",
+          "Name": "Положение подписи",
+          "Type": 1
+        },
+        {
+          "Description": "Поливаемый участок без зарегистрированной воды.",
+          "Name": "Участок",
+          "Type": 2
+        },
+        {
+          "Description": "Объясняет, почему для этого участка на графике нет столбцов.",
+          "Name": "Сообщение",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZoneRowV1"
+    },
+    {
+      "Description": "Сообщения для участков, где за выбранные даты не было дождя или полива.",
+      "DisplayName": "Участки без зарегистрированной воды",
+      "List": [
+        {
+          "Description": "Сообщения для участков, где за выбранные даты не было дождя или полива.",
+          "Name": "Участки без зарегистрированной воды",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZonesV1"
+    },
+    {
+      "Description": "Показывает объемы дождя и полива по датам для каждого участка.",
+      "DisplayName": "Использование воды",
+      "List": [
+        {
+          "Description": "Показывает объемы дождя и полива по датам для каждого участка.",
+          "Name": "Использование воды",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageMarksV1"
+    },
+    {
+      "Description": "Один объем дождя или полива, показанный для участка на определенную дату.",
+      "DisplayName": "Элемент использования воды",
+      "List": [
+        {
+          "Description": "Один объем дождя или полива, показанный для участка на определенную дату.",
+          "Name": "Элемент использования воды",
+          "Type": 0
+        },
+        {
+          "Description": "Местная календарная дата для этого объема дождя или полива.",
+          "Name": "Дата",
+          "Type": 1
+        },
+        {
+          "Description": "Место на графике, где начинается этот объем.",
+          "Name": "Начало столбца",
+          "Type": 2
+        },
+        {
+          "Description": "Место на графике, где заканчивается этот объем.",
+          "Name": "Конец столбца",
+          "Type": 3
+        },
+        {
+          "Description": "Дождь или полив, представленный этой частью столбца.",
+          "Name": "Объем воды",
+          "Type": 4
+        },
+        {
+          "Description": "Зарегистрированный дождь, полив, ожидаемый дождь или запланированный полив.",
+          "Name": "Источник воды",
+          "Type": 5
+        },
+        {
+          "Description": "Поливаемый участок, представленный этой строкой.",
+          "Name": "Участок",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageRowV1"
+    },
+    {
+      "Description": "Shows shared rain and irrigation for every area together on one chart.",
+      "DisplayName": "Water-use summary",
+      "List": [
+        {
+          "Description": "Shows shared rain and irrigation for every area together on one chart.",
+          "Name": "Water-use summary",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryChartV1"
+    },
+    {
+      "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+      "DisplayName": "Water-use summary item",
+      "List": [
+        {
+          "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+          "Name": "Water-use summary item",
+          "Type": 0
+        },
+        {
+          "Description": "Millimeter scale for comparing rain and irrigation.",
+          "Name": "Water amount",
+          "Type": 1
+        },
+        {
+          "Description": "Where this contribution ends in its stacked total.",
+          "Name": "Amount end",
+          "Type": 2
+        },
+        {
+          "Description": "Total rain or irrigation represented by this part of the bar.",
+          "Name": "Amount",
+          "Type": 3
+        },
+        {
+          "Description": "Recorded rain, forecast rain, actual watering, or scheduled watering.",
+          "Name": "Water source",
+          "Type": 4
+        },
+        {
+          "Description": "Keeps shared rain first, followed by every configured area.",
+          "Name": "Lane",
+          "Type": 5
+        },
+        {
+          "Description": "Shows Rain or the configured area's name on the summary axis.",
+          "Name": "Rain or area",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryRowV1"
+    },
+    {
+      "Description": "Показывает, было ли значение зарегистрировано или спрогнозировано.",
+      "DisplayName": "Источник погоды",
+      "List": [
+        {
+          "Description": "Показывает, было ли значение зарегистрировано или спрогнозировано.",
+          "Enum": [
+            {
+              "Description": "Завершенное погодное наблюдение.",
+              "Name": "Записанная история",
+              "Type": 1
+            },
+            {
+              "Description": "Недавнее наблюдение текущей погоды.",
+              "Name": "Текущие условия",
+              "Type": 2
+            },
+            {
+              "Description": "Будущее значение из последнего прогноза.",
+              "Name": "Прогноз",
+              "Type": 3
+            }
+          ],
+          "Name": "Источник погоды",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherChartSourceV1"
+    },
+    {
+      "Description": "Показывает вместе оцененную потерю воды, температуру, влажность и ветер.",
+      "DisplayName": "Погода",
+      "List": [
+        {
+          "Description": "Показывает вместе оцененную потерю воды, температуру, влажность и ветер.",
+          "Name": "Погода",
+          "Type": 0
+        },
+        {
+          "Description": "Зарегистрированная и прогнозируемая потеря воды из-за испарения и потребления растениями.",
+          "Name": "Оцененная потеря воды",
+          "Type": 1
+        },
+        {
+          "Description": "Наблюдаемые и прогнозируемые значения с независимыми осями Y.",
+          "Name": "Температура и относительная влажность",
+          "Type": 2
+        },
+        {
+          "Description": "Наблюдаемые и прогнозируемые устойчивый ветер и порывы.",
+          "Name": "Ветер",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherEtChartV1"
+    },
+    {
+      "Description": "Наблюдаемые и прогнозируемые устойчивый ветер и порывы на одной сопоставимой шкале.",
+      "DisplayName": "Ветер и порывы",
+      "List": [
+        {
+          "Description": "Наблюдаемые и прогнозируемые устойчивый ветер и порывы на одной сопоставимой шкале.",
+          "Name": "Ветер и порывы",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWindChartV1"
+    },
+    {
+      "Description": "Один образец устойчивого ветра или порыва.",
+      "DisplayName": "Строка ветра",
+      "List": [
+        {
+          "Description": "Один образец устойчивого ветра или порыва.",
+          "Name": "Строка ветра",
+          "Type": 0
+        },
+        {
+          "Description": "Начало периода поставщика.",
+          "Name": "Время",
+          "Type": 1
+        },
+        {
+          "Description": "Скорость устойчивого ветра или порыва в метрах в секунду.",
+          "Name": "Скорость ветра",
+          "Type": 2
+        },
+        {
+          "Description": "Наблюдаемый или прогнозируемый устойчивый ветер либо порыв.",
+          "Name": "Серия",
+          "Type": 3
+        },
+        {
+          "Description": "Созданный сервером идентификатор для этого времени и серии ветра.",
+          "Name": "Стабильный ключ",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWindRowV1"
+    },
+    {
+      "Description": "Разделяет устойчивый ветер и порывы для наблюдаемых и прогнозируемых периодов.",
+      "DisplayName": "Серия ветра",
+      "List": [
+        {
+          "Description": "Разделяет устойчивый ветер и порывы для наблюдаемых и прогнозируемых периодов.",
+          "Enum": [
+            {
+              "Description": "Устойчивый ветер за завершенный исторический период.",
+              "Name": "Исторический устойчивый ветер",
+              "Type": 1
+            },
+            {
+              "Description": "Максимальный порыв за завершенный исторический период.",
+              "Name": "Исторический порыв",
+              "Type": 2
+            },
+            {
+              "Description": "Устойчивый ветер из сохраненного текущего наблюдения.",
+              "Name": "Текущий устойчивый ветер",
+              "Type": 3
+            },
+            {
+              "Description": "Максимальный порыв из сохраненного текущего наблюдения.",
+              "Name": "Текущий порыв",
+              "Type": 4
+            },
+            {
+              "Description": "Прогнозируемый устойчивый ветер.",
+              "Name": "Прогнозируемый устойчивый ветер",
+              "Type": 5
+            },
+            {
+              "Description": "Прогнозируемый максимальный порыв.",
+              "Name": "Прогнозируемый порыв",
+              "Type": 6
+            }
+          ],
+          "Name": "Серия ветра",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWindSeriesV1"
+    },
+    {
+      "Description": "Запоминает последнее напоминание, чтобы не отправлять его повторно слишком скоро.",
+      "DisplayName": "Последнее напоминание о подготовке к зиме",
+      "List": [
+        {
+          "Description": "Запоминает последнее напоминание, чтобы не отправлять его повторно слишком скоро.",
+          "Name": "Последнее напоминание о подготовке к зиме",
+          "Type": 0
+        },
+        {
+          "Description": "Время отправки последнего напоминания.",
+          "Name": "Отправлено в",
+          "Type": 1
+        },
+        {
+          "Description": "Причина отправки последнего напоминания.",
+          "Name": "Причина",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderMemoryV1"
+    },
+    {
+      "Description": "Объясняет, почему было отправлено последнее напоминание о холодной погоде.",
+      "DisplayName": "Причина напоминания о подготовке к зиме",
+      "List": [
+        {
+          "Description": "Объясняет, почему было отправлено последнее напоминание о холодной погоде.",
+          "Enum": [
+            {
+              "Description": "Широта площадки и текущий сезон указывают на приближение холодной погоды.",
+              "Name": "Местоположение и сезон",
+              "Type": 1
+            },
+            {
+              "Description": "Свежие данные о текущих условиях или прогнозе показывают температуру на уровне или ниже порога безопасности системы полива для холодной погоды.",
+              "Name": "Морозная погода",
+              "Type": 2
+            }
+          ],
+          "Name": "Причина напоминания о подготовке к зиме",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderReasonV1"
+    },
+    {
+      "Description": "Показывает данные, на которых основан текущий план полива.",
+      "DisplayName": "Сведения о зоне",
+      "List": [
+        {
+          "Description": "Показывает данные, на которых основан текущий план полива.",
+          "Name": "Сведения о зоне",
+          "Type": 0
+        },
+        {
+          "Description": "Данные, используемые для оценки того, когда растениям в следующий раз понадобится вода.",
+          "Name": "Оценка расхода воды",
+          "Type": 1
+        },
+        {
+          "Description": "Оцененный объем воды, теряемый каждый день из-за испарения и потребления растениями.",
+          "Name": "Оцененная суточная потеря воды",
+          "Type": 2
+        },
+        {
+          "Description": "Время расчета этого плана полива.",
+          "Name": "Последнее обновление",
+          "Type": 3
+        },
+        {
+          "Description": "Текущее решение о поливе или причина задержки.",
+          "Name": "Состояние",
+          "Type": 4
+        },
+        {
+          "Description": "Запланированные время начала и длительность. Погода или доступность клапана все еще могут изменить план.",
+          "Name": "Следующий полив",
+          "Type": 5
+        },
+        {
+          "Description": "Объем воды, запланированный для следующего автоматического сеанса.",
+          "Name": "Запланированная вода",
+          "Type": 6
+        },
+        {
+          "Description": "Оценка того, сколько воды требуется растениям.",
+          "Name": "Оцененный дефицит воды",
+          "Type": 7
+        },
+        {
+          "Description": "Дождь, учтенный за последние семь дней.",
+          "Name": "Недавний дождь",
+          "Type": 8
+        },
+        {
+          "Description": "Полив, учтенный за последние семь дней.",
+          "Name": "Недавний полив",
+          "Type": 9
+        },
+        {
+          "Description": "Указывает, открыт ли клапан в данный момент.",
+          "Name": "Полив сейчас",
+          "Type": 10
+        },
+        {
+          "Description": "Автоматический полив ожидает, пока состояние клапана станет доступно.",
+          "Name": "Состояние клапана доступно",
+          "Type": 11
+        },
+        {
+          "Description": "Проблемы, о которых сообщил клапан. Одновременно может присутствовать несколько проблем.",
+          "Name": "Проблемы клапана",
+          "Type": 12
+        }
+      ],
+      "Name": "SprinklerZoneActiveStateV1"
+    },
+    {
+      "Description": "Показывает полный план полива или то, что система подготовлена к зиме.",
+      "DisplayName": "Подробное состояние системы полива",
+      "List": [
+        {
+          "Description": "Показывает полный план полива или то, что система подготовлена к зиме.",
+          "Name": "Подробное состояние системы полива",
+          "Type": 0
+        },
+        {
+          "Description": "Автоматический полив включен, и все текущие данные зоны доступны.",
+          "Name": "Активно",
+          "Type": 1
+        },
+        {
+          "Description": "Текущий план полива, оценка воды и состояние клапана.",
+          "Name": "Сведения о зоне",
+          "Type": 2
+        },
+        {
+          "Description": "Автоматический полив отключен для всей системы, и ни один интервал полива не запланирован.",
+          "Name": "Подготовлено к зиме",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerZoneAdvancedStateV1"
+    },
+    {
+      "Description": "Explains why a requested sprinkler setting was not changed.",
+      "DisplayName": "Configuration error",
+      "List": [
+        {
+          "Description": "Explains why a requested sprinkler setting was not changed.",
+          "Enum": [
+            {
+              "Description": "The percentage was outside the supported range or step.",
+              "Name": "Invalid water amount",
+              "Type": 1
+            },
+            {
+              "Description": "The replacement contained too many periods or an invalid interval.",
+              "Name": "Invalid no-watering periods",
+              "Type": 2
+            }
+          ],
+          "Name": "Configuration error",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationErrorV1"
+    },
+    {
+      "Description": "Настройте объем воды, периоды без полива или активность автоматического полива.",
+      "DisplayName": "Настройки зоны",
+      "List": [
+        {
+          "Description": "Настройте объем воды, периоды без полива или активность автоматического полива.",
+          "Name": "Настройки зоны",
+          "Type": 0
+        },
+        {
+          "Description": "Используйте 100% для рекомендуемого объема, меньшее значение для меньшего количества воды или большее значение для большего количества воды.",
+          "Name": "Объем воды",
+          "Type": 1
+        },
+        {
+          "Description": "Times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 2
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 3
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationV1"
+    },
+    {
+      "Description": "Сохраняет компактные, устойчивые к перезапуску корректировщик объема воды, ограничения и свернутую базовую линию водного баланса для одного настроенного клапана. События воды хранятся отдельно как добавочные индексированные записи.",
+      "DisplayName": "Память зоны системы полива",
+      "List": [
+        {
+          "Description": "Сохраняет компактные, устойчивые к перезапуску корректировщик объема воды, ограничения и свернутую базовую линию водного баланса для одного настроенного клапана. События воды хранятся отдельно как добавочные индексированные записи.",
+          "Name": "Память зоны системы полива",
+          "Type": 0
+        },
+        {
+          "Description": "Процент адаптивного объема полива, который следует применять. Значение по умолчанию — 100%.",
+          "Name": "Корректировщик объема полива",
+          "Type": 1
+        },
+        {
+          "Description": "Нормализованные ограничения планирования во время выполнения.",
+          "Name": "Периоды запрета полива",
+          "Type": 2
+        },
+        {
+          "Description": "Полуоткрытый интервал, в течение которого зона не может поливаться.",
+          "Name": "Период запрета полива",
+          "Type": 3
+        },
+        {
+          "Description": "Дата и время, до которых более старые поступления воды были свернуты в `baseline_deficit_millimeters`.",
+          "Name": "Время базовой линии баланса",
+          "Type": 4
+        },
+        {
+          "Description": "Дефицит воды в корневой зоне на момент `balance_baseline_at`, в миллиметрах.",
+          "Name": "Базовый дефицит",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerZoneMemoryV1"
+    },
+    {
+      "Description": "Просматривайте состояние и подробности этого участка или изменяйте его настройки полива.",
+      "DisplayName": "Управление поливом",
+      "List": [
+        {
+          "Description": "Просматривайте состояние и подробности этого участка или изменяйте его настройки полива.",
+          "Name": "Управление поливом",
+          "Type": 0
+        },
+        {
+          "Description": "Показывает, что сейчас делает этот участок и когда он будет поливаться в следующий раз.",
+          "Name": "Просмотреть состояние",
+          "Type": 1
+        },
+        {
+          "Description": "Текущее состояние полива и план следующего полива.",
+          "Name": "Текущее состояние",
+          "Type": 2
+        },
+        {
+          "Description": "Текущее состояние этого участка или подготовленной к зиме системы.",
+          "Name": "Состояние системы полива",
+          "Type": 3
+        },
+        {
+          "Description": "Показывает оценку воды, план полива и состояние клапана.",
+          "Name": "Просмотреть подробности",
+          "Type": 4
+        },
+        {
+          "Description": "Оценка воды, план полива и состояние клапана.",
+          "Name": "Сведения о зоне",
+          "Type": 5
+        },
+        {
+          "Description": "Показывает объем воды, периоды без полива и активное состояние.",
+          "Name": "Просмотреть настройки",
+          "Type": 6
+        },
+        {
+          "Description": "Текущие объем воды, периоды без полива и активное состояние. Позже принятые изменения передаются как данные подписки до их окончательного подтверждения.",
+          "Name": "Настройки зоны",
+          "Type": 7
+        },
+        {
+          "Description": "Текущие настройки этого участка.",
+          "Name": "Настройки",
+          "Type": 8
+        },
+        {
+          "Description": "Использовать больше или меньше воды по сравнению с рекомендуемым объемом.",
+          "Name": "Изменить объем воды",
+          "Type": 9
+        },
+        {
+          "Description": "Use more or less water than the recommended amount.",
+          "Name": "Change water amount",
+          "Type": 10
+        },
+        {
+          "Description": "Use 100% for the recommended amount, a lower value for less water, or a higher value for more water.",
+          "Name": "Water amount",
+          "Type": 11
+        },
+        {
+          "Description": "Replace the times when this area must not be watered.",
+          "Name": "Change no-watering periods",
+          "Type": 12
+        },
+        {
+          "Description": "The complete list of times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 13
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 14
+        },
+        {
+          "Description": "Turn automatic watering on or off.",
+          "Name": "Change active state",
+          "Type": 15
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 16
+        },
+        {
+          "Description": "Confirms that a requested setting was persisted and applied. The current subscribed configuration remains installed.",
+          "Name": "Change accepted",
+          "Type": 17
+        },
+        {
+          "Description": "Explains why a requested setting was not changed while preserving the current subscribed configuration for correction and retry.",
+          "Name": "Change rejected",
+          "Type": 18
+        },
+        {
+          "Description": "A localized explanation of the invalid setting.",
+          "Name": "Error message",
+          "Type": 19
+        },
+        {
+          "Description": "The reason the setting was rejected.",
+          "Name": "Error",
+          "Type": 20
+        }
+      ],
+      "Name": "SprinklerZoneProtocol"
+    },
+    {
+      "Description": "Показывает текущее состояние и план следующего полива.",
+      "DisplayName": "Состояние системы полива",
+      "List": [
+        {
+          "Description": "Показывает текущее состояние и план следующего полива.",
+          "Name": "Состояние системы полива",
+          "Type": 0
+        },
+        {
+          "Description": "Автоматический полив включен.",
+          "Name": "Активно",
+          "Type": 1
+        },
+        {
+          "Description": "Текущее решение о поливе или причина задержки.",
+          "Name": "Состояние",
+          "Type": 2
+        },
+        {
+          "Description": "Запланированные время начала и длительность.",
+          "Name": "Следующий полив",
+          "Type": 3
+        },
+        {
+          "Description": "Автоматический полив отключен для всей системы, и ни один интервал полива не запланирован.",
+          "Name": "Подготовлено к зиме",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneStateV1"
+    },
+    {
+      "Description": "Настройте один газон, сад или засаженный участок, который поливается независимо.",
+      "DisplayName": "Поливаемый участок",
+      "List": [
+        {
+          "Description": "Настройте один газон, сад или засаженный участок, который поливается независимо.",
+          "Name": "Поливаемый участок",
+          "Type": 0
+        },
+        {
+          "Description": "Выберите клапан, управляющий этим участком.",
+          "Name": "Клапан полива",
+          "Type": 1
+        },
+        {
+          "Description": "Выберите, что растет на этом участке.",
+          "Name": "Тип растений",
+          "Type": 2
+        },
+        {
+          "Description": "Выберите, как вода подается на этот участок.",
+          "Name": "Способ полива",
+          "Type": 3
+        },
+        {
+          "Description": "Выберите, где будут доступны состояние, настройки и элементы управления этого участка.",
+          "Name": "Управление участком",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "System record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "System record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "ArchiveState",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "WateringMode",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WinterizationReminder",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "WeatherHistory",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "WeatherObservation",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 10
+        }
+      ],
+      "Name": "SystemRecord"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Valve record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Valve record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Memory",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "ActivityState",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "Restart",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WaterEvent",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Activity",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "DailyReport",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "ModeledWeatherGap",
+          "Type": 10
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 11
+        }
+      ],
+      "Name": "ZoneRecord"
+    }
+  ]
+}

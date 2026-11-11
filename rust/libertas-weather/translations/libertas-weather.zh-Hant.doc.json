@@ -1,0 +1,1825 @@
+{
+  "Description": "定義針對 Libertas 應用程式所做決策而設計的天氣資料。灑水器結構描述會將中樞提供的場地位置，與近期歷史、目前狀況及預報資料分開保存。每個天氣區段都有不同的重新整理間隔，並可各自成功或失敗。執行階段快照可能包含任意區段組合。應用程式會分別保存每個成功取得的區段，並在天氣資料重新整理失敗時保留較舊的區段。增量訂閱使用紀元時間戳記與序號游標，讓用戶端能區分伺服器游標重設與過時或順序錯亂的資料、重播保留的變更，或從快取資料復原選定的時間範圍。建築 HVAC 結構描述僅提供熱負載預測、熱泵運作、節能器決策及受控室外空氣通風所需的室外輸入資料。由於天氣與室外空氣品質區段使用不同的提供者，且資料時效特性不同，因此兩者會維持獨立。本機設備與生命安全控制系統必須繼續使用自身的感測器；快取的網際網路天氣資料是監督控制輸入，而非安全訊號。",
+  "DisplayName": "Libertas 天氣",
+  "DocumentVersion": "0.0.2",
+  "List": [],
+  "Locale": "zh-Hant",
+  "StringResources": {},
+  "Types": [
+    {
+      "Description": "包含監督式 HVAC 控制所使用的最新建模室外狀況。它無法取代用於設備保護或防凍保護的本機室外感測器。",
+      "DisplayName": "建築 HVAC 目前天氣",
+      "List": [
+        {
+          "Description": "包含監督式 HVAC 控制所使用的最新建模室外狀況。它無法取代用於設備保護或防凍保護的本機室外感測器。",
+          "Name": "建築 HVAC 目前天氣",
+          "Type": 0
+        },
+        {
+          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
+          "Name": "Retrieved at",
+          "Type": 1
+        },
+        {
+          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
+          "Name": "Valid until",
+          "Type": 2
+        },
+        {
+          "Description": "The provider-supplied date and time represented by these current conditions.",
+          "Name": "Valid at",
+          "Type": 3
+        },
+        {
+          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
+          "Name": "Observation interval",
+          "Type": 4
+        },
+        {
+          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
+          "Name": "Outdoor conditions",
+          "Type": 5
+        }
+      ],
+      "Name": "BuildingHvacCurrentWeatherV1"
+    },
+    {
+      "Description": "包含建模的室外污染物濃度，用於避免在不健康的狀況下增加機械式室外進氣量。這些區域模型數值無法取代本機安全感測器或官方緊急指示。",
+      "DisplayName": "建築 HVAC 室外空氣品質時段",
+      "List": [
+        {
+          "Description": "包含建模的室外污染物濃度，用於避免在不健康的狀況下增加機械式室外進氣量。這些區域模型數值無法取代本機安全感測器或官方緊急指示。",
+          "Name": "建築 HVAC 室外空氣品質時段",
+          "Type": 0
+        },
+        {
+          "Description": "此空氣品質時段所代表的日期與時間（含該時刻）。",
+          "Name": "開始時間",
+          "Type": 1
+        },
+        {
+          "Description": "此時段的長度，以秒為單位。建模的室外空氣品質通常使用 3,600 秒的時段。",
+          "Name": "持續時間",
+          "Type": 2
+        },
+        {
+          "Description": "建模的室外 PM2.5 濃度，以微克／立方公尺為單位。",
+          "Name": "細懸浮微粒",
+          "Type": 3
+        },
+        {
+          "Description": "建模的室外 PM10 濃度，以微克／立方公尺為單位。",
+          "Name": "懸浮微粒",
+          "Type": 4
+        },
+        {
+          "Description": "建模的室外臭氧濃度，以微克／立方公尺為單位。",
+          "Name": "臭氧",
+          "Type": 5
+        },
+        {
+          "Description": "建模的室外二氧化氮濃度，以微克／立方公尺為單位。",
+          "Name": "二氧化氮",
+          "Type": 6
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityPeriodV1"
+    },
+    {
+      "Description": "包含供通風規劃使用的目前及預報室外污染物建模時段。此區段可獨立省略，且會與實體天氣資料分開快取。",
+      "DisplayName": "建築 HVAC 室外空氣品質",
+      "List": [
+        {
+          "Description": "包含供通風規劃使用的目前及預報室外污染物建模時段。此區段可獨立省略，且會與實體天氣資料分開快取。",
+          "Name": "建築 HVAC 室外空氣品質",
+          "Type": 0
+        },
+        {
+          "Description": "此完整空氣品質區段經擷取、驗證並接受的日期與時間。",
+          "Name": "擷取時間",
+          "Type": 1
+        },
+        {
+          "Description": "不含該時刻的資料時效截止時間。不得將過時的建模數值解讀為室外空氣安全的證明。",
+          "Name": "有效期限",
+          "Type": 2
+        },
+        {
+          "Description": "目前及未來時段，依時間由早至晚排列。一般回應涵蓋的時間不超過 48 小時。",
+          "Name": "空氣品質時段",
+          "Type": 3
+        },
+        {
+          "Description": "單一時段的建模室外污染物濃度。",
+          "Name": "空氣品質時段",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityV1"
+    },
+    {
+      "Description": "包含 HVAC 負載預測、濕空氣熱力計算、節能器決策、滲風估算，以及暴露設備感知天氣運作所需的實體室外輸入資料。",
+      "DisplayName": "建築 HVAC 室外狀況",
+      "List": [
+        {
+          "Description": "包含 HVAC 負載預測、濕空氣熱力計算、節能器決策、滲風估算，以及暴露設備感知天氣運作所需的實體室外輸入資料。",
+          "Name": "建築 HVAC 室外狀況",
+          "Type": 0
+        },
+        {
+          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
+          "Name": "Dry-bulb temperature",
+          "Type": 1
+        },
+        {
+          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
+          "Name": "Dew-point temperature",
+          "Type": 2
+        },
+        {
+          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
+          "Name": "Relative humidity",
+          "Type": 3
+        },
+        {
+          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
+          "Name": "Surface pressure",
+          "Type": 4
+        },
+        {
+          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
+          "Name": "Wind speed",
+          "Type": 5
+        },
+        {
+          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
+          "Name": "Wind gust",
+          "Type": 6
+        },
+        {
+          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
+          "Name": "Wind direction",
+          "Type": 7
+        },
+        {
+          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
+          "Name": "Precipitation",
+          "Type": 8
+        },
+        {
+          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
+          "Name": "Precipitation kind",
+          "Type": 9
+        },
+        {
+          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
+          "Name": "Solar elevation",
+          "Type": 10
+        },
+        {
+          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
+          "Name": "Solar azimuth",
+          "Type": 11
+        },
+        {
+          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
+          "Name": "Global horizontal irradiance",
+          "Type": 12
+        },
+        {
+          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
+          "Name": "Direct normal irradiance",
+          "Type": 13
+        },
+        {
+          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
+          "Name": "Diffuse horizontal irradiance",
+          "Type": 14
+        }
+      ],
+      "Name": "BuildingHvacOutdoorConditionsV1"
+    },
+    {
+      "Description": "當降水相態可能影響室外盤管、進氣口、風門或其他暴露的 HVAC 設備時，對降水進行分類。",
+      "DisplayName": "建築 HVAC 降水類型",
+      "List": [
+        {
+          "Description": "當降水相態可能影響室外盤管、進氣口、風門或其他暴露的 HVAC 設備時，對降水進行分類。",
+          "Enum": [
+            {
+              "Description": "此時段表示無降水。",
+              "Name": "無降水",
+              "Type": 1
+            },
+            {
+              "Description": "此時段表示液態降雨或陣雨。",
+              "Name": "降雨",
+              "Type": 2
+            },
+            {
+              "Description": "此時段表示可能在暴露設備上結冰的過冷液態降水。",
+              "Name": "凍雨",
+              "Type": 3
+            },
+            {
+              "Description": "此時段表示以雪為主的固態降水。",
+              "Name": "降雪",
+              "Type": 4
+            },
+            {
+              "Description": "表示存在一種以上的液態或固態降水相態。",
+              "Name": "混合降水",
+              "Type": 5
+            },
+            {
+              "Description": "存在降水，但提供者無法判定其相態。",
+              "Name": "未知降水",
+              "Type": 6
+            }
+          ],
+          "Name": "建築 HVAC 降水類型",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacPrecipitationKindV1"
+    },
+    {
+      "Description": "定義增量建築 HVAC 天氣串流中的單一不可分割變更。變體與欄位順序是 Avro 線路協定的一部分。",
+      "DisplayName": "建築 HVAC 天氣變更",
+      "List": [
+        {
+          "Description": "定義增量建築 HVAC 天氣串流中的單一不可分割變更。變體與欄位順序是 Avro 線路協定的一部分。",
+          "Name": "建築 HVAC 天氣變更",
+          "Type": 0
+        },
+        {
+          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
+          "Name": "Upsert historical periods",
+          "Type": 1
+        },
+        {
+          "Description": "The retrieval and validation time for the updated history section.",
+          "Name": "Retrieved at",
+          "Type": 2
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the history section.",
+          "Name": "Valid until",
+          "Type": 3
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from oldest to newest.",
+          "Name": "Historical periods",
+          "Type": 4
+        },
+        {
+          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
+          "Name": "Historical period",
+          "Type": 5
+        },
+        {
+          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove historical periods",
+          "Type": 6
+        },
+        {
+          "Description": "The half-open range of historical period start times to remove.",
+          "Name": "Time range",
+          "Type": 7
+        },
+        {
+          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
+          "Name": "Replace current conditions",
+          "Type": 8
+        },
+        {
+          "Description": "The complete newly accepted current-condition section.",
+          "Name": "Current conditions",
+          "Type": 9
+        },
+        {
+          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
+          "Name": "Upsert forecast periods",
+          "Type": 10
+        },
+        {
+          "Description": "The retrieval and validation time for the updated forecast section.",
+          "Name": "Retrieved at",
+          "Type": 11
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the forecast section.",
+          "Name": "Valid until",
+          "Type": 12
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Forecast periods",
+          "Type": 13
+        },
+        {
+          "Description": "One future outdoor-condition period keyed by `starts_at`.",
+          "Name": "Forecast period",
+          "Type": 14
+        },
+        {
+          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove forecast periods",
+          "Type": 15
+        },
+        {
+          "Description": "The half-open range of forecast period start times to remove.",
+          "Name": "Time range",
+          "Type": 16
+        },
+        {
+          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
+          "Name": "Upsert outdoor-air-quality periods",
+          "Type": 17
+        },
+        {
+          "Description": "The retrieval and validation time for the updated air-quality section.",
+          "Name": "Retrieved at",
+          "Type": 18
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the air-quality section.",
+          "Name": "Valid until",
+          "Type": 19
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Air-quality periods",
+          "Type": 20
+        },
+        {
+          "Description": "One modeled pollutant period keyed by `starts_at`.",
+          "Name": "Air-quality period",
+          "Type": 21
+        },
+        {
+          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove outdoor-air-quality periods",
+          "Type": 22
+        },
+        {
+          "Description": "The half-open range of air-quality period start times to remove.",
+          "Name": "Time range",
+          "Type": 23
+        },
+        {
+          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
+          "Name": "Clear weather section",
+          "Type": 24
+        },
+        {
+          "Description": "The independently cached section to clear.",
+          "Name": "Weather section",
+          "Type": 25
+        },
+        {
+          "Description": "Replaces the complete historical section after a successful refresh.",
+          "Name": "Replace history",
+          "Type": 26
+        },
+        {
+          "Description": "The complete newly accepted history section.",
+          "Name": "History",
+          "Type": 27
+        },
+        {
+          "Description": "Replaces the complete forecast section after a successful refresh.",
+          "Name": "Replace forecast",
+          "Type": 28
+        },
+        {
+          "Description": "The complete newly accepted forecast section.",
+          "Name": "Forecast",
+          "Type": 29
+        },
+        {
+          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
+          "Name": "Replace outdoor air quality",
+          "Type": 30
+        },
+        {
+          "Description": "The complete newly accepted outdoor-air-quality section.",
+          "Name": "Outdoor air quality",
+          "Type": 31
+        }
+      ],
+      "Name": "BuildingHvacWeatherChangeV1"
+    },
+    {
+      "Description": "識別增量建築 HVAC 天氣串流中一個已完整套用的狀態。用戶端會一併比較紀元時間戳記與序號。",
+      "DisplayName": "建築 HVAC 天氣游標",
+      "List": [
+        {
+          "Description": "識別增量建築 HVAC 天氣串流中一個已完整套用的狀態。用戶端會一併比較紀元時間戳記與序號。",
+          "Name": "建築 HVAC 天氣游標",
+          "Type": 0
+        },
+        {
+          "Description": "由伺服器指派、用來識別串流世代的日期與時間。在序號正常遞增期間，此值維持不變。若伺服器遺失暫態游標狀態，則會指派一個嚴格較新的時間戳記。",
+          "Name": "紀元時間戳記",
+          "Type": 1
+        },
+        {
+          "Description": "最近一次已套用之原子變更的序號。伺服器游標重設後，序號會從零重新開始，但用戶端最初觀察到的可能是重設後較後面的序號。",
+          "Name": "序號",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherCursorV1"
+    },
+    {
+      "Description": "包含一個模型預測暖通空調規劃時段的室外狀況預測。",
+      "DisplayName": "建築物暖通空調預報時段",
+      "List": [
+        {
+          "Description": "包含一個模型預測暖通空調規劃時段的室外狀況預測。",
+          "Name": "建築物暖通空調預報時段",
+          "Type": 0
+        },
+        {
+          "Description": "此預報時段開始的日期與時間（含該時刻）。",
+          "Name": "開始時間",
+          "Type": 1
+        },
+        {
+          "Description": "此預報時段的長度（以秒為單位）。提供者可針對接近目前時間的時段提供 900 秒的預報，並針對較後面的時段提供 3,600 秒的預報。",
+          "Name": "持續時間",
+          "Type": 2
+        },
+        {
+          "Description": "此時段內出現可測量降水的機率，以 0 至 100 的整數百分比表示。",
+          "Name": "降水機率",
+          "Type": 3
+        },
+        {
+          "Description": "此時段的溫度、濕度、氣壓、風況、降水及太陽輻射輸入預測。",
+          "Name": "室外狀況",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "包含用於負載預測、預熱、預冷、蓄熱及感知天氣之通風規劃的未來室外狀況。",
+      "DisplayName": "建築物暖通空調天氣預報",
+      "List": [
+        {
+          "Description": "包含用於負載預測、預熱、預冷、蓄熱及感知天氣之通風規劃的未來室外狀況。",
+          "Name": "建築物暖通空調天氣預報",
+          "Type": 0
+        },
+        {
+          "Description": "擷取、驗證並接受此完整預報區段的日期與時間。",
+          "Name": "擷取時間",
+          "Type": 1
+        },
+        {
+          "Description": "不包含該時刻的新鮮度期限。較舊的預報仍可用於降級規劃，但不得據以核准安全敏感型操作。",
+          "Name": "有效期限",
+          "Type": 2
+        },
+        {
+          "Description": "依時間由近至遠排列的未來時段。一般回應涵蓋 72 小時，前六小時可選擇使用 15 分鐘時段，之後則使用每小時時段。",
+          "Name": "預報時段",
+          "Type": 3
+        },
+        {
+          "Description": "一個規劃時段的室外暖通空調狀況預測。",
+          "Name": "預報時段",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastV1"
+    },
+    {
+      "Description": "包含一個已結束時段的室外狀況，用於還原或更新建築物熱狀態估計。",
+      "DisplayName": "建築物暖通空調歷史天氣時段",
+      "List": [
+        {
+          "Description": "包含一個已結束時段的室外狀況，用於還原或更新建築物熱狀態估計。",
+          "Name": "建築物暖通空調歷史天氣時段",
+          "Type": 0
+        },
+        {
+          "Description": "此歷史時段開始的日期與時間（含該時刻）。",
+          "Name": "開始時間",
+          "Type": 1
+        },
+        {
+          "Description": "此已結束時段的長度（以秒為單位）。歷史資料通常使用 3,600 秒的時段。",
+          "Name": "持續時間",
+          "Type": 2
+        },
+        {
+          "Description": "此已結束時段所代表的溫度、濕度、氣壓、風況、降水及太陽輻射狀況。",
+          "Name": "室外狀況",
+          "Type": 3
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryPeriodV1"
+    },
+    {
+      "Description": "包含近期已結束的室外狀況時段，用於短期熱狀態復原。長期建築物學習則由暖通空調應用程式本身的遙測與模型持久化機制負責。",
+      "DisplayName": "建築物暖通空調天氣歷史資料",
+      "List": [
+        {
+          "Description": "包含近期已結束的室外狀況時段，用於短期熱狀態復原。長期建築物學習則由暖通空調應用程式本身的遙測與模型持久化機制負責。",
+          "Name": "建築物暖通空調天氣歷史資料",
+          "Type": 0
+        },
+        {
+          "Description": "擷取、驗證並接受此完整歷史資料區段的日期與時間。",
+          "Name": "擷取時間",
+          "Type": 1
+        },
+        {
+          "Description": "不包含該時刻的新鮮度期限。超過此時間後，較舊的歷史資料仍可作為降級的模型輸入。",
+          "Name": "有效期限",
+          "Type": 2
+        },
+        {
+          "Description": "依時間由最早至最新排列的已結束時段。一般回應涵蓋過去 72 小時；較短的清單亦屬有效的部分歷史資料。",
+          "Name": "歷史時段",
+          "Type": 3
+        },
+        {
+          "Description": "一個已結束時段的室外暖通空調狀況。",
+          "Name": "歷史時段",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryV1"
+    },
+    {
+      "Description": "載有一段依序排列且具原子性的建築物暖通空調天氣變更。只有當 `from_cursor` 與用戶端的上一個游標相符時，用戶端才會套用該報告。空白報告表示追趕完成後的復原；沒有變更時的定期存活狀態則使用 PeerAlive。",
+      "DisplayName": "建築物暖通空調天氣增量報告",
+      "List": [
+        {
+          "Description": "載有一段依序排列且具原子性的建築物暖通空調天氣變更。只有當 `from_cursor` 與用戶端的上一個游標相符時，用戶端才會套用該報告。空白報告表示追趕完成後的復原；沒有變更時的定期存活狀態則使用 PeerAlive。",
+          "Name": "建築物暖通空調天氣增量報告",
+          "Type": 0
+        },
+        {
+          "Description": "套用報告前所需的不包含下限游標，以及用戶端必須具備的確切狀態。",
+          "Name": "起始游標",
+          "Type": 1
+        },
+        {
+          "Description": "以原子方式套用每項變更後到達的游標（包含該游標）。",
+          "Name": "截止游標",
+          "Type": 2
+        },
+        {
+          "Description": "依游標序號排列的變更。每項變更會使序號恰好遞增一；空白清單則保留游標不變。",
+          "Name": "天氣變更",
+          "Type": 3
+        },
+        {
+          "Description": "依游標順序排列的一項原子狀態變更。",
+          "Name": "天氣變更",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "儲存用於擷取整棟住宅或建築物天氣資料的 Libertas Hub 位置。",
+      "DisplayName": "建築物暖通空調天氣位置",
+      "List": [
+        {
+          "Description": "儲存用於擷取整棟住宅或建築物天氣資料的 Libertas Hub 位置。",
+          "Name": "建築物暖通空調天氣位置",
+          "Type": 0
+        },
+        {
+          "Description": "以十進制度數表示的 WGS84 經度。位於格林威治以西的地點使用負值。",
+          "Name": "經度",
+          "Type": 1
+        },
+        {
+          "Description": "以十進制度數表示的 WGS84 緯度。",
+          "Name": "緯度",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherLocationV1"
+    },
+    {
+      "Description": "定義建築物 HVAC 天氣代理程式可寫入 Libertas 資料庫的所有值。每個變體均儲存於各自穩定的資源識別碼下，因此個別供應商發生故障時不會清除其他區段。訂閱游標、日誌、對等端及 PeerAlive 截止時間並非持久性資料。",
+      "DisplayName": "建築物 HVAC 天氣持久性資料",
+      "List": [
+        {
+          "Description": "定義建築物 HVAC 天氣代理程式可寫入 Libertas 資料庫的所有值。每個變體均儲存於各自穩定的資源識別碼下，因此個別供應商發生故障時不會清除其他區段。訂閱游標、日誌、對等端及 PeerAlive 截止時間並非持久性資料。",
+          "Name": "建築物 HVAC 天氣持久性資料",
+          "Type": 0
+        },
+        {
+          "Description": "儲存最近一次從 Libertas Hub 收到的有效場地座標。",
+          "Name": "建築物位置",
+          "Type": 1
+        },
+        {
+          "Description": "用於供應商請求的 WGS84 場地座標。",
+          "Name": "位置",
+          "Type": 2
+        },
+        {
+          "Description": "儲存最近一次成功接受的實體天氣歷史記錄。",
+          "Name": "近期歷史記錄",
+          "Type": 3
+        },
+        {
+          "Description": "近期室外狀況時段及其擷取與新鮮度時間戳記。",
+          "Name": "歷史記錄",
+          "Type": 4
+        },
+        {
+          "Description": "儲存最近一次成功接受的目前實體天氣。",
+          "Name": "目前狀況",
+          "Type": 5
+        },
+        {
+          "Description": "目前的室外 HVAC 輸入及其有效期與擷取時間戳記。",
+          "Name": "目前狀況",
+          "Type": 6
+        },
+        {
+          "Description": "儲存最近一次成功接受的實體天氣預報。",
+          "Name": "預報",
+          "Type": 7
+        },
+        {
+          "Description": "未來的室外 HVAC 輸入及其擷取與新鮮度時間戳記。",
+          "Name": "預報",
+          "Type": 8
+        },
+        {
+          "Description": "將最近一次成功接受的模型化污染物資料與實體天氣分開儲存。",
+          "Name": "室外空氣品質",
+          "Type": 9
+        },
+        {
+          "Description": "目前及未來的室外污染物時段及其擷取與新鮮度時間戳記。",
+          "Name": "室外空氣品質",
+          "Type": 10
+        }
+      ],
+      "Name": "BuildingHvacWeatherPersistentData"
+    },
+    {
+      "Description": "定義全屋或整棟建築物 HVAC 天氣的一次性及訂閱交易。由 Libertas 端點作業選擇一次性或訂閱行為，而非由此任意訊息合約中的欄位選擇。",
+      "DisplayName": "建築物 HVAC 天氣通訊協定",
+      "List": [
+        {
+          "Description": "定義全屋或整棟建築物 HVAC 天氣的一次性及訂閱交易。由 Libertas 端點作業選擇一次性或訂閱行為，而非由此任意訊息合約中的欄位選擇。",
+          "Name": "建築物 HVAC 天氣通訊協定",
+          "Type": 0
+        },
+        {
+          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
+          "Name": "Get building HVAC weather",
+          "Type": 1
+        },
+        {
+          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
+          "Name": "Resume cursor",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
+          "Name": "Historical recovery range",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
+          "Name": "Include current conditions",
+          "Type": 4
+        },
+        {
+          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
+          "Name": "Forecast recovery range",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
+          "Name": "Outdoor-air-quality recovery range",
+          "NullText": "No outdoor air quality",
+          "SetText": "Include outdoor air quality for",
+          "Type": 6
+        },
+        {
+          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
+          "Name": "Building HVAC weather recovery",
+          "Type": 7
+        },
+        {
+          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
+          "Name": "Maximum wait interval",
+          "Type": 8
+        },
+        {
+          "Description": "The replay, reset snapshot, or typed error result.",
+          "Name": "Recovery",
+          "Type": 9
+        },
+        {
+          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
+          "Name": "Building HVAC weather increment",
+          "Type": 10
+        },
+        {
+          "Description": "The ordered, atomic cursor range and its weather changes.",
+          "Name": "Incremental report",
+          "Type": 11
+        }
+      ],
+      "Name": "BuildingHvacWeatherProtocol"
+    },
+    {
+      "Description": "識別無法透過重播或範圍受限的快取快照滿足的復原請求。",
+      "DisplayName": "建築物 HVAC 天氣復原錯誤",
+      "List": [
+        {
+          "Description": "識別無法透過重播或範圍受限的快取快照滿足的復原請求。",
+          "Enum": [
+            {
+              "Description": "至少一個請求的半開區間為空或次序顛倒。",
+              "Name": "無效的時間範圍",
+              "Type": 1
+            },
+            {
+              "Description": "無法使所提供的游標與目前游標狀態或保留的日誌一致。",
+              "Name": "游標超前",
+              "Type": 2
+            },
+            {
+              "Description": "至少一個請求的復原範圍超出有限的回應容量。",
+              "Name": "請求過大",
+              "Type": 3
+            },
+            {
+              "Description": "必要的快取記錄或復原資源暫時無法使用。",
+              "Name": "暫時無法使用",
+              "Type": 4
+            }
+          ],
+          "Name": "建築物 HVAC 天氣復原錯誤",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "重播保留的變更、建立新的游標與快照，或回報可復原的請求錯誤。",
+      "DisplayName": "建築物 HVAC 天氣復原",
+      "List": [
+        {
+          "Description": "重播保留的變更、建立新的游標與快照，或回報可復原的請求錯誤。",
+          "Name": "建築物 HVAC 天氣復原",
+          "Type": 0
+        },
+        {
+          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
+          "Name": "Replayed changes",
+          "Type": 1
+        },
+        {
+          "Description": "The contiguous retained change range beginning at the request cursor.",
+          "Name": "Incremental report",
+          "Type": 2
+        },
+        {
+          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
+          "Name": "Reset with snapshot",
+          "Type": 3
+        },
+        {
+          "Description": "The reason the response contains a snapshot rather than replay.",
+          "Name": "Reset reason",
+          "Type": 4
+        },
+        {
+          "Description": "The cursor representing the returned snapshot.",
+          "Name": "Current cursor",
+          "Type": 5
+        },
+        {
+          "Description": "The available cached sections constrained by requested ranges.",
+          "Name": "Weather snapshot",
+          "Type": 6
+        },
+        {
+          "Description": "Rejects the request without changing client cursor or cached weather.",
+          "Name": "Recovery error",
+          "Type": 7
+        },
+        {
+          "Description": "The reason recovery could not be completed.",
+          "Name": "Error",
+          "Type": 8
+        },
+        {
+          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
+          "Name": "Retry delay",
+          "Type": 9
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryV1"
+    },
+    {
+      "Description": "說明復原程序為何透過範圍受限的快照建立狀態，而非重播增量變更。",
+      "DisplayName": "建築物 HVAC 天氣重設原因",
+      "List": [
+        {
+          "Description": "說明復原程序為何透過範圍受限的快照建立狀態，而非重播增量變更。",
+          "Enum": [
+            {
+              "Description": "未提供先前的游標。",
+              "Name": "初始訂閱",
+              "Type": 1
+            },
+            {
+              "Description": "請求的序列早於保留的重播日誌。",
+              "Name": "游標已過期",
+              "Type": 2
+            },
+            {
+              "Description": "伺服器遺失或刻意捨棄的僅是其暫時性游標與重播日誌；獨立保存的天氣區段仍可使用。",
+              "Name": "伺服器游標重設",
+              "Type": 3
+            }
+          ],
+          "Name": "建築物 HVAC 天氣重設原因",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherResetReasonV1"
+    },
+    {
+      "Description": "識別一個獨立快取的建築物 HVAC 天氣區段。",
+      "DisplayName": "建築物 HVAC 天氣區段",
+      "List": [
+        {
+          "Description": "識別一個獨立快取的建築物 HVAC 天氣區段。",
+          "Enum": [
+            {
+              "Description": "選取近期的實體室外狀況歷史記錄。",
+              "Name": "近期歷史記錄",
+              "Type": 1
+            },
+            {
+              "Description": "選取模擬得出的目前戶外物理狀況。",
+              "Name": "目前狀況",
+              "Type": 2
+            },
+            {
+              "Description": "選取未來戶外物理狀況的預報。",
+              "Name": "天氣預報",
+              "Type": 3
+            },
+            {
+              "Description": "選取模擬得出的目前及預報戶外污染物濃度。",
+              "Name": "戶外空氣品質",
+              "Type": 4
+            }
+          ],
+          "Name": "建築物 HVAC 天氣區段",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherSectionV1"
+    },
+    {
+      "Description": "包含每個所要求區段最近一次成功接受的值。缺少的區段沒有可用的快取；過期區段仍會保留，並維持其原始保鮮期限。",
+      "DisplayName": "建築暖通空調天氣快照",
+      "List": [
+        {
+          "Description": "包含每個所要求區段最近一次成功接受的值。缺少的區段沒有可用的快取；過期區段仍會保留，並維持其原始保鮮期限。",
+          "Name": "建築暖通空調天氣快照",
+          "Type": 0
+        },
+        {
+          "Description": "存在可用的快取歷史資料時，所要求的近期戶外狀況時段。",
+          "Name": "近期歷史資料",
+          "Type": 1
+        },
+        {
+          "Description": "已要求且可用時，最近一次接受的目前戶外狀況。",
+          "Name": "目前狀況",
+          "Type": 2
+        },
+        {
+          "Description": "存在可用的快取預報資料時，所要求的未來戶外狀況時段。",
+          "Name": "天氣預報",
+          "Type": 3
+        },
+        {
+          "Description": "存在可用的模擬空氣品質資料時，所要求的目前及預報污染物時段。",
+          "Name": "戶外空氣品質",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherSnapshotV1"
+    },
+    {
+      "Description": "依開始時間選取歷史、預報或戶外空氣品質時段的半開區間。",
+      "DisplayName": "建築暖通空調天氣時間範圍",
+      "List": [
+        {
+          "Description": "依開始時間選取歷史、預報或戶外空氣品質時段的半開區間。",
+          "Name": "建築暖通空調天氣時間範圍",
+          "Type": 0
+        },
+        {
+          "Description": "所選時段開始時間的包含式下限。",
+          "Name": "開始時間",
+          "Type": 1
+        },
+        {
+          "Description": "所選時段開始時間的排除式上限。此時間必須晚於 `starts_at`。",
+          "Name": "結束時間",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherTimeRangeV1"
+    },
+    {
+      "Description": "包含即時降雨、凍結、濕度、風力及水分平衡輸入，用於判斷原已排定的灑水作業能否安全地開始或繼續。",
+      "DisplayName": "灑水器目前天氣",
+      "List": [
+        {
+          "Description": "包含即時降雨、凍結、濕度、風力及水分平衡輸入，用於判斷原已排定的灑水作業能否安全地開始或繼續。",
+          "Name": "灑水器目前天氣",
+          "Type": 0
+        },
+        {
+          "Description": "上次擷取、驗證並接受完整目前天氣區段的日期與時間。",
+          "Name": "擷取時間",
+          "Type": 1
+        },
+        {
+          "Description": "不包含此時間點的保鮮期限。目前時間早於此值時，目前天氣為最新狀態。到達或超過此值時，該區段仍會保留於快取中，但不得將其視為可以安全灑水的證明。",
+          "Name": "有效期限",
+          "Type": 2
+        },
+        {
+          "Description": "供應商提供且由目前狀況值所代表的日期與時間。此時間可能與 `retrieved_at` 不同。",
+          "Name": "有效時間",
+          "Type": 3
+        },
+        {
+          "Description": "累積降水量與蒸散量所代表的回溯間隔秒數。Open-Meteo 目前天氣通常採用 900 秒的間隔。",
+          "Name": "觀測間隔",
+          "Type": 4
+        },
+        {
+          "Description": "地面上方兩公尺處的空氣溫度，單位為攝氏度。灑水器使用此值來禁止在接近或低於冰點時灑水。",
+          "Name": "溫度",
+          "Type": 5
+        },
+        {
+          "Description": "地面上方兩公尺處的相對濕度，以 0 到 100 的百分比表示。需要從上方灑水時，灑水器使用此值來避免葉面濕潤時間不必要地過長。",
+          "Name": "相對濕度",
+          "Type": 6
+        },
+        {
+          "Description": "在 `interval_seconds` 期間累積的降雨、陣雨及凍結降水的水當量總和，單位為毫米。灑水器會在此值非零時禁止灑水，因為此時正在降水。",
+          "Name": "降水量",
+          "Type": 7
+        },
+        {
+          "Description": "在 `interval_seconds` 期間累積的 FAO-56 參考蒸散量，單位為毫米。此值可將水分平衡延伸至下一個完整歷史時段可用為止。",
+          "Name": "參考蒸散量",
+          "Type": 8
+        },
+        {
+          "Description": "地面上方 10 公尺處的持續風速，單位為公尺每秒。使用此資料的灑水器會套用其設定的風速閾值。",
+          "Name": "風速",
+          "Type": 9
+        },
+        {
+          "Description": "地面上方 10 公尺處的最高陣風風速，單位為公尺每秒。使用此資料的灑水器會將此值與持續風速一併使用，以避免水霧飄移。",
+          "Name": "陣風風速",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerCurrentWeatherV1"
+    },
+    {
+      "Description": "定義增量式灑水器天氣串流中的單一不可分割變更。變體順序與欄位順序皆為僅附加式 Avro 線路格式的一部分。",
+      "DisplayName": "灑水器天氣變更",
+      "List": [
+        {
+          "Description": "定義增量式灑水器天氣串流中的單一不可分割變更。變體順序與欄位順序皆為僅附加式 Avro 線路格式的一部分。",
+          "Name": "灑水器天氣變更",
+          "Type": 0
+        },
+        {
+          "Description": "移除開始時間落在所提供半開範圍內的快取歷史時段。",
+          "Name": "移除歷史時段",
+          "Type": 1
+        },
+        {
+          "Description": "要移除的歷史時段開始時間半開範圍。",
+          "Name": "時間範圍",
+          "Type": 2
+        },
+        {
+          "Description": "成功擷取並驗證後，取代完整的目前狀況區段。",
+          "Name": "取代目前狀況",
+          "Type": 3
+        },
+        {
+          "Description": "新近接受的目前狀況區段。",
+          "Name": "目前狀況",
+          "Type": 4
+        },
+        {
+          "Description": "標記預報重新整理成功，並依 `starts_at` 插入或取代時段。空的時段清單只會更新擷取與保鮮中繼資料。",
+          "Name": "新增或更新預報時段",
+          "Type": 5
+        },
+        {
+          "Description": "預報區段成功擷取並通過驗證的時間。",
+          "Name": "擷取時間",
+          "Type": 6
+        },
+        {
+          "Description": "預報區段新的資料新鮮度期限，不包含該截止時點。",
+          "Name": "有效期限",
+          "Type": 7
+        },
+        {
+          "Description": "要插入或取代的時段，依時間由早至晚排列。",
+          "Name": "預報時段",
+          "Type": 8
+        },
+        {
+          "Description": "以 `starts_at` 為索引鍵的一個灌溉規劃時段。",
+          "Name": "預報時段",
+          "Type": 9
+        },
+        {
+          "Description": "移除開始時間落在所提供半開區間內的快取預報時段。",
+          "Name": "移除預報時段",
+          "Type": 10
+        },
+        {
+          "Description": "要移除之預報時段開始時間的半開區間。",
+          "Name": "時間範圍",
+          "Type": 11
+        },
+        {
+          "Description": "僅在已知某個區段的快取值無效時清除該區段，例如驗證失敗或移轉不相容之後。僅因供應者重新整理失敗，不得發出此變更。",
+          "Name": "清除氣象區段",
+          "Type": 12
+        },
+        {
+          "Description": "要清除的獨立快取區段。",
+          "Name": "氣象區段",
+          "Type": 13
+        },
+        {
+          "Description": "供應者成功重新整理後，取代完整的預報區段。取代資料中未包含的時段將不再保留於快取中。",
+          "Name": "取代預報",
+          "Type": 14
+        },
+        {
+          "Description": "新接受的完整預報區段。",
+          "Name": "預報",
+          "Type": 15
+        },
+        {
+          "Description": "識別後續每項氣象變更所屬的實體站點。用戶端使用此值，將不同 Hub 位置保留的歷史記錄分隔為不同世代，而無須依賴回呼順序。",
+          "Name": "取代氣象站點",
+          "Type": 16
+        },
+        {
+          "Description": "供應者進行觀測與預報時使用的 WGS84 位置。",
+          "Name": "站點位置",
+          "Type": 17
+        },
+        {
+          "Description": "標記歷史記錄已成功重新整理，並依 `starts_at` 插入或取代包含完整氣象資料的時段。",
+          "Name": "新增或更新歷史時段 V2",
+          "Type": 18
+        },
+        {
+          "Description": "歷史區段成功擷取並通過驗證的時間。",
+          "Name": "擷取時間",
+          "Type": 19
+        },
+        {
+          "Description": "歷史區段新的資料新鮮度期限，不包含該截止時點。",
+          "Name": "有效期限",
+          "Type": 20
+        },
+        {
+          "Description": "要插入或取代且包含完整氣象資料的時段，依時間由最早至最新排列。",
+          "Name": "歷史時段",
+          "Type": 21
+        },
+        {
+          "Description": "以 `starts_at` 為索引鍵的一筆已完成 V2 觀測資料。",
+          "Name": "歷史時段",
+          "Type": 22
+        },
+        {
+          "Description": "供應者成功重新整理後，取代完整的完整觀測歷史區段。",
+          "Name": "取代歷史記錄 V2",
+          "Type": 23
+        },
+        {
+          "Description": "新接受的完整 V2 歷史區段。",
+          "Name": "歷史記錄",
+          "Type": 24
+        }
+      ],
+      "Name": "SprinklerWeatherChangeV1"
+    },
+    {
+      "Description": "識別增量式灑水器氣象串流中一個已套用的狀態。用戶端會比較這兩個欄位，且不得僅將較小的序號解讀為伺服器重設。",
+      "DisplayName": "灑水器氣象游標",
+      "List": [
+        {
+          "Description": "識別增量式灑水器氣象串流中一個已套用的狀態。用戶端會比較這兩個欄位，且不得僅將較小的序號解讀為伺服器重設。",
+          "Name": "灑水器氣象游標",
+          "Type": 0
+        },
+        {
+          "Description": "由伺服器指派、用於識別游標世代的日期與時間。此單一欄位既是串流紀元，也是有序時間戳記；不存在另一個不透明的紀元值。在序號正常遞增期間，此值維持不變。當伺服器遺失暫存游標或重播日誌時，會指派一個嚴格晚於先前值的紀元時間戳記，並將 `sequence` 重新從零開始。用戶端最初觀察到的可能是重設後較晚的序號，而非零。此時間戳記描述的是游標狀態，而非氣象值的觀測時間。",
+          "Name": "紀元時間戳記",
+          "Type": 1
+        },
+        {
+          "Description": "識別最新套用的狀態變更。伺服器會針對每項接受的氣象變更將此值遞增一次。暫存伺服器游標重設時，伺服器會將此值重設為零，然後針對後續變更遞增；重設不會清除歷史、目前或預報氣象資料。",
+          "Name": "序號",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherCursorV1"
+    },
+    {
+      "Description": "包含預測的水分輸入、水分流失、溫度、濕度及風害資料，用於決定在一個規劃時段內何時澆水及澆水量。",
+      "DisplayName": "灑水器氣象預報時段",
+      "List": [
+        {
+          "Description": "包含預測的水分輸入、水分流失、溫度、濕度及風害資料，用於決定在一個規劃時段內何時澆水及澆水量。",
+          "Name": "灑水器氣象預報時段",
+          "Type": 0
+        },
+        {
+          "Description": "此預報時段開始的日期與時間，包含該時點。",
+          "Name": "開始時間",
+          "Type": 1
+        },
+        {
+          "Description": "此預報時段的長度，以秒為單位。Open-Meteo 預報通常使用 3,600 秒的時段。",
+          "Name": "持續時間",
+          "Type": 2
+        },
+        {
+          "Description": "預測的地面上方兩公尺處氣溫，以攝氏度為單位。灑水器使用此資料，避免在預報會結冰的情況下澆水。",
+          "Name": "溫度",
+          "Type": 3
+        },
+        {
+          "Description": "預測的地面上方兩公尺處相對濕度，以 0 至 100 的整數百分比表示。此資料與太陽位置及灑水頭類型搭配使用，有助於避免葉面長時間潮濕。",
+          "Name": "相對濕度",
+          "Type": 4
+        },
+        {
+          "Description": "此時段內出現可測量降水的機率，以 0 至 100 的整數百分比表示。此值用於表達預報的不確定性，並與預期降水量分開表示。",
+          "Name": "降水機率",
+          "Type": 5
+        },
+        {
+          "Description": "預測此時段內累積的總降雨、陣雨及水當量固態降水量，以毫米為單位。",
+          "Name": "預期降水量",
+          "Type": 6
+        },
+        {
+          "Description": "預測此時段內累積的 FAO-56 參考蒸散量，以毫米為單位。",
+          "Name": "參考蒸散量",
+          "Type": 7
+        },
+        {
+          "Description": "預測地面上方 10 公尺處的持續風速，單位為公尺／秒。",
+          "Name": "風速",
+          "Type": 8
+        },
+        {
+          "Description": "預測地面上方 10 公尺處的最大陣風風速，單位為公尺／秒。灑水器會將此資料與持續風速搭配使用，以避免在可能發生噴霧飄移時排定澆水作業。",
+          "Name": "陣風",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "包含用於規劃未來七天灑水灌溉的逐小時天氣輸入資料。後續預報重新整理失敗時，會保留上次成功取得的值。",
+      "DisplayName": "灑水器天氣預報",
+      "List": [
+        {
+          "Description": "包含用於規劃未來七天灑水灌溉的逐小時天氣輸入資料。後續預報重新整理失敗時，會保留上次成功取得的值。",
+          "Name": "灑水器天氣預報",
+          "Type": 0
+        },
+        {
+          "Description": "完整預報區段上次被擷取、驗證並接受的日期與時間。",
+          "Name": "擷取時間",
+          "Type": 1
+        },
+        {
+          "Description": "不含該時點的資料新鮮度期限。目前時間早於此值時，預報為新鮮；目前時間等於或晚於此值時，預報為過期。過期的預報仍可作為降級的快取輸入使用。",
+          "Name": "有效期限",
+          "Type": 2
+        },
+        {
+          "Description": "依時間由早至晚排列的未來時段。一般回應以一小時為解析度涵蓋未來七天；較短的清單則是有效的部分預報。",
+          "Name": "預報時段",
+          "Type": 3
+        },
+        {
+          "Description": "一個規劃時段的預測降水量、參考蒸散量、溫度、濕度及風況。",
+          "Name": "預報時段",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherForecastV1"
+    },
+    {
+      "Description": "儲存動態重建之索引歷史時段的資料新鮮度時間戳記。",
+      "DisplayName": "灑水器天氣歷史資料中繼資料",
+      "List": [
+        {
+          "Description": "儲存動態重建之索引歷史時段的資料新鮮度時間戳記。",
+          "Name": "灑水器天氣歷史資料中繼資料",
+          "Type": 0
+        },
+        {
+          "Description": "完整索引歷史資料集上次被擷取、驗證並接受的日期與時間。",
+          "Name": "擷取時間",
+          "Type": 1
+        },
+        {
+          "Description": "重建之歷史資料區段不含該時點的資料新鮮度期限。",
+          "Name": "有效期限",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryMetadataV1"
+    },
+    {
+      "Description": "在已完成時段的水平衡資料中，加入說明灌溉決策所需的溫度、濕度、持續風速及陣風觀測資料。",
+      "DisplayName": "灑水器天氣歷史時段 V2",
+      "List": [
+        {
+          "Description": "在已完成時段的水平衡資料中，加入說明灌溉決策所需的溫度、濕度、持續風速及陣風觀測資料。",
+          "Name": "灑水器天氣歷史時段 V2",
+          "Type": 0
+        },
+        {
+          "Description": "此歷史時段開始的日期與時間，包含該時點。",
+          "Name": "開始時間",
+          "Type": 1
+        },
+        {
+          "Description": "此歷史時段的長度，單位為秒。Open-Meteo 歷史資料通常使用 3,600 秒的時段。",
+          "Name": "持續時間",
+          "Type": 2
+        },
+        {
+          "Description": "此時段內累積的總降水量，包括固態降水的水當量，單位為毫米。",
+          "Name": "降水量",
+          "Type": 3
+        },
+        {
+          "Description": "此時段內累積的 FAO-56 參考蒸散量，單位為毫米。",
+          "Name": "參考蒸散量",
+          "Type": 4
+        },
+        {
+          "Description": "此歷史時段內地面上方 2 公尺處的氣溫，單位為攝氏度。",
+          "Name": "溫度",
+          "Type": 5
+        },
+        {
+          "Description": "此歷史時段內地面上方 2 公尺處的相對濕度，以 0 至 100 的整數百分比表示。",
+          "Name": "相對濕度",
+          "Type": 6
+        },
+        {
+          "Description": "此歷史時段內地面上方 10 公尺處的持續風速，單位為公尺／秒。",
+          "Name": "風速",
+          "Type": 7
+        },
+        {
+          "Description": "此歷史時段內地面上方 10 公尺處的最大陣風風速，單位為公尺／秒。",
+          "Name": "陣風",
+          "Type": 8
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryPeriodV2"
+    },
+    {
+      "Description": "包含最近已完成的時段，以及用於灌溉計算及決策說明圖表的完整天氣觀測資料。",
+      "DisplayName": "灑水器天氣歷史資料 V2",
+      "List": [
+        {
+          "Description": "包含最近已完成的時段，以及用於灌溉計算及決策說明圖表的完整天氣觀測資料。",
+          "Name": "灑水器天氣歷史資料 V2",
+          "Type": 0
+        },
+        {
+          "Description": "完整歷史資料區段上次被擷取、驗證並接受的日期與時間。",
+          "Name": "擷取時間",
+          "Type": 1
+        },
+        {
+          "Description": "不含該時點的資料新鮮度期限。過期的歷史資料仍可作為降級的快取輸入使用。",
+          "Name": "有效期限",
+          "Type": 2
+        },
+        {
+          "Description": "依時間由最早至最新排列的已完成時段。",
+          "Name": "歷史時段",
+          "Type": 3
+        },
+        {
+          "Description": "一個已完成時段的溫度、濕度、降水量、參考蒸散量及風況。",
+          "Name": "歷史時段",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryV2"
+    },
+    {
+      "Description": "承載一段有序且具原子性的天氣變更範圍。用戶端只有在其儲存的游標等於 `from_cursor` 時才會套用報告，之後再儲存 `through_cursor`。空白報告表示復原作業已追上進度；週期性且無變更的存活狀態使用 PeerAlive。",
+      "DisplayName": "灑水器天氣增量報告",
+      "List": [
+        {
+          "Description": "承載一段有序且具原子性的天氣變更範圍。用戶端只有在其儲存的游標等於 `from_cursor` 時才會套用報告，之後再儲存 `through_cursor`。空白報告表示復原作業已追上進度；週期性且無變更的存活狀態使用 PeerAlive。",
+          "Name": "灑水器天氣增量報告",
+          "Type": 0
+        },
+        {
+          "Description": "此報告不含的下限游標，也是用戶端套用報告前必須已持有的確切游標。",
+          "Name": "起始游標",
+          "Type": 1
+        },
+        {
+          "Description": "套用此報告中的每項變更後所到達且包含在內的上限游標。它必須保留與 `from_cursor` 相同的紀元時間戳記。伺服器游標重設絕不會以增量報告傳送；此操作需要完整重設。",
+          "Name": "截至游標",
+          "Type": 2
+        },
+        {
+          "Description": "要以不可分割方式套用的有序變更。每個項目都會使序號正好遞增一；空清單表示追趕完成的復原，不會推進游標，也不會用作週期性存活訊號。",
+          "Name": "天氣變更",
+          "Type": 3
+        },
+        {
+          "Description": "依游標順序進行的一次不可分割狀態變更。",
+          "Name": "天氣變更",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Records for one endpoint share a transaction and scan prefix.",
+      "DisplayName": "Saved weather keys",
+      "List": [
+        {
+          "Description": "Records for one endpoint share a transaction and scan prefix.",
+          "Name": "Saved weather keys",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Weather belonging to one service endpoint",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherKey"
+    },
+    {
+      "Description": "儲存用來取得單一灑水器站點天氣的 Libertas Hub 位置。此位置與供應者資料分開快取，因此天氣代理程式可在 Hub 暫時中斷服務期間繼續重新整理。",
+      "DisplayName": "灑水器天氣位置",
+      "List": [
+        {
+          "Description": "儲存用來取得單一灑水器站點天氣的 Libertas Hub 位置。此位置與供應者資料分開快取，因此天氣代理程式可在 Hub 暫時中斷服務期間繼續重新整理。",
+          "Name": "灑水器天氣位置",
+          "Type": 0
+        },
+        {
+          "Description": "以十進制度數表示的 WGS84 經度。位於格林威治以西的位置使用負值。",
+          "Name": "經度",
+          "Type": 1
+        },
+        {
+          "Description": "以十進制度數表示的 WGS84 緯度。",
+          "Name": "緯度",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherLocationV1"
+    },
+    {
+      "Description": "定義灑水器天氣代理程式可寫入 Libertas 資料庫的完整值集合。歷史中繼資料、目前狀況、預報及位置是彼此獨立的單一記錄。每個已完成的歷史期間都是以其開始時間戳記為索引鍵的索引記錄。刻意不包含訂閱游標及重播日誌：重設它們不得清除這些記錄。",
+      "DisplayName": "灑水器天氣持久性資料",
+      "List": [
+        {
+          "Description": "定義灑水器天氣代理程式可寫入 Libertas 資料庫的完整值集合。歷史中繼資料、目前狀況、預報及位置是彼此獨立的單一記錄。每個已完成的歷史期間都是以其開始時間戳記為索引鍵的索引記錄。刻意不包含訂閱游標及重播日誌：重設它們不得清除這些記錄。",
+          "Name": "灑水器天氣持久性資料",
+          "Type": 0
+        },
+        {
+          "Description": "儲存 Libertas Hub 上次回報的有效位置。快取值可讓供應者重新整理作業在 Hub 暫時無法使用時繼續進行。",
+          "Name": "灑水器站點位置",
+          "Type": 1
+        },
+        {
+          "Description": "用於供應者要求的 WGS84 座標。",
+          "Name": "位置",
+          "Type": 2
+        },
+        {
+          "Description": "儲存動態重建之索引歷史資料的時效性。",
+          "Name": "歷史中繼資料",
+          "Type": 3
+        },
+        {
+          "Description": "已接受索引集合的擷取及時效性時間戳記。",
+          "Name": "歷史中繼資料",
+          "Type": 4
+        },
+        {
+          "Description": "在索引資料中儲存一個已完成的完整天氣期間。它佔用已移除 V1 期間的聯集位置；V2 歷史資源名稱會將這些不相容的索引記錄分開。",
+          "Name": "歷史期間 V2",
+          "Type": 5
+        },
+        {
+          "Description": "溫度、濕度、降水量、參考蒸散量、風及陣風。",
+          "Name": "歷史期間",
+          "Type": 6
+        },
+        {
+          "Description": "儲存上次成功擷取並驗證的目前狀況區段。重新整理失敗時，現有的資料庫記錄會保持不變。",
+          "Name": "目前狀況",
+          "Type": 7
+        },
+        {
+          "Description": "即時降雨、冰凍、濕度、風及水平衡輸入，包括其擷取及時效性時間戳記。",
+          "Name": "目前狀況",
+          "Type": 8
+        },
+        {
+          "Description": "儲存上次成功擷取並驗證的預報區段。重新整理失敗時，現有的資料庫記錄會保持不變。",
+          "Name": "預報",
+          "Type": 9
+        },
+        {
+          "Description": "未來的降水量、參考蒸散量、溫度、濕度及風力輸入，包括其擷取及時效性時間戳記。",
+          "Name": "預報",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherPersistentData"
+    },
+    {
+      "Description": "定義用於要求或訂閱灑水器天氣的具型別 Libertas 端點交易。回應會公開可各自獨立使用的歷史、目前及預報區段，因此服務中斷不會隱藏可用的快取資料。Libertas 端點狀態合約會拒絕格式錯誤的 Avro，以及用於錯誤訊息角色的值；這些傳輸錯誤不是復原變體。",
+      "DisplayName": "灑水器天氣通訊協定",
+      "List": [
+        {
+          "Description": "定義用於要求或訂閱灑水器天氣的具型別 Libertas 端點交易。回應會公開可各自獨立使用的歷史、目前及預報區段，因此服務中斷不會隱藏可用的快取資料。Libertas 端點狀態合約會拒絕格式錯誤的 Avro，以及用於錯誤訊息角色的值；這些傳輸錯誤不是復原變體。",
+          "Name": "灑水器天氣通訊協定",
+          "Type": 0
+        },
+        {
+          "Description": "執行一次性增量讀取，或開始或繼續增量訂閱。行為由 Libertas 端點作業選取；此訊息中並未編碼該行為。可能時，伺服器會重播 `after_cursor` 之後保留的變更，否則會傳回範圍受限的快取快照。",
+          "Name": "取得灑水器天氣",
+          "Type": 1
+        },
+        {
+          "Description": "用戶端最後完整且以不可分割方式套用的游標。`None` 會要求初始的範圍受限快照。伺服器會比較這兩個欄位；只有在回應游標亦具有較新的紀元時間戳記時，較低的序號才表示發生重設。",
+          "Name": "繼續游標",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "無法重播時要納入之歷史期間開始時間的左閉右開範圍。`None` 會從重設快照中排除歷史資料。",
+          "Name": "歷史復原範圍",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "重設快照是否應包含快取的目前狀況。",
+          "Name": "包含目前狀況",
+          "Type": 4
+        },
+        {
+          "Description": "無法重播時要納入之預報期間開始時間的左閉右開範圍。`None` 會從重設快照中排除預報資料。",
+          "Name": "預報復原範圍",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "使用重播的變更、重設快照或可復原錯誤來回應天氣要求。每個回應都會提供最長等待間隔。訂閱用戶端會在成功重播或重設後使用該間隔；一次性用戶端則會忽略它。發生錯誤後，以復原錯誤及重試延遲為優先。",
+          "Name": "灑水器天氣復原",
+          "Type": 6
+        },
+        {
+          "Description": "訂閱用戶端在成功復原、增量報告或 PeerAlive 後等待的最長秒數。伺服器會先傳送已變更的資料或 PeerAlive。一次性用戶端會忽略這個必要的非零值。",
+          "Name": "最長等待間隔",
+          "Type": 7
+        },
+        {
+          "Description": "繼續要求的重播、重設或錯誤結果。",
+          "Name": "復原",
+          "Type": 8
+        },
+        {
+          "Description": "僅回報成功天氣要求後的狀態變更。游標不符或範圍不連續時，需要再次提出訂閱要求；用戶端不得只套用部分報告。有效的報告或 PeerAlive 會重新啟動復原回應的等待計時器；PeerAlive 絕不會進入此資料結構描述，也不會變更游標。",
+          "Name": "灑水器天氣增量",
+          "Type": 9
+        },
+        {
+          "Description": "有序的不可分割游標範圍及其天氣變更。",
+          "Name": "增量報告",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherProtocol"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved weather record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved weather record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "HistoryMetadata",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "HistoryPeriod",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "starts_at",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "Current",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Forecast",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWeatherRecordKey"
+    },
+    {
+      "Description": "識別無法透過重播的變更或範圍受限的快取快照來滿足的復原要求。",
+      "DisplayName": "灑水器天氣復原錯誤",
+      "List": [
+        {
+          "Description": "識別無法透過重播的變更或範圍受限的快取快照來滿足的復原要求。",
+          "Enum": [
+            {
+              "Description": "至少一個要求的半開時間範圍為空或起訖順序顛倒。",
+              "Name": "無效的時間範圍",
+              "Type": 1
+            },
+            {
+              "Description": "提供的紀元時間戳記與序號游標無法與伺服器目前的游標或保留的重播日誌一致。",
+              "Name": "游標超前",
+              "Type": 2
+            },
+            {
+              "Description": "要求的復原範圍超出伺服器有限的回應容量。",
+              "Name": "要求過大",
+              "Type": 3
+            },
+            {
+              "Description": "快取資料或其他必要的復原資源暫時無法使用；用戶端可在提供的延遲時間過後重試。",
+              "Name": "暫時無法使用",
+              "Type": 4
+            }
+          ],
+          "Name": "灑水器天氣復原錯誤",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "傳回重播的變更、使用範圍受限的快照建立新游標，或回報可復原的要求錯誤。",
+      "DisplayName": "灑水器天氣復原",
+      "List": [
+        {
+          "Description": "傳回重播的變更、使用範圍受限的快照建立新游標，或回報可復原的要求錯誤。",
+          "Name": "灑水器天氣復原",
+          "Type": 0
+        },
+        {
+          "Description": "重播所提供游標之後保留的每項變更，以繼續要求的串流。空白報告表示用戶端已是最新狀態。",
+          "Name": "重播的變更",
+          "Type": 1
+        },
+        {
+          "Description": "從要求的游標開始之連續變更範圍。",
+          "Name": "增量報告",
+          "Type": 2
+        },
+        {
+          "Description": "拒絕要求，且不變更用戶端的游標或本機天氣狀態。",
+          "Name": "復原錯誤",
+          "Type": 3
+        },
+        {
+          "Description": "無法完成復原的原因。",
+          "Name": "錯誤",
+          "Type": 4
+        },
+        {
+          "Description": "重試前的建議延遲秒數。`None` 表示必須先變更要求參數，重試才可能成功。",
+          "Name": "重試延遲",
+          "Type": 5
+        },
+        {
+          "Description": "建立新游標，並將完整觀測歷史快照繫結至其供應商站點。",
+          "Name": "使用站點快照 V2 重設",
+          "Type": 6
+        },
+        {
+          "Description": "以快照取代增量重播的原因。",
+          "Name": "重設原因",
+          "Type": 7
+        },
+        {
+          "Description": "代表傳回之快照的游標。",
+          "Name": "目前游標",
+          "Type": 8
+        },
+        {
+          "Description": "用於取得傳回之天氣區段的 WGS84 位置。",
+          "Name": "站點位置",
+          "Type": 9
+        },
+        {
+          "Description": "依要求範圍限制的可用 V2 快取區段。",
+          "Name": "天氣快照",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryV1"
+    },
+    {
+      "Description": "說明復原為何傳回範圍受限的快照，而不是重播要求之游標後的增量變更。",
+      "DisplayName": "灑水器天氣重設原因",
+      "List": [
+        {
+          "Description": "說明復原為何傳回範圍受限的快照，而不是重播要求之游標後的增量變更。",
+          "Enum": [
+            {
+              "Description": "未提供先前的游標，因此快照會建立初始狀態。",
+              "Name": "初始訂閱",
+              "Type": 1
+            },
+            {
+              "Description": "要求的序號早於保留的重播日誌。",
+              "Name": "游標已過期",
+              "Type": 2
+            },
+            {
+              "Description": "伺服器遺失或刻意捨棄的只有暫存游標與重播日誌。持久保存的天氣區段仍可使用，且可從 Open-Meteo 再次擷取缺少的歷史資料。",
+              "Name": "伺服器游標重設",
+              "Type": 3
+            }
+          ],
+          "Name": "灑水器天氣重設原因",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherResetReasonV1"
+    },
+    {
+      "Description": "識別一個獨立快取的灑水器天氣區段。",
+      "DisplayName": "灑水器天氣區段",
+      "List": [
+        {
+          "Description": "識別一個獨立快取的灑水器天氣區段。",
+          "Enum": [
+            {
+              "Description": "選取歷史水量平衡區段。",
+              "Name": "近期歷史",
+              "Type": 1
+            },
+            {
+              "Description": "選取即時澆水安全區段。",
+              "Name": "目前狀況",
+              "Type": 2
+            },
+            {
+              "Description": "選取未來灌溉規劃區段。",
+              "Name": "預報",
+              "Type": 3
+            }
+          ],
+          "Name": "灑水器天氣區段",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherSectionV1"
+    },
+    {
+      "Description": "包含各自獨立可用的完整觀測歷史、目前狀況及預報區段。缺少的區段沒有可用的快取值；過時的區段會保留其原始有效性時間戳記。",
+      "DisplayName": "灑水器天氣快照 V2",
+      "List": [
+        {
+          "Description": "包含各自獨立可用的完整觀測歷史、目前狀況及預報區段。缺少的區段沒有可用的快取值；過時的區段會保留其原始有效性時間戳記。",
+          "Name": "灑水器天氣快照 V2",
+          "Type": 0
+        },
+        {
+          "Description": "存在可用的快取歷史時，要求的 V2 歷史時段。",
+          "Name": "近期歷史",
+          "Type": 1
+        },
+        {
+          "Description": "要求且可供使用時，最後接受的目前狀況。",
+          "Name": "目前狀況",
+          "Type": 2
+        },
+        {
+          "Description": "存在可用的快取資料時，要求的預報時段。",
+          "Name": "預報",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherSnapshotV2"
+    },
+    {
+      "Description": "選取要復原的歷史或預報時段之半開區間。當某時段的開始時間不早於 `starts_at` 且早於 `ends_before` 時，便會選取該時段。",
+      "DisplayName": "灑水器天氣時間範圍",
+      "List": [
+        {
+          "Description": "選取歷史或預報時段的半開區間以供擷取。若某時段的開始時間不早於 `starts_at` 且早於 `ends_before`，則會選取該時段。",
+          "Name": "灑水器天氣時間範圍",
+          "Type": 0
+        },
+        {
+          "Description": "所選時段開始時間的含括下限。",
+          "Name": "開始時間",
+          "Type": 1
+        },
+        {
+          "Description": "所選時段開始時間的不含括上限。此值必須晚於 `starts_at`。",
+          "Name": "結束時間",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherTimeRangeV1"
+    }
+  ]
+}

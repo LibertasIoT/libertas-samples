@@ -1,0 +1,75 @@
+{
+  "Description": "يتيح لك تجربة تطبيقات مرشّات الري من دون تركيب أجهزة ري فعلية.",
+  "DisplayName": "محاكي التحكم في مرشّات الري",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Virtual sprinkler valves",
+      "Description": "يتيح للمستخدمين تجربة تطبيقات مرشّات الري من دون تركيب أجهزة ري فعلية. يختار المستخدم صمامًا افتراضيًا واحدًا أو أكثر، ويمكنه ضبط مدة الري الافتراضية لكل صمام. يمكن للمستخدم أو لتطبيق مرشّات الري فتح صمام إلى أجل غير مسمى، أو فتحه لمدة يحددها، أو إغلاقه. تغلق وحدة التحكم في الصمامات تلقائيًا الصمام عند انتهاء مدة الري المحددة، كما تغلق أي صمام آخر قبل فتح صمام جديد، بحيث لا يعمل سوى صمام واحد للري في كل مرة. تعرض وحدة التحكم حالة كل صمام، سواء كان مفتوحًا أم مغلقًا، والمدة المحددة، والمدة الافتراضية، والوقت المتبقي، كما تتذكر المدة الافتراضية بعد إعادة التشغيل.",
+      "DisplayName": "محاكي التحكم في مرشّات الري",
+      "List": [
+        {
+          "Description": "أضف صمامًا افتراضيًا واحدًا لكل منطقة تريد تجربتها.",
+          "Name": "صمامات مرشّات الري",
+          "Type": 0
+        },
+        {
+          "Description": "صمام مياه افتراضي واحد.",
+          "Name": "صمام مرشّات الري",
+          "Type": 1
+        }
+      ],
+      "Name": "virtual_irrigation_controller"
+    }
+  ],
+  "Locale": "ar-SA",
+  "StringResources": {
+    "DEFAULT_OPEN_DURATION": "مدة الري المحفوظة لـ {0}."
+  },
+  "Types": [
+    {
+      "Description": "تُعرَّف مباشرةً في هذا النوع الاتحادي كل بنية بيانات تُكتب في قاعدة بيانات Libertas.",
+      "DisplayName": "بيانات الصمام الدائمة.",
+      "List": [
+        {
+          "Description": "تُعرَّف مباشرةً في هذا النوع الاتحادي كل بنية بيانات تُكتب في قاعدة بيانات Libertas.",
+          "Name": "بيانات الصمام الدائمة.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "سمة DefaultOpenDuration في Matter.",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "DefaultOpenDuration، بالثواني.",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved valve settings",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved valve settings",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Default watering duration for one valve",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveKey"
+    }
+  ]
+}

@@ -1,0 +1,1825 @@
+{
+  "Description": "Libertas アプリケーションによる意思決定に適した気象データを定義します。スプリンクラーのスキーマは、ハブから提供された設置場所を、直近の履歴、現在の状況、予報データとは別に永続化します。各気象セクションの更新間隔は異なり、それぞれ独立して成功または失敗する可能性があります。実行時のスナップショットには、任意の組み合わせのセクションが含まれる場合があります。アプリケーションは、正常に取得できた各セクションを個別に永続化し、気象データの更新に失敗した場合は以前のセクションを保持します。増分サブスクリプションでは、エポックタイムスタンプとシーケンスから成るカーソルを使用するため、クライアントはサーバーによるカーソルのリセットを古いデータや順序の入れ替わったデータと区別し、保持されている変更を再生したり、キャッシュデータから指定した時間範囲を復元したりできます。建物HVACのスキーマは、熱負荷予測、ヒートポンプ運転、エコノマイザーの判断、および制御された外気換気に必要な屋外入力のみを提供します。気象セクションと屋外空気質セクションではプロバイダーと鮮度の特性が異なるため、両者を独立して保持します。現場の機器制御と人命安全制御では、引き続き専用のセンサーを使用する必要があります。キャッシュされたインターネット気象データは監視制御用の入力であり、安全信号ではありません。",
+  "DisplayName": "Libertas 天気情報",
+  "DocumentVersion": "0.0.2",
+  "List": [],
+  "Locale": "ja-JP",
+  "StringResources": {},
+  "Types": [
+    {
+      "Description": "HVACの監視制御に使用される、モデル化された最新の屋外状況を格納します。機器保護または凍結防止に使用される現場の屋外センサーを代替するものではありません。",
+      "DisplayName": "建物HVACの現在の気象状況",
+      "List": [
+        {
+          "Description": "HVACの監視制御に使用される、モデル化された最新の屋外状況を格納します。機器保護または凍結防止に使用される現場の屋外センサーを代替するものではありません。",
+          "Name": "建物HVACの現在の気象状況",
+          "Type": 0
+        },
+        {
+          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
+          "Name": "Retrieved at",
+          "Type": 1
+        },
+        {
+          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
+          "Name": "Valid until",
+          "Type": 2
+        },
+        {
+          "Description": "The provider-supplied date and time represented by these current conditions.",
+          "Name": "Valid at",
+          "Type": 3
+        },
+        {
+          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
+          "Name": "Observation interval",
+          "Type": 4
+        },
+        {
+          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
+          "Name": "Outdoor conditions",
+          "Type": 5
+        }
+      ],
+      "Name": "BuildingHvacCurrentWeatherV1"
+    },
+    {
+      "Description": "不健全な状況で機械換気による外気の取り入れ量が増加するのを避けるために使用される、モデル化された屋外汚染物質濃度を格納します。これらの地域モデルの値は、現場の安全センサーや公的機関による緊急時の指示を代替するものではありません。",
+      "DisplayName": "建物HVACの屋外空気質期間",
+      "List": [
+        {
+          "Description": "不健全な状況で機械換気による外気の取り入れ量が増加するのを避けるために使用される、モデル化された屋外汚染物質濃度を格納します。これらの地域モデルの値は、現場の安全センサーや公的機関による緊急時の指示を代替するものではありません。",
+          "Name": "建物HVACの屋外空気質期間",
+          "Type": 0
+        },
+        {
+          "Description": "この空気質期間が表す、開始点を含む日付と時刻です。",
+          "Name": "開始日時",
+          "Type": 1
+        },
+        {
+          "Description": "この期間の長さ（秒）です。モデル化された屋外空気質では、通常3,600秒の期間を使用します。",
+          "Name": "継続時間",
+          "Type": 2
+        },
+        {
+          "Description": "モデル化された屋外のPM2.5濃度（1立方メートル当たりのマイクログラム）です。",
+          "Name": "微小粒子状物質",
+          "Type": 3
+        },
+        {
+          "Description": "モデル化された屋外のPM10濃度（1立方メートル当たりのマイクログラム）です。",
+          "Name": "粒子状物質",
+          "Type": 4
+        },
+        {
+          "Description": "モデル化された屋外のオゾン濃度（1立方メートル当たりのマイクログラム）です。",
+          "Name": "オゾン",
+          "Type": 5
+        },
+        {
+          "Description": "モデル化された屋外の二酸化窒素濃度（1立方メートル当たりのマイクログラム）です。",
+          "Name": "二酸化窒素",
+          "Type": 6
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityPeriodV1"
+    },
+    {
+      "Description": "換気計画のために、現在および予報のモデル化された屋外汚染物質期間を格納します。このセクションは任意であり、物理的な気象データとは独立してキャッシュされます。",
+      "DisplayName": "建物HVACの屋外空気質",
+      "List": [
+        {
+          "Description": "換気計画のために、現在および予報のモデル化された屋外汚染物質期間を格納します。このセクションは任意であり、物理的な気象データとは独立してキャッシュされます。",
+          "Name": "建物HVACの屋外空気質",
+          "Type": 0
+        },
+        {
+          "Description": "この空気質セクション全体が取得、検証、および受理された日付と時刻です。",
+          "Name": "取得日時",
+          "Type": 1
+        },
+        {
+          "Description": "この時刻を含まない鮮度の期限です。古くなったモデル値を、屋外の空気が安全であることの証拠として解釈してはなりません。",
+          "Name": "有効期限",
+          "Type": 2
+        },
+        {
+          "Description": "現在および将来の期間を、早い順に並べたものです。通常の応答が対象とするのは最大48時間です。",
+          "Name": "空気質期間",
+          "Type": 3
+        },
+        {
+          "Description": "1つの期間における、モデル化された屋外汚染物質濃度です。",
+          "Name": "空気質期間",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityV1"
+    },
+    {
+      "Description": "HVACの負荷予測、湿り空気線図に基づく計算、エコノマイザーの判断、浸入外気量の推定、および屋外に露出した機器の気象状況に応じた運転に必要な物理的屋外入力を格納します。",
+      "DisplayName": "建物HVACの屋外状況",
+      "List": [
+        {
+          "Description": "HVACの負荷予測、湿り空気線図に基づく計算、エコノマイザーの判断、浸入外気量の推定、および屋外に露出した機器の気象状況に応じた運転に必要な物理的屋外入力を格納します。",
+          "Name": "建物HVACの屋外状況",
+          "Type": 0
+        },
+        {
+          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
+          "Name": "Dry-bulb temperature",
+          "Type": 1
+        },
+        {
+          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
+          "Name": "Dew-point temperature",
+          "Type": 2
+        },
+        {
+          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
+          "Name": "Relative humidity",
+          "Type": 3
+        },
+        {
+          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
+          "Name": "Surface pressure",
+          "Type": 4
+        },
+        {
+          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
+          "Name": "Wind speed",
+          "Type": 5
+        },
+        {
+          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
+          "Name": "Wind gust",
+          "Type": 6
+        },
+        {
+          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
+          "Name": "Wind direction",
+          "Type": 7
+        },
+        {
+          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
+          "Name": "Precipitation",
+          "Type": 8
+        },
+        {
+          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
+          "Name": "Precipitation kind",
+          "Type": 9
+        },
+        {
+          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
+          "Name": "Solar elevation",
+          "Type": 10
+        },
+        {
+          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
+          "Name": "Solar azimuth",
+          "Type": 11
+        },
+        {
+          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
+          "Name": "Global horizontal irradiance",
+          "Type": 12
+        },
+        {
+          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
+          "Name": "Direct normal irradiance",
+          "Type": 13
+        },
+        {
+          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
+          "Name": "Diffuse horizontal irradiance",
+          "Type": 14
+        }
+      ],
+      "Name": "BuildingHvacOutdoorConditionsV1"
+    },
+    {
+      "Description": "降水の相が屋外コイル、吸気口、ダンパー、または屋外に露出したその他のHVAC機器に影響する可能性がある場合に、その降水を分類します。",
+      "DisplayName": "建物HVACの降水種別",
+      "List": [
+        {
+          "Description": "降水の相が屋外コイル、吸気口、ダンパー、または屋外に露出したその他のHVAC機器に影響する可能性がある場合に、その降水を分類します。",
+          "Enum": [
+            {
+              "Description": "この期間に降水はありません。",
+              "Name": "降水なし",
+              "Type": 1
+            },
+            {
+              "Description": "この期間には液体の雨またはにわか雨があります。",
+              "Name": "雨",
+              "Type": 2
+            },
+            {
+              "Description": "この期間には、屋外に露出した機器上で凍結する可能性がある過冷却の液体降水があります。",
+              "Name": "着氷性の雨",
+              "Type": 3
+            },
+            {
+              "Description": "この期間には、主に雪から成る固体降水があります。",
+              "Name": "雪",
+              "Type": 4
+            },
+            {
+              "Description": "複数の液体または固体の降水相があります。",
+              "Name": "混合降水",
+              "Type": 5
+            },
+            {
+              "Description": "降水はありますが、プロバイダーがその相を分類できません。",
+              "Name": "不明な降水",
+              "Type": 6
+            }
+          ],
+          "Name": "建物HVACの降水種別",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacPrecipitationKindV1"
+    },
+    {
+      "Description": "建物HVACの増分気象ストリームにおける、1つのアトミックな変更を定義します。バリアントとフィールドの順序は、Avroワイヤーコントラクトの一部です。",
+      "DisplayName": "建物HVACの気象変更",
+      "List": [
+        {
+          "Description": "建物HVACの増分気象ストリームにおける、1つのアトミックな変更を定義します。バリアントとフィールドの順序は、Avroワイヤーコントラクトの一部です。",
+          "Name": "建物HVACの気象変更",
+          "Type": 0
+        },
+        {
+          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
+          "Name": "Upsert historical periods",
+          "Type": 1
+        },
+        {
+          "Description": "The retrieval and validation time for the updated history section.",
+          "Name": "Retrieved at",
+          "Type": 2
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the history section.",
+          "Name": "Valid until",
+          "Type": 3
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from oldest to newest.",
+          "Name": "Historical periods",
+          "Type": 4
+        },
+        {
+          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
+          "Name": "Historical period",
+          "Type": 5
+        },
+        {
+          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove historical periods",
+          "Type": 6
+        },
+        {
+          "Description": "The half-open range of historical period start times to remove.",
+          "Name": "Time range",
+          "Type": 7
+        },
+        {
+          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
+          "Name": "Replace current conditions",
+          "Type": 8
+        },
+        {
+          "Description": "The complete newly accepted current-condition section.",
+          "Name": "Current conditions",
+          "Type": 9
+        },
+        {
+          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
+          "Name": "Upsert forecast periods",
+          "Type": 10
+        },
+        {
+          "Description": "The retrieval and validation time for the updated forecast section.",
+          "Name": "Retrieved at",
+          "Type": 11
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the forecast section.",
+          "Name": "Valid until",
+          "Type": 12
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Forecast periods",
+          "Type": 13
+        },
+        {
+          "Description": "One future outdoor-condition period keyed by `starts_at`.",
+          "Name": "Forecast period",
+          "Type": 14
+        },
+        {
+          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove forecast periods",
+          "Type": 15
+        },
+        {
+          "Description": "The half-open range of forecast period start times to remove.",
+          "Name": "Time range",
+          "Type": 16
+        },
+        {
+          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
+          "Name": "Upsert outdoor-air-quality periods",
+          "Type": 17
+        },
+        {
+          "Description": "The retrieval and validation time for the updated air-quality section.",
+          "Name": "Retrieved at",
+          "Type": 18
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the air-quality section.",
+          "Name": "Valid until",
+          "Type": 19
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Air-quality periods",
+          "Type": 20
+        },
+        {
+          "Description": "One modeled pollutant period keyed by `starts_at`.",
+          "Name": "Air-quality period",
+          "Type": 21
+        },
+        {
+          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove outdoor-air-quality periods",
+          "Type": 22
+        },
+        {
+          "Description": "The half-open range of air-quality period start times to remove.",
+          "Name": "Time range",
+          "Type": 23
+        },
+        {
+          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
+          "Name": "Clear weather section",
+          "Type": 24
+        },
+        {
+          "Description": "The independently cached section to clear.",
+          "Name": "Weather section",
+          "Type": 25
+        },
+        {
+          "Description": "Replaces the complete historical section after a successful refresh.",
+          "Name": "Replace history",
+          "Type": 26
+        },
+        {
+          "Description": "The complete newly accepted history section.",
+          "Name": "History",
+          "Type": 27
+        },
+        {
+          "Description": "Replaces the complete forecast section after a successful refresh.",
+          "Name": "Replace forecast",
+          "Type": 28
+        },
+        {
+          "Description": "The complete newly accepted forecast section.",
+          "Name": "Forecast",
+          "Type": 29
+        },
+        {
+          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
+          "Name": "Replace outdoor air quality",
+          "Type": 30
+        },
+        {
+          "Description": "The complete newly accepted outdoor-air-quality section.",
+          "Name": "Outdoor air quality",
+          "Type": 31
+        }
+      ],
+      "Name": "BuildingHvacWeatherChangeV1"
+    },
+    {
+      "Description": "建物HVACの増分気象ストリームで、完全に適用された1つの状態を識別します。クライアントは、エポックタイムスタンプとシーケンスを組み合わせて比較します。",
+      "DisplayName": "建物HVACの気象カーソル",
+      "List": [
+        {
+          "Description": "建物HVACの増分気象ストリームで、完全に適用された1つの状態を識別します。クライアントは、エポックタイムスタンプとシーケンスを組み合わせて比較します。",
+          "Name": "建物HVACの気象カーソル",
+          "Type": 0
+        },
+        {
+          "Description": "ストリームの世代を識別する、サーバーによって割り当てられた日付と時刻です。通常のシーケンス進行中は一定のままです。一時的なカーソル状態を失ったサーバーは、それまでよりも必ず新しいタイムスタンプを割り当てます。",
+          "Name": "エポックタイムスタンプ",
+          "Type": 1
+        },
+        {
+          "Description": "最後に適用されたアトミックな変更のシーケンス。サーバーのカーソルがリセットされると再びゼロから始まりますが、クライアントが最初に確認するのはリセット後のより後のシーケンスである場合があります。",
+          "Name": "シーケンス",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherCursorV1"
+    },
+    {
+      "Description": "モデル予測型HVAC計画の1期間における屋外条件の予測値を格納します。",
+      "DisplayName": "建物HVAC予報期間",
+      "List": [
+        {
+          "Description": "モデル予測型HVAC計画の1期間における屋外条件の予測値を格納します。",
+          "Name": "建物HVAC予報期間",
+          "Type": 0
+        },
+        {
+          "Description": "この予報期間が始まる日時（その日時を含む）。",
+          "Name": "開始時刻",
+          "Type": 1
+        },
+        {
+          "Description": "この予報期間の長さ（秒）。プロバイダーは、現在時刻に近い範囲には900秒単位の期間を、それより後の範囲には3,600秒単位の期間を提供する場合があります。",
+          "Name": "期間",
+          "Type": 2
+        },
+        {
+          "Description": "この期間中に観測可能な降水がある確率。0から100までの整数パーセントで表します。",
+          "Name": "降水確率",
+          "Type": 3
+        },
+        {
+          "Description": "この期間について予測された気温、湿度、気圧、風、降水、および日射の入力値。",
+          "Name": "屋外条件",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "負荷予測、予熱、予冷、蓄熱、および気象を考慮した換気計画に使用する将来の屋外条件を格納します。",
+      "DisplayName": "建物HVAC気象予報",
+      "List": [
+        {
+          "Description": "負荷予測、予熱、予冷、蓄熱、および気象を考慮した換気計画に使用する将来の屋外条件を格納します。",
+          "Name": "建物HVAC気象予報",
+          "Type": 0
+        },
+        {
+          "Description": "この予報セクション全体が取得、検証、および受理された日時。",
+          "Name": "取得日時",
+          "Type": 1
+        },
+        {
+          "Description": "鮮度の有効期限（この日時を含まない）。期限を過ぎた予報も縮退時の計画には引き続き利用できますが、安全性に影響する運用の許可には使用できません。",
+          "Name": "有効期限",
+          "Type": 2
+        },
+        {
+          "Description": "早いものから遅いものの順に並べた将来の期間。通常の応答は72時間分を対象とし、最初の6時間には任意で15分単位の期間を、それ以降には1時間単位の期間を使用します。",
+          "Name": "予報期間一覧",
+          "Type": 3
+        },
+        {
+          "Description": "1つの計画期間について予測された屋外HVAC条件。",
+          "Name": "予報期間",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastV1"
+    },
+    {
+      "Description": "建物の熱状態推定を復元または更新するために使用する、完了済みの1期間の屋外条件を格納します。",
+      "DisplayName": "建物HVAC気象履歴期間",
+      "List": [
+        {
+          "Description": "建物の熱状態推定を復元または更新するために使用する、完了済みの1期間の屋外条件を格納します。",
+          "Name": "建物HVAC気象履歴期間",
+          "Type": 0
+        },
+        {
+          "Description": "この履歴期間が始まる日時（その日時を含む）。",
+          "Name": "開始時刻",
+          "Type": 1
+        },
+        {
+          "Description": "この完了済み期間の長さ（秒）。履歴では通常、3,600秒単位の期間を使用します。",
+          "Name": "期間",
+          "Type": 2
+        },
+        {
+          "Description": "この完了済み期間が表す気温、湿度、気圧、風、降水、および日射の条件。",
+          "Name": "屋外条件",
+          "Type": 3
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryPeriodV1"
+    },
+    {
+      "Description": "短期的な熱状態の復元に使用する、直近の完了済み屋外条件期間を格納します。建物の長期的な学習は、HVACアプリケーション独自のテレメトリおよびモデル永続化で行います。",
+      "DisplayName": "建物HVAC気象履歴",
+      "List": [
+        {
+          "Description": "短期的な熱状態の復元に使用する、直近の完了済み屋外条件期間を格納します。建物の長期的な学習は、HVACアプリケーション独自のテレメトリおよびモデル永続化で行います。",
+          "Name": "建物HVAC気象履歴",
+          "Type": 0
+        },
+        {
+          "Description": "この履歴セクション全体が取得、検証、および受理された日時。",
+          "Name": "取得日時",
+          "Type": 1
+        },
+        {
+          "Description": "鮮度の有効期限（この日時を含まない）。期限を過ぎた履歴も、この時刻以降は縮退時のモデル入力として引き続き利用できます。",
+          "Name": "有効期限",
+          "Type": 2
+        },
+        {
+          "Description": "古いものから新しいものの順に並べた完了済み期間。通常の応答は過去72時間分を対象としますが、これより短いリストも有効な部分履歴です。",
+          "Name": "履歴期間一覧",
+          "Type": 3
+        },
+        {
+          "Description": "完了済みの1期間における屋外HVAC条件。",
+          "Name": "履歴期間",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryV1"
+    },
+    {
+      "Description": "建物HVACの気象変更について、順序付けられたアトミックな範囲を伝達します。クライアントは、`from_cursor`が自身の最後のカーソルと一致する場合にのみ、このレポートを適用します。空のレポートは追いつき済みの復旧を示します。変更がない場合の定期的な生存通知にはPeerAliveを使用します。",
+      "DisplayName": "建物HVAC気象差分レポート",
+      "List": [
+        {
+          "Description": "建物HVACの気象変更について、順序付けられたアトミックな範囲を伝達します。クライアントは、`from_cursor`が自身の最後のカーソルと一致する場合にのみ、このレポートを適用します。空のレポートは追いつき済みの復旧を示します。変更がない場合の定期的な生存通知にはPeerAliveを使用します。",
+          "Name": "建物HVAC気象差分レポート",
+          "Type": 0
+        },
+        {
+          "Description": "レポートを適用する前に必要となる、範囲に含まれない下限カーソルおよびそれと完全に一致するクライアント状態。",
+          "Name": "開始カーソル",
+          "Type": 1
+        },
+        {
+          "Description": "すべての変更をアトミックに適用した後に到達するカーソル（そのカーソルを含む）。",
+          "Name": "到達カーソル",
+          "Type": 2
+        },
+        {
+          "Description": "カーソルのシーケンス順に並べた変更。各変更によりシーケンスが正確に1つ進みます。リストが空の場合、カーソルは維持されます。",
+          "Name": "気象変更一覧",
+          "Type": 3
+        },
+        {
+          "Description": "カーソル順の1つのアトミックな状態変更。",
+          "Name": "気象変更",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "1軒の家屋または1棟の建物全体の気象情報を取得するために使用するLibertas Hubの地点を格納します。",
+      "DisplayName": "建物HVAC気象地点",
+      "List": [
+        {
+          "Description": "1軒の家屋または1棟の建物全体の気象情報を取得するために使用するLibertas Hubの地点を格納します。",
+          "Name": "建物HVAC気象地点",
+          "Type": 0
+        },
+        {
+          "Description": "WGS84に基づく十進度単位の経度。グリニッジより西の地点には負の値を使用します。",
+          "Name": "経度",
+          "Type": 1
+        },
+        {
+          "Description": "WGS84に基づく十進度単位の緯度。",
+          "Name": "緯度",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherLocationV1"
+    },
+    {
+      "Description": "建物HVAC気象エージェントがLibertasデータベースに書き込めるすべての値を定義します。各バリアントは固有の安定したリソース識別子の下に保存されるため、一部のプロバイダーで障害が発生しても別のセクションが消去されることはありません。サブスクリプションカーソル、ジャーナル、ピア、およびPeerAliveの期限は永続化されません。",
+      "DisplayName": "建物HVAC気象永続データ",
+      "List": [
+        {
+          "Description": "建物HVAC気象エージェントがLibertasデータベースに書き込めるすべての値を定義します。各バリアントは固有の安定したリソース識別子の下に保存されるため、一部のプロバイダーで障害が発生しても別のセクションが消去されることはありません。サブスクリプションカーソル、ジャーナル、ピア、およびPeerAliveの期限は永続化されません。",
+          "Name": "建物HVAC気象永続データ",
+          "Type": 0
+        },
+        {
+          "Description": "Libertas Hubから受信した直近の有効なサイト座標を保存します。",
+          "Name": "建物の位置",
+          "Type": 1
+        },
+        {
+          "Description": "プロバイダーへのリクエストに使用されるサイトのWGS84座標。",
+          "Name": "位置",
+          "Type": 2
+        },
+        {
+          "Description": "正常に受理された直近の物理気象履歴を保存します。",
+          "Name": "最近の履歴",
+          "Type": 3
+        },
+        {
+          "Description": "取得時刻および鮮度タイムスタンプを含む、最近の屋外環境期間。",
+          "Name": "履歴",
+          "Type": 4
+        },
+        {
+          "Description": "正常に受理された直近の現在の物理気象を保存します。",
+          "Name": "現在の気象状況",
+          "Type": 5
+        },
+        {
+          "Description": "有効性タイムスタンプおよび取得タイムスタンプを含む、現在の屋外HVAC入力。",
+          "Name": "現在の気象状況",
+          "Type": 6
+        },
+        {
+          "Description": "正常に受理された直近の物理気象予報を保存します。",
+          "Name": "予報",
+          "Type": 7
+        },
+        {
+          "Description": "取得時刻および鮮度タイムスタンプを含む、将来の屋外HVAC入力。",
+          "Name": "予報",
+          "Type": 8
+        },
+        {
+          "Description": "正常に受理された直近のモデル化汚染物質データを、物理気象とは別に保存します。",
+          "Name": "屋外空気質",
+          "Type": 9
+        },
+        {
+          "Description": "取得時刻および鮮度タイムスタンプを含む、現在および将来の屋外汚染物質期間。",
+          "Name": "屋外空気質",
+          "Type": 10
+        }
+      ],
+      "Name": "BuildingHvacWeatherPersistentData"
+    },
+    {
+      "Description": "住宅全体または建物全体のHVAC気象に対する単発トランザクションおよびサブスクリプショントランザクションを定義します。この任意メッセージコントラクト内のフィールドではなく、Libertasエンドポイントの操作によって、単発動作またはサブスクリプション動作が選択されます。",
+      "DisplayName": "建物HVAC気象プロトコル",
+      "List": [
+        {
+          "Description": "住宅全体または建物全体のHVAC気象に対する単発トランザクションおよびサブスクリプショントランザクションを定義します。この任意メッセージコントラクト内のフィールドではなく、Libertasエンドポイントの操作によって、単発動作またはサブスクリプション動作が選択されます。",
+          "Name": "建物HVAC気象プロトコル",
+          "Type": 0
+        },
+        {
+          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
+          "Name": "Get building HVAC weather",
+          "Type": 1
+        },
+        {
+          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
+          "Name": "Resume cursor",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
+          "Name": "Historical recovery range",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
+          "Name": "Include current conditions",
+          "Type": 4
+        },
+        {
+          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
+          "Name": "Forecast recovery range",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
+          "Name": "Outdoor-air-quality recovery range",
+          "NullText": "No outdoor air quality",
+          "SetText": "Include outdoor air quality for",
+          "Type": 6
+        },
+        {
+          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
+          "Name": "Building HVAC weather recovery",
+          "Type": 7
+        },
+        {
+          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
+          "Name": "Maximum wait interval",
+          "Type": 8
+        },
+        {
+          "Description": "The replay, reset snapshot, or typed error result.",
+          "Name": "Recovery",
+          "Type": 9
+        },
+        {
+          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
+          "Name": "Building HVAC weather increment",
+          "Type": 10
+        },
+        {
+          "Description": "The ordered, atomic cursor range and its weather changes.",
+          "Name": "Incremental report",
+          "Type": 11
+        }
+      ],
+      "Name": "BuildingHvacWeatherProtocol"
+    },
+    {
+      "Description": "再生または範囲制限付きキャッシュスナップショットでは満たせない復旧リクエストを識別します。",
+      "DisplayName": "建物HVAC気象復旧エラー",
+      "List": [
+        {
+          "Description": "再生または範囲制限付きキャッシュスナップショットでは満たせない復旧リクエストを識別します。",
+          "Enum": [
+            {
+              "Description": "リクエストされた半開区間のうち、少なくとも1つが空であるか、始点と終点が逆になっています。",
+              "Name": "無効な時間範囲",
+              "Type": 1
+            },
+            {
+              "Description": "指定されたカーソルを、現在のカーソル状態または保持されているジャーナルと整合させることができません。",
+              "Name": "カーソルが先行",
+              "Type": 2
+            },
+            {
+              "Description": "リクエストされた復旧範囲のうち、少なくとも1つが制限された応答容量を超えています。",
+              "Name": "リクエストが大きすぎます",
+              "Type": 3
+            },
+            {
+              "Description": "必要なキャッシュレコードまたは復旧リソースが一時的に利用できません。",
+              "Name": "一時的に利用できません",
+              "Type": 4
+            }
+          ],
+          "Name": "建物HVAC気象復旧エラー",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "保持されている変更を再生するか、新しいカーソルとスナップショットを確立するか、復旧可能なリクエストエラーを報告します。",
+      "DisplayName": "建物HVAC気象復旧",
+      "List": [
+        {
+          "Description": "保持されている変更を再生するか、新しいカーソルとスナップショットを確立するか、復旧可能なリクエストエラーを報告します。",
+          "Name": "建物HVAC気象復旧",
+          "Type": 0
+        },
+        {
+          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
+          "Name": "Replayed changes",
+          "Type": 1
+        },
+        {
+          "Description": "The contiguous retained change range beginning at the request cursor.",
+          "Name": "Incremental report",
+          "Type": 2
+        },
+        {
+          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
+          "Name": "Reset with snapshot",
+          "Type": 3
+        },
+        {
+          "Description": "The reason the response contains a snapshot rather than replay.",
+          "Name": "Reset reason",
+          "Type": 4
+        },
+        {
+          "Description": "The cursor representing the returned snapshot.",
+          "Name": "Current cursor",
+          "Type": 5
+        },
+        {
+          "Description": "The available cached sections constrained by requested ranges.",
+          "Name": "Weather snapshot",
+          "Type": 6
+        },
+        {
+          "Description": "Rejects the request without changing client cursor or cached weather.",
+          "Name": "Recovery error",
+          "Type": 7
+        },
+        {
+          "Description": "The reason recovery could not be completed.",
+          "Name": "Error",
+          "Type": 8
+        },
+        {
+          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
+          "Name": "Retry delay",
+          "Type": 9
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryV1"
+    },
+    {
+      "Description": "復旧時に増分変更を再生せず、範囲制限付きスナップショットから状態を確立した理由を説明します。",
+      "DisplayName": "建物HVAC気象リセット理由",
+      "List": [
+        {
+          "Description": "復旧時に増分変更を再生せず、範囲制限付きスナップショットから状態を確立した理由を説明します。",
+          "Enum": [
+            {
+              "Description": "以前のカーソルが指定されていません。",
+              "Name": "初回サブスクリプション",
+              "Type": 1
+            },
+            {
+              "Description": "リクエストされたシーケンスは、保持されている再生ジャーナルよりも古いものです。",
+              "Name": "カーソルの期限切れ",
+              "Type": 2
+            },
+            {
+              "Description": "サーバーが一時的なカーソルと再生ジャーナルのみを失ったか、意図的に破棄しました。個別に永続化された気象セクションは引き続き使用できます。",
+              "Name": "サーバーカーソルのリセット",
+              "Type": 3
+            }
+          ],
+          "Name": "建物HVAC気象リセット理由",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherResetReasonV1"
+    },
+    {
+      "Description": "個別にキャッシュされる建物HVAC気象セクションを識別します。",
+      "DisplayName": "建物HVAC気象セクション",
+      "List": [
+        {
+          "Description": "個別にキャッシュされる建物HVAC気象セクションを識別します。",
+          "Enum": [
+            {
+              "Description": "最近の物理的な屋外環境履歴を選択します。",
+              "Name": "最近の履歴",
+              "Type": 1
+            },
+            {
+              "Description": "モデル化された現在の屋外の物理的状況を選択します。",
+              "Name": "現在の気象状況",
+              "Type": 2
+            },
+            {
+              "Description": "将来の屋外の物理的状況の予報を選択します。",
+              "Name": "気象予報",
+              "Type": 3
+            },
+            {
+              "Description": "モデル化された現在および予報の屋外汚染物質濃度を選択します。",
+              "Name": "屋外空気質",
+              "Type": 4
+            }
+          ],
+          "Name": "建物HVAC気象セクション",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherSectionV1"
+    },
+    {
+      "Description": "要求された各セクションについて、最後に正常に受け入れられた値を保持します。欠落しているセクションには使用可能なキャッシュがありません。古くなったセクションは、元の鮮度期限とともに引き続き保持されます。",
+      "DisplayName": "建物HVAC気象スナップショット",
+      "List": [
+        {
+          "Description": "要求された各セクションについて、最後に正常に受け入れられた値を保持します。欠落しているセクションには使用可能なキャッシュがありません。古くなったセクションは、元の鮮度期限とともに引き続き保持されます。",
+          "Name": "建物HVAC気象スナップショット",
+          "Type": 0
+        },
+        {
+          "Description": "使用可能なキャッシュ済み履歴が存在する場合の、要求された直近の屋外状況期間です。",
+          "Name": "直近の履歴",
+          "Type": 1
+        },
+        {
+          "Description": "要求され、利用可能な場合における、最後に受け入れられた現在の屋外状況です。",
+          "Name": "現在の気象状況",
+          "Type": 2
+        },
+        {
+          "Description": "使用可能なキャッシュ済み予報データが存在する場合の、要求された将来の屋外状況期間です。",
+          "Name": "気象予報",
+          "Type": 3
+        },
+        {
+          "Description": "使用可能なモデル化済み空気質データが存在する場合の、要求された現在および予報の汚染物質期間です。",
+          "Name": "屋外空気質",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherSnapshotV1"
+    },
+    {
+      "Description": "履歴、予報、または屋外空気質の期間を、その開始時刻に基づく半開区間で選択します。",
+      "DisplayName": "建物HVAC気象時間範囲",
+      "List": [
+        {
+          "Description": "履歴、予報、または屋外空気質の期間を、その開始時刻に基づく半開区間で選択します。",
+          "Name": "建物HVAC気象時間範囲",
+          "Type": 0
+        },
+        {
+          "Description": "選択する期間の開始時刻に対する、範囲に含まれる下限です。",
+          "Name": "開始時刻",
+          "Type": 1
+        },
+        {
+          "Description": "選択する期間の開始時刻に対する、範囲に含まれない上限です。`starts_at` より後でなければなりません。",
+          "Name": "終了時刻",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherTimeRangeV1"
+    },
+    {
+      "Description": "予定されている散水処理を安全に開始または継続できるかどうかを判断するために使用する、直近の降雨、凍結、湿度、風、および水収支の入力値を保持します。",
+      "DisplayName": "スプリンクラーの現在の気象情報",
+      "List": [
+        {
+          "Description": "予定されている散水処理を安全に開始または継続できるかどうかを判断するために使用する、直近の降雨、凍結、湿度、風、および水収支の入力値を保持します。",
+          "Name": "スプリンクラーの現在の気象情報",
+          "Type": 0
+        },
+        {
+          "Description": "現在の気象セクション全体が最後に取得、検証され、受け入れられた日時です。",
+          "Name": "取得日時",
+          "Type": 1
+        },
+        {
+          "Description": "範囲に含まれない鮮度期限です。現在時刻がこの値より前である間、現在の気象情報は新鮮です。この値以降もセクションはキャッシュに保持されますが、散水が安全であることの根拠として扱ってはなりません。",
+          "Name": "有効期限",
+          "Type": 2
+        },
+        {
+          "Description": "現在の気象状況の値が表す、プロバイダーから提供された日時です。これは `retrieved_at` と異なる場合があります。",
+          "Name": "基準日時",
+          "Type": 3
+        },
+        {
+          "Description": "累積降水量および蒸発散量が表す、過去に遡る秒単位の区間です。Open-Meteoの現在の気象情報では通常、900秒の区間が使用されます。",
+          "Name": "観測区間",
+          "Type": 4
+        },
+        {
+          "Description": "地上2メートルにおける摂氏単位の気温です。スプリンクラーは、氷点付近または氷点以下で散水を抑止するためにこの値を使用します。",
+          "Name": "気温",
+          "Type": 5
+        },
+        {
+          "Description": "地上2メートルにおける相対湿度で、0～100のパーセント値として表されます。スプリンクラーは、頭上散水が必要な場合に葉面の濡れが不必要に長時間続くことを避けるためにこの値を使用します。",
+          "Name": "相対湿度",
+          "Type": 6
+        },
+        {
+          "Description": "`interval_seconds` の期間中に累積した雨、にわか雨、および水当量換算の凍結性降水の合計で、単位はミリメートルです。スプリンクラーは、降水中の散水を抑止するためにゼロ以外の値を使用します。",
+          "Name": "降水量",
+          "Type": 7
+        },
+        {
+          "Description": "`interval_seconds` の期間中に累積したFAO-56基準蒸発散量で、単位はミリメートルです。次の完了済み履歴期間が利用可能になるまで、水収支を補完できます。",
+          "Name": "基準蒸発散量",
+          "Type": 8
+        },
+        {
+          "Description": "地上10メートルにおける持続風速で、単位はメートル毎秒です。この情報を使用するスプリンクラーは、設定された風速しきい値を適用します。",
+          "Name": "風速",
+          "Type": 9
+        },
+        {
+          "Description": "地上10メートルにおける突風の最大速度で、単位はメートル毎秒です。この情報を使用するスプリンクラーは、散水の飛散を避けるため、持続風速と併せてこの値を使用します。",
+          "Name": "最大瞬間風速",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerCurrentWeatherV1"
+    },
+    {
+      "Description": "スプリンクラー気象情報の差分ストリームにおける1つのアトミックな変更を定義します。バリアントの順序とフィールドの順序は、追記専用のAvroワイヤー形式の一部です。",
+      "DisplayName": "スプリンクラー気象変更",
+      "List": [
+        {
+          "Description": "スプリンクラー気象情報の差分ストリームにおける1つのアトミックな変更を定義します。バリアントの順序とフィールドの順序は、追記専用のAvroワイヤー形式の一部です。",
+          "Name": "スプリンクラー気象変更",
+          "Type": 0
+        },
+        {
+          "Description": "開始時刻が指定された半開範囲内にある、キャッシュ済みの履歴期間を削除します。",
+          "Name": "履歴期間を削除",
+          "Type": 1
+        },
+        {
+          "Description": "削除する履歴期間の開始時刻の半開範囲です。",
+          "Name": "時間範囲",
+          "Type": 2
+        },
+        {
+          "Description": "正常な取得と検証の後、現在の気象状況セクション全体を置き換えます。",
+          "Name": "現在の気象状況を置換",
+          "Type": 3
+        },
+        {
+          "Description": "新たに受け入れられた現在の気象状況セクションです。",
+          "Name": "現在の気象状況",
+          "Type": 4
+        },
+        {
+          "Description": "予報の更新が成功したことを記録し、`starts_at` に基づいて期間を挿入または置換します。期間リストが空の場合は、取得および鮮度のメタデータのみを更新します。",
+          "Name": "予報期間をアップサート",
+          "Type": 5
+        },
+        {
+          "Description": "予報セクションの取得と検証が正常に完了した日時。",
+          "Name": "取得日時",
+          "Type": 6
+        },
+        {
+          "Description": "予報セクションが最新とみなされる新しい期限（期限時刻は含まない）。",
+          "Name": "有効期限",
+          "Type": 7
+        },
+        {
+          "Description": "挿入または置換する期間。早いものから順に並びます。",
+          "Name": "予報期間",
+          "Type": 8
+        },
+        {
+          "Description": "`starts_at`をキーとする、灌水計画用の1期間。",
+          "Name": "予報期間",
+          "Type": 9
+        },
+        {
+          "Description": "開始時刻が指定された半開区間内にある、キャッシュ済みの予報期間を削除します。",
+          "Name": "予報期間を削除",
+          "Type": 10
+        },
+        {
+          "Description": "削除する予報期間の開始時刻を示す半開区間。",
+          "Name": "時間範囲",
+          "Type": 11
+        },
+        {
+          "Description": "検証の失敗や互換性のない移行の後など、キャッシュされた値が無効であることが判明している場合に限り、1つのセクションを消去します。プロバイダーの更新に失敗しただけでは、この変更を生成してはなりません。",
+          "Name": "気象セクションを消去",
+          "Type": 12
+        },
+        {
+          "Description": "消去する、個別にキャッシュされたセクション。",
+          "Name": "気象セクション",
+          "Type": 13
+        },
+        {
+          "Description": "プロバイダーの更新が正常に完了した後、予報セクション全体を置換します。置換後のデータに含まれない期間は、キャッシュから削除されます。",
+          "Name": "予報を置換",
+          "Type": 14
+        },
+        {
+          "Description": "新たに受け入れられた完全な予報セクション。",
+          "Name": "予報",
+          "Type": 15
+        },
+        {
+          "Description": "これ以降のすべての気象変更の物理的な地点を識別します。クライアントはこの値を使用することで、コールバックの順序に依存せず、異なるHub設置場所で保持された履歴を別々の世代として管理します。",
+          "Name": "気象観測地点を置換",
+          "Type": 16
+        },
+        {
+          "Description": "プロバイダーの観測と予報に使用されるWGS84位置情報。",
+          "Name": "地点の位置",
+          "Type": 17
+        },
+        {
+          "Description": "履歴の更新が正常に完了したことを示し、`starts_at`をキーとして、完全な気象情報を含む期間を挿入または置換します。",
+          "Name": "履歴期間V2を挿入または更新",
+          "Type": 18
+        },
+        {
+          "Description": "履歴セクションの取得と検証が正常に完了した日時。",
+          "Name": "取得日時",
+          "Type": 19
+        },
+        {
+          "Description": "履歴セクションが最新とみなされる新しい期限（期限時刻は含まない）。",
+          "Name": "有効期限",
+          "Type": 20
+        },
+        {
+          "Description": "挿入または置換する、完全な気象情報を含む期間。古いものから順に並びます。",
+          "Name": "履歴期間",
+          "Type": 21
+        },
+        {
+          "Description": "`starts_at`をキーとする、完了済みの1件のV2観測。",
+          "Name": "履歴期間",
+          "Type": 22
+        },
+        {
+          "Description": "プロバイダーの更新が正常に完了した後、完全な観測情報を含む履歴セクション全体を置換します。",
+          "Name": "履歴V2を置換",
+          "Type": 23
+        },
+        {
+          "Description": "新たに受け入れられた完全なV2履歴セクション。",
+          "Name": "履歴",
+          "Type": 24
+        }
+      ],
+      "Name": "SprinklerWeatherChangeV1"
+    },
+    {
+      "Description": "スプリンクラー気象の増分ストリームで適用された1つの状態を識別します。クライアントは両方のフィールドを比較する必要があり、シーケンス値が小さいという理由だけでサーバーがリセットされたと解釈してはなりません。",
+      "DisplayName": "スプリンクラー気象カーソル",
+      "List": [
+        {
+          "Description": "スプリンクラー気象の増分ストリームで適用された1つの状態を識別します。クライアントは両方のフィールドを比較する必要があり、シーケンス値が小さいという理由だけでサーバーがリセットされたと解釈してはなりません。",
+          "Name": "スプリンクラー気象カーソル",
+          "Type": 0
+        },
+        {
+          "Description": "カーソルの世代を識別する、サーバーによって割り当てられた日時。この単一のフィールドはストリームのエポックであると同時に、順序付け可能なタイムスタンプでもあります。これとは別の不透明なエポックは存在しません。通常のシーケンス進行中、この値は変わりません。サーバーが一時的なカーソルまたは再生ジャーナルを失った場合、以前の値よりも厳密に新しいエポックタイムスタンプを割り当て、`sequence`を再びゼロから開始します。クライアントが最初に確認するリセット後のシーケンスは、ゼロではなく、それより後の値である場合があります。このタイムスタンプはカーソルの状態を表すものであり、気象値の観測日時ではありません。",
+          "Name": "エポックタイムスタンプ",
+          "Type": 1
+        },
+        {
+          "Description": "最後に適用された状態変更を識別します。サーバーは、受け入れられた気象変更ごとにこの値を1ずつ増やします。一時的なサーバーカーソルがリセットされると、この値をゼロに戻し、その後の変更ごとに増やします。リセットしても、過去、現在、または予報の気象データは消去されません。",
+          "Name": "シーケンス",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherCursorV1"
+    },
+    {
+      "Description": "1つの計画期間中にいつ、どの程度灌水するかを決定するために使用する、予測水分供給量、水分損失量、気温、湿度、および風による危険性を格納します。",
+      "DisplayName": "スプリンクラー気象予報期間",
+      "List": [
+        {
+          "Description": "1つの計画期間中にいつ、どの程度灌水するかを決定するために使用する、予測水分供給量、水分損失量、気温、湿度、および風による危険性を格納します。",
+          "Name": "スプリンクラー気象予報期間",
+          "Type": 0
+        },
+        {
+          "Description": "この予報期間が始まる日時（その日時を含む）。",
+          "Name": "開始日時",
+          "Type": 1
+        },
+        {
+          "Description": "この予報期間の長さ（秒単位）。Open-Meteoの予報では通常、3,600秒の期間を使用します。",
+          "Name": "期間",
+          "Type": 2
+        },
+        {
+          "Description": "地上2メートルにおける予測気温（摂氏）。スプリンクラーは、予報で氷点下になる状況での灌水を避けるためにこの値を使用します。",
+          "Name": "気温",
+          "Type": 3
+        },
+        {
+          "Description": "地上2メートルにおける予測相対湿度。0から100までの整数パーセントで表されます。この値は、太陽の位置およびスプリンクラーヘッドの種類と併せて、葉が長時間濡れたままになることを防ぐために役立ちます。",
+          "Name": "相対湿度",
+          "Type": 4
+        },
+        {
+          "Description": "この期間中に観測可能な降水がある確率。0から100までの整数パーセントで表されます。予想降水量とは別に、予報の不確実性を示します。",
+          "Name": "降水確率",
+          "Type": 5
+        },
+        {
+          "Description": "この期間中に蓄積すると予測される雨、にわか雨、および凍結降水の水換算量の合計（ミリメートル単位）。",
+          "Name": "予想降水量",
+          "Type": 6
+        },
+        {
+          "Description": "この期間中に蓄積すると予測されるFAO-56基準蒸発散量（ミリメートル単位）。",
+          "Name": "基準蒸発散量",
+          "Type": 7
+        },
+        {
+          "Description": "地上10メートルにおける予測平均風速（メートル毎秒）。",
+          "Name": "風速",
+          "Type": 8
+        },
+        {
+          "Description": "地上10メートルにおける予測最大瞬間風速（メートル毎秒）。スプリンクラーは、散水が風で流される可能性が高いときに散水を予定しないよう、この値を平均風速と併用します。",
+          "Name": "最大瞬間風速",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "今後7日間のスプリンクラー灌漑を計画するために使用する、将来の1時間ごとの気象入力を格納します。以降の予報更新が失敗した場合は、最後に正常に取得した値が保持されます。",
+      "DisplayName": "スプリンクラー気象予報",
+      "List": [
+        {
+          "Description": "今後7日間のスプリンクラー灌漑を計画するために使用する、将来の1時間ごとの気象入力を格納します。以降の予報更新が失敗した場合は、最後に正常に取得した値が保持されます。",
+          "Name": "スプリンクラー気象予報",
+          "Type": 0
+        },
+        {
+          "Description": "予報セクション全体が最後に取得、検証、受理された日時。",
+          "Name": "取得日時",
+          "Type": 1
+        },
+        {
+          "Description": "鮮度の排他的な有効期限。現在時刻がこの値より前であれば予報は最新であり、この値以降では古いものと見なされます。古い予報も、品質が低下したキャッシュ済み入力として引き続き利用できます。",
+          "Name": "有効期限",
+          "Type": 2
+        },
+        {
+          "Description": "早いものから遅いものの順に並べられた将来の期間。通常の応答は今後7日間を1時間単位で網羅しますが、より短いリストも有効な部分予報です。",
+          "Name": "予報期間",
+          "Type": 3
+        },
+        {
+          "Description": "1つの計画期間における降水量、基準蒸発散量、気温、湿度、および風の予測値。",
+          "Name": "予報期間",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherForecastV1"
+    },
+    {
+      "Description": "動的に再構築されたインデックス付き履歴期間の鮮度タイムスタンプを格納します。",
+      "DisplayName": "スプリンクラー気象履歴メタデータ",
+      "List": [
+        {
+          "Description": "動的に再構築されたインデックス付き履歴期間の鮮度タイムスタンプを格納します。",
+          "Name": "スプリンクラー気象履歴メタデータ",
+          "Type": 0
+        },
+        {
+          "Description": "インデックス付き履歴セット全体が最後に取得、検証、受理された日時。",
+          "Name": "取得日時",
+          "Type": 1
+        },
+        {
+          "Description": "再構築された履歴セクションに対する鮮度の排他的な有効期限。",
+          "Name": "有効期限",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryMetadataV1"
+    },
+    {
+      "Description": "完了期間の水収支に、灌漑判断の説明に必要な気温、湿度、平均風速、および最大瞬間風速の観測値を追加します。",
+      "DisplayName": "スプリンクラー気象履歴期間V2",
+      "List": [
+        {
+          "Description": "完了期間の水収支に、灌漑判断の説明に必要な気温、湿度、平均風速、および最大瞬間風速の観測値を追加します。",
+          "Name": "スプリンクラー気象履歴期間V2",
+          "Type": 0
+        },
+        {
+          "Description": "この履歴期間が開始する日時（この日時を含む）。",
+          "Name": "開始日時",
+          "Type": 1
+        },
+        {
+          "Description": "この履歴期間の長さ（秒）。Open-Meteoの履歴では通常、3,600秒の期間が使用されます。",
+          "Name": "期間",
+          "Type": 2
+        },
+        {
+          "Description": "この期間中に蓄積された、凍結降水の水換算量を含む総降水量（ミリメートル）。",
+          "Name": "降水量",
+          "Type": 3
+        },
+        {
+          "Description": "この期間中に蓄積されたFAO-56基準蒸発散量（ミリメートル）。",
+          "Name": "基準蒸発散量",
+          "Type": 4
+        },
+        {
+          "Description": "この履歴期間中の地上2メートルにおける気温（摂氏度）。",
+          "Name": "気温",
+          "Type": 5
+        },
+        {
+          "Description": "この履歴期間中の地上2メートルにおける相対湿度。0から100までの整数パーセントで表されます。",
+          "Name": "相対湿度",
+          "Type": 6
+        },
+        {
+          "Description": "この履歴期間中の地上10メートルにおける平均風速（メートル毎秒）。",
+          "Name": "風速",
+          "Type": 7
+        },
+        {
+          "Description": "この履歴期間中の地上10メートルにおける最大瞬間風速（メートル毎秒）。",
+          "Name": "最大瞬間風速",
+          "Type": 8
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryPeriodV2"
+    },
+    {
+      "Description": "灌漑計算と判断説明用グラフの両方に使用される完全な気象観測値を含む、直近の完了期間を格納します。",
+      "DisplayName": "スプリンクラー気象履歴V2",
+      "List": [
+        {
+          "Description": "灌漑計算と判断説明用グラフの両方に使用される完全な気象観測値を含む、直近の完了期間を格納します。",
+          "Name": "スプリンクラー気象履歴V2",
+          "Type": 0
+        },
+        {
+          "Description": "履歴セクション全体が最後に取得、検証、受理された日時。",
+          "Name": "取得日時",
+          "Type": 1
+        },
+        {
+          "Description": "鮮度の排他的な有効期限。古い履歴も、品質が低下したキャッシュ済み入力として引き続き利用できます。",
+          "Name": "有効期限",
+          "Type": 2
+        },
+        {
+          "Description": "古いものから新しいものの順に並べられた完了期間。",
+          "Name": "履歴期間",
+          "Type": 3
+        },
+        {
+          "Description": "1つの完了期間における気温、湿度、降水量、基準蒸発散量、および風。",
+          "Name": "履歴期間",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryV2"
+    },
+    {
+      "Description": "順序付けられたアトミックな範囲の気象変更を伝達します。クライアントは、保存済みカーソルが`from_cursor`と等しい場合にのみレポートを適用し、その後`through_cursor`を保存します。空のレポートは最新状態への追従が完了した回復結果です。変更がない場合の定期的な生存通知にはPeerAliveを使用します。",
+      "DisplayName": "スプリンクラー気象増分レポート",
+      "List": [
+        {
+          "Description": "順序付けられたアトミックな範囲の気象変更を伝達します。クライアントは、保存済みカーソルが`from_cursor`と等しい場合にのみレポートを適用し、その後`through_cursor`を保存します。空のレポートは最新状態への追従が完了した回復結果です。変更がない場合の定期的な生存通知にはPeerAliveを使用します。",
+          "Name": "スプリンクラー気象増分レポート",
+          "Type": 0
+        },
+        {
+          "Description": "このレポートの範囲に含まれない下限カーソルであり、レポートを適用する前にクライアントが保持していなければならない正確なカーソル。",
+          "Name": "開始カーソル",
+          "Type": 1
+        },
+        {
+          "Description": "このレポート内のすべての変更を適用した後に到達する、範囲に含まれる上限カーソル。`from_cursor`と同じエポックタイムスタンプを保持する必要があります。サーバーカーソルのリセットが増分レポートとして伝達されることはなく、完全なリセットが必要です。",
+          "Name": "終了カーソル",
+          "Type": 2
+        },
+        {
+          "Description": "アトミックに適用する順序付きの変更です。各項目はシーケンスを正確に1つ進めます。空のリストは追いつき済みの復旧を表し、カーソルを進めることも、定期的な生存確認として機能することもありません。",
+          "Name": "気象変更",
+          "Type": 3
+        },
+        {
+          "Description": "カーソル順の1つのアトミックな状態変更です。",
+          "Name": "気象変更",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Records for one endpoint share a transaction and scan prefix.",
+      "DisplayName": "Saved weather keys",
+      "List": [
+        {
+          "Description": "Records for one endpoint share a transaction and scan prefix.",
+          "Name": "Saved weather keys",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Weather belonging to one service endpoint",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherKey"
+    },
+    {
+      "Description": "1つのスプリンクラー設置場所の気象情報を取得するために使用するLibertas Hubの地点を保存します。プロバイダーのデータとは独立してキャッシュされるため、Hubが一時的に停止している間も気象エージェントは更新を続行できます。",
+      "DisplayName": "スプリンクラー気象地点",
+      "List": [
+        {
+          "Description": "1つのスプリンクラー設置場所の気象情報を取得するために使用するLibertas Hubの地点を保存します。プロバイダーのデータとは独立してキャッシュされるため、Hubが一時的に停止している間も気象エージェントは更新を続行できます。",
+          "Name": "スプリンクラー気象地点",
+          "Type": 0
+        },
+        {
+          "Description": "10進度単位のWGS84経度です。グリニッジより西の地点には負の値を使用します。",
+          "Name": "経度",
+          "Type": 1
+        },
+        {
+          "Description": "10進度単位のWGS84緯度です。",
+          "Name": "緯度",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherLocationV1"
+    },
+    {
+      "Description": "スプリンクラー気象エージェントがLibertasデータベースに書き込む可能性がある値の完全なセットを定義します。履歴メタデータ、現在の気象条件、予報、および地点は、それぞれ独立した単一レコードです。完了した各履歴期間は、その開始タイムスタンプをキーとするインデックス付きレコードです。サブスクリプションカーソルとリプレイジャーナルは意図的に含まれていません。これらをリセットしても、これらのレコードが消去されてはなりません。",
+      "DisplayName": "スプリンクラー気象永続データ",
+      "List": [
+        {
+          "Description": "スプリンクラー気象エージェントがLibertasデータベースに書き込む可能性がある値の完全なセットを定義します。履歴メタデータ、現在の気象条件、予報、および地点は、それぞれ独立した単一レコードです。完了した各履歴期間は、その開始タイムスタンプをキーとするインデックス付きレコードです。サブスクリプションカーソルとリプレイジャーナルは意図的に含まれていません。これらをリセットしても、これらのレコードが消去されてはなりません。",
+          "Name": "スプリンクラー気象永続データ",
+          "Type": 0
+        },
+        {
+          "Description": "Libertas Hubから報告された最後の有効な地点を保存します。キャッシュされた値により、Hubが一時的に利用できない間もプロバイダーの更新を続行できます。",
+          "Name": "スプリンクラー設置場所",
+          "Type": 1
+        },
+        {
+          "Description": "プロバイダーへのリクエストに使用するWGS84座標です。",
+          "Name": "地点",
+          "Type": 2
+        },
+        {
+          "Description": "動的に再構築されるインデックス付き履歴の鮮度情報を保存します。",
+          "Name": "履歴メタデータ",
+          "Type": 3
+        },
+        {
+          "Description": "受け入れられたインデックス付きセットの取得タイムスタンプと鮮度タイムスタンプです。",
+          "Name": "履歴メタデータ",
+          "Type": 4
+        },
+        {
+          "Description": "完了した1つの総合気象期間をインデックス付きデータに保存します。削除されたV1期間のユニオン位置を占めます。V2履歴リソース名により、互換性のないこれらのインデックス付きレコードは分離された状態に保たれます。",
+          "Name": "履歴期間V2",
+          "Type": 5
+        },
+        {
+          "Description": "気温、湿度、降水量、基準蒸発散量、風、および突風です。",
+          "Name": "履歴期間",
+          "Type": 6
+        },
+        {
+          "Description": "最後に正常に取得および検証された現在の気象条件セクションを保存します。更新に失敗した場合、既存のデータベースレコードは変更されません。",
+          "Name": "現在の気象条件",
+          "Type": 7
+        },
+        {
+          "Description": "直近の降雨、凍結、湿度、風、および水収支の入力値（取得タイムスタンプと鮮度タイムスタンプを含む）です。",
+          "Name": "現在の気象条件",
+          "Type": 8
+        },
+        {
+          "Description": "最後に正常に取得および検証された予報セクションを保存します。更新に失敗した場合、既存のデータベースレコードは変更されません。",
+          "Name": "予報",
+          "Type": 9
+        },
+        {
+          "Description": "将来の降水量、基準蒸発散量、気温、湿度、および風の入力値（取得タイムスタンプと鮮度タイムスタンプを含む）です。",
+          "Name": "予報",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherPersistentData"
+    },
+    {
+      "Description": "スプリンクラー気象を要求または購読するための、型付けされたLibertasエンドポイントトランザクションを定義します。応答では履歴、現在、予報の各セクションが個別に利用可能として公開されるため、障害が発生しても使用可能なキャッシュデータは隠されません。Libertasエンドポイントのステータス規約は、不正な形式のAvroと、誤ったメッセージ役割で使用された値を拒否します。これらの転送エラーは復旧バリアントではありません。",
+      "DisplayName": "スプリンクラー気象プロトコル",
+      "List": [
+        {
+          "Description": "スプリンクラー気象を要求または購読するための、型付けされたLibertasエンドポイントトランザクションを定義します。応答では履歴、現在、予報の各セクションが個別に利用可能として公開されるため、障害が発生しても使用可能なキャッシュデータは隠されません。Libertasエンドポイントのステータス規約は、不正な形式のAvroと、誤ったメッセージ役割で使用された値を拒否します。これらの転送エラーは復旧バリアントではありません。",
+          "Name": "スプリンクラー気象プロトコル",
+          "Type": 0
+        },
+        {
+          "Description": "1回限りの増分読み取りを実行するか、増分サブスクリプションを開始または再開します。動作はLibertasエンドポイントの操作によって選択され、このメッセージにはエンコードされません。可能な場合、サーバーは`after_cursor`以降に保持された変更をリプレイします。それができない場合は、範囲が制限されたキャッシュ済みスナップショットを返します。",
+          "Name": "スプリンクラー気象を取得",
+          "Type": 1
+        },
+        {
+          "Description": "クライアントが完全かつアトミックに適用した最後のカーソルです。`None`は、範囲が制限された初期スナップショットを要求します。サーバーは両方のフィールドを比較します。シーケンスが小さい場合、応答カーソルのエポックタイムスタンプもより新しいときに限り、リセットを示します。",
+          "Name": "再開カーソル",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "リプレイが不可能な場合に含める、履歴期間の開始時刻の半開区間です。`None`の場合、リセットスナップショットから履歴を除外します。",
+          "Name": "履歴復旧範囲",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "リセットスナップショットにキャッシュ済みの現在の気象条件を含めるかどうかを示します。",
+          "Name": "現在の気象条件を含める",
+          "Type": 4
+        },
+        {
+          "Description": "リプレイが不可能な場合に含める、予報期間の開始時刻の半開区間です。`None`の場合、リセットスナップショットから予報データを除外します。",
+          "Name": "予報復旧範囲",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "気象リクエストに対して、リプレイされた変更、リセットスナップショット、または復旧可能なエラーで応答します。すべての応答には最大待機間隔が指定されます。サブスクリプションクライアントは、リプレイまたはリセットが成功した後にその間隔を使用します。1回限りのクライアントは無視します。エラー後は、復旧エラーと再試行遅延が優先されます。",
+          "Name": "スプリンクラー気象復旧",
+          "Type": 6
+        },
+        {
+          "Description": "復旧、増分レポート、またはPeerAliveが成功した後にサブスクリプションクライアントが待機する最大秒数です。サーバーは、変更されたデータまたはPeerAliveをそれより先に送信します。1回限りのクライアントは、この必須のゼロ以外の値を無視します。",
+          "Name": "最大待機間隔",
+          "Type": 7
+        },
+        {
+          "Description": "再開リクエストに対するリプレイ、リセット、またはエラーの結果です。",
+          "Name": "復旧",
+          "Type": 8
+        },
+        {
+          "Description": "気象リクエストが成功した後の状態変更のみを報告します。カーソルの不一致または不連続な範囲がある場合は、別のサブスクリプションリクエストが必要です。クライアントはレポートを部分的に適用してはなりません。有効なレポートまたはPeerAliveによって、復旧応答の待機タイマーが再始動します。PeerAliveがこのデータスキーマに入ることや、カーソルを変更することはありません。",
+          "Name": "スプリンクラー気象増分",
+          "Type": 9
+        },
+        {
+          "Description": "順序付けされたアトミックなカーソル範囲と、その気象変更です。",
+          "Name": "増分レポート",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherProtocol"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved weather record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved weather record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "HistoryMetadata",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "HistoryPeriod",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "starts_at",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "Current",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Forecast",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWeatherRecordKey"
+    },
+    {
+      "Description": "リプレイされた変更でも、範囲が制限されたキャッシュ済みスナップショットでも満たすことができない復旧リクエストを識別します。",
+      "DisplayName": "スプリンクラー気象復旧エラー",
+      "List": [
+        {
+          "Description": "リプレイされた変更でも、範囲が制限されたキャッシュ済みスナップショットでも満たすことができない復旧リクエストを識別します。",
+          "Enum": [
+            {
+              "Description": "要求された半開時間範囲の少なくとも1つが空であるか、開始と終了が逆になっています。",
+              "Name": "無効な時間範囲",
+              "Type": 1
+            },
+            {
+              "Description": "指定されたエポックタイムスタンプとシーケンスのカーソルは、サーバーの現在のカーソルまたは保持されているリプレイジャーナルと整合させることができません。",
+              "Name": "カーソルが先行",
+              "Type": 2
+            },
+            {
+              "Description": "要求された復旧範囲が、サーバーの応答容量の上限を超えています。",
+              "Name": "要求が大きすぎます",
+              "Type": 3
+            },
+            {
+              "Description": "キャッシュされたデータまたは復旧に必要な別のリソースが一時的に利用できません。クライアントは指定された遅延時間の経過後に再試行できます。",
+              "Name": "一時的に利用できません",
+              "Type": 4
+            }
+          ],
+          "Name": "スプリンクラー気象復旧エラー",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "変更をリプレイして返すか、範囲を限定したスナップショットで新しいカーソルを確立するか、復旧可能な要求エラーを報告します。",
+      "DisplayName": "スプリンクラー気象情報の復旧",
+      "List": [
+        {
+          "Description": "変更をリプレイして返すか、範囲を限定したスナップショットで新しいカーソルを確立するか、復旧可能な要求エラーを報告します。",
+          "Name": "スプリンクラー気象情報の復旧",
+          "Type": 0
+        },
+        {
+          "Description": "指定されたカーソルより後に保持されたすべての変更をリプレイして、要求されたストリームを継続します。レポートが空の場合、クライアントはすでに最新の状態です。",
+          "Name": "リプレイされた変更",
+          "Type": 1
+        },
+        {
+          "Description": "指定されたカーソルから始まる連続した変更範囲です。",
+          "Name": "増分レポート",
+          "Type": 2
+        },
+        {
+          "Description": "クライアントのカーソルやローカルの気象状態を変更せずに要求を拒否します。",
+          "Name": "復旧エラー",
+          "Type": 3
+        },
+        {
+          "Description": "復旧を完了できなかった理由です。",
+          "Name": "エラー",
+          "Type": 4
+        },
+        {
+          "Description": "再試行までの推奨待機時間（秒）です。`None` は、要求パラメーターを変更しない限り再試行が成功しないことを意味します。",
+          "Name": "再試行までの遅延",
+          "Type": 5
+        },
+        {
+          "Description": "新しいカーソルを確立し、完全な観測履歴のスナップショットをその提供元サイトに関連付けます。",
+          "Name": "サイトスナップショットV2でリセット",
+          "Type": 6
+        },
+        {
+          "Description": "増分リプレイがスナップショットに置き換えられた理由です。",
+          "Name": "リセット理由",
+          "Type": 7
+        },
+        {
+          "Description": "返されたスナップショットを表すカーソルです。",
+          "Name": "現在のカーソル",
+          "Type": 8
+        },
+        {
+          "Description": "返された気象セクションの取得に使用されたWGS84位置情報です。",
+          "Name": "サイトの位置",
+          "Type": 9
+        },
+        {
+          "Description": "要求された範囲に制限された、利用可能なV2キャッシュ済みセクションです。",
+          "Name": "気象スナップショット",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryV1"
+    },
+    {
+      "Description": "指定されたカーソルより後の増分変更をリプレイする代わりに、復旧処理が範囲を限定したスナップショットを返した理由を示します。",
+      "DisplayName": "スプリンクラー気象情報のリセット理由",
+      "List": [
+        {
+          "Description": "指定されたカーソルより後の増分変更をリプレイする代わりに、復旧処理が範囲を限定したスナップショットを返した理由を示します。",
+          "Enum": [
+            {
+              "Description": "以前のカーソルが指定されていないため、スナップショットによって初期状態を確立します。",
+              "Name": "初回サブスクリプション",
+              "Type": 1
+            },
+            {
+              "Description": "要求されたシーケンスは、保持されているリプレイジャーナルよりも古いものです。",
+              "Name": "カーソルの有効期限切れ",
+              "Type": 2
+            },
+            {
+              "Description": "サーバーは、一時的なカーソルとリプレイジャーナルのみを失ったか、意図的に破棄しました。永続化された気象セクションは引き続き使用でき、欠落している履歴データはOpen-Meteoから再取得できます。",
+              "Name": "サーバーカーソルのリセット",
+              "Type": 3
+            }
+          ],
+          "Name": "スプリンクラー気象情報のリセット理由",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherResetReasonV1"
+    },
+    {
+      "Description": "個別にキャッシュされるスプリンクラー気象セクションの1つを識別します。",
+      "DisplayName": "スプリンクラー気象セクション",
+      "List": [
+        {
+          "Description": "個別にキャッシュされるスプリンクラー気象セクションの1つを識別します。",
+          "Enum": [
+            {
+              "Description": "過去の水収支セクションを選択します。",
+              "Name": "最近の履歴",
+              "Type": 1
+            },
+            {
+              "Description": "現在の散水安全性セクションを選択します。",
+              "Name": "現在の気象状況",
+              "Type": 2
+            },
+            {
+              "Description": "将来の灌漑計画セクションを選択します。",
+              "Name": "予報",
+              "Type": 3
+            }
+          ],
+          "Name": "スプリンクラー気象セクション",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherSectionV1"
+    },
+    {
+      "Description": "それぞれ独立して利用可能な完全な観測履歴、現在の気象状況、予報の各セクションが含まれます。欠落しているセクションには使用可能なキャッシュ値がありません。古くなったセクションでは、元の有効性タイムスタンプが維持されます。",
+      "DisplayName": "スプリンクラー気象スナップショットV2",
+      "List": [
+        {
+          "Description": "それぞれ独立して利用可能な完全な観測履歴、現在の気象状況、予報の各セクションが含まれます。欠落しているセクションには使用可能なキャッシュ値がありません。古くなったセクションでは、元の有効性タイムスタンプが維持されます。",
+          "Name": "スプリンクラー気象スナップショットV2",
+          "Type": 0
+        },
+        {
+          "Description": "使用可能な履歴キャッシュが存在する場合の、要求されたV2の過去期間です。",
+          "Name": "最近の履歴",
+          "Type": 1
+        },
+        {
+          "Description": "要求され、かつ利用可能な場合に、最後に受理された現在の気象状況です。",
+          "Name": "現在の気象状況",
+          "Type": 2
+        },
+        {
+          "Description": "使用可能なキャッシュデータが存在する場合の、要求された予報期間です。",
+          "Name": "予報",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherSnapshotV2"
+    },
+    {
+      "Description": "復旧対象となる過去または予報の期間について、半開区間を選択します。期間の開始時刻が `starts_at` 以降かつ `ends_before` より前の場合、その期間が選択されます。",
+      "DisplayName": "スプリンクラー気象情報の時間範囲",
+      "List": [
+        {
+          "Description": "取得する過去または予報の期間を、半開区間で選択します。開始時刻が `starts_at` 以降かつ `ends_before` より前の期間が選択されます。",
+          "Name": "スプリンクラー気象時間範囲",
+          "Type": 0
+        },
+        {
+          "Description": "選択される期間の開始時刻に対する、境界値を含む下限です。",
+          "Name": "開始時刻",
+          "Type": 1
+        },
+        {
+          "Description": "選択される期間の開始時刻に対する、境界値を含まない上限です。この値は `starts_at` より後でなければなりません。",
+          "Name": "終了時刻",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherTimeRangeV1"
+    }
+  ]
+}

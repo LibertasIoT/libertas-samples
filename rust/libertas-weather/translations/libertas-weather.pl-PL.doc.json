@@ -1,0 +1,1825 @@
+{
+  "Description": "Definiuje dane pogodowe dostosowane do decyzji podejmowanych przez aplikacje Libertas. Schemat systemu zraszaczy przechowuje lokalizację obiektu podaną przez Hub oddzielnie od najnowszej historii, bieżących warunków i danych prognozy. Każda sekcja pogodowa ma inny interwał odświeżania, a jej aktualizacja może zakończyć się powodzeniem lub niepowodzeniem niezależnie od pozostałych. Migawki środowiska wykonawczego mogą zawierać dowolną kombinację sekcji. Aplikacje przechowują każdą pomyślnie pobraną sekcję oddzielnie i zachowują starsze sekcje, gdy odświeżenie danych pogodowych się nie powiedzie. Subskrypcje przyrostowe używają kursorów złożonych ze znacznika czasu epoki i numeru sekwencji, dzięki czemu klienci mogą odróżnić zresetowanie kursora serwera od nieaktualnych lub otrzymanych poza kolejnością danych, ponownie odtworzyć zachowane zmiany albo odzyskać wybrane zakresy czasu z danych w pamięci podręcznej. Schemat systemu HVAC budynku dostarcza wyłącznie dane zewnętrzne potrzebne do przewidywania obciążenia cieplnego, działania pompy ciepła, podejmowania decyzji przez ekonomizer i kontrolowanej wentylacji powietrzem zewnętrznym. Sekcje pogody i jakości powietrza zewnętrznego są od siebie niezależne, ponieważ korzystają z różnych dostawców i mają odmienną charakterystykę aktualności. Lokalne urządzenia oraz systemy ochrony życia i zdrowia muszą nadal korzystać z własnych czujników; internetowe dane pogodowe z pamięci podręcznej są danymi wejściowymi dla sterowania nadrzędnego, a nie sygnałem bezpieczeństwa.",
+  "DisplayName": "Pogoda Libertas",
+  "DocumentVersion": "0.0.2",
+  "List": [],
+  "Locale": "pl-PL",
+  "StringResources": {},
+  "Types": [
+    {
+      "Description": "Zawiera najnowsze modelowane warunki zewnętrzne używane przez nadrzędne sterowanie systemem HVAC. Nie zastępuje lokalnego czujnika zewnętrznego używanego do ochrony urządzeń lub ochrony przed zamarzaniem.",
+      "DisplayName": "Bieżąca pogoda dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Zawiera najnowsze modelowane warunki zewnętrzne używane przez nadrzędne sterowanie systemem HVAC. Nie zastępuje lokalnego czujnika zewnętrznego używanego do ochrony urządzeń lub ochrony przed zamarzaniem.",
+          "Name": "Bieżąca pogoda dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
+          "Name": "Retrieved at",
+          "Type": 1
+        },
+        {
+          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
+          "Name": "Valid until",
+          "Type": 2
+        },
+        {
+          "Description": "The provider-supplied date and time represented by these current conditions.",
+          "Name": "Valid at",
+          "Type": 3
+        },
+        {
+          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
+          "Name": "Observation interval",
+          "Type": 4
+        },
+        {
+          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
+          "Name": "Outdoor conditions",
+          "Type": 5
+        }
+      ],
+      "Name": "BuildingHvacCurrentWeatherV1"
+    },
+    {
+      "Description": "Zawiera modelowane stężenia zanieczyszczeń w powietrzu zewnętrznym, używane do zapobiegania zwiększaniu mechanicznego poboru powietrza zewnętrznego w warunkach szkodliwych dla zdrowia. Te wartości z modeli regionalnych nie zastępują lokalnych czujników bezpieczeństwa ani oficjalnych instrukcji postępowania w sytuacjach awaryjnych.",
+      "DisplayName": "Okres jakości powietrza zewnętrznego dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Zawiera modelowane stężenia zanieczyszczeń w powietrzu zewnętrznym, używane do zapobiegania zwiększaniu mechanicznego poboru powietrza zewnętrznego w warunkach szkodliwych dla zdrowia. Te wartości z modeli regionalnych nie zastępują lokalnych czujników bezpieczeństwa ani oficjalnych instrukcji postępowania w sytuacjach awaryjnych.",
+          "Name": "Okres jakości powietrza zewnętrznego dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Data i godzina rozpoczęcia, włącznie, okresu jakości powietrza.",
+          "Name": "Czas rozpoczęcia",
+          "Type": 1
+        },
+        {
+          "Description": "Długość tego okresu w sekundach. Modelowane dane o jakości powietrza zewnętrznego zwykle używają okresów trwających 3600 sekund.",
+          "Name": "Czas trwania",
+          "Type": 2
+        },
+        {
+          "Description": "Modelowane stężenie PM2,5 w powietrzu zewnętrznym, wyrażone w mikrogramach na metr sześcienny.",
+          "Name": "Drobny pył zawieszony",
+          "Type": 3
+        },
+        {
+          "Description": "Modelowane stężenie PM10 w powietrzu zewnętrznym, wyrażone w mikrogramach na metr sześcienny.",
+          "Name": "Pył zawieszony",
+          "Type": 4
+        },
+        {
+          "Description": "Modelowane stężenie ozonu w powietrzu zewnętrznym, wyrażone w mikrogramach na metr sześcienny.",
+          "Name": "Ozon",
+          "Type": 5
+        },
+        {
+          "Description": "Modelowane stężenie dwutlenku azotu w powietrzu zewnętrznym, wyrażone w mikrogramach na metr sześcienny.",
+          "Name": "Dwutlenek azotu",
+          "Type": 6
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityPeriodV1"
+    },
+    {
+      "Description": "Zawiera bieżące i prognozowane okresy modelowanych stężeń zanieczyszczeń w powietrzu zewnętrznym na potrzeby planowania wentylacji. Ta sekcja jest opcjonalna niezależnie od danych o pogodzie fizycznej i jest od nich niezależnie zapisywana w pamięci podręcznej.",
+      "DisplayName": "Jakość powietrza zewnętrznego dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Zawiera bieżące i prognozowane okresy modelowanych stężeń zanieczyszczeń w powietrzu zewnętrznym na potrzeby planowania wentylacji. Ta sekcja jest opcjonalna niezależnie od danych o pogodzie fizycznej i jest od nich niezależnie zapisywana w pamięci podręcznej.",
+          "Name": "Jakość powietrza zewnętrznego dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Data i godzina pobrania, zweryfikowania i zaakceptowania tej kompletnej sekcji jakości powietrza.",
+          "Name": "Czas pobrania",
+          "Type": 1
+        },
+        {
+          "Description": "Nieobejmujący wskazanej chwili termin utraty aktualności. Nieaktualnych wartości modelowanych nie wolno interpretować jako dowodu, że powietrze zewnętrzne jest bezpieczne.",
+          "Name": "Ważne do",
+          "Type": 2
+        },
+        {
+          "Description": "Bieżące i przyszłe okresy uporządkowane od najwcześniejszego do najpóźniejszego. Standardowa odpowiedź obejmuje nie więcej niż 48 godzin.",
+          "Name": "Okresy jakości powietrza",
+          "Type": 3
+        },
+        {
+          "Description": "Modelowane stężenia zanieczyszczeń w powietrzu zewnętrznym dla jednego okresu.",
+          "Name": "Okres jakości powietrza",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityV1"
+    },
+    {
+      "Description": "Zawiera fizyczne dane wejściowe dotyczące warunków zewnętrznych, wymagane do przewidywania obciążenia systemu HVAC, obliczeń psychrometrycznych, podejmowania decyzji przez ekonomizer, szacowania infiltracji oraz działania wystawionych na warunki atmosferyczne urządzeń z uwzględnieniem pogody.",
+      "DisplayName": "Warunki zewnętrzne dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Zawiera fizyczne dane wejściowe dotyczące warunków zewnętrznych, wymagane do przewidywania obciążenia systemu HVAC, obliczeń psychrometrycznych, podejmowania decyzji przez ekonomizer, szacowania infiltracji oraz działania wystawionych na warunki atmosferyczne urządzeń z uwzędnieniem pogody.",
+          "Name": "Warunki zewnętrzne dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
+          "Name": "Dry-bulb temperature",
+          "Type": 1
+        },
+        {
+          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
+          "Name": "Dew-point temperature",
+          "Type": 2
+        },
+        {
+          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
+          "Name": "Relative humidity",
+          "Type": 3
+        },
+        {
+          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
+          "Name": "Surface pressure",
+          "Type": 4
+        },
+        {
+          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
+          "Name": "Wind speed",
+          "Type": 5
+        },
+        {
+          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
+          "Name": "Wind gust",
+          "Type": 6
+        },
+        {
+          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
+          "Name": "Wind direction",
+          "Type": 7
+        },
+        {
+          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
+          "Name": "Precipitation",
+          "Type": 8
+        },
+        {
+          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
+          "Name": "Precipitation kind",
+          "Type": 9
+        },
+        {
+          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
+          "Name": "Solar elevation",
+          "Type": 10
+        },
+        {
+          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
+          "Name": "Solar azimuth",
+          "Type": 11
+        },
+        {
+          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
+          "Name": "Global horizontal irradiance",
+          "Type": 12
+        },
+        {
+          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
+          "Name": "Direct normal irradiance",
+          "Type": 13
+        },
+        {
+          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
+          "Name": "Diffuse horizontal irradiance",
+          "Type": 14
+        }
+      ],
+      "Name": "BuildingHvacOutdoorConditionsV1"
+    },
+    {
+      "Description": "Klasyfikuje opady, gdy ich postać może wpływać na zewnętrzne wymienniki, czerpnie powietrza, przepustnice lub inne wystawione na warunki atmosferyczne urządzenia HVAC.",
+      "DisplayName": "Rodzaj opadów dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Klasyfikuje opady, gdy ich postać może wpływać na zewnętrzne wymienniki, czerpnie powietrza, przepustnice lub inne wystawione na warunki atmosferyczne urządzenia HVAC.",
+          "Enum": [
+            {
+              "Description": "Dla tego okresu wskazano brak opadów.",
+              "Name": "Brak opadów",
+              "Type": 1
+            },
+            {
+              "Description": "Dla tego okresu wskazano opady deszczu lub przelotne opady deszczu.",
+              "Name": "Deszcz",
+              "Type": 2
+            },
+            {
+              "Description": "Dla tego okresu wskazano przechłodzone opady ciekłe, które mogą zamarzać na urządzeniach wystawionych na warunki atmosferyczne.",
+              "Name": "Marznący deszcz",
+              "Type": 3
+            },
+            {
+              "Description": "Dla tego okresu wskazano opady stałe z przewagą śniegu.",
+              "Name": "Śnieg",
+              "Type": 4
+            },
+            {
+              "Description": "Wskazano więcej niż jedną ciekłą lub stałą postać opadów.",
+              "Name": "Opady mieszane",
+              "Type": 5
+            },
+            {
+              "Description": "Występują opady, ale dostawca nie może sklasyfikować ich postaci.",
+              "Name": "Nieznany rodzaj opadów",
+              "Type": 6
+            }
+          ],
+          "Name": "Rodzaj opadów dla systemu HVAC budynku",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacPrecipitationKindV1"
+    },
+    {
+      "Description": "Definiuje jedną atomową modyfikację w przyrostowym strumieniu danych pogodowych dla systemu HVAC budynku. Kolejność wariantów i pól stanowi część kontraktu transmisji danych Avro.",
+      "DisplayName": "Zmiana pogody dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Definiuje jedną atomową modyfikację w przyrostowym strumieniu danych pogodowych dla systemu HVAC budynku. Kolejność wariantów i pól stanowi część kontraktu transmisji danych Avro.",
+          "Name": "Zmiana pogody dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
+          "Name": "Upsert historical periods",
+          "Type": 1
+        },
+        {
+          "Description": "The retrieval and validation time for the updated history section.",
+          "Name": "Retrieved at",
+          "Type": 2
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the history section.",
+          "Name": "Valid until",
+          "Type": 3
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from oldest to newest.",
+          "Name": "Historical periods",
+          "Type": 4
+        },
+        {
+          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
+          "Name": "Historical period",
+          "Type": 5
+        },
+        {
+          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove historical periods",
+          "Type": 6
+        },
+        {
+          "Description": "The half-open range of historical period start times to remove.",
+          "Name": "Time range",
+          "Type": 7
+        },
+        {
+          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
+          "Name": "Replace current conditions",
+          "Type": 8
+        },
+        {
+          "Description": "The complete newly accepted current-condition section.",
+          "Name": "Current conditions",
+          "Type": 9
+        },
+        {
+          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
+          "Name": "Upsert forecast periods",
+          "Type": 10
+        },
+        {
+          "Description": "The retrieval and validation time for the updated forecast section.",
+          "Name": "Retrieved at",
+          "Type": 11
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the forecast section.",
+          "Name": "Valid until",
+          "Type": 12
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Forecast periods",
+          "Type": 13
+        },
+        {
+          "Description": "One future outdoor-condition period keyed by `starts_at`.",
+          "Name": "Forecast period",
+          "Type": 14
+        },
+        {
+          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove forecast periods",
+          "Type": 15
+        },
+        {
+          "Description": "The half-open range of forecast period start times to remove.",
+          "Name": "Time range",
+          "Type": 16
+        },
+        {
+          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
+          "Name": "Upsert outdoor-air-quality periods",
+          "Type": 17
+        },
+        {
+          "Description": "The retrieval and validation time for the updated air-quality section.",
+          "Name": "Retrieved at",
+          "Type": 18
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the air-quality section.",
+          "Name": "Valid until",
+          "Type": 19
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Air-quality periods",
+          "Type": 20
+        },
+        {
+          "Description": "One modeled pollutant period keyed by `starts_at`.",
+          "Name": "Air-quality period",
+          "Type": 21
+        },
+        {
+          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove outdoor-air-quality periods",
+          "Type": 22
+        },
+        {
+          "Description": "The half-open range of air-quality period start times to remove.",
+          "Name": "Time range",
+          "Type": 23
+        },
+        {
+          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
+          "Name": "Clear weather section",
+          "Type": 24
+        },
+        {
+          "Description": "The independently cached section to clear.",
+          "Name": "Weather section",
+          "Type": 25
+        },
+        {
+          "Description": "Replaces the complete historical section after a successful refresh.",
+          "Name": "Replace history",
+          "Type": 26
+        },
+        {
+          "Description": "The complete newly accepted history section.",
+          "Name": "History",
+          "Type": 27
+        },
+        {
+          "Description": "Replaces the complete forecast section after a successful refresh.",
+          "Name": "Replace forecast",
+          "Type": 28
+        },
+        {
+          "Description": "The complete newly accepted forecast section.",
+          "Name": "Forecast",
+          "Type": 29
+        },
+        {
+          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
+          "Name": "Replace outdoor air quality",
+          "Type": 30
+        },
+        {
+          "Description": "The complete newly accepted outdoor-air-quality section.",
+          "Name": "Outdoor air quality",
+          "Type": 31
+        }
+      ],
+      "Name": "BuildingHvacWeatherChangeV1"
+    },
+    {
+      "Description": "Identyfikuje jeden w pełni zastosowany stan w przyrostowym strumieniu danych pogodowych dla systemu HVAC budynku. Klienci porównują łącznie znacznik czasu epoki i numer sekwencji.",
+      "DisplayName": "Kursor pogody dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Identyfikuje jeden w pełni zastosowany stan w przyrostowym strumieniu danych pogodowych dla systemu HVAC budynku. Klienci porównują łącznie znacznik czasu epoki i numer sekwencji.",
+          "Name": "Kursor pogody dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Przypisana przez serwer data i godzina identyfikująca generację strumienia. Pozostaje niezmienna podczas normalnego zwiększania numeru sekwencji. Serwer, który utraci przejściowy stan kursora, przypisuje znacznik czasu ściśle późniejszy od poprzedniego.",
+          "Name": "Znacznik czasu epoki",
+          "Type": 1
+        },
+        {
+          "Description": "Sekwencja ostatniej zastosowanej niepodzielnej zmiany. Zresetowanie kursora przez serwer rozpoczyna ją ponownie od zera, chociaż klient może najpierw zaobserwować późniejszy numer sekwencji po resecie.",
+          "Name": "Sekwencja",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherCursorV1"
+    },
+    {
+      "Description": "Zawiera przewidywane warunki zewnętrzne dla jednego okresu planowania systemu HVAC opartego na sterowaniu predykcyjnym.",
+      "DisplayName": "Okres prognozy pogody dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Zawiera przewidywane warunki zewnętrzne dla jednego okresu planowania systemu HVAC opartego na sterowaniu predykcyjnym.",
+          "Name": "Okres prognozy pogody dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Data i godzina rozpoczęcia tego okresu prognozy, włącznie.",
+          "Name": "Czas rozpoczęcia",
+          "Type": 1
+        },
+        {
+          "Description": "Długość tego okresu prognozy w sekundach. Dostawcy mogą udostępniać okresy 900-sekundowe dla czasu zbliżonego do bieżącego oraz okresy 3600-sekundowe dla późniejszego czasu.",
+          "Name": "Czas trwania",
+          "Type": 2
+        },
+        {
+          "Description": "Prawdopodobieństwo mierzalnych opadów w tym okresie, wyrażone jako całkowita wartość procentowa od 0 do 100.",
+          "Name": "Prawdopodobieństwo opadów",
+          "Type": 3
+        },
+        {
+          "Description": "Przewidywane wartości temperatury, wilgotności, ciśnienia, wiatru, opadów i nasłonecznienia dla tego okresu.",
+          "Name": "Warunki zewnętrzne",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "Zawiera przyszłe warunki zewnętrzne na potrzeby przewidywania obciążenia, wstępnego ogrzewania, wstępnego chłodzenia, magazynowania energii cieplnej oraz planowania wentylacji z uwzględnieniem pogody.",
+      "DisplayName": "Prognoza pogody dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Zawiera przyszłe warunki zewnętrzne na potrzeby przewidywania obciążenia, wstępnego ogrzewania, wstępnego chłodzenia, magazynowania energii cieplnej oraz planowania wentylacji z uwzględnieniem pogody.",
+          "Name": "Prognoza pogody dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Data i godzina pobrania, zweryfikowania i zaakceptowania tej kompletnej sekcji prognozy.",
+          "Name": "Czas pobrania",
+          "Type": 1
+        },
+        {
+          "Description": "Nieobejmujący wskazanej chwili termin ważności aktualnych danych. Starsze prognozy pozostają dostępne na potrzeby planowania w trybie ograniczonym, ale nie mogą zezwalać na działania o krytycznym znaczeniu dla bezpieczeństwa.",
+          "Name": "Ważna do",
+          "Type": 2
+        },
+        {
+          "Description": "Przyszłe okresy uporządkowane od najwcześniejszego do najpóźniejszego. Standardowa odpowiedź obejmuje 72 godziny i może opcjonalnie używać okresów 15-minutowych dla pierwszych sześciu godzin, a następnie okresów godzinnych.",
+          "Name": "Okresy prognozy",
+          "Type": 3
+        },
+        {
+          "Description": "Przewidywane zewnętrzne warunki pracy systemu HVAC dla jednego okresu planowania.",
+          "Name": "Okres prognozy",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastV1"
+    },
+    {
+      "Description": "Zawiera warunki zewnętrzne dla jednego zakończonego okresu, używane do odtworzenia lub zaktualizowania oszacowania stanu cieplnego budynku.",
+      "DisplayName": "Historyczny okres pogody dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Zawiera warunki zewnętrzne dla jednego zakończonego okresu, używane do odtworzenia lub zaktualizowania oszacowania stanu cieplnego budynku.",
+          "Name": "Historyczny okres pogody dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Data i godzina rozpoczęcia tego okresu historycznego, włącznie.",
+          "Name": "Czas rozpoczęcia",
+          "Type": 1
+        },
+        {
+          "Description": "Długość tego zakończonego okresu w sekundach. Dane historyczne zwykle używają okresów 3600-sekundowych.",
+          "Name": "Czas trwania",
+          "Type": 2
+        },
+        {
+          "Description": "Warunki dotyczące temperatury, wilgotności, ciśnienia, wiatru, opadów i nasłonecznienia reprezentowane przez ten zakończony okres.",
+          "Name": "Warunki zewnętrzne",
+          "Type": 3
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryPeriodV1"
+    },
+    {
+      "Description": "Zawiera ostatnie zakończone okresy warunków zewnętrznych, używane do krótkoterminowego odtwarzania stanu cieplnego. Długoterminowe uczenie się charakterystyki budynku należy do własnej telemetrii i mechanizmu utrwalania modelu aplikacji HVAC.",
+      "DisplayName": "Historia pogody dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Zawiera ostatnie zakończone okresy warunków zewnętrznych, używane do krótkoterminowego odtwarzania stanu cieplnego. Długoterminowe uczenie się charakterystyki budynku należy do własnej telemetrii i mechanizmu utrwalania modelu aplikacji HVAC.",
+          "Name": "Historia pogody dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Data i godzina pobrania, zweryfikowania i zaakceptowania tej kompletnej sekcji historii.",
+          "Name": "Czas pobrania",
+          "Type": 1
+        },
+        {
+          "Description": "Nieobejmujący wskazanej chwili termin ważności aktualnych danych. Po tym czasie starsze dane historyczne pozostają dostępne jako dane wejściowe modelu w trybie ograniczonym.",
+          "Name": "Ważna do",
+          "Type": 2
+        },
+        {
+          "Description": "Zakończone okresy uporządkowane od najstarszego do najnowszego. Standardowa odpowiedź obejmuje poprzednie 72 godziny; krótsza lista stanowi prawidłową historię częściową.",
+          "Name": "Okresy historyczne",
+          "Type": 3
+        },
+        {
+          "Description": "Zewnętrzne warunki pracy systemu HVAC dla jednego zakończonego okresu.",
+          "Name": "Okres historyczny",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryV1"
+    },
+    {
+      "Description": "Przenosi uporządkowany, niepodzielny zakres zmian pogody dla systemu HVAC budynku. Klient stosuje go tylko wtedy, gdy `from_cursor` odpowiada jego ostatniemu kursorowi. Pusty raport oznacza odzyskanie aktualnego stanu; okresowe potwierdzanie aktywności bez zmian używa PeerAlive.",
+      "DisplayName": "Przyrostowy raport pogodowy dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Przenosi uporządkowany, niepodzielny zakres zmian pogody dla systemu HVAC budynku. Klient stosuje go tylko wtedy, gdy `from_cursor` odpowiada jego ostatniemu kursorowi. Pusty raport oznacza odzyskanie aktualnego stanu; okresowe potwierdzanie aktywności bez zmian używa PeerAlive.",
+          "Name": "Przyrostowy raport pogodowy dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Wyłączny dolny kursor oraz dokładny stan klienta wymagane przed zastosowaniem raportu.",
+          "Name": "Kursor początkowy",
+          "Type": 1
+        },
+        {
+          "Description": "Włączny kursor osiągnięty po niepodzielnym zastosowaniu każdej zmiany.",
+          "Name": "Kursor końcowy",
+          "Type": 2
+        },
+        {
+          "Description": "Zmiany uporządkowane według sekwencji kursora. Każda zmiana zwiększa sekwencję dokładnie o jeden; pusta lista zachowuje kursor.",
+          "Name": "Zmiany pogody",
+          "Type": 3
+        },
+        {
+          "Description": "Jedna niepodzielna zmiana stanu w kolejności kursora.",
+          "Name": "Zmiana pogody",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Przechowuje lokalizację koncentratora Libertas Hub używaną do pobierania danych pogodowych dla całego domu lub budynku.",
+      "DisplayName": "Lokalizacja pogodowa dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Przechowuje lokalizację koncentratora Libertas Hub używaną do pobierania danych pogodowych dla całego domu lub budynku.",
+          "Name": "Lokalizacja pogodowa dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Długość geograficzna w układzie WGS84 wyrażona w stopniach dziesiętnych. Dla lokalizacji na zachód od Greenwich stosuje się wartości ujemne.",
+          "Name": "Długość geograficzna",
+          "Type": 1
+        },
+        {
+          "Description": "Szerokość geograficzna w układzie WGS84 wyrażona w stopniach dziesiętnych.",
+          "Name": "Szerokość geograficzna",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherLocationV1"
+    },
+    {
+      "Description": "Definiuje każdą wartość, którą agent danych pogodowych systemu HVAC budynku może zapisać w bazie danych Libertas. Każdy wariant jest przechowywany pod własnym stabilnym identyfikatorem zasobu, dzięki czemu częściowa awaria dostawcy nie może usunąć innej sekcji. Kursory subskrypcji, dzienniki, peery i terminy PeerAlive nie są trwałe.",
+      "DisplayName": "Trwałe dane pogodowe systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Definiuje każdą wartość, którą agent danych pogodowych systemu HVAC budynku może zapisać w bazie danych Libertas. Każdy wariant jest przechowywany pod własnym stabilnym identyfikatorem zasobu, dzięki czemu częściowa awaria dostawcy nie może usunąć innej sekcji. Kursory subskrypcji, dzienniki, peery i terminy PeerAlive nie są trwałe.",
+          "Name": "Trwałe dane pogodowe systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Przechowuje ostatnie prawidłowe współrzędne obiektu otrzymane z koncentratora Libertas.",
+          "Name": "Lokalizacja budynku",
+          "Type": 1
+        },
+        {
+          "Description": "Współrzędne obiektu w układzie WGS84 używane w żądaniach do dostawców.",
+          "Name": "Lokalizacja",
+          "Type": 2
+        },
+        {
+          "Description": "Przechowuje ostatnią pomyślnie zaakceptowaną historię fizycznych warunków pogodowych.",
+          "Name": "Najnowsza historia",
+          "Type": 3
+        },
+        {
+          "Description": "Najnowsze okresy warunków zewnętrznych wraz ze znacznikami czasu pobrania i aktualności.",
+          "Name": "Historia",
+          "Type": 4
+        },
+        {
+          "Description": "Przechowuje ostatnie pomyślnie zaakceptowane bieżące fizyczne warunki pogodowe.",
+          "Name": "Bieżące warunki",
+          "Type": 5
+        },
+        {
+          "Description": "Bieżące zewnętrzne dane wejściowe systemu HVAC wraz ze znacznikami czasu ważności i pobrania.",
+          "Name": "Bieżące warunki",
+          "Type": 6
+        },
+        {
+          "Description": "Przechowuje ostatnią pomyślnie zaakceptowaną prognozę fizycznych warunków pogodowych.",
+          "Name": "Prognoza",
+          "Type": 7
+        },
+        {
+          "Description": "Przyszłe zewnętrzne dane wejściowe systemu HVAC wraz ze znacznikami czasu pobrania i aktualności.",
+          "Name": "Prognoza",
+          "Type": 8
+        },
+        {
+          "Description": "Przechowuje ostatnie pomyślnie zaakceptowane modelowane dane o zanieczyszczeniach oddzielnie od fizycznych warunków pogodowych.",
+          "Name": "Jakość powietrza zewnętrznego",
+          "Type": 9
+        },
+        {
+          "Description": "Bieżące i przyszłe okresy występowania zanieczyszczeń na zewnątrz wraz ze znacznikami czasu pobrania i aktualności.",
+          "Name": "Jakość powietrza zewnętrznego",
+          "Type": 10
+        }
+      ],
+      "Name": "BuildingHvacWeatherPersistentData"
+    },
+    {
+      "Description": "Definiuje jednorazowe transakcje i transakcje subskrypcyjne dotyczące danych pogodowych dla systemu HVAC całego domu lub budynku. To operacja punktu końcowego Libertas, a nie pole w tym dowolnym kontrakcie komunikatu, wybiera zachowanie jednorazowe lub subskrypcyjne.",
+      "DisplayName": "Protokół danych pogodowych systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Definiuje jednorazowe transakcje i transakcje subskrypcyjne dotyczące danych pogodowych dla systemu HVAC całego domu lub budynku. To operacja punktu końcowego Libertas, a nie pole w tym dowolnym kontrakcie komunikatu, wybiera zachowanie jednorazowe lub subskrypcyjne.",
+          "Name": "Protokół danych pogodowych systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
+          "Name": "Get building HVAC weather",
+          "Type": 1
+        },
+        {
+          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
+          "Name": "Resume cursor",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
+          "Name": "Historical recovery range",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
+          "Name": "Include current conditions",
+          "Type": 4
+        },
+        {
+          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
+          "Name": "Forecast recovery range",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
+          "Name": "Outdoor-air-quality recovery range",
+          "NullText": "No outdoor air quality",
+          "SetText": "Include outdoor air quality for",
+          "Type": 6
+        },
+        {
+          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
+          "Name": "Building HVAC weather recovery",
+          "Type": 7
+        },
+        {
+          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
+          "Name": "Maximum wait interval",
+          "Type": 8
+        },
+        {
+          "Description": "The replay, reset snapshot, or typed error result.",
+          "Name": "Recovery",
+          "Type": 9
+        },
+        {
+          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
+          "Name": "Building HVAC weather increment",
+          "Type": 10
+        },
+        {
+          "Description": "The ordered, atomic cursor range and its weather changes.",
+          "Name": "Incremental report",
+          "Type": 11
+        }
+      ],
+      "Name": "BuildingHvacWeatherProtocol"
+    },
+    {
+      "Description": "Identyfikuje żądanie odzyskiwania, którego nie można zrealizować przez ponowne odtworzenie ani za pomocą buforowanego obrazu stanu ograniczonego zakresem.",
+      "DisplayName": "Błąd odzyskiwania danych pogodowych systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Identyfikuje żądanie odzyskiwania, którego nie można zrealizować przez ponowne odtworzenie ani za pomocą buforowanego obrazu stanu ograniczonego zakresem.",
+          "Enum": [
+            {
+              "Description": "Co najmniej jeden żądany przedział półotwarty jest pusty lub odwrócony.",
+              "Name": "Nieprawidłowy zakres czasu",
+              "Type": 1
+            },
+            {
+              "Description": "Podanego kursora nie można uzgodnić z bieżącym stanem kursora ani z zachowanym dziennikiem.",
+              "Name": "Kursor wysunięty naprzód",
+              "Type": 2
+            },
+            {
+              "Description": "Co najmniej jeden żądany zakres odzyskiwania przekracza ograniczoną pojemność odpowiedzi.",
+              "Name": "Żądanie jest zbyt duże",
+              "Type": 3
+            },
+            {
+              "Description": "Wymagany buforowany rekord lub zasób odzyskiwania jest tymczasowo niedostępny.",
+              "Name": "Tymczasowo niedostępne",
+              "Type": 4
+            }
+          ],
+          "Name": "Błąd odzyskiwania danych pogodowych systemu HVAC budynku",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "Ponownie odtwarza zachowane zmiany, ustanawia nowy kursor i obraz stanu albo zgłasza możliwy do obsłużenia błąd żądania.",
+      "DisplayName": "Odzyskiwanie danych pogodowych systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Ponownie odtwarza zachowane zmiany, ustanawia nowy kursor i obraz stanu albo zgłasza możliwy do obsłużenia błąd żądania.",
+          "Name": "Odzyskiwanie danych pogodowych systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
+          "Name": "Replayed changes",
+          "Type": 1
+        },
+        {
+          "Description": "The contiguous retained change range beginning at the request cursor.",
+          "Name": "Incremental report",
+          "Type": 2
+        },
+        {
+          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
+          "Name": "Reset with snapshot",
+          "Type": 3
+        },
+        {
+          "Description": "The reason the response contains a snapshot rather than replay.",
+          "Name": "Reset reason",
+          "Type": 4
+        },
+        {
+          "Description": "The cursor representing the returned snapshot.",
+          "Name": "Current cursor",
+          "Type": 5
+        },
+        {
+          "Description": "The available cached sections constrained by requested ranges.",
+          "Name": "Weather snapshot",
+          "Type": 6
+        },
+        {
+          "Description": "Rejects the request without changing client cursor or cached weather.",
+          "Name": "Recovery error",
+          "Type": 7
+        },
+        {
+          "Description": "The reason recovery could not be completed.",
+          "Name": "Error",
+          "Type": 8
+        },
+        {
+          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
+          "Name": "Retry delay",
+          "Type": 9
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryV1"
+    },
+    {
+      "Description": "Wyjaśnia, dlaczego podczas odzyskiwania ustanowiono stan na podstawie obrazu stanu ograniczonego zakresem zamiast ponownie odtworzyć zmiany przyrostowe.",
+      "DisplayName": "Przyczyna resetowania danych pogodowych systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Wyjaśnia, dlaczego podczas odzyskiwania ustanowiono stan na podstawie obrazu stanu ograniczonego zakresem zamiast ponownie odtworzyć zmiany przyrostowe.",
+          "Enum": [
+            {
+              "Description": "Nie podano poprzedniego kursora.",
+              "Name": "Subskrypcja początkowa",
+              "Type": 1
+            },
+            {
+              "Description": "Żądana sekwencja jest starsza niż zachowany dziennik ponownego odtwarzania.",
+              "Name": "Kursor wygasł",
+              "Type": 2
+            },
+            {
+              "Description": "Serwer utracił lub celowo odrzucił jedynie swój przejściowy kursor i dziennik ponownego odtwarzania; niezależnie utrwalone sekcje danych pogodowych pozostają zdatne do użycia.",
+              "Name": "Reset kursora serwera",
+              "Type": 3
+            }
+          ],
+          "Name": "Przyczyna resetowania danych pogodowych systemu HVAC budynku",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherResetReasonV1"
+    },
+    {
+      "Description": "Identyfikuje jedną niezależnie buforowaną sekcję danych pogodowych systemu HVAC budynku.",
+      "DisplayName": "Sekcja danych pogodowych systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Identyfikuje jedną niezależnie buforowaną sekcję danych pogodowych systemu HVAC budynku.",
+          "Enum": [
+            {
+              "Description": "Wybiera najnowszą historię fizycznych warunków zewnętrznych.",
+              "Name": "Najnowsza historia",
+              "Type": 1
+            },
+            {
+              "Description": "Wybiera modelowane bieżące warunki fizyczne na zewnątrz.",
+              "Name": "Bieżące warunki",
+              "Type": 2
+            },
+            {
+              "Description": "Wybiera prognozę przyszłych warunków fizycznych na zewnątrz.",
+              "Name": "Prognoza pogody",
+              "Type": 3
+            },
+            {
+              "Description": "Wybiera modelowane bieżące i prognozowane stężenia zanieczyszczeń na zewnątrz.",
+              "Name": "Jakość powietrza na zewnątrz",
+              "Type": 4
+            }
+          ],
+          "Name": "Sekcja danych pogodowych systemu HVAC budynku",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherSectionV1"
+    },
+    {
+      "Description": "Zawiera ostatnią pomyślnie zaakceptowaną wartość każdej żądanej sekcji. Brakujące sekcje nie mają użytecznej pamięci podręcznej; nieaktualne sekcje pozostają dostępne wraz z pierwotnymi terminami ważności.",
+      "DisplayName": "Migawka danych pogodowych dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Zawiera ostatnią pomyślnie zaakceptowaną wartość każdej żądanej sekcji. Brakujące sekcje nie mają użytecznej pamięci podręcznej; nieaktualne sekcje pozostają dostępne wraz z pierwotnymi terminami ważności.",
+          "Name": "Migawka danych pogodowych dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Żądane niedawne okresy warunków na zewnątrz, jeśli dostępne są użyteczne dane historyczne w pamięci podręcznej.",
+          "Name": "Najnowsza historia",
+          "Type": 1
+        },
+        {
+          "Description": "Ostatnie zaakceptowane bieżące warunki na zewnątrz, jeśli zostały zażądane i są dostępne.",
+          "Name": "Bieżące warunki",
+          "Type": 2
+        },
+        {
+          "Description": "Żądane przyszłe okresy warunków na zewnątrz, jeśli w pamięci podręcznej dostępne są użyteczne dane prognostyczne.",
+          "Name": "Prognoza pogody",
+          "Type": 3
+        },
+        {
+          "Description": "Żądane bieżące i prognozowane okresy stężeń zanieczyszczeń, jeśli dostępne są użyteczne modelowane dane o jakości powietrza.",
+          "Name": "Jakość powietrza na zewnątrz",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherSnapshotV1"
+    },
+    {
+      "Description": "Wybiera półotwarty przedział okresów danych historycznych, prognostycznych lub dotyczących jakości powietrza na zewnątrz według ich czasów rozpoczęcia.",
+      "DisplayName": "Zakres czasu danych pogodowych dla systemu HVAC budynku",
+      "List": [
+        {
+          "Description": "Wybiera półotwarty przedział okresów danych historycznych, prognostycznych lub dotyczących jakości powietrza na zewnątrz według ich czasów rozpoczęcia.",
+          "Name": "Zakres czasu danych pogodowych dla systemu HVAC budynku",
+          "Type": 0
+        },
+        {
+          "Description": "Domknięta dolna granica czasów rozpoczęcia wybranych okresów.",
+          "Name": "Czas rozpoczęcia",
+          "Type": 1
+        },
+        {
+          "Description": "Otwarta górna granica czasów rozpoczęcia wybranych okresów. Musi być późniejsza niż `starts_at`.",
+          "Name": "Czas zakończenia",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherTimeRangeV1"
+    },
+    {
+      "Description": "Zawiera aktualne dane dotyczące deszczu, mrozu, wilgotności, wiatru i bilansu wodnego, używane do określenia, czy zaplanowane podlewanie może bezpiecznie się rozpocząć lub być kontynuowane.",
+      "DisplayName": "Bieżąca pogoda dla zraszacza",
+      "List": [
+        {
+          "Description": "Zawiera aktualne dane dotyczące deszczu, mrozu, wilgotności, wiatru i bilansu wodnego, używane do określenia, czy zaplanowane podlewanie może bezpiecznie się rozpocząć lub być kontynuowane.",
+          "Name": "Bieżąca pogoda dla zraszacza",
+          "Type": 0
+        },
+        {
+          "Description": "Data i godzina ostatniego pobrania, zweryfikowania i zaakceptowania kompletnej sekcji bieżącej pogody.",
+          "Name": "Czas pobrania",
+          "Type": 1
+        },
+        {
+          "Description": "Otwarta granica aktualności. Bieżące dane pogodowe są aktualne, dopóki bieżący czas jest wcześniejszy od tej wartości. Od tej chwili sekcja pozostaje w pamięci podręcznej, ale nie może być traktowana jako potwierdzenie, że podlewanie jest bezpieczne.",
+          "Name": "Ważne do",
+          "Type": 2
+        },
+        {
+          "Description": "Podana przez dostawcę data i godzina reprezentowana przez wartości bieżących warunków. Może się różnić od `retrieved_at`.",
+          "Name": "Czas obowiązywania danych",
+          "Type": 3
+        },
+        {
+          "Description": "Wyrażony w sekundach interwał wsteczny reprezentowany przez skumulowane opady i ewapotranspirację. Bieżące dane pogodowe Open-Meteo zwykle korzystają z interwału 900 sekund.",
+          "Name": "Interwał obserwacji",
+          "Type": 4
+        },
+        {
+          "Description": "Temperatura powietrza na wysokości dwóch metrów nad ziemią, wyrażona w stopniach Celsjusza. Zraszacz wykorzystuje ją do wstrzymania podlewania w temperaturze bliskiej lub niższej od temperatury zamarzania.",
+          "Name": "Temperatura",
+          "Type": 5
+        },
+        {
+          "Description": "Wilgotność względna na wysokości dwóch metrów nad ziemią, wyrażona jako wartość procentowa od 0 do 100. Zraszacz wykorzystuje ją, aby unikać niepotrzebnie długich okresów zwilżenia liści, gdy wymagane jest podlewanie od góry.",
+          "Name": "Wilgotność względna",
+          "Type": 6
+        },
+        {
+          "Description": "Łączna ilość deszczu, przelotnych opadów i wodnego równoważnika opadów zamarzniętych, skumulowana podczas `interval_seconds` i wyrażona w milimetrach. Zraszacz wykorzystuje wartość niezerową do wstrzymania podlewania podczas występowania opadów.",
+          "Name": "Opady",
+          "Type": 7
+        },
+        {
+          "Description": "Ewapotranspiracja referencyjna FAO-56 skumulowana podczas `interval_seconds` i wyrażona w milimetrach. Może uzupełniać bilans wodny do czasu udostępnienia następnego zakończonego okresu historycznego.",
+          "Name": "Ewapotranspiracja referencyjna",
+          "Type": 8
+        },
+        {
+          "Description": "Stała prędkość wiatru na wysokości 10 metrów nad ziemią, wyrażona w metrach na sekundę. Korzystający z tych danych zraszacz stosuje skonfigurowany próg wiatru.",
+          "Name": "Prędkość wiatru",
+          "Type": 9
+        },
+        {
+          "Description": "Szczytowa prędkość porywu wiatru na wysokości 10 metrów nad ziemią, wyrażona w metrach na sekundę. Korzystający z tych danych zraszacz używa jej wraz ze stałą prędkością wiatru, aby uniknąć znoszenia rozpylanej wody.",
+          "Name": "Poryw wiatru",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerCurrentWeatherV1"
+    },
+    {
+      "Description": "Definiuje pojedynczą atomową modyfikację w przyrostowym strumieniu danych pogodowych zraszacza. Kolejność wariantów i pól stanowi część rozszerzanego wyłącznie przez dopisywanie formatu transmisyjnego Avro.",
+      "DisplayName": "Zmiana danych pogodowych zraszacza",
+      "List": [
+        {
+          "Description": "Definiuje pojedynczą atomową modyfikację w przyrostowym strumieniu danych pogodowych zraszacza. Kolejność wariantów i pól stanowi część rozszerzanego wyłącznie przez dopisywanie formatu transmisyjnego Avro.",
+          "Name": "Zmiana danych pogodowych zraszacza",
+          "Type": 0
+        },
+        {
+          "Description": "Usuwa okresy historyczne z pamięci podręcznej, których czasy rozpoczęcia mieszczą się w podanym półotwartym zakresie.",
+          "Name": "Usuń okresy historyczne",
+          "Type": 1
+        },
+        {
+          "Description": "Półotwarty zakres czasów rozpoczęcia okresów historycznych przeznaczonych do usunięcia.",
+          "Name": "Zakres czasu",
+          "Type": 2
+        },
+        {
+          "Description": "Zastępuje kompletną sekcję bieżących warunków po pomyślnym pobraniu i weryfikacji.",
+          "Name": "Zastąp bieżące warunki",
+          "Type": 3
+        },
+        {
+          "Description": "Nowo zaakceptowana sekcja bieżących warunków.",
+          "Name": "Bieżące warunki",
+          "Type": 4
+        },
+        {
+          "Description": "Oznacza pomyślne odświeżenie prognozy oraz wstawia lub zastępuje okresy według `starts_at`. Pusta lista okresów aktualizuje wyłącznie metadane pobrania i aktualności.",
+          "Name": "Wstaw lub zaktualizuj okresy prognozy",
+          "Type": 5
+        },
+        {
+          "Description": "Czas pomyślnego pobrania i zweryfikowania sekcji prognozy.",
+          "Name": "Pobrano o",
+          "Type": 6
+        },
+        {
+          "Description": "Nowy wyłączny termin utraty aktualności sekcji prognozy.",
+          "Name": "Ważne do",
+          "Type": 7
+        },
+        {
+          "Description": "Okresy do wstawienia lub zastąpienia, uporządkowane od najwcześniejszego do najpóźniejszego.",
+          "Name": "Okresy prognozy",
+          "Type": 8
+        },
+        {
+          "Description": "Jeden okres planowania nawadniania, identyfikowany przez `starts_at`.",
+          "Name": "Okres prognozy",
+          "Type": 9
+        },
+        {
+          "Description": "Usuwa okresy prognozy z pamięci podręcznej, których czasy rozpoczęcia mieszczą się w podanym przedziale półotwartym.",
+          "Name": "Usuń okresy prognozy",
+          "Type": 10
+        },
+        {
+          "Description": "Półotwarty przedział czasów rozpoczęcia okresów prognozy, które mają zostać usunięte.",
+          "Name": "Przedział czasu",
+          "Type": 11
+        },
+        {
+          "Description": "Czyści jedną sekcję tylko wtedy, gdy wiadomo, że jej wartość w pamięci podręcznej jest nieprawidłowa, na przykład po nieudanej walidacji lub niezgodnej migracji. Sama awaria odświeżania danych dostawcy nie może powodować wysłania tej zmiany.",
+          "Name": "Wyczyść sekcję pogody",
+          "Type": 12
+        },
+        {
+          "Description": "Niezależnie przechowywana w pamięci podręcznej sekcja, która ma zostać wyczyszczona.",
+          "Name": "Sekcja pogody",
+          "Type": 13
+        },
+        {
+          "Description": "Zastępuje całą sekcję prognozy po pomyślnym odświeżeniu danych dostawcy. Okresy nieobecne w danych zastępczych nie są już przechowywane w pamięci podręcznej.",
+          "Name": "Zastąp prognozę",
+          "Type": 14
+        },
+        {
+          "Description": "Cała nowo zaakceptowana sekcja prognozy.",
+          "Name": "Prognoza",
+          "Type": 15
+        },
+        {
+          "Description": "Identyfikuje fizyczną lokalizację dla każdej kolejnej zmiany pogody. Klient używa tej wartości, aby przechowywać zachowaną historię z różnych lokalizacji koncentratora w oddzielnych generacjach bez zależności od kolejności wywołań zwrotnych.",
+          "Name": "Zastąp lokalizację pogodową",
+          "Type": 16
+        },
+        {
+          "Description": "Położenie w układzie WGS84 używane do obserwacji i prognoz dostawcy.",
+          "Name": "Położenie lokalizacji",
+          "Type": 17
+        },
+        {
+          "Description": "Oznacza pomyślne odświeżenie historii oraz wstawia lub zastępuje okresy pełnych danych pogodowych według `starts_at`.",
+          "Name": "Wstaw lub zaktualizuj okresy historyczne V2",
+          "Type": 18
+        },
+        {
+          "Description": "Czas pomyślnego pobrania i zweryfikowania sekcji historii.",
+          "Name": "Pobrano o",
+          "Type": 19
+        },
+        {
+          "Description": "Nowy wyłączny termin utraty aktualności sekcji historii.",
+          "Name": "Ważne do",
+          "Type": 20
+        },
+        {
+          "Description": "Okresy pełnych danych pogodowych do wstawienia lub zastąpienia, uporządkowane od najstarszego do najnowszego.",
+          "Name": "Okresy historyczne",
+          "Type": 21
+        },
+        {
+          "Description": "Jedna zakończona obserwacja V2, identyfikowana przez `starts_at`.",
+          "Name": "Okres historyczny",
+          "Type": 22
+        },
+        {
+          "Description": "Zastępuje całą sekcję historii pełnych obserwacji po pomyślnym odświeżeniu danych dostawcy.",
+          "Name": "Zastąp historię V2",
+          "Type": 23
+        },
+        {
+          "Description": "Cała nowo zaakceptowana sekcja danych historycznych V2.",
+          "Name": "Historia",
+          "Type": 24
+        }
+      ],
+      "Name": "SprinklerWeatherChangeV1"
+    },
+    {
+      "Description": "Identyfikuje jeden zastosowany stan w przyrostowym strumieniu danych pogodowych zraszacza. Klient porównuje oba pola i nie może interpretować samego zmniejszenia numeru sekwencji jako zresetowania serwera.",
+      "DisplayName": "Kursor pogody zraszacza",
+      "List": [
+        {
+          "Description": "Identyfikuje jeden zastosowany stan w przyrostowym strumieniu danych pogodowych zraszacza. Klient porównuje oba pola i nie może interpretować samego zmniejszenia numeru sekwencji jako zresetowania serwera.",
+          "Name": "Kursor pogody zraszacza",
+          "Type": 0
+        },
+        {
+          "Description": "Data i czas przypisane przez serwer, identyfikujące generację kursora. To jedno pole jest zarówno epoką strumienia, jak i uporządkowanym znacznikiem czasu; nie istnieje oddzielna nieprzezroczysta epoka. Pozostaje ono niezmienione podczas normalnego zwiększania numeru sekwencji. Gdy serwer utraci swój przejściowy kursor lub dziennik odtwarzania, przypisuje znacznik czasu epoki późniejszy od poprzedniego i ponownie rozpoczyna `sequence` od zera. Klient może najpierw zaobserwować późniejszy numer sekwencji po resecie zamiast zera. Ten znacznik czasu opisuje stan kursora, a nie czas obserwacji wartości pogodowych.",
+          "Name": "Znacznik czasu epoki",
+          "Type": 1
+        },
+        {
+          "Description": "Identyfikuje ostatnią zastosowaną zmianę stanu. Serwer zwiększa tę wartość jeden raz dla każdej zaakceptowanej zmiany pogody. Ustawia ją ponownie na zero po zresetowaniu przejściowego kursora serwera, a następnie zwiększa ją dla kolejnych zmian; reset nie usuwa historycznych, bieżących ani prognozowanych danych pogodowych.",
+          "Name": "Sekwencja",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherCursorV1"
+    },
+    {
+      "Description": "Zawiera przewidywane zasilanie wodą, utratę wody, temperaturę, wilgotność i zagrożenia związane z wiatrem, używane do określenia, kiedy i jak intensywnie nawadniać w danym okresie planowania.",
+      "DisplayName": "Okres prognozy pogody dla zraszacza",
+      "List": [
+        {
+          "Description": "Zawiera przewidywane zasilanie wodą, utratę wody, temperaturę, wilgotność i zagrożenia związane z wiatrem, używane do określenia, kiedy i jak intensywnie nawadniać w danym okresie planowania.",
+          "Name": "Okres prognozy pogody dla zraszacza",
+          "Type": 0
+        },
+        {
+          "Description": "Data i czas rozpoczęcia tego okresu prognozy, należące do tego okresu.",
+          "Name": "Czas rozpoczęcia",
+          "Type": 1
+        },
+        {
+          "Description": "Długość tego okresu prognozy w sekundach. Prognozy Open-Meteo zwykle wykorzystują okresy trwające 3600 sekund.",
+          "Name": "Czas trwania",
+          "Type": 2
+        },
+        {
+          "Description": "Przewidywana temperatura powietrza na wysokości dwóch metrów nad ziemią, wyrażona w stopniach Celsjusza. Zraszacz wykorzystuje ją, aby uniknąć nawadniania podczas prognozowanych mrozów.",
+          "Name": "Temperatura",
+          "Type": 3
+        },
+        {
+          "Description": "Przewidywana wilgotność względna na wysokości dwóch metrów nad ziemią, wyrażona jako całkowita wartość procentowa od 0 do 100. W połączeniu z położeniem słońca i typem głowicy zraszacza pomaga to uniknąć długotrwałego zwilżenia liści.",
+          "Name": "Wilgotność względna",
+          "Type": 4
+        },
+        {
+          "Description": "Prawdopodobieństwo mierzalnych opadów w tym okresie, wyrażone jako całkowita wartość procentowa od 0 do 100. Określa ono niepewność prognozy niezależnie od przewidywanej ilości opadów.",
+          "Name": "Prawdopodobieństwo opadów",
+          "Type": 5
+        },
+        {
+          "Description": "Przewidywana łączna ilość deszczu, przelotnych opadów i wodnego równoważnika opadów w postaci stałej, skumulowana w tym okresie i wyrażona w milimetrach.",
+          "Name": "Przewidywane opady",
+          "Type": 6
+        },
+        {
+          "Description": "Przewidywana ewapotranspiracja referencyjna FAO-56, skumulowana w tym okresie i wyrażona w milimetrach.",
+          "Name": "Ewapotranspiracja referencyjna",
+          "Type": 7
+        },
+        {
+          "Description": "Przewidywana stała prędkość wiatru na wysokości 10 metrów nad ziemią, wyrażona w metrach na sekundę.",
+          "Name": "Prędkość wiatru",
+          "Type": 8
+        },
+        {
+          "Description": "Przewidywana maksymalna prędkość porywu wiatru na wysokości 10 metrów nad ziemią, wyrażona w metrach na sekundę. Sterownik zraszaczy wykorzystuje tę wartość wraz ze stałą prędkością wiatru, aby nie planować podlewania w czasie, gdy prawdopodobne jest znoszenie rozpylanej wody.",
+          "Name": "Poryw wiatru",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "Zawiera przyszłe godzinowe dane pogodowe używane do planowania nawadniania zraszaczami w ciągu najbliższych siedmiu dni. Jeśli późniejsze odświeżenie prognozy nie powiedzie się, zachowywana jest ostatnia pomyślnie uzyskana wartość.",
+      "DisplayName": "Prognoza pogody dla zraszaczy",
+      "List": [
+        {
+          "Description": "Zawiera przyszłe godzinowe dane pogodowe używane do planowania nawadniania zraszaczami w ciągu najbliższych siedmiu dni. Jeśli późniejsze odświeżenie prognozy nie powiedzie się, zachowywana jest ostatnia pomyślnie uzyskana wartość.",
+          "Name": "Prognoza pogody dla zraszaczy",
+          "Type": 0
+        },
+        {
+          "Description": "Data i godzina ostatniego pobrania, zweryfikowania i zaakceptowania kompletnej sekcji prognozy.",
+          "Name": "Pobrano",
+          "Type": 1
+        },
+        {
+          "Description": "Nieprzekraczalny termin aktualności. Prognoza jest aktualna, dopóki bieżący czas jest wcześniejszy od tej wartości, a staje się nieaktualna z chwilą osiągnięcia tej wartości lub później. Nieaktualna prognoza pozostaje dostępna jako dane z pamięci podręcznej o obniżonej jakości.",
+          "Name": "Ważne do",
+          "Type": 2
+        },
+        {
+          "Description": "Przyszłe okresy uporządkowane od najwcześniejszego do najpóźniejszego. Standardowa odpowiedź obejmuje następne siedem dni z rozdzielczością jednej godziny; krótsza lista jest prawidłową prognozą częściową.",
+          "Name": "Okresy prognozy",
+          "Type": 3
+        },
+        {
+          "Description": "Przewidywane opady, ewapotranspiracja referencyjna, temperatura, wilgotność i wiatr dla jednego okresu planowania.",
+          "Name": "Okres prognozy",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherForecastV1"
+    },
+    {
+      "Description": "Przechowuje znaczniki czasu aktualności dla dynamicznie odtwarzanych, indeksowanych okresów historycznych.",
+      "DisplayName": "Metadane historii pogody dla zraszaczy",
+      "List": [
+        {
+          "Description": "Przechowuje znaczniki czasu aktualności dla dynamicznie odtwarzanych, indeksowanych okresów historycznych.",
+          "Name": "Metadane historii pogody dla zraszaczy",
+          "Type": 0
+        },
+        {
+          "Description": "Data i godzina ostatniego pobrania, zweryfikowania i zaakceptowania kompletnego indeksowanego zestawu danych historycznych.",
+          "Name": "Pobrano",
+          "Type": 1
+        },
+        {
+          "Description": "Nieprzekraczalny termin aktualności odtworzonej sekcji danych historycznych.",
+          "Name": "Ważne do",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryMetadataV1"
+    },
+    {
+      "Description": "Rozszerza bilans wodny zakończonego okresu o obserwacje temperatury, wilgotności, stałego wiatru i porywów potrzebne do wyjaśnienia decyzji dotyczących nawadniania.",
+      "DisplayName": "Okres historii pogody dla zraszaczy V2",
+      "List": [
+        {
+          "Description": "Rozszerza bilans wodny zakończonego okresu o obserwacje temperatury, wilgotności, stałego wiatru i porywów potrzebne do wyjaśnienia decyzji dotyczących nawadniania.",
+          "Name": "Okres historii pogody dla zraszaczy V2",
+          "Type": 0
+        },
+        {
+          "Description": "Data i godzina rozpoczęcia tego okresu historycznego, należąca do tego okresu.",
+          "Name": "Czas rozpoczęcia",
+          "Type": 1
+        },
+        {
+          "Description": "Długość tego okresu historycznego w sekundach. Dane historyczne Open-Meteo zwykle korzystają z okresów trwających 3600 sekund.",
+          "Name": "Czas trwania",
+          "Type": 2
+        },
+        {
+          "Description": "Łączna ilość opadów zgromadzonych w tym okresie, w tym równoważnik wodny opadów zamarzniętych, wyrażona w milimetrach.",
+          "Name": "Opady",
+          "Type": 3
+        },
+        {
+          "Description": "Ewapotranspiracja referencyjna FAO-56 nagromadzona w tym okresie, wyrażona w milimetrach.",
+          "Name": "Ewapotranspiracja referencyjna",
+          "Type": 4
+        },
+        {
+          "Description": "Temperatura powietrza na wysokości dwóch metrów nad ziemią w tym okresie historycznym, wyrażona w stopniach Celsjusza.",
+          "Name": "Temperatura",
+          "Type": 5
+        },
+        {
+          "Description": "Wilgotność względna na wysokości dwóch metrów nad ziemią w tym okresie historycznym, wyrażona jako całkowita wartość procentowa od 0 do 100.",
+          "Name": "Wilgotność względna",
+          "Type": 6
+        },
+        {
+          "Description": "Stała prędkość wiatru na wysokości 10 metrów nad ziemią w tym okresie historycznym, wyrażona w metrach na sekundę.",
+          "Name": "Prędkość wiatru",
+          "Type": 7
+        },
+        {
+          "Description": "Maksymalna prędkość porywu wiatru na wysokości 10 metrów nad ziemią w tym okresie historycznym, wyrażona w metrach na sekundę.",
+          "Name": "Poryw wiatru",
+          "Type": 8
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryPeriodV2"
+    },
+    {
+      "Description": "Zawiera ostatnie zakończone okresy wraz z pełnymi obserwacjami pogodowymi używanymi zarówno do obliczeń dotyczących nawadniania, jak i do wykresów objaśniających decyzje.",
+      "DisplayName": "Historia pogody dla zraszaczy V2",
+      "List": [
+        {
+          "Description": "Zawiera ostatnie zakończone okresy wraz z pełnymi obserwacjami pogodowymi używanymi zarówno do obliczeń dotyczących nawadniania, jak i do wykresów objaśniających decyzje.",
+          "Name": "Historia pogody dla zraszaczy V2",
+          "Type": 0
+        },
+        {
+          "Description": "Data i godzina ostatniego pobrania, zweryfikowania i zaakceptowania kompletnej sekcji danych historycznych.",
+          "Name": "Pobrano",
+          "Type": 1
+        },
+        {
+          "Description": "Nieprzekraczalny termin aktualności. Nieaktualne dane historyczne pozostają dostępne jako dane z pamięci podręcznej o obniżonej jakości.",
+          "Name": "Ważne do",
+          "Type": 2
+        },
+        {
+          "Description": "Zakończone okresy uporządkowane od najstarszego do najnowszego.",
+          "Name": "Okresy historyczne",
+          "Type": 3
+        },
+        {
+          "Description": "Temperatura, wilgotność, opady, ewapotranspiracja referencyjna i wiatr dla jednego zakończonego okresu.",
+          "Name": "Okres historyczny",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryV2"
+    },
+    {
+      "Description": "Przenosi uporządkowany, niepodzielny zakres zmian pogodowych. Klient stosuje raport tylko wtedy, gdy przechowywany przez niego kursor jest równy `from_cursor`, a następnie zapisuje `through_cursor`. Pusty raport oznacza, że w wyniku odzyskiwania osiągnięto aktualny stan; okresowe potwierdzanie aktywności przy braku zmian korzysta z PeerAlive.",
+      "DisplayName": "Przyrostowy raport pogodowy dla zraszaczy",
+      "List": [
+        {
+          "Description": "Przenosi uporządkowany, niepodzielny zakres zmian pogodowych. Klient stosuje raport tylko wtedy, gdy przechowywany przez niego kursor jest równy `from_cursor`, a następnie zapisuje `through_cursor`. Pusty raport oznacza, że w wyniku odzyskiwania osiągnięto aktualny stan; okresowe potwierdzanie aktywności przy braku zmian korzysta z PeerAlive.",
+          "Name": "Przyrostowy raport pogodowy dla zraszaczy",
+          "Type": 0
+        },
+        {
+          "Description": "Wyłączny dolny kursor tego raportu oraz dokładna wartość kursora, którą klient musi już posiadać przed zastosowaniem raportu.",
+          "Name": "Kursor początkowy",
+          "Type": 1
+        },
+        {
+          "Description": "Włączny górny kursor osiągany po zastosowaniu wszystkich zmian zawartych w tym raporcie. Musi zachować ten sam znacznik czasu epoki co `from_cursor`. Reset kursora serwera nigdy nie jest przenoszony w raporcie przyrostowym; wymaga pełnego resetu.",
+          "Name": "Kursor końcowy",
+          "Type": 2
+        },
+        {
+          "Description": "Uporządkowane zmiany, które należy zastosować atomowo. Każdy element zwiększa numer sekwencji dokładnie o jeden; pusta lista oznacza zakończenie odzyskiwania i nie przesuwa kursora ani nie służy jako okresowy sygnał aktywności.",
+          "Name": "Zmiany danych pogodowych",
+          "Type": 3
+        },
+        {
+          "Description": "Jedna atomowa modyfikacja stanu w kolejności kursora.",
+          "Name": "Zmiana danych pogodowych",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Records for one endpoint share a transaction and scan prefix.",
+      "DisplayName": "Saved weather keys",
+      "List": [
+        {
+          "Description": "Records for one endpoint share a transaction and scan prefix.",
+          "Name": "Saved weather keys",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Weather belonging to one service endpoint",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherKey"
+    },
+    {
+      "Description": "Przechowuje lokalizację z koncentratora Libertas używaną do pobierania danych pogodowych dla jednej lokalizacji systemu nawadniania. Jest ona buforowana niezależnie od danych dostawcy, dzięki czemu agent pogodowy może kontynuować odświeżanie podczas tymczasowej awarii koncentratora.",
+      "DisplayName": "Lokalizacja systemu nawadniania dla danych pogodowych",
+      "List": [
+        {
+          "Description": "Przechowuje lokalizację z koncentratora Libertas używaną do pobierania danych pogodowych dla jednej lokalizacji systemu nawadniania. Jest ona buforowana niezależnie od danych dostawcy, dzięki czemu agent pogodowy może kontynuować odświeżanie podczas tymczasowej awarii koncentratora.",
+          "Name": "Lokalizacja systemu nawadniania dla danych pogodowych",
+          "Type": 0
+        },
+        {
+          "Description": "Długość geograficzna WGS84 wyrażona w stopniach dziesiętnych. Lokalizacje na zachód od Greenwich mają wartości ujemne.",
+          "Name": "Długość geograficzna",
+          "Type": 1
+        },
+        {
+          "Description": "Szerokość geograficzna WGS84 wyrażona w stopniach dziesiętnych.",
+          "Name": "Szerokość geograficzna",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherLocationV1"
+    },
+    {
+      "Description": "Definiuje pełny zestaw wartości, które agent pogodowy systemu nawadniania może zapisywać w bazie danych Libertas. Metadane historii, bieżące warunki, prognoza i lokalizacja są niezależnymi pojedynczymi rekordami. Każdy zakończony okres historyczny jest indeksowanym rekordem, którego kluczem jest znacznik czasu jego rozpoczęcia. Kursory subskrypcji i dzienniki odtwarzania celowo pominięto: ich zresetowanie nie może usuwać tych rekordów.",
+      "DisplayName": "Trwałe dane pogodowe systemu nawadniania",
+      "List": [
+        {
+          "Description": "Definiuje pełny zestaw wartości, które agent pogodowy systemu nawadniania może zapisywać w bazie danych Libertas. Metadane historii, bieżące warunki, prognoza i lokalizacja są niezależnymi pojedynczymi rekordami. Każdy zakończony okres historyczny jest indeksowanym rekordem, którego kluczem jest znacznik czasu jego rozpoczęcia. Kursory subskrypcji i dzienniki odtwarzania celowo pominięto: ich zresetowanie nie może usuwać tych rekordów.",
+          "Name": "Trwałe dane pogodowe systemu nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Przechowuje ostatnią prawidłową lokalizację zgłoszoną przez koncentrator Libertas. Wartość w pamięci podręcznej umożliwia kontynuowanie odświeżania danych dostawcy, gdy koncentrator jest tymczasowo niedostępny.",
+          "Name": "Lokalizacja systemu nawadniania",
+          "Type": 1
+        },
+        {
+          "Description": "Współrzędne WGS84 używane w żądaniach do dostawcy.",
+          "Name": "Lokalizacja",
+          "Type": 2
+        },
+        {
+          "Description": "Przechowuje informacje o aktualności dynamicznie odtwarzanej indeksowanej historii.",
+          "Name": "Metadane historii",
+          "Type": 3
+        },
+        {
+          "Description": "Znaczniki czasu pobrania i aktualności zaakceptowanego zestawu indeksowanego.",
+          "Name": "Metadane historii",
+          "Type": 4
+        },
+        {
+          "Description": "Przechowuje jeden zakończony okres pełnych danych pogodowych w danych indeksowanych. Zajmuje pozycję usuniętego okresu V1 w unii; nazwa zasobu historii V2 oddziela te niezgodne rekordy indeksowane.",
+          "Name": "Okres historyczny V2",
+          "Type": 5
+        },
+        {
+          "Description": "Temperatura, wilgotność, opady, ewapotranspiracja referencyjna, wiatr i porywy wiatru.",
+          "Name": "Okres historyczny",
+          "Type": 6
+        },
+        {
+          "Description": "Przechowuje ostatnią pomyślnie pobraną i zweryfikowaną sekcję bieżących warunków. Nieudane odświeżenie nie zmienia istniejącego rekordu w bazie danych.",
+          "Name": "Bieżące warunki",
+          "Type": 7
+        },
+        {
+          "Description": "Dane wejściowe dotyczące bezpośredniego zagrożenia deszczem i mrozem, wilgotności, wiatru oraz bilansu wodnego, wraz ze znacznikami czasu ich pobrania i aktualności.",
+          "Name": "Bieżące warunki",
+          "Type": 8
+        },
+        {
+          "Description": "Przechowuje ostatnią pomyślnie pobraną i zweryfikowaną sekcję prognozy. Nieudane odświeżenie nie zmienia istniejącego rekordu w bazie danych.",
+          "Name": "Prognoza",
+          "Type": 9
+        },
+        {
+          "Description": "Dane wejściowe dotyczące przyszłych opadów, ewapotranspiracji referencyjnej, temperatury, wilgotności i wiatru, wraz ze znacznikami czasu ich pobrania i aktualności.",
+          "Name": "Prognoza",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherPersistentData"
+    },
+    {
+      "Description": "Definiuje typowaną transakcję punktu końcowego Libertas służącą do żądania lub subskrybowania danych pogodowych systemu nawadniania. Odpowiedzi udostępniają niezależnie dostępne sekcje historii, bieżących warunków i prognozy, dzięki czemu awaria nie ukrywa użytecznych danych z pamięci podręcznej. Kontrakt stanu punktu końcowego Libertas odrzuca nieprawidłowo sformatowane dane Avro oraz wartości użyte w niewłaściwej roli komunikatu; te błędy transportu nie są wariantami odzyskiwania.",
+      "DisplayName": "Protokół danych pogodowych systemu nawadniania",
+      "List": [
+        {
+          "Description": "Definiuje typowaną transakcję punktu końcowego Libertas służącą do żądania lub subskrybowania danych pogodowych systemu nawadniania. Odpowiedzi udostępniają niezależnie dostępne sekcje historii, bieżących warunków i prognozy, dzięki czemu awaria nie ukrywa użytecznych danych z pamięci podręcznej. Kontrakt stanu punktu końcowego Libertas odrzuca nieprawidłowo sformatowane dane Avro oraz wartości użyte w niewłaściwej roli komunikatu; te błędy transportu nie są wariantami odzyskiwania.",
+          "Name": "Protokół danych pogodowych systemu nawadniania",
+          "Type": 0
+        },
+        {
+          "Description": "Wykonuje jednorazowy odczyt przyrostowy albo rozpoczyna bądź wznawia subskrypcję przyrostową. Zachowanie wybiera operacja punktu końcowego Libertas; nie jest ono zakodowane w tym komunikacie. Gdy jest to możliwe, serwer odtwarza zachowane zmiany następujące po `after_cursor`, a w przeciwnym razie zwraca ograniczoną zakresem migawkę z pamięci podręcznej.",
+          "Name": "Pobierz dane pogodowe systemu nawadniania",
+          "Type": 1
+        },
+        {
+          "Description": "Ostatni kursor w pełni i atomowo zastosowany przez klienta. Wartość `None` żąda początkowej migawki ograniczonej zakresem. Serwer porównuje oba pola; niższy numer sekwencji oznacza reset tylko wtedy, gdy kursor odpowiedzi ma również nowszy znacznik czasu epoki.",
+          "Name": "Kursor wznowienia",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "Półotwarty zakres czasów rozpoczęcia okresów historycznych, które należy uwzględnić, gdy odtwarzanie jest niemożliwe. Wartość `None` wyklucza historię z migawki resetowania.",
+          "Name": "Zakres odzyskiwania historii",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Określa, czy migawka resetowania powinna zawierać bieżące warunki z pamięci podręcznej.",
+          "Name": "Uwzględnij bieżące warunki",
+          "Type": 4
+        },
+        {
+          "Description": "Półotwarty zakres czasów rozpoczęcia okresów prognozy, które należy uwzględnić, gdy odtwarzanie jest niemożliwe. Wartość `None` wyklucza dane prognozy z migawki resetowania.",
+          "Name": "Zakres odzyskiwania prognozy",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "Odpowiada na żądanie danych pogodowych, zwracając odtworzone zmiany, migawkę resetowania albo błąd możliwy do usunięcia. Każda odpowiedź zawiera maksymalny czas oczekiwania. Klient subskrypcji używa go po pomyślnym odtworzeniu lub zresetowaniu; klient jednorazowy go ignoruje. Po wystąpieniu błędu pierwszeństwo mają błąd odzyskiwania i opóźnienie ponownej próby.",
+          "Name": "Odzyskiwanie danych pogodowych systemu nawadniania",
+          "Type": 6
+        },
+        {
+          "Description": "Maksymalna liczba sekund, przez jaką klient subskrypcji czeka po pomyślnym odzyskaniu, raporcie przyrostowym lub komunikacie PeerAlive. Serwer wcześniej wysyła zmienione dane albo komunikat PeerAlive. Klienci jednorazowi ignorują tę wymaganą, niezerową wartość.",
+          "Name": "Maksymalny czas oczekiwania",
+          "Type": 7
+        },
+        {
+          "Description": "Wynik odtwarzania, resetowania lub błędu dla żądania wznowienia.",
+          "Name": "Odzyskiwanie",
+          "Type": 8
+        },
+        {
+          "Description": "Zgłasza wyłącznie zmiany stanu następujące po pomyślnym żądaniu danych pogodowych. Niezgodność kursora lub nieciągły zakres wymaga kolejnego żądania subskrypcji; klient nie może częściowo zastosować raportu. Prawidłowy raport lub komunikat PeerAlive ponownie uruchamia licznik czasu oczekiwania z odpowiedzi odzyskiwania; komunikat PeerAlive nigdy nie trafia do tego schematu danych ani nie zmienia kursora.",
+          "Name": "Przyrost danych pogodowych systemu nawadniania",
+          "Type": 9
+        },
+        {
+          "Description": "Uporządkowany atomowy zakres kursora i powiązane z nim zmiany danych pogodowych.",
+          "Name": "Raport przyrostowy",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherProtocol"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved weather record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved weather record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "HistoryMetadata",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "HistoryPeriod",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "starts_at",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "Current",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Forecast",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWeatherRecordKey"
+    },
+    {
+      "Description": "Identyfikuje żądanie odzyskiwania, którego nie można zrealizować ani za pomocą odtworzonych zmian, ani ograniczonej zakresem migawki z pamięci podręcznej.",
+      "DisplayName": "Błąd odzyskiwania danych pogodowych systemu nawadniania",
+      "List": [
+        {
+          "Description": "Identyfikuje żądanie odzyskiwania, którego nie można zrealizować ani za pomocą odtworzonych zmian, ani ograniczonej zakresem migawki z pamięci podręcznej.",
+          "Enum": [
+            {
+              "Description": "Co najmniej jeden z żądanych półotwartych zakresów czasu jest pusty lub odwrócony.",
+              "Name": "Nieprawidłowy zakres czasu",
+              "Type": 1
+            },
+            {
+              "Description": "Podanego kursora składającego się ze znacznika czasu epoki i numeru sekwencji nie można uzgodnić z bieżącym kursorem serwera ani z zachowanym dziennikiem odtwarzania.",
+              "Name": "Kursor wyprzedza stan serwera",
+              "Type": 2
+            },
+            {
+              "Description": "Żądane zakresy odzyskiwania przekraczają ograniczoną pojemność odpowiedzi serwera.",
+              "Name": "Żądanie jest zbyt duże",
+              "Type": 3
+            },
+            {
+              "Description": "Dane w pamięci podręcznej lub inny zasób wymagany do odzyskiwania są tymczasowo niedostępne; klient może ponowić próbę po upływie podanego opóźnienia.",
+              "Name": "Tymczasowo niedostępne",
+              "Type": 4
+            }
+          ],
+          "Name": "Błąd odzyskiwania danych pogodowych systemu nawadniania",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "Zwraca odtworzone zmiany, ustanawia nowy kursor wraz z migawką ograniczoną do zakresu albo zgłasza możliwy do usunięcia błąd żądania.",
+      "DisplayName": "Odzyskiwanie danych pogodowych dla zraszacza",
+      "List": [
+        {
+          "Description": "Zwraca odtworzone zmiany, ustanawia nowy kursor wraz z migawką ograniczoną do zakresu albo zgłasza możliwy do usunięcia błąd żądania.",
+          "Name": "Odzyskiwanie danych pogodowych dla zraszacza",
+          "Type": 0
+        },
+        {
+          "Description": "Kontynuuje żądany strumień, odtwarzając każdą zachowaną zmianę następującą po podanym kursorze. Pusty raport oznacza, że klient jest już na bieżąco.",
+          "Name": "Odtworzone zmiany",
+          "Type": 1
+        },
+        {
+          "Description": "Ciągły zakres zmian rozpoczynający się od żądanego kursora.",
+          "Name": "Raport przyrostowy",
+          "Type": 2
+        },
+        {
+          "Description": "Odrzuca żądanie bez zmiany kursora klienta ani lokalnego stanu danych pogodowych.",
+          "Name": "Błąd odzyskiwania",
+          "Type": 3
+        },
+        {
+          "Description": "Przyczyna, dla której nie udało się ukończyć odzyskiwania.",
+          "Name": "Błąd",
+          "Type": 4
+        },
+        {
+          "Description": "Sugerowane opóźnienie w sekundach przed ponowieniem próby. `None` oznacza, że przed pomyślnym ponowieniem próby należy zmienić parametry żądania.",
+          "Name": "Opóźnienie ponowienia próby",
+          "Type": 5
+        },
+        {
+          "Description": "Ustanawia nowy kursor i wiąże migawkę historii pełnych obserwacji z lokalizacją jej dostawcy.",
+          "Name": "Reset z migawką lokalizacji V2",
+          "Type": 6
+        },
+        {
+          "Description": "Przyczyna zastąpienia odtwarzania przyrostowego migawką.",
+          "Name": "Przyczyna resetu",
+          "Type": 7
+        },
+        {
+          "Description": "Kursor reprezentujący zwróconą migawkę.",
+          "Name": "Bieżący kursor",
+          "Type": 8
+        },
+        {
+          "Description": "Położenie w układzie WGS84 użyte do uzyskania zwróconych sekcji danych pogodowych.",
+          "Name": "Położenie lokalizacji",
+          "Type": 9
+        },
+        {
+          "Description": "Dostępne sekcje V2 z pamięci podręcznej, ograniczone do żądanych zakresów.",
+          "Name": "Migawka danych pogodowych",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryV1"
+    },
+    {
+      "Description": "Wyjaśnia, dlaczego odzyskiwanie zwróciło migawkę ograniczoną do zakresu zamiast odtworzyć zmiany przyrostowe następujące po żądanym kursorze.",
+      "DisplayName": "Przyczyna resetu danych pogodowych dla zraszacza",
+      "List": [
+        {
+          "Description": "Wyjaśnia, dlaczego odzyskiwanie zwróciło migawkę ograniczoną do zakresu zamiast odtworzyć zmiany przyrostowe następujące po żądanym kursorze.",
+          "Enum": [
+            {
+              "Description": "Nie podano wcześniejszego kursora, dlatego migawka ustanawia stan początkowy.",
+              "Name": "Subskrypcja początkowa",
+              "Type": 1
+            },
+            {
+              "Description": "Żądana sekwencja jest starsza niż zachowany dziennik odtwarzania.",
+              "Name": "Kursor wygasł",
+              "Type": 2
+            },
+            {
+              "Description": "Serwer utracił lub celowo odrzucił wyłącznie swój tymczasowy kursor i dziennik odtwarzania. Utrwalone sekcje danych pogodowych nadal nadają się do użycia, a brakujące dane historyczne można ponownie pobrać z Open-Meteo.",
+              "Name": "Reset kursora serwera",
+              "Type": 3
+            }
+          ],
+          "Name": "Przyczyna resetu danych pogodowych dla zraszacza",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherResetReasonV1"
+    },
+    {
+      "Description": "Identyfikuje jedną niezależnie buforowaną sekcję danych pogodowych dla zraszacza.",
+      "DisplayName": "Sekcja danych pogodowych dla zraszacza",
+      "List": [
+        {
+          "Description": "Identyfikuje jedną niezależnie buforowaną sekcję danych pogodowych dla zraszacza.",
+          "Enum": [
+            {
+              "Description": "Wybiera sekcję historycznego bilansu wodnego.",
+              "Name": "Najnowsza historia",
+              "Type": 1
+            },
+            {
+              "Description": "Wybiera sekcję natychmiastowej oceny bezpieczeństwa podlewania.",
+              "Name": "Bieżące warunki",
+              "Type": 2
+            },
+            {
+              "Description": "Wybiera sekcję planowania przyszłego nawadniania.",
+              "Name": "Prognoza",
+              "Type": 3
+            }
+          ],
+          "Name": "Sekcja danych pogodowych dla zraszacza",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherSectionV1"
+    },
+    {
+      "Description": "Zawiera niezależnie dostępne sekcje historii pełnych obserwacji, bieżących warunków i prognozy. Brakujące sekcje nie mają użytecznej wartości w pamięci podręcznej; nieaktualne sekcje zachowują swoje pierwotne znaczniki czasu ważności.",
+      "DisplayName": "Migawka danych pogodowych dla zraszacza V2",
+      "List": [
+        {
+          "Description": "Zawiera niezależnie dostępne sekcje historii pełnych obserwacji, bieżących warunków i prognozy. Brakujące sekcje nie mają użytecznej wartości w pamięci podręcznej; nieaktualne sekcje zachowują swoje pierwotne znaczniki czasu ważności.",
+          "Name": "Migawka danych pogodowych dla zraszacza V2",
+          "Type": 0
+        },
+        {
+          "Description": "Żądane okresy historyczne V2, jeśli istnieje użyteczna historia w pamięci podręcznej.",
+          "Name": "Najnowsza historia",
+          "Type": 1
+        },
+        {
+          "Description": "Ostatnie zaakceptowane bieżące warunki, jeśli zostały zażądane i są dostępne.",
+          "Name": "Bieżące warunki",
+          "Type": 2
+        },
+        {
+          "Description": "Żądane okresy prognozy, jeśli istnieją użyteczne dane w pamięci podręcznej.",
+          "Name": "Prognoza",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherSnapshotV2"
+    },
+    {
+      "Description": "Wybiera półotwarty przedział okresów historycznych lub okresów prognozy na potrzeby odzyskiwania. Okres zostaje wybrany, gdy jego czas rozpoczęcia jest nie wcześniejszy niż `starts_at` i wcześniejszy niż `ends_before`.",
+      "DisplayName": "Zakres czasu danych pogodowych dla zraszacza",
+      "List": [
+        {
+          "Description": "Wybiera półotwarty przedział okresów historycznych lub prognozowanych do pobrania. Okres zostaje wybrany, gdy jego czas rozpoczęcia jest nie wcześniejszy niż `starts_at` i wcześniejszy niż `ends_before`.",
+          "Name": "Zakres czasu danych pogodowych zraszacza",
+          "Type": 0
+        },
+        {
+          "Description": "Dolna granica włącznie dla czasów rozpoczęcia wybranych okresów.",
+          "Name": "Czas rozpoczęcia",
+          "Type": 1
+        },
+        {
+          "Description": "Górna granica wyłącznie dla czasów rozpoczęcia wybranych okresów. Ta wartość musi być późniejsza niż `starts_at`.",
+          "Name": "Czas zakończenia",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherTimeRangeV1"
+    }
+  ]
+}

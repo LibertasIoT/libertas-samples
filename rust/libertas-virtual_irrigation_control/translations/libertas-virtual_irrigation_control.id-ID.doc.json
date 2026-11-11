@@ -1,0 +1,75 @@
+{
+  "Description": "Memungkinkan Anda mencoba aplikasi penyiram tanpa memasang perangkat keras irigasi fisik.",
+  "DisplayName": "Emulator kontrol penyiram",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Virtual sprinkler valves",
+      "Description": "Memungkinkan pengguna mencoba aplikasi penyiram tanpa memasang perangkat keras irigasi fisik. Pengguna memilih satu atau beberapa katup virtual dan dapat mengatur durasi penyiraman bawaan untuk setiap katup. Pengguna atau aplikasi penyiram dapat membuka katup tanpa batas waktu, membukanya selama durasi yang dipilih, atau menutupnya. Pengontrol katup secara otomatis menutup katup setelah waktu penyiraman berakhir dan menutup katup lain sebelum membuka katup baru, sehingga hanya satu katup yang menyiram pada satu waktu. Pengontrol katup menampilkan status terbuka atau tertutup, durasi yang dipilih, durasi bawaan, dan waktu yang tersisa untuk setiap katup, serta mengingat durasi bawaan setelah dimulai ulang.",
+      "DisplayName": "Emulator kontrol penyiram",
+      "List": [
+        {
+          "Description": "Tambahkan satu katup virtual untuk setiap area yang ingin Anda coba.",
+          "Name": "Katup penyiram",
+          "Type": 0
+        },
+        {
+          "Description": "Satu katup air virtual.",
+          "Name": "Katup penyiram",
+          "Type": 1
+        }
+      ],
+      "Name": "virtual_irrigation_controller"
+    }
+  ],
+  "Locale": "id-ID",
+  "StringResources": {
+    "DEFAULT_OPEN_DURATION": "Durasi penyiraman yang disimpan untuk {0}."
+  },
+  "Types": [
+    {
+      "Description": "Setiap bentuk data yang ditulis ke basis data Libertas didefinisikan langsung dalam tipe gabungan ini.",
+      "DisplayName": "Data katup persisten.",
+      "List": [
+        {
+          "Description": "Setiap bentuk data yang ditulis ke basis data Libertas didefinisikan langsung dalam tipe gabungan ini.",
+          "Name": "Data katup persisten.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Atribut DefaultOpenDuration Matter.",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "DefaultOpenDuration, dalam detik.",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved valve settings",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved valve settings",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Default watering duration for one valve",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveKey"
+    }
+  ]
+}

@@ -1,0 +1,1802 @@
+{
+  "Description": "Khám phá mười ba ví dụ tương tác về mô hình không gian, so sánh sản phẩm và bề mặt toán học bằng dữ liệu mẫu mô phỏng. Bộ sưu tập chạy trên Libertas Hub và cung cấp các ví dụ cho trình xem hỗ trợ biểu đồ 3D Libertas.",
+  "DisplayName": "Bộ sưu tập biểu đồ 3D Libertas",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "Description": "Bộ sưu tập biểu đồ 3D giúp người dùng khám phá mười ba ví dụ tương tác về mô hình không gian, so sánh sản phẩm và bề mặt toán học. Người dùng chọn tên cho bộ sưu tập trong quá trình thiết lập. Sau đó, người dùng có thể mở bất kỳ ví dụ nào trong bộ sưu tập. Bộ sưu tập hiển thị các nhóm điểm phân tán trong không gian; các đường diễn biến về khảo sát, dự báo và giới hạn vận hành; các cột doanh số theo khu vực; các phép so sánh sản phẩm theo chiều ngang; cùng các khối hộp chữ nhật có kích thước khác nhau. Người dùng có thể so sánh độ phủ, mức tăng trưởng và tỷ lệ duy trì của sản phẩm trong biểu đồ bong bóng, trong đó kích thước bong bóng biểu thị giá trị hằng năm. Bộ sưu tập cũng hiển thị bản đồ độ cao địa hình, khung lưới hình yên ngựa, các đường đồng mức trên một bề mặt, một bề mặt được lấy mẫu không đồng đều với một khoảng trống có chủ ý và một bề mặt toán học cong. Người dùng có thể so sánh các phổ tần số, xem xét các xung dương và âm được đo từ mức 0, khám phá một đám mây gồm 96 mẫu không gian, đồng thời so sánh khối lượng theo kỳ, xu hướng và số liệu quan sát. Các ví dụ minh họa biểu đồ kết hợp và các chế độ xem riêng biệt, kèm theo nhãn, chú giải, chi tiết mẫu và nhiều góc nhìn khác nhau. Bộ sưu tập tính toán dữ liệu mẫu minh họa khi người dùng mở một ví dụ. Việc chọn lại cùng một ví dụ sẽ tái tạo đúng các giá trị mô phỏng đó. Bộ sưu tập chạy trên Libertas Hub và yêu cầu trình xem hỗ trợ biểu đồ 3D Libertas. Do Smartonlabs Inc. (libertas) phát triển.",
+      "DisplayName": "Bộ sưu tập biểu đồ 3D",
+      "List": [
+        {
+          "DefaultText": "Bộ sưu tập biểu đồ 3D",
+          "Description": "Người dùng đặt tên cho bộ sưu tập được tác vụ này tạo ra. Người dùng có thể mở bộ sưu tập này để khám phá các phép so sánh không gian và bề mặt toán học qua những ví dụ mô phỏng.",
+          "Name": "Dịch vụ bộ sưu tập",
+          "Type": 0
+        }
+      ],
+      "Name": "chart3d_demo"
+    }
+  ],
+  "Locale": "vi-VN",
+  "StringResources": {},
+  "Types": [
+    {
+      "Description": "Hiển thị các cột doanh số theo khu vực, phép so sánh sản phẩm theo chiều ngang và các khối hộp chữ nhật dưới dạng ba ví dụ riêng biệt.",
+      "DisplayName": "So sánh bằng cột 3D",
+      "List": [
+        {
+          "Description": "Hiển thị các cột doanh số theo khu vực, phép so sánh sản phẩm theo chiều ngang và các khối hộp chữ nhật dưới dạng ba ví dụ riêng biệt.",
+          "Name": "So sánh bằng cột 3D",
+          "Type": 0
+        },
+        {
+          "Description": "So sánh doanh thu theo quý và khu vực bán hàng.",
+          "Name": "Doanh số theo khu vực",
+          "Type": 1
+        },
+        {
+          "Description": "So sánh kết quả thực tế và kế hoạch của từng dòng sản phẩm.",
+          "Name": "So sánh sản phẩm",
+          "Type": 2
+        },
+        {
+          "Description": "So sánh các khối hộp có kích thước và vị trí khác nhau.",
+          "Name": "Khối hộp chữ nhật",
+          "Type": 3
+        }
+      ],
+      "Name": "BarFormsChartV1"
+    },
+    {
+      "Description": "Phân biệt kết quả thực tế với kết quả kế hoạch trong ví dụ.",
+      "DisplayName": "Kịch bản bán hàng",
+      "List": [
+        {
+          "Description": "Phân biệt kết quả thực tế với kết quả kế hoạch trong ví dụ.",
+          "Enum": [
+            {
+              "Description": "Kết quả được thể hiện là kết quả thực tế trong phép so sánh mô phỏng này.",
+              "Name": "Thực tế",
+              "Type": 1
+            },
+            {
+              "Description": "Kết quả kế hoạch dùng để so sánh với kết quả thực tế trong ví dụ.",
+              "Name": "Kế hoạch",
+              "Type": 2
+            }
+          ],
+          "Name": "Kịch bản bán hàng",
+          "Type": 0
+        }
+      ],
+      "Name": "BarScenarioV1"
+    },
+    {
+      "Description": "So sánh độ phủ, mức tăng trưởng và tỷ lệ duy trì của sản phẩm, trong đó kích thước bong bóng biểu thị giá trị hằng năm.",
+      "DisplayName": "Bong bóng sản phẩm 3D",
+      "List": [
+        {
+          "Description": "So sánh độ phủ, mức tăng trưởng và tỷ lệ duy trì của sản phẩm, trong đó kích thước bong bóng biểu thị giá trị hằng năm.",
+          "Name": "Bong bóng sản phẩm 3D",
+          "Type": 0
+        },
+        {
+          "Description": "Độ phủ, mức tăng trưởng, tỷ lệ duy trì, giá trị hằng năm, phân khúc và đối tượng phục vụ của một sản phẩm mô phỏng.",
+          "Name": "Bong bóng sản phẩm",
+          "Type": 1
+        }
+      ],
+      "Name": "BubbleChartV1"
+    },
+    {
+      "Description": "Cho biết sản phẩm trong ví dụ phục vụ người tiêu dùng, ngành công nghiệp hay hoạt động khoa học.",
+      "DisplayName": "Đối tượng phục vụ của sản phẩm",
+      "List": [
+        {
+          "Description": "Cho biết sản phẩm trong ví dụ phục vụ người tiêu dùng, ngành công nghiệp hay hoạt động khoa học.",
+          "Enum": [
+            {
+              "Description": "Sản phẩm hướng đến người tiêu dùng.",
+              "Name": "Tiêu dùng",
+              "Type": 1
+            },
+            {
+              "Description": "Sản phẩm công nghiệp.",
+              "Name": "Công nghiệp",
+              "Type": 2
+            },
+            {
+              "Description": "Sản phẩm phục vụ hoạt động khoa học.",
+              "Name": "Khoa học",
+              "Type": 3
+            }
+          ],
+          "Name": "Đối tượng phục vụ của sản phẩm",
+          "Type": 0
+        }
+      ],
+      "Name": "BubbleClassV1"
+    },
+    {
+      "Description": "Độ phủ, mức tăng trưởng, tỷ lệ duy trì, giá trị hằng năm, phân khúc và đối tượng phục vụ của một sản phẩm mô phỏng.",
+      "DisplayName": "Bong bóng sản phẩm",
+      "List": [
+        {
+          "Description": "Độ phủ, mức tăng trưởng, tỷ lệ duy trì, giá trị hằng năm, phân khúc và đối tượng phục vụ của một sản phẩm mô phỏng.",
+          "Name": "Bong bóng sản phẩm",
+          "Type": 0
+        },
+        {
+          "Description": "Độ phủ thị trường tương đối của sản phẩm trong ví dụ.",
+          "Name": "Độ phủ",
+          "Type": 1
+        },
+        {
+          "Description": "Mức tăng trưởng của sản phẩm trong ví dụ; giá trị âm biểu thị sự suy giảm.",
+          "Name": "Tăng trưởng",
+          "Type": 2
+        },
+        {
+          "Description": "Tỷ lệ khách hàng mà sản phẩm trong ví dụ giữ chân được.",
+          "Name": "Tỷ lệ duy trì",
+          "Type": 3
+        },
+        {
+          "Description": "Giá trị hằng năm của sản phẩm trong ví dụ; giá trị càng lớn thì bong bóng hiển thị càng lớn.",
+          "Name": "Giá trị hằng năm",
+          "Type": 4
+        },
+        {
+          "Description": "Cho biết sản phẩm này thuộc phân khúc đã ổn định, đang tăng trưởng hay đang thử nghiệm.",
+          "Name": "Phân khúc",
+          "Type": 5
+        },
+        {
+          "Description": "Cho biết sản phẩm này phục vụ người tiêu dùng, ngành công nghiệp hay hoạt động khoa học.",
+          "Name": "Đối tượng phục vụ của sản phẩm",
+          "Type": 6
+        },
+        {
+          "Description": "Dùng để phân biệt sản phẩm này với các sản phẩm khác trong ví dụ.",
+          "Name": "Mã tham chiếu sản phẩm",
+          "Type": 7
+        }
+      ],
+      "Name": "BubblePointV1"
+    },
+    {
+      "Description": "Nhóm các sản phẩm trong ví dụ theo trạng thái đã ổn định, đang tăng trưởng hoặc đang thử nghiệm.",
+      "DisplayName": "Phân khúc sản phẩm",
+      "List": [
+        {
+          "Description": "Nhóm các sản phẩm trong ví dụ theo trạng thái đã ổn định, đang tăng trưởng hoặc đang thử nghiệm.",
+          "Enum": [
+            {
+              "Description": "Các sản phẩm cốt lõi đã có chỗ đứng.",
+              "Name": "Cốt lõi",
+              "Type": 1
+            },
+            {
+              "Description": "Các sản phẩm đang mở rộng nhanh chóng.",
+              "Name": "Tăng trưởng",
+              "Type": 2
+            },
+            {
+              "Description": "Các sản phẩm thử nghiệm.",
+              "Name": "Nghiên cứu",
+              "Type": 3
+            }
+          ],
+          "Name": "Phân khúc sản phẩm",
+          "Type": 0
+        }
+      ],
+      "Name": "BubbleSegmentV1"
+    },
+    {
+      "Description": "Người dùng có thể chọn một ví dụ để khám phá các mẫu không gian mô phỏng, các phép so sánh hoặc các bề mặt toán học.",
+      "DisplayName": "Bộ sưu tập biểu đồ 3D",
+      "List": [
+        {
+          "Description": "Người dùng có thể chọn một ví dụ để khám phá các mẫu không gian mô phỏng, các phép so sánh hoặc các bề mặt toán học.",
+          "Name": "Bộ sưu tập biểu đồ 3D",
+          "Type": 0
+        },
+        {
+          "Description": "Người dùng có thể so sánh độ phân tán và mức độ tách biệt của ba nhóm vị trí mô phỏng.",
+          "Name": "Xem các mẫu không gian",
+          "Type": 1
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị các vị trí mô phỏng xung quanh một sống núi, lòng chảo và thềm địa hình.",
+          "Name": "Các mẫu không gian",
+          "Type": 2
+        },
+        {
+          "Description": "Người dùng có thể so sánh các lộ trình mô phỏng của hoạt động khảo sát, dự báo và giới hạn vận hành.",
+          "Name": "Xem các quỹ đạo 3D",
+          "Type": 3
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị ba lộ trình trong không gian để so sánh.",
+          "Name": "Các quỹ đạo 3D",
+          "Type": 4
+        },
+        {
+          "Description": "Người dùng có thể khám phá các cột doanh số theo khu vực, các phép so sánh sản phẩm theo chiều ngang và các khối hộp chữ nhật.",
+          "Name": "Xem các biểu đồ cột 3D để so sánh",
+          "Type": 5
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị ba ví dụ riêng biệt về các cột và hộp có kích thước khác nhau.",
+          "Name": "Các biểu đồ cột 3D để so sánh",
+          "Type": 6
+        },
+        {
+          "Description": "Người dùng có thể đồng thời so sánh độ phủ, mức tăng trưởng và khả năng duy trì của sản phẩm cùng với giá trị hằng năm.",
+          "Name": "Xem biểu đồ bong bóng sản phẩm 3D",
+          "Type": 7
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị kết quả sản phẩm mô phỏng, trong đó kích thước bong bóng biểu thị giá trị hằng năm.",
+          "Name": "Biểu đồ bong bóng sản phẩm 3D",
+          "Type": 8
+        },
+        {
+          "Description": "Người dùng có thể khám phá sự lên xuống của địa hình mô phỏng.",
+          "Name": "Xem bản đồ độ cao địa hình",
+          "Type": 9
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị một bề mặt địa hình được tô kín, lấy mẫu tại các vị trí cách đều nhau.",
+          "Name": "Bản đồ độ cao địa hình",
+          "Type": 10
+        },
+        {
+          "Description": "Người dùng có thể khám phá một bề mặt hình yên ngựa thông qua lưới các đường nối của bề mặt.",
+          "Name": "Xem khung lưới hình yên ngựa",
+          "Type": 11
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị hình dạng của một bề mặt hình yên ngựa dưới dạng lưới mở.",
+          "Name": "Khung lưới hình yên ngựa",
+          "Type": 12
+        },
+        {
+          "Description": "Người dùng có thể so sánh các đường có cùng độ cao với bề mặt mà chúng mô tả.",
+          "Name": "Xem các đường đồng mức trên bề mặt",
+          "Type": 13
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị đồng thời một bề mặt và các đường đồng mức cao độ hình thoi của bề mặt đó.",
+          "Name": "Các đường đồng mức trên bề mặt",
+          "Type": 14
+        },
+        {
+          "Description": "Người dùng có thể khám phá một bề mặt được lấy mẫu theo các khoảng không đều và xem khoảng trống do một mẫu bị thiếu để lại.",
+          "Name": "Xem bề mặt có khoảng cách lấy mẫu không đều",
+          "Type": 15
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị một bề mặt có khoảng cách lấy mẫu không đều và một mẫu được chủ ý để trống.",
+          "Name": "Bề mặt có khoảng cách lấy mẫu không đều",
+          "Type": 16
+        },
+        {
+          "Description": "Người dùng có thể so sánh phổ tần số của mức cơ sở và ba thời điểm trong ngày.",
+          "Name": "Xem phổ dạng thác nước",
+          "Type": 17
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị cường độ tín hiệu mô phỏng theo các tần số trong bốn khoảng thời gian.",
+          "Name": "Phổ dạng thác nước",
+          "Type": 18
+        },
+        {
+          "Description": "Người dùng có thể so sánh các xung dương và âm với mức 0.",
+          "Name": "Xem biểu đồ thân xung",
+          "Type": 19
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị mỗi xung mô phỏng dưới dạng một thân kéo dài từ mức 0, với một điểm ở đầu thân để đánh dấu giá trị của xung.",
+          "Name": "Biểu đồ thân xung",
+          "Type": 20
+        },
+        {
+          "Description": "Người dùng có thể khám phá một bề mặt cong được tính từ một đa thức có hai tham số.",
+          "Name": "Xem bề mặt toán học",
+          "Type": 21
+        },
+        {
+          "Description": "Bộ sưu tập cho thấy cách hai tham số toán học định hình một bề mặt trong không gian ba chiều.",
+          "Name": "Bề mặt toán học",
+          "Type": 22
+        },
+        {
+          "Description": "Người dùng có thể khám phá độ phân tán của 96 mẫu không gian mô phỏng và so sánh các vùng cũng như trọng số tương đối của chúng.",
+          "Name": "Xem đám mây điểm 3D",
+          "Type": 23
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị các mẫu không gian được nhóm theo vùng, trong đó kích thước điểm biểu thị trọng số tương đối.",
+          "Name": "Đám mây điểm 3D",
+          "Type": 24
+        },
+        {
+          "Description": "Người dùng có thể khám phá phổ tần số và một biểu đồ kết hợp khối lượng, xu hướng và số liệu quan sát.",
+          "Name": "Xem nhiều phép so sánh 3D",
+          "Type": 25
+        },
+        {
+          "Description": "Bộ sưu tập hiển thị riêng các phép so sánh phổ và khoảng thời gian, trong đó có một biểu đồ kết hợp ba đại lượng đo.",
+          "Name": "Nhiều phép so sánh 3D",
+          "Type": 26
+        }
+      ],
+      "Name": "Chart3dDemoProtocol"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved stored values for the function's required data schema.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved stored values for the function's required data schema.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "value",
+          "Type": 2
+        }
+      ],
+      "Name": "ChartData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved storage keys; this demonstration currently writes no records.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved storage keys; this demonstration currently writes no records.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        }
+      ],
+      "Name": "ChartDataKey"
+    },
+    {
+      "Description": "Nhóm các mẫu không gian mô phỏng theo độ cao và vị trí đông–tây của chúng.",
+      "DisplayName": "Vùng đám mây điểm",
+      "List": [
+        {
+          "Description": "Phân nhóm các mẫu không gian mô phỏng theo độ cao và vị trí đông-tây.",
+          "Enum": [
+            {
+              "Description": "Các mẫu nằm trên độ cao 0 và tại hoặc về phía đông của điểm gốc.",
+              "Name": "Phía trên, bên đông",
+              "Type": 1
+            },
+            {
+              "Description": "Các mẫu nằm trên độ cao 0 và về phía tây của điểm gốc.",
+              "Name": "Phía trên, bên tây",
+              "Type": 2
+            },
+            {
+              "Description": "Các mẫu nằm tại hoặc dưới độ cao 0 và tại hoặc về phía đông của điểm gốc.",
+              "Name": "Phía dưới, bên đông",
+              "Type": 3
+            },
+            {
+              "Description": "Các mẫu nằm tại hoặc dưới độ cao 0 và về phía tây của điểm gốc.",
+              "Name": "Phía dưới, bên tây",
+              "Type": 4
+            }
+          ],
+          "Name": "Vùng đám mây",
+          "Type": 0
+        }
+      ],
+      "Name": "CloudRegionV1"
+    },
+    {
+      "Description": "Độ cao chung của mọi vị trí dọc theo một đường đồng mức, dùng để so sánh độ cao bề mặt.",
+      "DisplayName": "Mức đường đồng mức",
+      "List": [
+        {
+          "Description": "Độ cao chung của mọi vị trí dọc theo một đường đồng mức, dùng để so sánh độ cao bề mặt.",
+          "Enum": [
+            {
+              "Description": "Đường đồng mức tại độ cao một đơn vị.",
+              "Name": "Một đơn vị",
+              "Type": 1
+            },
+            {
+              "Description": "Đường đồng mức tại độ cao hai đơn vị.",
+              "Name": "Hai đơn vị",
+              "Type": 2
+            },
+            {
+              "Description": "Đường đồng mức tại độ cao ba đơn vị.",
+              "Name": "Ba đơn vị",
+              "Type": 3
+            }
+          ],
+          "Name": "Mức đường đồng mức",
+          "Type": 0
+        }
+      ],
+      "Name": "ContourLevelV1"
+    },
+    {
+      "Description": "Một vị trí trên đường nối các địa điểm có cùng độ cao.",
+      "DisplayName": "Điểm trên đường đồng mức",
+      "List": [
+        {
+          "Description": "Một vị trí trên đường nối các địa điểm có cùng độ cao.",
+          "Name": "Điểm trên đường đồng mức",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí của đường đồng mức theo hướng x của bề mặt.",
+          "Name": "Tọa độ X",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí của đường đồng mức theo hướng y của bề mặt.",
+          "Name": "Tọa độ Y",
+          "Type": 2
+        },
+        {
+          "Description": "Độ cao chung của mọi vị trí trên đường đồng mức này.",
+          "Name": "Độ cao",
+          "Type": 3
+        },
+        {
+          "Description": "Mức độ cao mà đường đồng mức này biểu thị.",
+          "Name": "Mức đường đồng mức",
+          "Type": 4
+        },
+        {
+          "Description": "Thứ tự của vị trí khi đường đồng mức chạy theo một đường khép kín.",
+          "Name": "Thứ tự trên đường đồng mức",
+          "Type": 5
+        },
+        {
+          "Description": "Phân biệt vị trí này với các vị trí khác dọc theo các đường đồng mức.",
+          "Name": "Tham chiếu đường đồng mức",
+          "Type": 6
+        }
+      ],
+      "Name": "ContourLinePointV1"
+    },
+    {
+      "Description": "Nối các vị trí có cùng độ cao để thể hiện sự thay đổi độ cao trên toàn bề mặt.",
+      "DisplayName": "Các đường đồng mức",
+      "List": [
+        {
+          "Description": "Nối các vị trí có cùng độ cao để thể hiện sự thay đổi độ cao trên toàn bề mặt.",
+          "Name": "Các đường đồng mức",
+          "Type": 0
+        },
+        {
+          "Description": "Một vị trí trên đường nối các địa điểm có cùng độ cao.",
+          "Name": "Điểm trên đường đồng mức",
+          "Type": 1
+        }
+      ],
+      "Name": "ContourLinesChartV1"
+    },
+    {
+      "Description": "Hiển thị một bề mặt có các đường đồng mức cùng độ cao tạo thành những hình thoi bao quanh tâm.",
+      "DisplayName": "Các mẫu bề mặt đồng mức",
+      "List": [
+        {
+          "Description": "Hiển thị một bề mặt có các đường đồng mức cùng độ cao tạo thành những hình thoi bao quanh tâm.",
+          "Name": "Các mẫu bề mặt đồng mức",
+          "Type": 0
+        },
+        {
+          "Description": "Một vị trí và độ cao trên bề mặt, dùng để so sánh các mức đường đồng mức.",
+          "Name": "Mẫu bề mặt đồng mức",
+          "Type": 1
+        }
+      ],
+      "Name": "ContourSurfaceChartV1"
+    },
+    {
+      "Description": "Một vị trí và độ cao trên bề mặt, dùng để so sánh các mức đường đồng mức.",
+      "DisplayName": "Mẫu bề mặt đồng mức",
+      "List": [
+        {
+          "Description": "Một vị trí và độ cao trên bề mặt, dùng để so sánh các mức đường đồng mức.",
+          "Name": "Mẫu bề mặt đồng mức",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí theo hướng x dùng chung cho bề mặt và các đường đồng mức của bề mặt.",
+          "Name": "Tọa độ X",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí theo hướng y dùng chung cho bề mặt và các đường đồng mức của bề mặt.",
+          "Name": "Tọa độ Y",
+          "Type": 2
+        },
+        {
+          "Description": "Độ cao tại vị trí này trên bề mặt hình thoi của ví dụ.",
+          "Name": "Độ cao",
+          "Type": 3
+        },
+        {
+          "Description": "Độ cao dùng để phân biệt các khoảng độ cao trên bề mặt này.",
+          "Name": "Mức phân biệt độ cao",
+          "Type": 4
+        }
+      ],
+      "Name": "ContourSurfacePointV1"
+    },
+    {
+      "Description": "So sánh các khối hộp có vị trí, chiều rộng, chiều sâu và chiều cao khác nhau.",
+      "DisplayName": "Các khối hộp chữ nhật",
+      "List": [
+        {
+          "Description": "So sánh các khối hộp có vị trí, chiều rộng, chiều sâu và chiều cao khác nhau.",
+          "Name": "Các khối hộp chữ nhật",
+          "Type": 0
+        },
+        {
+          "Description": "Một khối hộp trong ví dụ, có vị trí, chiều rộng, chiều sâu và chiều cao riêng.",
+          "Name": "Khối hộp chữ nhật",
+          "Type": 1
+        }
+      ],
+      "Name": "ExplicitCuboidsChartV1"
+    },
+    {
+      "Description": "Một khối hộp trong ví dụ, có vị trí, chiều rộng, chiều sâu và chiều cao riêng.",
+      "DisplayName": "Khối hộp chữ nhật",
+      "List": [
+        {
+          "Description": "Một khối hộp trong ví dụ, có vị trí, chiều rộng, chiều sâu và chiều cao riêng.",
+          "Name": "Khối hộp chữ nhật",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí bắt đầu của khối hộp theo hướng x.",
+          "Name": "Điểm đầu X",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí kết thúc của khối hộp theo hướng x.",
+          "Name": "Điểm cuối X",
+          "Type": 2
+        },
+        {
+          "Description": "Vị trí bắt đầu của khối hộp theo hướng y.",
+          "Name": "Điểm đầu Y",
+          "Type": 3
+        },
+        {
+          "Description": "Vị trí kết thúc của khối hộp theo hướng y.",
+          "Name": "Điểm cuối Y",
+          "Type": 4
+        },
+        {
+          "Description": "Độ cao của mặt trên khối hộp.",
+          "Name": "Độ cao mặt trên",
+          "Type": 5
+        },
+        {
+          "Description": "Độ cao của mặt dưới khối hộp, có thể thấp hơn 0.",
+          "Name": "Độ cao mặt dưới",
+          "Type": 6
+        },
+        {
+          "Description": "Phân biệt khối hộp này với các khối hộp khác trong ví dụ.",
+          "Name": "Mã tham chiếu khối hộp",
+          "Type": 7
+        }
+      ],
+      "Name": "ExplicitCuboidV1"
+    },
+    {
+      "Description": "Thể hiện sự lên xuống của bề mặt địa hình mô phỏng được lấy mẫu tại các vị trí cách đều nhau.",
+      "DisplayName": "Các mẫu độ cao địa hình",
+      "List": [
+        {
+          "Description": "Thể hiện sự lên xuống của bề mặt địa hình mô phỏng được lấy mẫu tại các vị trí cách đều nhau.",
+          "Name": "Các mẫu độ cao địa hình",
+          "Type": 0
+        },
+        {
+          "Description": "Một vị trí và độ cao của vị trí đó trên địa hình mô phỏng trong ví dụ.",
+          "Name": "Mẫu bề mặt",
+          "Type": 1
+        }
+      ],
+      "Name": "HeightMapChartV1"
+    },
+    {
+      "Description": "Một vị trí và độ cao của vị trí đó trên địa hình mô phỏng trong ví dụ.",
+      "DisplayName": "Mẫu bề mặt",
+      "List": [
+        {
+          "Description": "Một vị trí và độ cao của vị trí đó trên địa hình mô phỏng trong ví dụ.",
+          "Name": "Mẫu bề mặt",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí của mẫu theo hướng x của địa hình.",
+          "Name": "Tọa độ X",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí của mẫu theo hướng y của địa hình.",
+          "Name": "Tọa độ Y",
+          "Type": 2
+        },
+        {
+          "Description": "Độ cao mô phỏng của địa hình tại vị trí này.",
+          "Name": "Độ cao",
+          "Type": 3
+        },
+        {
+          "Description": "Độ cao địa hình được dùng để phân biệt các dải độ cao trên bề mặt.",
+          "Name": "Phân biệt độ cao",
+          "Type": 4
+        }
+      ],
+      "Name": "HeightMapPointV1"
+    },
+    {
+      "Description": "So sánh khối lượng theo kỳ, xu hướng đã được làm mượt và từng quan sát riêng lẻ trong cùng một biểu đồ.",
+      "DisplayName": "So sánh kết hợp theo kỳ",
+      "List": [
+        {
+          "Description": "So sánh khối lượng theo kỳ, xu hướng đã được làm mượt và từng quan sát riêng lẻ trong cùng một biểu đồ.",
+          "Name": "So sánh kết hợp theo kỳ",
+          "Type": 0
+        },
+        {
+          "Description": "Các khối lượng trong ví dụ được so sánh giữa các kỳ.",
+          "Name": "Khối lượng theo kỳ",
+          "Type": 1
+        },
+        {
+          "Description": "Các kết quả đã được làm mượt được so sánh giữa cùng các kỳ đó.",
+          "Name": "Các mẫu xu hướng",
+          "Type": 2
+        },
+        {
+          "Description": "Các kết quả mô phỏng riêng lẻ được so sánh giữa cùng các kỳ đó.",
+          "Name": "Các quan sát theo kỳ",
+          "Type": 3
+        }
+      ],
+      "Name": "HeterogeneousSeriesChartV1"
+    },
+    {
+      "Description": "So sánh kết quả thực tế và kế hoạch của ba dòng sản phẩm mẫu bằng các thanh ngang.",
+      "DisplayName": "Các thanh so sánh sản phẩm",
+      "List": [
+        {
+          "Description": "So sánh kết quả thực tế và kế hoạch của ba dòng sản phẩm mẫu bằng các thanh ngang.",
+          "Name": "Các thanh so sánh sản phẩm",
+          "Type": 0
+        },
+        {
+          "Description": "Kết quả thực tế hoặc kế hoạch của một sản phẩm mẫu được đo từ một đường cơ sở chung.",
+          "Name": "Thanh so sánh sản phẩm",
+          "Type": 1
+        }
+      ],
+      "Name": "HorizontalLegacyBarsChartV1"
+    },
+    {
+      "Description": "Kết quả thực tế hoặc kế hoạch của một sản phẩm mẫu được đo từ một đường cơ sở chung.",
+      "DisplayName": "Thanh so sánh sản phẩm",
+      "List": [
+        {
+          "Description": "Kết quả thực tế hoặc kế hoạch của một sản phẩm mẫu được đo từ một đường cơ sở chung.",
+          "Name": "Thanh so sánh sản phẩm",
+          "Type": 0
+        },
+        {
+          "Description": "Kết quả thực tế hoặc theo kế hoạch trong ví dụ dành cho dòng sản phẩm này.",
+          "Name": "Kết quả",
+          "Type": 1
+        },
+        {
+          "Description": "Giá trị ban đầu để so sánh kết quả này; ví dụ sử dụng giá trị 0.",
+          "Name": "Giá trị cơ sở",
+          "Type": 2
+        },
+        {
+          "Description": "Dòng sản phẩm được thể hiện trong phép so sánh này.",
+          "Name": "Sản phẩm",
+          "Type": 3
+        },
+        {
+          "Description": "Cho biết thanh này biểu thị kết quả thực tế hay kế hoạch của ví dụ.",
+          "Name": "Kịch bản",
+          "Type": 4
+        },
+        {
+          "Description": "Phân biệt sản phẩm và kịch bản này với các mục so sánh khác.",
+          "Name": "Tham chiếu so sánh",
+          "Type": 5
+        }
+      ],
+      "Name": "HorizontalLegacyBarV1"
+    },
+    {
+      "Description": "Hiển thị các xung dương và âm được đo từ 0, với một đầu mút xác định giá trị cuối cùng của từng xung.",
+      "DisplayName": "Biểu đồ xung và thân",
+      "List": [
+        {
+          "Description": "Hiển thị các xung dương và âm được đo từ 0, với một đầu mút xác định giá trị cuối cùng của từng xung.",
+          "Name": "Biểu đồ xung và thân",
+          "Type": 0
+        },
+        {
+          "Description": "Khoảng chênh lệch giữa 0 và từng giá trị xung mô phỏng.",
+          "Name": "Thân xung",
+          "Type": 1
+        },
+        {
+          "Description": "Các giá trị cuối cùng của những xung mô phỏng tương ứng.",
+          "Name": "Đầu mút xung",
+          "Type": 2
+        }
+      ],
+      "Name": "ImpulseChartV1"
+    },
+    {
+      "Description": "Cho biết một xung trong ví dụ nhỏ hơn 0 hay bằng 0 hoặc dương.",
+      "DisplayName": "Dấu của xung",
+      "List": [
+        {
+          "Description": "Cho biết một xung trong ví dụ nhỏ hơn 0 hay bằng 0 hoặc dương.",
+          "Enum": [
+            {
+              "Description": "Một xung có giá trị nhỏ hơn 0.",
+              "Name": "Âm",
+              "Type": 1
+            },
+            {
+              "Description": "Một xung có giá trị bằng 0 hoặc lớn hơn.",
+              "Name": "Bằng 0 hoặc dương",
+              "Type": 2
+            }
+          ],
+          "Name": "Dấu của xung",
+          "Type": 0
+        }
+      ],
+      "Name": "ImpulseSignV1"
+    },
+    {
+      "Description": "Hiển thị khoảng cách mà từng xung mô phỏng vươn lên trên hoặc xuống dưới mức 0.",
+      "DisplayName": "Thân xung",
+      "List": [
+        {
+          "Description": "Hiển thị khoảng cách mà từng xung mô phỏng vươn lên trên hoặc xuống dưới mức 0.",
+          "Name": "Thân xung",
+          "Type": 0
+        },
+        {
+          "Description": "Một xung mô phỏng được đo từ 0 đến giá trị dương hoặc âm của nó.",
+          "Name": "Thân xung",
+          "Type": 1
+        }
+      ],
+      "Name": "ImpulseStemsV1"
+    },
+    {
+      "Description": "Một xung mô phỏng được đo từ 0 đến giá trị dương hoặc âm của nó.",
+      "DisplayName": "Thân xung",
+      "List": [
+        {
+          "Description": "Một xung mô phỏng được đo từ 0 đến giá trị dương hoặc âm của nó.",
+          "Name": "Thân xung",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí của xung theo hướng X trong ví dụ.",
+          "Name": "Tọa độ X",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí của xung theo hướng Y trong ví dụ.",
+          "Name": "Tọa độ Y",
+          "Type": 2
+        },
+        {
+          "Description": "Giá trị dương, âm hoặc bằng 0 của xung mô phỏng.",
+          "Name": "Giá trị xung",
+          "Type": 3
+        },
+        {
+          "Description": "Giá trị 0 được dùng làm mốc để đo xung này.",
+          "Name": "Mốc 0",
+          "Type": 4
+        },
+        {
+          "Description": "Cho biết xung là âm hay bằng 0 hoặc dương.",
+          "Name": "Dấu",
+          "Type": 5
+        },
+        {
+          "Description": "Phân biệt xung này và liên kết nó với đầu mút tương ứng.",
+          "Name": "Tham chiếu xung",
+          "Type": 6
+        }
+      ],
+      "Name": "ImpulseStemV1"
+    },
+    {
+      "Description": "Xác định giá trị cuối cùng của từng xung mô phỏng.",
+      "DisplayName": "Đầu mút xung",
+      "List": [
+        {
+          "Description": "Xác định giá trị cuối cùng của từng xung mô phỏng.",
+          "Name": "Đầu mút xung",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí biểu thị giá trị cuối cùng của một xung mô phỏng.",
+          "Name": "Đầu mút xung",
+          "Type": 1
+        }
+      ],
+      "Name": "ImpulseTipsV1"
+    },
+    {
+      "Description": "Vị trí biểu thị giá trị cuối cùng của một xung mô phỏng.",
+      "DisplayName": "Đầu mút xung",
+      "List": [
+        {
+          "Description": "Vị trí biểu thị giá trị cuối cùng của một xung mô phỏng.",
+          "Name": "Đầu mút xung",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí của đầu mút xung theo hướng X trong ví dụ.",
+          "Name": "Tọa độ X",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí của đầu mút xung theo hướng Y trong ví dụ.",
+          "Name": "Tọa độ Y",
+          "Type": 2
+        },
+        {
+          "Description": "Giá trị dương, âm hoặc bằng 0 của xung mô phỏng.",
+          "Name": "Giá trị xung",
+          "Type": 3
+        },
+        {
+          "Description": "Kích thước tương đối được dùng để giúp phân biệt từng đầu mút xung.",
+          "Name": "Mức nhấn mạnh đầu mút",
+          "Type": 4
+        },
+        {
+          "Description": "Cho biết xung là âm hay bằng 0 hoặc dương.",
+          "Name": "Dấu",
+          "Type": 5
+        },
+        {
+          "Description": "Liên kết đầu mút này với chính xung được biểu thị bằng thân xung tương ứng.",
+          "Name": "Tham chiếu xung",
+          "Type": 6
+        }
+      ],
+      "Name": "ImpulseTipV1"
+    },
+    {
+      "Description": "Hiển thị một bề mặt cong được tính từ một đa thức có hai tham số.",
+      "DisplayName": "Các mẫu bề mặt toán học",
+      "List": [
+        {
+          "Description": "Hiển thị một bề mặt cong được tính từ một đa thức có hai tham số.",
+          "Name": "Các mẫu bề mặt toán học",
+          "Type": 0
+        },
+        {
+          "Description": "Một vị trí trên bề mặt được tính từ hai tham số toán học.",
+          "Name": "Mẫu bề mặt toán học",
+          "Type": 1
+        }
+      ],
+      "Name": "MathematicalSurfaceChartV1"
+    },
+    {
+      "Description": "Một vị trí trên bề mặt được tính từ hai tham số toán học.",
+      "DisplayName": "Mẫu bề mặt toán học",
+      "List": [
+        {
+          "Description": "Một vị trí trên bề mặt được tính từ hai tham số toán học.",
+          "Name": "Mẫu bề mặt toán học",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí của bề mặt theo hướng x tại cặp tham số này.",
+          "Name": "Tọa độ X",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí của bề mặt theo hướng y tại cặp tham số này.",
+          "Name": "Tọa độ Y",
+          "Type": 2
+        },
+        {
+          "Description": "Độ cao của bề mặt tại cặp tham số này.",
+          "Name": "Tọa độ Z",
+          "Type": 3
+        },
+        {
+          "Description": "Đầu vào toán học thứ nhất xác định vị trí này trên bề mặt và các mẫu lân cận.",
+          "Name": "Tham số thứ nhất",
+          "Type": 4
+        },
+        {
+          "Description": "Đầu vào toán học thứ hai xác định vị trí này trên bề mặt và các mẫu lân cận.",
+          "Name": "Tham số thứ hai",
+          "Type": 5
+        },
+        {
+          "Description": "Tham số thứ nhất được dùng để phân biệt các vùng của bề mặt toán học.",
+          "Name": "Tham số phân biệt",
+          "Type": 6
+        }
+      ],
+      "Name": "MathematicalSurfacePointV1"
+    },
+    {
+      "Description": "Hiển thị khối lượng của ví dụ trong từng kỳ cùng với xu hướng và các giá trị quan sát.",
+      "DisplayName": "Khối lượng theo kỳ",
+      "List": [
+        {
+          "Description": "Hiển thị khối lượng của ví dụ trong từng kỳ cùng với xu hướng và các giá trị quan sát.",
+          "Name": "Khối lượng theo kỳ",
+          "Type": 0
+        },
+        {
+          "Description": "Một lượng mô phỏng trong một kỳ, được so sánh với xu hướng và một giá trị quan sát.",
+          "Name": "Khối lượng trong kỳ",
+          "Type": 1
+        }
+      ],
+      "Name": "MultipleSeriesBarsV1"
+    },
+    {
+      "Description": "Một lượng mô phỏng trong một kỳ, được so sánh với xu hướng và một giá trị quan sát.",
+      "DisplayName": "Khối lượng trong kỳ",
+      "List": [
+        {
+          "Description": "Một lượng mô phỏng trong một kỳ, được so sánh với xu hướng và một giá trị quan sát.",
+          "Name": "Khối lượng trong kỳ",
+          "Type": 0
+        },
+        {
+          "Description": "Kỳ chung của khối lượng, xu hướng và giá trị quan sát đang được so sánh.",
+          "Name": "Kỳ",
+          "Type": 1
+        },
+        {
+          "Description": "Nhóm chung của ba đại lượng trong ví dụ này.",
+          "Name": "Nhóm so sánh",
+          "Type": 2
+        },
+        {
+          "Description": "Khối lượng của ví dụ trong kỳ này.",
+          "Name": "Khối lượng",
+          "Type": 3
+        },
+        {
+          "Description": "Cho biết ví dụ đang hiển thị khối lượng, xu hướng hay một giá trị quan sát.",
+          "Name": "Đại lượng so sánh",
+          "Type": 4
+        },
+        {
+          "Description": "Phân biệt khối lượng của kỳ này với các khối lượng khác.",
+          "Name": "Tham chiếu khối lượng",
+          "Type": 5
+        }
+      ],
+      "Name": "MultipleSeriesBarV1"
+    },
+    {
+      "Description": "Hiển thị phổ tần số và phép so sánh kết hợp giữa khối lượng, xu hướng và giá trị quan sát dưới dạng các ví dụ riêng biệt.",
+      "DisplayName": "Nhiều phép so sánh 3D",
+      "List": [
+        {
+          "Description": "Hiển thị phổ tần số và phép so sánh kết hợp giữa khối lượng, xu hướng và giá trị quan sát dưới dạng các ví dụ riêng biệt.",
+          "Name": "Nhiều phép so sánh 3D",
+          "Type": 0
+        },
+        {
+          "Description": "So sánh cường độ tín hiệu trên các tần số giữa mức cơ sở và ba thời điểm trong ngày.",
+          "Name": "Phổ tần số",
+          "Type": 1
+        },
+        {
+          "Description": "So sánh khối lượng, xu hướng và các giá trị quan sát trong cùng những kỳ trên một biểu đồ.",
+          "Name": "So sánh kết hợp theo kỳ",
+          "Type": 2
+        }
+      ],
+      "Name": "MultipleSeriesChartV1"
+    },
+    {
+      "Description": "Xác định nhóm chung được dùng để so sánh khối lượng, xu hướng và các giá trị quan sát.",
+      "DisplayName": "Nhóm so sánh",
+      "List": [
+        {
+          "Description": "Xác định nhóm chung được dùng để so sánh khối lượng, xu hướng và các giá trị quan sát.",
+          "Enum": [
+            {
+              "Description": "Nhóm chung của cả ba đại lượng trong ví dụ này.",
+              "Name": "Nhóm chính",
+              "Type": 1
+            }
+          ],
+          "Name": "Nhóm so sánh",
+          "Type": 0
+        }
+      ],
+      "Name": "MultipleSeriesLaneV1"
+    },
+    {
+      "Description": "Một điểm trên đường biến động đã được làm mượt của ví dụ qua các kỳ.",
+      "DisplayName": "Mẫu xu hướng",
+      "List": [
+        {
+          "Description": "Một điểm trên đường biến động đã được làm mượt của ví dụ qua các kỳ.",
+          "Name": "Mẫu xu hướng",
+          "Type": 0
+        },
+        {
+          "Description": "Kỳ chung của xu hướng, khối lượng và giá trị quan sát đang được so sánh.",
+          "Name": "Kỳ",
+          "Type": 1
+        },
+        {
+          "Description": "Nhóm chung của ba đại lượng trong ví dụ này.",
+          "Name": "Nhóm so sánh",
+          "Type": 2
+        },
+        {
+          "Description": "Kết quả đã được làm trơn của ví dụ trong kỳ này.",
+          "Name": "Xu hướng",
+          "Type": 3
+        },
+        {
+          "Description": "Cho biết ví dụ hiển thị khối lượng, xu hướng hay một quan sát.",
+          "Name": "Đại lượng so sánh",
+          "Type": 4
+        },
+        {
+          "Description": "Vị trí của mẫu trong chuỗi các kỳ của xu hướng.",
+          "Name": "Thứ tự xu hướng",
+          "Type": 5
+        },
+        {
+          "Description": "Phân biệt mẫu xu hướng của kỳ này với các mẫu xu hướng khác.",
+          "Name": "Tham chiếu xu hướng",
+          "Type": 6
+        }
+      ],
+      "Name": "MultipleSeriesLinePointV1"
+    },
+    {
+      "Description": "Cho thấy kết quả đã được làm trơn của ví dụ thay đổi như thế nào qua các kỳ.",
+      "DisplayName": "Các mẫu xu hướng",
+      "List": [
+        {
+          "Description": "Cho thấy kết quả đã được làm trơn của ví dụ thay đổi như thế nào qua các kỳ.",
+          "Name": "Các mẫu xu hướng",
+          "Type": 0
+        },
+        {
+          "Description": "Một điểm thể hiện sự thay đổi đã được làm trơn của ví dụ qua các kỳ.",
+          "Name": "Mẫu xu hướng",
+          "Type": 1
+        }
+      ],
+      "Name": "MultipleSeriesLineV1"
+    },
+    {
+      "Description": "Hiển thị từng kết quả mô phỏng cùng với khối lượng và xu hướng trong cùng các kỳ.",
+      "DisplayName": "Các quan sát theo kỳ",
+      "List": [
+        {
+          "Description": "Hiển thị từng kết quả mô phỏng cùng với khối lượng và xu hướng trong cùng các kỳ.",
+          "Name": "Các quan sát theo kỳ",
+          "Type": 0
+        },
+        {
+          "Description": "Một kết quả mô phỏng được so sánh với khối lượng và xu hướng trong cùng kỳ.",
+          "Name": "Quan sát theo kỳ",
+          "Type": 1
+        }
+      ],
+      "Name": "MultipleSeriesPointsV1"
+    },
+    {
+      "Description": "Một kết quả mô phỏng được so sánh với khối lượng và xu hướng trong cùng kỳ.",
+      "DisplayName": "Quan sát theo kỳ",
+      "List": [
+        {
+          "Description": "Một kết quả mô phỏng được so sánh với khối lượng và xu hướng trong cùng kỳ.",
+          "Name": "Quan sát theo kỳ",
+          "Type": 0
+        },
+        {
+          "Description": "Kỳ chung của quan sát, khối lượng và xu hướng đang được so sánh.",
+          "Name": "Kỳ",
+          "Type": 1
+        },
+        {
+          "Description": "Nhóm chung của ba đại lượng trong ví dụ này.",
+          "Name": "Nhóm so sánh",
+          "Type": 2
+        },
+        {
+          "Description": "Kết quả riêng lẻ của ví dụ trong kỳ này.",
+          "Name": "Quan sát",
+          "Type": 3
+        },
+        {
+          "Description": "Kích thước tương đối dùng để giúp phân biệt từng quan sát.",
+          "Name": "Mức nhấn mạnh của quan sát",
+          "Type": 4
+        },
+        {
+          "Description": "Cho biết ví dụ hiển thị khối lượng, xu hướng hay một quan sát.",
+          "Name": "Đại lượng so sánh",
+          "Type": 5
+        },
+        {
+          "Description": "Phân biệt quan sát của kỳ này với các quan sát khác.",
+          "Name": "Tham chiếu quan sát",
+          "Type": 6
+        }
+      ],
+      "Name": "MultipleSeriesPointV1"
+    },
+    {
+      "Description": "Phân biệt khối lượng, xu hướng và các quan sát riêng lẻ trong cùng một phép so sánh.",
+      "DisplayName": "Đại lượng so sánh",
+      "List": [
+        {
+          "Description": "Phân biệt khối lượng, xu hướng và các quan sát riêng lẻ trong cùng một phép so sánh.",
+          "Enum": [
+            {
+              "Description": "Lượng của ví dụ trong một kỳ.",
+              "Name": "Khối lượng",
+              "Type": 1
+            },
+            {
+              "Description": "Sự thay đổi đã được làm trơn của ví dụ qua các kỳ.",
+              "Name": "Xu hướng",
+              "Type": 2
+            },
+            {
+              "Description": "Một kết quả mô phỏng trong một kỳ.",
+              "Name": "Quan sát",
+              "Type": 3
+            }
+          ],
+          "Name": "Đại lượng so sánh",
+          "Type": 0
+        }
+      ],
+      "Name": "MultipleSeriesRoleV1"
+    },
+    {
+      "Description": "Hiển thị một bề mặt được lấy mẫu tại các khoảng không đều, trong đó một mẫu bị thiếu tạo thành một khoảng trống.",
+      "DisplayName": "Các mẫu bề mặt có khoảng cách không đều",
+      "List": [
+        {
+          "Description": "Hiển thị một bề mặt được lấy mẫu tại các khoảng không đều, trong đó một mẫu bị thiếu tạo thành một khoảng trống.",
+          "Name": "Các mẫu bề mặt có khoảng cách không đều",
+          "Type": 0
+        },
+        {
+          "Description": "Một vị trí và độ cao tại đó trên bề mặt được lấy mẫu tại các khoảng không đều.",
+          "Name": "Mẫu bề mặt có khoảng cách không đều",
+          "Type": 1
+        }
+      ],
+      "Name": "NonuniformSurfaceChartV1"
+    },
+    {
+      "Description": "Một vị trí và độ cao tại đó trên bề mặt được lấy mẫu tại các khoảng không đều.",
+      "DisplayName": "Mẫu bề mặt có khoảng cách không đều",
+      "List": [
+        {
+          "Description": "Một vị trí và độ cao tại đó trên bề mặt được lấy mẫu tại các khoảng không đều.",
+          "Name": "Mẫu bề mặt có khoảng cách không đều",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí của mẫu trong số các vị trí có khoảng cách không đều theo hướng x.",
+          "Name": "Tọa độ X",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí của mẫu trong số các vị trí có khoảng cách không đều theo hướng y.",
+          "Name": "Tọa độ Y",
+          "Type": 2
+        },
+        {
+          "Description": "Độ cao của bề mặt trong ví dụ tại vị trí lấy mẫu này.",
+          "Name": "Độ cao",
+          "Type": 3
+        },
+        {
+          "Description": "Cao độ dùng để phân biệt các khoảng độ cao trên bề mặt này.",
+          "Name": "Phân biệt độ cao",
+          "Type": 4
+        }
+      ],
+      "Name": "NonuniformSurfacePointV1"
+    },
+    {
+      "Description": "Hiển thị sự phân bố của 96 mẫu không gian mô phỏng, được nhóm theo vùng và thể hiện theo trọng số tương đối.",
+      "DisplayName": "Các mẫu đám mây điểm",
+      "List": [
+        {
+          "Description": "Hiển thị sự phân bố của 96 mẫu không gian mô phỏng, được nhóm theo vùng và thể hiện theo trọng số tương đối.",
+          "Name": "Các mẫu đám mây điểm",
+          "Type": 0
+        },
+        {
+          "Description": "Một mẫu không gian mô phỏng có vị trí, trọng số tương đối và vùng.",
+          "Name": "Mẫu đám mây điểm",
+          "Type": 1
+        }
+      ],
+      "Name": "PointCloudChartV1"
+    },
+    {
+      "Description": "Một mẫu không gian mô phỏng có vị trí, trọng số tương đối và vùng.",
+      "DisplayName": "Mẫu đám mây điểm",
+      "List": [
+        {
+          "Description": "Một mẫu không gian mô phỏng có vị trí, trọng số tương đối và vùng.",
+          "Name": "Mẫu đám mây điểm",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí của mẫu ở phía đông hoặc phía tây so với gốc tọa độ.",
+          "Name": "Vị trí đông–tây",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí của mẫu ở phía bắc hoặc phía nam so với gốc tọa độ.",
+          "Name": "Vị trí bắc–nam",
+          "Type": 2
+        },
+        {
+          "Description": "Độ cao của mẫu ở trên hoặc dưới mức không.",
+          "Name": "Cao độ",
+          "Type": 3
+        },
+        {
+          "Description": "Độ lớn tương đối của mẫu; trọng số càng lớn thì điểm hiển thị càng lớn.",
+          "Name": "Trọng số tương đối",
+          "Type": 4
+        },
+        {
+          "Description": "Vùng của mẫu được xác định theo cao độ và vị trí đông–tây.",
+          "Name": "Vùng",
+          "Type": 5
+        },
+        {
+          "Description": "Xác định vùng dùng để phân biệt mẫu này với các mẫu thuộc vùng khác.",
+          "Name": "Đặc điểm phân biệt vùng",
+          "Type": 6
+        },
+        {
+          "Description": "Vùng của mẫu, đồng thời được phân biệt bằng một ký hiệu để tiện so sánh.",
+          "Name": "Ký hiệu vùng",
+          "Type": 7
+        },
+        {
+          "Description": "Phân biệt mẫu không gian này với các mẫu khác trong đám mây điểm.",
+          "Name": "Mã tham chiếu mẫu",
+          "Type": 8
+        }
+      ],
+      "Name": "PointCloudPointV1"
+    },
+    {
+      "Description": "Xác định loại sản phẩm có kết quả được so sánh với kế hoạch.",
+      "DisplayName": "Dòng sản phẩm",
+      "List": [
+        {
+          "Description": "Xác định loại sản phẩm có kết quả được so sánh với kế hoạch.",
+          "Enum": [
+            {
+              "Description": "Sản phẩm tiêu dùng.",
+              "Name": "Gia dụng",
+              "Type": 1
+            },
+            {
+              "Description": "Sản phẩm dành cho các nhóm chuyên môn.",
+              "Name": "Doanh nghiệp",
+              "Type": 2
+            },
+            {
+              "Description": "Các dịch vụ nền tảng dùng chung.",
+              "Name": "Nền tảng",
+              "Type": 3
+            }
+          ],
+          "Name": "Dòng sản phẩm",
+          "Type": 0
+        }
+      ],
+      "Name": "ProductFamilyV1"
+    },
+    {
+      "Description": "Xác định kỳ bán hàng ba tháng dùng để so sánh doanh thu giữa các khu vực.",
+      "DisplayName": "Quý",
+      "List": [
+        {
+          "Description": "Xác định kỳ bán hàng ba tháng dùng để so sánh doanh thu giữa các khu vực.",
+          "Enum": [
+            {
+              "Description": "Từ tháng 1 đến hết tháng 3.",
+              "Name": "Quý I",
+              "Type": 1
+            },
+            {
+              "Description": "Từ tháng 4 đến hết tháng 6.",
+              "Name": "Quý II",
+              "Type": 2
+            },
+            {
+              "Description": "Từ tháng 7 đến hết tháng 9.",
+              "Name": "Quý III",
+              "Type": 3
+            }
+          ],
+          "Name": "Quý",
+          "Type": 0
+        }
+      ],
+      "Name": "QuarterV1"
+    },
+    {
+      "Description": "Xác định thị trường có doanh thu theo quý được hiển thị trong phần so sánh doanh số.",
+      "DisplayName": "Khu vực bán hàng",
+      "List": [
+        {
+          "Description": "Xác định thị trường có doanh thu theo quý được hiển thị trong phần so sánh doanh số.",
+          "Enum": [
+            {
+              "Description": "Doanh số tại Bắc Mỹ và Nam Mỹ.",
+              "Name": "Châu Mỹ",
+              "Type": 1
+            },
+            {
+              "Description": "Doanh số tại châu Âu.",
+              "Name": "Châu Âu",
+              "Type": 2
+            }
+          ],
+          "Name": "Khu vực bán hàng",
+          "Type": 0
+        }
+      ],
+      "Name": "SalesRegionV1"
+    },
+    {
+      "Description": "Hiển thị ba nhóm vị trí mô phỏng để so sánh mức độ phân bố và tách biệt của chúng.",
+      "DisplayName": "Các mẫu không gian",
+      "List": [
+        {
+          "Description": "Hiển thị ba nhóm vị trí mô phỏng để so sánh mức độ phân bố và tách biệt của chúng.",
+          "Name": "Các mẫu không gian",
+          "Type": 0
+        },
+        {
+          "Description": "Một vị trí mô phỏng cùng cụm tương ứng, dùng để so sánh các dạng phân bố không gian.",
+          "Name": "Mẫu không gian",
+          "Type": 1
+        }
+      ],
+      "Name": "ScatterChartV1"
+    },
+    {
+      "Description": "Xác định sống núi, lòng chảo hoặc thềm được biểu thị bởi một nhóm mẫu không gian mô phỏng.",
+      "DisplayName": "Cụm mẫu",
+      "List": [
+        {
+          "Description": "Xác định sống núi, lòng chảo hoặc thềm được biểu thị bởi một nhóm mẫu không gian mô phỏng.",
+          "Enum": [
+            {
+              "Description": "Các mẫu tập trung quanh sống núi phía bắc.",
+              "Name": "Sống núi phía bắc",
+              "Type": 1
+            },
+            {
+              "Description": "Các mẫu tập trung quanh bồn địa trung tâm.",
+              "Name": "Bồn địa trung tâm",
+              "Type": 2
+            },
+            {
+              "Description": "Các mẫu tập trung quanh thềm phía nam.",
+              "Name": "Thềm phía nam",
+              "Type": 3
+            }
+          ],
+          "Name": "Cụm mẫu",
+          "Type": 0
+        }
+      ],
+      "Name": "ScatterClusterV1"
+    },
+    {
+      "Description": "Một vị trí mô phỏng cùng cụm của vị trí đó, dùng để so sánh các kiểu phân bố không gian.",
+      "DisplayName": "Mẫu không gian",
+      "List": [
+        {
+          "Description": "Một vị trí mô phỏng cùng cụm của vị trí đó, dùng để so sánh các kiểu phân bố không gian.",
+          "Name": "Mẫu không gian",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí theo phương ngang từ đông sang tây.",
+          "Name": "Tọa độ đông",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí theo phương ngang từ bắc xuống nam.",
+          "Name": "Tọa độ bắc",
+          "Type": 2
+        },
+        {
+          "Description": "Vị trí theo phương thẳng đứng.",
+          "Name": "Độ cao",
+          "Type": 3
+        },
+        {
+          "Description": "Sống núi, bồn địa hoặc thềm mà mẫu này thuộc về.",
+          "Name": "Cụm",
+          "Type": 4
+        },
+        {
+          "Description": "Phân biệt vị trí này với các mẫu khác trong ví dụ.",
+          "Name": "Mã tham chiếu mẫu",
+          "Type": 5
+        }
+      ],
+      "Name": "ScatterPointV1"
+    },
+    {
+      "Description": "So sánh doanh thu mô phỏng theo quý giữa châu Mỹ và châu Âu.",
+      "DisplayName": "Biểu đồ cột doanh số theo khu vực",
+      "List": [
+        {
+          "Description": "So sánh doanh thu mô phỏng theo quý giữa châu Mỹ và châu Âu.",
+          "Name": "Biểu đồ cột doanh số theo khu vực",
+          "Type": 0
+        },
+        {
+          "Description": "Một tổng doanh thu mô phỏng cho một quý và một khu vực bán hàng.",
+          "Name": "Kết quả doanh số theo khu vực",
+          "Type": 1
+        }
+      ],
+      "Name": "SparseColumnsChartV1"
+    },
+    {
+      "Description": "Một tổng doanh thu mô phỏng cho một quý và một khu vực bán hàng.",
+      "DisplayName": "Kết quả doanh số theo khu vực",
+      "List": [
+        {
+          "Description": "Một tổng doanh thu mô phỏng cho một quý và một khu vực bán hàng.",
+          "Name": "Kết quả doanh số theo khu vực",
+          "Type": 0
+        },
+        {
+          "Description": "Khoảng thời gian ba tháng được thể hiện qua tổng doanh thu này.",
+          "Name": "Quý",
+          "Type": 1
+        },
+        {
+          "Description": "Khu vực bán hàng được thể hiện qua tổng doanh thu này.",
+          "Name": "Khu vực",
+          "Type": 2
+        },
+        {
+          "Description": "Doanh thu trong ví dụ cho quý và khu vực bán hàng này.",
+          "Name": "Doanh thu",
+          "Type": 3
+        },
+        {
+          "Description": "Phân biệt quý và khu vực này với các kết quả doanh số khác.",
+          "Name": "Mã tham chiếu doanh số",
+          "Type": 4
+        }
+      ],
+      "Name": "SparseColumnV1"
+    },
+    {
+      "Description": "Một giá trị cường độ tín hiệu mô phỏng tại một tần số, ứng với phổ cơ sở hoặc một thời điểm trong ngày.",
+      "DisplayName": "Mẫu phổ",
+      "List": [
+        {
+          "Description": "Một giá trị cường độ tín hiệu mô phỏng tại một tần số, ứng với phổ cơ sở hoặc một thời điểm trong ngày.",
+          "Name": "Mẫu phổ",
+          "Type": 0
+        },
+        {
+          "Description": "Tần số được thể hiện qua mẫu cường độ tín hiệu này.",
+          "Name": "Tần số",
+          "Type": 1
+        },
+        {
+          "Description": "Khoảng cách tách phổ này khỏi các phổ khác để so sánh.",
+          "Name": "Độ giãn cách phổ",
+          "Type": 2
+        },
+        {
+          "Description": "Cường độ tín hiệu mô phỏng tại tần số này, được đo từ mức không.",
+          "Name": "Biên độ",
+          "Type": 3
+        },
+        {
+          "Description": "Phổ cơ sở hoặc thời điểm trong ngày được thể hiện qua mẫu này.",
+          "Name": "Giai đoạn phổ",
+          "Type": 4
+        },
+        {
+          "Description": "Xác định giai đoạn phổ dùng để phân biệt đường biểu diễn này với các đường khác.",
+          "Name": "Mã phân biệt giai đoạn",
+          "Type": 5
+        },
+        {
+          "Description": "Vị trí của mẫu theo thứ tự tần số tăng dần trong phổ của mẫu đó.",
+          "Name": "Thứ tự tần số",
+          "Type": 6
+        },
+        {
+          "Description": "Phân biệt tần số và giai đoạn này với các mẫu phổ khác.",
+          "Name": "Mã tham chiếu phổ",
+          "Type": 7
+        }
+      ],
+      "Name": "SpectrumPointV1"
+    },
+    {
+      "Description": "Xác định phổ cơ sở hoặc thời điểm trong ngày được thể hiện qua một phổ tần số.",
+      "DisplayName": "Giai đoạn phổ",
+      "List": [
+        {
+          "Description": "Xác định phổ cơ sở hoặc thời điểm trong ngày được thể hiện qua một phổ tần số.",
+          "Enum": [
+            {
+              "Description": "Phổ tham chiếu dùng để so sánh các thay đổi hằng ngày trong ví dụ.",
+              "Name": "Cơ sở",
+              "Type": 1
+            },
+            {
+              "Description": "Phổ buổi sáng được mô phỏng.",
+              "Name": "Buổi sáng",
+              "Type": 2
+            },
+            {
+              "Description": "Phổ mô phỏng vào buổi chiều.",
+              "Name": "Buổi chiều",
+              "Type": 3
+            },
+            {
+              "Description": "Phổ mô phỏng vào buổi tối.",
+              "Name": "Buổi tối",
+              "Type": 4
+            }
+          ],
+          "Name": "Giai đoạn phổ",
+          "Type": 0
+        }
+      ],
+      "Name": "SpectrumTraceV1"
+    },
+    {
+      "Description": "So sánh cường độ tín hiệu cơ sở, buổi sáng, buổi chiều và buổi tối trên các tần số.",
+      "DisplayName": "Phổ dạng thác nước",
+      "List": [
+        {
+          "Description": "So sánh cường độ tín hiệu cơ sở, buổi sáng, buổi chiều và buổi tối trên các tần số.",
+          "Name": "Phổ dạng thác nước",
+          "Type": 0
+        },
+        {
+          "Description": "Một giá trị cường độ tín hiệu mô phỏng tại một tần số, dùng cho mức cơ sở hoặc một thời điểm trong ngày.",
+          "Name": "Mẫu phổ",
+          "Type": 1
+        }
+      ],
+      "Name": "SpectrumWaterfallChartV1"
+    },
+    {
+      "Description": "Hiển thị các đường đồng mức có cùng độ cao cùng với bề mặt mà chúng mô tả.",
+      "DisplayName": "Đường đồng mức trên bề mặt",
+      "List": [
+        {
+          "Description": "Hiển thị các đường đồng mức có cùng độ cao cùng với bề mặt mà chúng mô tả.",
+          "Name": "Đường đồng mức trên bề mặt",
+          "Type": 0
+        },
+        {
+          "Description": "Bề mặt mẫu có độ cao được các đường đồng mức mô tả.",
+          "Name": "Các mẫu bề mặt",
+          "Type": 1
+        },
+        {
+          "Description": "Các đường có cùng độ cao dùng để so sánh độ cao trên bề mặt.",
+          "Name": "Các đường đồng mức",
+          "Type": 2
+        }
+      ],
+      "Name": "SurfaceContoursChartV1"
+    },
+    {
+      "Description": "So sánh các đường khảo sát, dự báo và giới hạn vận hành mô phỏng trong không gian ba chiều.",
+      "DisplayName": "Quỹ đạo 3D",
+      "List": [
+        {
+          "Description": "So sánh các đường khảo sát, dự báo và giới hạn vận hành mô phỏng trong không gian ba chiều.",
+          "Name": "Quỹ đạo 3D",
+          "Type": 0
+        },
+        {
+          "Description": "Một vị trí dọc theo đường khảo sát, dự báo hoặc giới hạn vận hành mẫu.",
+          "Name": "Điểm quỹ đạo",
+          "Type": 1
+        }
+      ],
+      "Name": "TrajectoryChartV1"
+    },
+    {
+      "Description": "Một vị trí dọc theo đường khảo sát, dự báo hoặc giới hạn vận hành mẫu.",
+      "DisplayName": "Điểm quỹ đạo",
+      "List": [
+        {
+          "Description": "Một vị trí dọc theo đường khảo sát, dự báo hoặc giới hạn vận hành mẫu.",
+          "Name": "Điểm quỹ đạo",
+          "Type": 0
+        },
+        {
+          "Description": "Mức tiến triển theo phương ngang dọc theo đường đi.",
+          "Name": "Tiến độ",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí theo phương ngang từ bên này sang bên kia của đường đi.",
+          "Name": "Vị trí ngang",
+          "Type": 2
+        },
+        {
+          "Description": "Vị trí theo phương thẳng đứng của đường đi.",
+          "Name": "Độ cao",
+          "Type": 3
+        },
+        {
+          "Description": "Đường khảo sát, dự báo hoặc giới hạn vận hành chứa vị trí này.",
+          "Name": "Quỹ đạo",
+          "Type": 4
+        },
+        {
+          "Description": "Xác định đường đi có hình thức hiển thị giúp phân biệt vị trí này với các đường khác.",
+          "Name": "Phân biệt đường đi",
+          "Type": 5
+        },
+        {
+          "Description": "Thứ tự của vị trí này trong chuỗi vị trí dọc theo đường đi tương ứng.",
+          "Name": "Thứ tự trên đường đi",
+          "Type": 6
+        },
+        {
+          "Description": "Phân biệt vị trí này với các vị trí khác dọc theo các đường mẫu.",
+          "Name": "Mã tham chiếu vị trí",
+          "Type": 7
+        }
+      ],
+      "Name": "TrajectoryPointV1"
+    },
+    {
+      "Description": "Xác định một đường đi có thứ tự trong không gian ba chiều.",
+      "DisplayName": "Quỹ đạo",
+      "List": [
+        {
+          "Description": "Xác định một đường đi có thứ tự trong không gian ba chiều.",
+          "Enum": [
+            {
+              "Description": "Đường khảo sát mô phỏng của ví dụ.",
+              "Name": "Khảo sát",
+              "Type": 1
+            },
+            {
+              "Description": "Đường dự báo của ví dụ, dùng để so sánh với đường khảo sát mô phỏng.",
+              "Name": "Dự báo",
+              "Type": 2
+            },
+            {
+              "Description": "Đường tham chiếu của ví dụ, đại diện cho một giới hạn vận hành.",
+              "Name": "Giới hạn",
+              "Type": 3
+            }
+          ],
+          "Name": "Quỹ đạo",
+          "Type": 0
+        }
+      ],
+      "Name": "TrajectoryV1"
+    },
+    {
+      "Description": "Hiển thị hình dạng của bề mặt yên ngựa dưới dạng lưới hở gồm các đường nối.",
+      "DisplayName": "Các mẫu khung lưới hình yên ngựa",
+      "List": [
+        {
+          "Description": "Hiển thị hình dạng của bề mặt yên ngựa dưới dạng lưới hở gồm các đường nối.",
+          "Name": "Các mẫu khung lưới hình yên ngựa",
+          "Type": 0
+        },
+        {
+          "Description": "Một vị trí và độ cao của vị trí đó trên bề mặt hình yên ngựa của ví dụ.",
+          "Name": "Mẫu hình yên ngựa",
+          "Type": 1
+        }
+      ],
+      "Name": "WireframeChartV1"
+    },
+    {
+      "Description": "Một vị trí và độ cao của vị trí đó trên bề mặt hình yên ngựa của ví dụ.",
+      "DisplayName": "Mẫu hình yên ngựa",
+      "List": [
+        {
+          "Description": "Một vị trí và độ cao của vị trí đó trên bề mặt hình yên ngựa của ví dụ.",
+          "Name": "Mẫu hình yên ngựa",
+          "Type": 0
+        },
+        {
+          "Description": "Vị trí của mẫu theo hướng trục x của bề mặt yên ngựa.",
+          "Name": "Tọa độ X",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí của điểm mẫu theo hướng y của mặt yên ngựa.",
+          "Name": "Tọa độ Y",
+          "Type": 2
+        },
+        {
+          "Description": "Độ cao của mặt yên ngựa tại vị trí này.",
+          "Name": "Độ cao",
+          "Type": 3
+        },
+        {
+          "Description": "Mốc độ cao dùng để phân biệt các khoảng độ cao dọc theo mặt yên ngựa.",
+          "Name": "Mốc phân biệt độ cao",
+          "Type": 4
+        }
+      ],
+      "Name": "WireframePointV1"
+    }
+  ]
+}

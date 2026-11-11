@@ -1,0 +1,75 @@
+{
+  "Description": "Permite experimentar aplicações de controlo de aspersores sem instalar equipamento físico de rega.",
+  "DisplayName": "Emulador de controlo de aspersores",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Virtual sprinkler valves",
+      "Description": "Permite experimentar aplicações de controlo de aspersores sem instalar equipamento físico de rega. O utilizador escolhe uma ou mais válvulas virtuais e pode definir a duração de rega predefinida de cada válvula. O utilizador ou uma aplicação de controlo de aspersores pode abrir uma válvula por tempo indeterminado, abri-la durante um período escolhido ou fechá-la. O controlador fecha automaticamente a válvula quando termina uma rega temporizada e fecha qualquer outra válvula antes de abrir uma nova, para que apenas uma válvula regue de cada vez. O controlador apresenta o estado aberto ou fechado de cada válvula, a duração selecionada, a duração predefinida e o tempo restante, e conserva a duração predefinida após reiniciar.",
+      "DisplayName": "Emulador de controlo de aspersores",
+      "List": [
+        {
+          "Description": "Adicione uma válvula virtual para cada área que pretende experimentar.",
+          "Name": "Válvulas dos aspersores",
+          "Type": 0
+        },
+        {
+          "Description": "Uma válvula de água virtual.",
+          "Name": "Válvula do aspersor",
+          "Type": 1
+        }
+      ],
+      "Name": "virtual_irrigation_controller"
+    }
+  ],
+  "Locale": "pt-PT",
+  "StringResources": {
+    "DEFAULT_OPEN_DURATION": "Duração de rega guardada para {0}."
+  },
+  "Types": [
+    {
+      "Description": "Todas as estruturas de dados gravadas na base de dados Libertas são definidas diretamente nesta união.",
+      "DisplayName": "Dados persistentes da válvula.",
+      "List": [
+        {
+          "Description": "Todas as estruturas de dados gravadas na base de dados Libertas são definidas diretamente nesta união.",
+          "Name": "Dados persistentes da válvula.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Atributo DefaultOpenDuration do Matter.",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "DefaultOpenDuration, em segundos.",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved valve settings",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved valve settings",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Default watering duration for one valve",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveKey"
+    }
+  ]
+}

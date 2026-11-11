@@ -1,0 +1,2555 @@
+{
+  "Description": "Bahçenin her bölümünü yalnızca suya ihtiyaç duyduğunda sular. Her alanda ne yetiştiğini, nasıl sulandığını ve sulamanın duraklatılması gereken zamanları seçin. Akıllı Sulama Sistemi; güvenli bir sulama zamanı ve miktarı belirlemek için yakın zamandaki yağışı, mevcut hava durumunu ve tahmini kullanır. Ayrıca manuel sulamayı hesaba katar, kısa internet kesintileri sırasında çalışmaya devam eder ve sistemi dondurucu hava koşullarına hazırlamanız gerektiğini hatırlatır.",
+  "DisplayName": "Akıllı Sulama Sistemi",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Smart sprinkler",
+      "Description": "Her çimi, bahçeyi veya ekili alanı bitkilerine, sulama yöntemine, yakın zamandaki yağışa, tahmini hava durumuna ve kullanıcı tarafından seçilen ayarlamalara göre sular. Kullanıcı hava durumu kaynağını, alan kontrollerinin ve raporların nerede kullanılabileceğini, hatırlatma alıcılarını ve her alanın vanasını, bitki türünü ve sulama yöntemini seçer. Kullanıcı istediği zaman her alanın sulama yüzdesini ve sulama yapılmayacak dönemlerini manuel olarak değiştirebilir veya tüm sistemi kışa hazırlayıp yeniden etkinleştirebilir. Sulama sistemi; yağmur, tahmini yağış, rüzgâr, dondurucu sıcaklıklar, bitki ihtiyaçları ve sulama yapılmayacak dönemleri dikkate alarak her vanayı otomatik olarak programlar ve çalıştırır; kısa süreli hava durumu kesintilerinde kaydedilmiş tahminleri kullanır. Sulama sistemi her alanın mevcut durumunu, su tahminini, vana durumunu ve yaklaşan sulama planını gösterir. Su dengesi, günlük su kullanımı ve kaydedilmiş ve tahmini hava durumu grafikleri sağlar ve dondurucu hava öncesinde seçilen kişilere hatırlatmalar gönderir. Değişiklik günlüğü: protokol varyantları güncellendi.",
+      "DisplayName": "Akıllı Sulama Sistemi",
+      "List": [
+        {
+          "Description": "Yağmur, sıcaklık, rüzgâr ve tahminler için kullanılacak yerel hava durumu hizmetini seçin. Akıllı Sulama Sistemi kısa süreli kesintiler sırasında kaydedilmiş tahminleri kullanabilir.",
+          "Name": "Hava durumu hizmeti",
+          "Type": 0
+        },
+        {
+          "Description": "Su dengesi, su kullanımı ve hava durumu grafiklerinin nerede kullanılabileceğini seçin.",
+          "Name": "Sulama sistemi raporları",
+          "Type": 1
+        },
+        {
+          "Description": "Sulama sistemini dondurucu havaya hazırlama hatırlatmalarını alması gereken kişileri seçin.",
+          "Name": "Hatırlatma alıcıları",
+          "Type": 2
+        },
+        {
+          "Description": "Sulama sistemi hatırlatmalarını alması gereken bir kişi.",
+          "Name": "Bildirilecek kişi",
+          "Type": 3
+        },
+        {
+          "Description": "Bağımsız olarak sulanması gereken her çimi, bahçeyi veya ekili alanı ekleyin.",
+          "Name": "Sulanan alanlar",
+          "Type": 4
+        },
+        {
+          "Description": "Kendi vanası, bitkileri ve sulama yöntemi bulunan tek bir alan.",
+          "Name": "Sulanan alan",
+          "Type": 5
+        }
+      ],
+      "Name": "libertas_sprinkler"
+    }
+  ],
+  "Locale": "tr-TR",
+  "StringResources": {
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "{0} için günlük su dengesi kaydedildi.",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "En fazla 64 sulama yapılmayacak dönem kullanın; her birinin geçerli bir başlangıcı ve sıfırdan büyük bir süresi olmalıdır.",
+    "SPRINKLER_INVALID_WATERING_PERCENT": "Su miktarı %20 ile %200 arasında, %10'luk adımlarla olmalıdır.",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "{0} için hizmet kesintileri sırasında kullanılan hava durumu tahminleri kaydedildi.",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "İlk tarih son tarihten daha geç olamaz.",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "{0} için sulama sistemi hava durumu raporlarında kullanılan konum kaydedildi.",
+    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "{0} için sulama sistemi raporlarına yönelik ayrıntılı hava durumu geçmişi kaydedildi.",
+    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "{0} için sulama sistemi raporlarına yönelik mevcut hava durumu gözlemleri kaydedildi.",
+    "SPRINKLER_SITE_LOCATION_V1": "{0} için sulama sistemi hava durumunda kullanılan konum kaydedildi.",
+    "SPRINKLER_UI_CHANGE_DATES": "Change dates",
+    "SPRINKLER_UI_SYSTEM_ACTIVE": "System active",
+    "SPRINKLER_UI_VALVE": "Valve",
+    "SPRINKLER_UI_WATERING_PLAN": "Watering plan",
+    "SPRINKLER_UI_WATER_BALANCE": "Water balance",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "{0} için sulama geçmişi kaydedildi.",
+    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "{0} için mevcut sulama etkinliği.",
+    "SPRINKLER_WATERING_MODE_V1": "{0} için sulama modu kaydedildi.",
+    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
+    "SPRINKLER_WATER_EVENTS_V1": "{0} için yakın zamandaki yağmur ve sulama kaydedildi.",
+    "SPRINKLER_WATER_USAGE_RAIN_LANE": "Yağmur",
+    "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
+    "SPRINKLER_WINTERIZATION_REMINDER_V1": "{0} için kışa hazırlama hatırlatıcısı geçmişi kaydedildi.",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "Bu konumda soğuk mevsim yaklaşıyor. Sulama sisteminizi kışa hazırlayın, ardından Etkin seçeneğini kapatın.",
+    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "Dondurucu hava ({0}) sulama sisteminize zarar verebilir. Sistemi kışa hazırlayın, ardından Etkin seçeneğini kapatın.",
+    "SPRINKLER_ZONE_MEMORY_V1": "{0} için su dengesi ve ayarlar kaydedildi.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Otomatik sulama için yerel hava durumunu almak üzere bu Hub'ın konumunu kullanın."
+  },
+  "Types": [
+    {
+      "Description": "Süresiz olarak saklanan UTC günü denetim noktası ve su muhasebesi özeti. Kurulumdan bu yana gerçekleşen her olayı yeniden oynatmadan eski bir su dengesi aralığının sorgulanabilmesini sağlar.",
+      "DisplayName": "Günlük sulama sistemi raporu",
+      "List": [
+        {
+          "Description": "Süresiz olarak saklanan UTC günü denetim noktası ve su muhasebesi özeti. Kurulumdan bu yana gerçekleşen her olayı yeniden oynatmadan eski bir su dengesi aralığının sorgulanabilmesini sağlar.",
+          "Name": "Günlük sulama sistemi raporu",
+          "Type": 0
+        },
+        {
+          "Description": "Dizinlenmiş kayıt anahtarı olarak kullanılan, dahil UTC takvim günü sınırı.",
+          "Name": "Gün başlangıcı",
+          "Type": 1
+        },
+        {
+          "Description": "Hariç UTC takvim günü sınırı.",
+          "Name": "Gün sonu",
+          "Type": 2
+        },
+        {
+          "Description": "Bu denetim noktası tarafından temsil edilen ilk an. Kurulum veya saha geçiş gününde UTC gün sınırından daha geç olabilir.",
+          "Name": "Kapsam başlangıcı",
+          "Type": 3
+        },
+        {
+          "Description": "Bu denetim noktası tarafından temsil edilen hariç son an. Mevcut kısmi gün için gün sınırından önce olabilir.",
+          "Name": "Kapsam sonu",
+          "Type": 4
+        },
+        {
+          "Description": "Milimetre cinsinden modellenmiş bitki profili kapasitesi.",
+          "Name": "Kök bölgesi kapasitesi",
+          "Type": 5
+        },
+        {
+          "Description": "Temsil edilen günün başlangıcındaki hesaplanmış kök bölgesi su açığı.",
+          "Name": "Başlangıç açığı",
+          "Type": 6
+        },
+        {
+          "Description": "Temsil edilen son anda veya bilinen en son zamanda hesaplanmış kök bölgesi su açığı.",
+          "Name": "Kapanış açığı",
+          "Type": 7
+        },
+        {
+          "Description": "Bu UTC gününe atanmış, sağlayıcı tarafından kaydedilen yağış.",
+          "Name": "Yağmur",
+          "Type": 8
+        },
+        {
+          "Description": "Bitkiye özgü ürün katsayısı uygulanmadan önce bu UTC gününe atanmış, sağlayıcı tarafından kaydedilen referans ET.",
+          "Name": "Referans evapotranspirasyon",
+          "Type": 9
+        },
+        {
+          "Description": "Sağlayıcı geçmişinin kapsamadığı aralıkları doldurmak için kullanılan referans ET.",
+          "Name": "Modellenmiş referans evapotranspirasyon",
+          "Type": 10
+        },
+        {
+          "Description": "Modellenmiş ET miktarının kaynağı; sağlayıcı geçmişi temsil edilen aralığın tamamını kapsıyorsa belirtilmez.",
+          "Name": "Modellenmiş talep kaynağı",
+          "Type": 11
+        },
+        {
+          "Description": "Temsil edilen aralıkta kabul edilmiş sağlayıcı hava durumu dönemleri tarafından kapsanan saniye sayısı.",
+          "Name": "Sağlayıcı hava durumu kapsamı",
+          "Type": 12
+        },
+        {
+          "Description": "Bu UTC gününe atanmış, gözlemlenen vana açık kalma aralıklarından tahmin edilen su derinliği.",
+          "Name": "Sulama",
+          "Type": 13
+        },
+        {
+          "Description": "Denetim noktasının mevcut kısmi gün yerine UTC gününün tamamını temsil edip etmediği.",
+          "Name": "Tam gün",
+          "Type": 14
+        },
+        {
+          "Description": "Bu denetim noktasının en son yeniden oluşturulduğu UTC zamanı.",
+          "Name": "Hesaplanma zamanı",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerDailyReportV1"
+    },
+    {
+      "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+      "DisplayName": "Daily water use",
+      "List": [
+        {
+          "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+          "Name": "Daily water use",
+          "Type": 0
+        },
+        {
+          "Description": "Recorded and planned water amounts.",
+          "Name": "Rain and watering",
+          "Type": 1
+        },
+        {
+          "Description": "Areas with no rain or watering during the selected dates.",
+          "Name": "Areas with no recorded water",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerDailyWaterUsageChartV1"
+    },
+    {
+      "Description": "Sulama sistemi uygulaması tarafından yazılan her değeri tanımlar. Bölge verileri her Matter Vana altında saklanır; paylaşılan sistem verileri hava durumu uç noktasını kullanır.",
+      "DisplayName": "Sulama sistemi kalıcı verileri",
+      "List": [
+        {
+          "Description": "Sulama sistemi uygulaması tarafından yazılan her değeri tanımlar. Bölge verileri her Matter Vana altında saklanır; paylaşılan sistem verileri hava durumu uç noktasını kullanır.",
+          "Name": "Sulama sistemi kalıcı verileri",
+          "Type": 0
+        },
+        {
+          "Description": "Bir bölgenin çalışma zamanı ayarlayıcısını, kısıtlarını ve birleştirilmiş temel değerini saklar.",
+          "Name": "Bölge belleği",
+          "Type": 1
+        },
+        {
+          "Description": "Yapılandırılmış vana için yeniden başlatmaya dayanıklı eksiksiz durum.",
+          "Name": "Bölge belleği",
+          "Type": 2
+        },
+        {
+          "Description": "Bağımsız olarak dizinlenmiş tek bir hava durumu veya sulama olayını saklar.",
+          "Name": "Su olayı",
+          "Type": 3
+        },
+        {
+          "Description": "Tamamlanmış bir hava durumu dönemi veya hesaba katılmış vana açık kalma aralığı.",
+          "Name": "Su olayı",
+          "Type": 4
+        },
+        {
+          "Description": "Çevrimdışı mevsimsel tahmin için son geçerli Hub konumunu saklar.",
+          "Name": "Saha konumu",
+          "Type": 5
+        },
+        {
+          "Description": "Sulama sahası için önbelleğe alınmış WGS84 koordinatları.",
+          "Name": "Saha konumu",
+          "Type": 6
+        },
+        {
+          "Description": "Sulama sistemi için paylaşılan Etkin veya Kışa Hazırlama modunu saklar.",
+          "Name": "Sulama modu",
+          "Type": 7
+        },
+        {
+          "Description": "Her bölge tarafından paylaşılan, yeniden başlatmaya dayanıklı çalışma modu.",
+          "Name": "Sulama modu",
+          "Type": 8
+        },
+        {
+          "Description": "Sistem genelindeki en son hatırlatma zamanını ve nedenini saklar.",
+          "Name": "Kışa hazırlama hatırlatıcısı",
+          "Type": 9
+        },
+        {
+          "Description": "Kışa hazırlama bildirimleri için yeniden başlatmaya dayanıklı hız sınırlama durumu.",
+          "Name": "Hatırlatma belleği",
+          "Type": 10
+        },
+        {
+          "Description": "Tam bir yedek ET aralığını süresiz olarak arşivler.",
+          "Name": "Modellenmiş hava durumu boşluğu",
+          "Type": 11
+        },
+        {
+          "Description": "Değiştirilemez kaynak ve oran kökenine sahip tam aralık.",
+          "Name": "Modellenmiş boşluk",
+          "Type": 12
+        },
+        {
+          "Description": "Programlanmış, çalışan, tamamlanmış, atlanmış, başarısız, yerine yenisi geçmiş, manuel veya eski türde tek bir sulama etkinliğini süresiz olarak arşivler.",
+          "Name": "Sulama etkinliği",
+          "Type": 13
+        },
+        {
+          "Description": "Eksiksiz ve kalıcı planlanan-gerçekleşen yaşam döngüsü verileri.",
+          "Name": "Etkinlik",
+          "Type": 14
+        },
+        {
+          "Description": "Eski aralıkların sorgulanabilir kalması için bir UTC gününe ait su muhasebesi ve denge denetim noktasını süresiz olarak arşivler.",
+          "Name": "Günlük rapor",
+          "Type": 15
+        },
+        {
+          "Description": "Yağmur, ET, tahmini sulama ve başlangıç/kapanış modellenmiş açığı.",
+          "Name": "Günlük rapor",
+          "Type": 16
+        },
+        {
+          "Description": "Its generation is bound only by explicit provider site messages.",
+          "Name": "Report weather archive state V2",
+          "Type": 17
+        },
+        {
+          "Description": "Active indefinitely retained provider-site generation.",
+          "Name": "Archive state",
+          "Type": 18
+        },
+        {
+          "Description": "Kabul edilmiş tek bir mevcut koşul örneğini süresiz olarak arşivler. Tamamlanmış saatlik geçmişte zaten temsil edilen yağmur veya ET'yi çift saymadan 15 dakikalık karar kanıtlarını korur.",
+          "Name": "Rapor hava durumu gözlemi",
+          "Type": 19
+        },
+        {
+          "Description": "Sağlayıcının temsil ettiği zamandaki sıcaklık, nem, rüzgâr, rüzgâr hamleleri ve anlık su girdileri.",
+          "Name": "Hava durumu gözlemi",
+          "Type": 20
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 21
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 22
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 23
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 24
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 25
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 26
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 27
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 28
+        }
+      ],
+      "Name": "SprinklerData"
+    },
+    {
+      "Description": "Buharlaşma ve bitki kullanımı yoluyla kaydedilmiş ve tahmini su kaybı.",
+      "DisplayName": "Tahmini su kaybı",
+      "List": [
+        {
+          "Description": "Buharlaşma ve bitki kullanımı yoluyla kaydedilmiş ve tahmini su kaybı.",
+          "Name": "Tahmini su kaybı",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerEtChartV1"
+    },
+    {
+      "Description": "Buharlaşma ve bitkiler yoluyla kaybedilen, kaydedilmiş veya tahmini tek bir su miktarı.",
+      "DisplayName": "Günlük su kaybı",
+      "List": [
+        {
+          "Description": "Buharlaşma ve bitkiler yoluyla kaybedilen, kaydedilmiş veya tahmini tek bir su miktarı.",
+          "Name": "Günlük su kaybı",
+          "Type": 0
+        },
+        {
+          "Description": "Bu hava durumu döneminin başladığı zaman.",
+          "Name": "Başlangıç zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Bu hava durumu döneminin bittiği zaman.",
+          "Name": "Bitiş zamanı",
+          "Type": 2
+        },
+        {
+          "Description": "Buharlaşma ve bitki kullanımı yoluyla kaybedilen su.",
+          "Name": "Tahmini su kaybı",
+          "Type": 3
+        },
+        {
+          "Description": "Bu değerin kaydedilmiş mi yoksa tahmin edilmiş mi olduğu.",
+          "Name": "Kaynak",
+          "Type": 4
+        },
+        {
+          "Description": "Bu aralık ve kaynak için sunucu tarafından oluşturulan kimlik.",
+          "Name": "Kararlı anahtar",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerEtRowV1"
+    },
+    {
+      "Description": "Bu alana kurulmuş sprinkler veya damla sulama sisteminin türünü seçin.",
+      "DisplayName": "Sulama yöntemi",
+      "List": [
+        {
+          "Description": "Bu alana kurulmuş sprinkler veya damla sulama sisteminin türünü seçin.",
+          "Enum": [
+            {
+              "Description": "Yüzey damlatıcılarından yavaş ve hedeflenmiş su dağıtımı.",
+              "Name": "Yüzey damla sulama",
+              "Type": 1
+            },
+            {
+              "Description": "Ağaçlar, çalılar veya dikim havuzları çevresine yoğunlaştırılmış su dağıtımı.",
+              "Name": "Bubbler başlıklar",
+              "Type": 2
+            },
+            {
+              "Description": "Sabit açılır sprey başlıklarından geniş alanlı ve nispeten hızlı su dağıtımı.",
+              "Name": "Açılır sprey",
+              "Type": 3
+            },
+            {
+              "Description": "Yüksek verimli veya çok akışlı rotorlardan yavaş, geniş alanlı su dağıtımı.",
+              "Name": "Düşük debili rotorlar",
+              "Type": 4
+            },
+            {
+              "Description": "Geleneksel rotor başlıklarından daha hızlı, geniş alanlı su dağıtımı.",
+              "Name": "Yüksek debili rotorlar",
+              "Type": 5
+            }
+          ],
+          "Name": "Sulama yöntemi",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerHeadTypeV1"
+    },
+    {
+      "Description": "Gözlemlenen ve tahmini nemi kendi yüzde 0-100 ölçeğinde gösterir.",
+      "DisplayName": "Bağıl nem",
+      "List": [
+        {
+          "Description": "Gözlemlenen ve tahmini nemi kendi yüzde 0-100 ölçeğinde gösterir.",
+          "Name": "Bağıl nem",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerHumidityChartV1"
+    },
+    {
+      "Description": "Gözlemlenmiş veya tahmini tek bir bağıl nem örneği.",
+      "DisplayName": "Nem satırı",
+      "List": [
+        {
+          "Description": "Gözlemlenmiş veya tahmini tek bir bağıl nem örneği.",
+          "Name": "Nem satırı",
+          "Type": 0
+        },
+        {
+          "Description": "Sağlayıcı döneminin başlangıcı.",
+          "Name": "Zaman",
+          "Type": 1
+        },
+        {
+          "Description": "Bağıl nem yüzdesi.",
+          "Name": "Bağıl nem",
+          "Type": 2
+        },
+        {
+          "Description": "Birleşik panelde bu çizginin bağıl nemi temsil ettiğini belirtir.",
+          "Name": "Ölçüm",
+          "Type": 3
+        },
+        {
+          "Description": "Gözlemlenmiş veya tahmini.",
+          "Name": "Kaynak",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerHumidityRowV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved sprinkler identities",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved sprinkler identities",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "System settings and weather archives",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "One valve's settings, accounting and reports",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerKey"
+    },
+    {
+      "Description": "Sağlayıcı tarafından kapsanmayan tam bir aralık; yedek referans ET kaynağı ve oranı, aralık ilk kaydedildiğinde sabitlenir. Daha sonra kabul edilen bir sağlayıcı dönemi bu aralığı kırpabilir veya onun yerini alabilir; yedek tahminlerde daha sonra yapılan değişiklikler köken bilgisini yeniden yazmaz.",
+      "DisplayName": "Modellenmiş hava durumu boşluğu",
+      "List": [
+        {
+          "Description": "Sağlayıcı tarafından kapsanmayan tam bir aralık; yedek referans ET kaynağı ve oranı, aralık ilk kaydedildiğinde sabitlenir. Daha sonra kabul edilen bir sağlayıcı dönemi bu aralığı kırpabilir veya onun yerini alabilir; yedek tahminlerde daha sonra yapılan değişiklikler köken bilgisini yeniden yazmaz.",
+          "Name": "Modellenmiş hava durumu boşluğu",
+          "Type": 0
+        },
+        {
+          "Description": "Sağlayıcı tarafından kapsanmayan aralığın dahil başlangıcı.",
+          "Name": "Başlangıç zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Sağlayıcı tarafından kapsanmayan aralığın hariç sonu.",
+          "Name": "Bitiş zamanı",
+          "Type": 2
+        },
+        {
+          "Description": "UTC günü başına milimetre cinsinden sabitlenmiş yedek referans ET oranı.",
+          "Name": "Referans evapotranspirasyon oranı",
+          "Type": 3
+        },
+        {
+          "Description": "Sabitlenmiş yakın hava durumu, konum/mevsim veya ihtiyatlı tahmin kökeni.",
+          "Name": "Talep kaynağı",
+          "Type": 4
+        },
+        {
+          "Description": "Bu aralığın sabit köken bilgisini ilk aldığı UTC zamanı.",
+          "Name": "Kaydedilme zamanı",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerModeledWeatherGapV1"
+    },
+    {
+      "Description": "Sulamanın ihtiyaçlarına uygun olabilmesi için bu alanda ne yetiştiğini seçin.",
+      "DisplayName": "Bitki türü",
+      "List": [
+        {
+          "Description": "Sulamanın ihtiyaçlarına uygun olabilmesi için bu alanda ne yetiştiğini seçin.",
+          "Enum": [
+            {
+              "Description": "Sığ köklere ve düzenli su ihtiyacına sahip, sık dikilmiş çim örtüsü.",
+              "Name": "Çim",
+              "Type": 1
+            },
+            {
+              "Description": "Orta derinlikte köklere ve orta düzeyde su ihtiyacına sahip süs amaçlı çiçekli bitkiler.",
+              "Name": "Çiçekler",
+              "Type": 2
+            },
+            {
+              "Description": "Orta derinlikte köklere ve nispeten yüksek su ihtiyacına sahip mevsimlik gıda bitkileri.",
+              "Name": "Sebzeler",
+              "Type": 3
+            },
+            {
+              "Description": "Daha derin köklere ve orta düzeyde su ihtiyacına sahip yerleşik meyve ağaçları.",
+              "Name": "Meyve ağaçları",
+              "Type": 4
+            },
+            {
+              "Description": "Derin köklere ve orta-yüksek su ihtiyacına sahip narenciye ağaçları.",
+              "Name": "Narenciye",
+              "Type": 5
+            },
+            {
+              "Description": "Derin köklere sahip yerleşik odunsu peyzaj bitkileri.",
+              "Name": "Ağaçlar ve çalılar",
+              "Type": 6
+            },
+            {
+              "Description": "Hava koşullarına bağlı su ihtiyacı düşük, kuraklığa uyumlu bitkilendirme.",
+              "Name": "Kurakçıl peyzaj",
+              "Type": 7
+            }
+          ],
+          "Name": "Bitki türü",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerPlantTypeV1"
+    },
+    {
+      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+      "DisplayName": "Available report range",
+      "List": [
+        {
+          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+          "Name": "Available report range",
+          "Type": 0
+        },
+        {
+          "Description": "Earliest currently selectable date after applying this chart's maximum range length.",
+          "Name": "Earliest date",
+          "Type": 1
+        },
+        {
+          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts.",
+          "Name": "Latest date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportAvailableRangeV1"
+    },
+    {
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "DisplayName": "Effective report range",
+      "List": [
+        {
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+          "Name": "Effective report range",
+          "Type": 0
+        },
+        {
+          "Description": "First calendar date included in the generated report.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Last calendar date included in the generated report.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportEffectiveRangeV1"
+    },
+    {
+      "Description": "Yapılandırılmış bir alanın seçilen tarihler için neden gösterecek bir verisi olmadığını açıklar.",
+      "DisplayName": "Rapor verisi yok",
+      "List": [
+        {
+          "Description": "Yapılandırılmış bir alanın seçilen tarihler için neden gösterecek bir verisi olmadığını açıklar.",
+          "Enum": [
+            {
+              "Description": "Seçilen tarihlerde bu alan için yağmur veya sulama kaydedilmedi.",
+              "Name": "Kaydedilmiş su girdisi yok",
+              "Type": 1
+            }
+          ],
+          "Name": "Rapor verisi yok",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerReportEmptyStateV1"
+    },
+    {
+      "Description": "Her alan için su dengesini, su kullanımını veya hava durumunu görüntüleyin. Yakın dönemi görmek için tarihleri boş bırakın. Kullanılabilir geçmişin dışındaki tarihler otomatik olarak kullanılabilir en erken veya en son tarihe ayarlanır.",
+      "DisplayName": "Sulama sistemi raporları",
+      "List": [
+        {
+          "Description": "Her alan için su dengesini, su kullanımını veya hava durumunu görüntüleyin. Yakın dönemi görmek için tarihleri boş bırakın. Kullanılabilir geçmişin dışındaki tarihler otomatik olarak kullanılabilir en erken veya en son tarihe ayarlanır.",
+          "Name": "Sulama sistemi raporları",
+          "Type": 0
+        },
+        {
+          "Description": "Her alan için tahmini bitkilerin kullanabileceği suyu ve sulama olaylarını gösterir. Seçilen dönem en fazla 365 gün olabilir; daha uzun seçimlerde en son 365 gün korunur.",
+          "Name": "Su dengesini görüntüle",
+          "Type": 1
+        },
+        {
+          "Description": "Bu yanıtı oluşturmak için fiilen kullanılan dahil tarihler.",
+          "Name": "Geçerli aralık",
+          "Type": 2
+        },
+        {
+          "Description": "Water-balance chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 3
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 4
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 5
+        },
+        {
+          "Description": "Bir sonraki istek için geçerli tarih seçici sınırları ve varsayılanları.",
+          "Name": "Kullanılabilir aralık",
+          "Type": 6
+        },
+        {
+          "Description": "Geçerli rapor aralığı için su kullanımı grafiği.",
+          "Name": "Grafik",
+          "Type": 7
+        },
+        {
+          "Description": "Water-use chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 8
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 9
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 10
+        },
+        {
+          "Description": "Bu yanıtı oluşturmak için fiilen kullanılan dahil tarihler.",
+          "Name": "Geçerli aralık",
+          "Type": 11
+        },
+        {
+          "Description": "Kaydedilmiş ve tahmini sıcaklık, nem, rüzgâr ve tahmini su kaybı.",
+          "Name": "Hava durumu",
+          "Type": 12
+        },
+        {
+          "Description": "Weather chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 13
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 14
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerReportProtocol"
+    },
+    {
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "DisplayName": "Report date range",
+      "List": [
+        {
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+          "Name": "Report date range",
+          "Type": 0
+        },
+        {
+          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportRequestRangeV1"
+    },
+    {
+      "Description": "Eski nesiller saklanmaya devam ederken etkin fiziksel saha neslini seçer ve eski nesiller mevcut sulama sistemi raporuyla karıştırılmaz. Açık bir hava durumu akışı saha değişimi veya sahaya bağlı sıfırlama bir nesli bağlar; bölüm temizlemeleri hiçbir zaman saha sınırı onayı olarak kabul edilmez.",
+      "DisplayName": "Rapor hava durumu arşivi durumu",
+      "List": [
+        {
+          "Description": "Eski nesiller saklanmaya devam ederken etkin fiziksel saha neslini seçer ve eski nesiller mevcut sulama sistemi raporuyla karıştırılmaz. Açık bir hava durumu akışı saha değişimi veya sahaya bağlı sıfırlama bir nesli bağlar; bölüm temizlemeleri hiçbir zaman saha sınırı onayı olarak kabul edilmez.",
+          "Name": "Rapor hava durumu arşivi durumu",
+          "Type": 0
+        },
+        {
+          "Description": "Farklı sağlayıcı sahaları arasındaki kabul edilmiş her geçiş için monoton olarak artar.",
+          "Name": "Nesil",
+          "Type": 1
+        },
+        {
+          "Description": "Biliniyorsa bu nesle açıkça bağlanmış sağlayıcı konumu.",
+          "Name": "Saha konumu",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportWeatherArchiveStateV2"
+    },
+    {
+      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+      "DisplayName": "Restart accounting checkpoint",
+      "List": [
+        {
+          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+          "Name": "Restart accounting checkpoint",
+          "Type": 0
+        },
+        {
+          "Description": "Authoritative lifecycle snapshot at the checkpoint.",
+          "Name": "Activity",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusive end of the already accounted valve-open interval.",
+          "Name": "Accounted through",
+          "Type": 2
+        },
+        {
+          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted.",
+          "Name": "Ledger segment",
+          "Type": 3
+        },
+        {
+          "Description": "Expected end of an automatic timed run; manual runs have no known end.",
+          "Name": "Expected finish",
+          "Type": 4
+        },
+        {
+          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour.",
+          "Name": "Delivery rate",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerRestartAccountingV1"
+    },
+    {
+      "Description": "Sulama sisteminin ne yaptığını veya sulamanın neden geciktiğini açıklar.",
+      "DisplayName": "Sulama durumu",
+      "List": [
+        {
+          "Description": "Sulama sisteminin ne yaptığını veya sulamanın neden geciktiğini açıklar.",
+          "Enum": [
+            {
+              "Description": "En son bilgiler hazırlanıyor.",
+              "Name": "Başlatılıyor",
+              "Type": 1
+            },
+            {
+              "Description": "Bitkilerin şu anda yeterli suyu var.",
+              "Name": "Su gerekmiyor",
+              "Type": 2
+            },
+            {
+              "Description": "Beklenen yağmurun şimdilik yeterli su sağlaması bekleniyor.",
+              "Name": "Tahmini yağmur",
+              "Type": 3
+            },
+            {
+              "Description": "Yağmur yağdığı, hava donma noktasına yakın olduğu veya fazla rüzgârlı olduğu için sulama geciktiriliyor.",
+              "Name": "Güvenli hava bekleniyor",
+              "Type": 4
+            },
+            {
+              "Description": "Bitkiler sulama yapılmayacak dönem sırasında fazla kuruyabileceğinden, dönem başlamadan önce güvenli bir sulama planlanıyor.",
+              "Name": "Duraklamadan önce sulama",
+              "Type": 5
+            },
+            {
+              "Description": "Sulama, sulama yapılmayacak dönem sonrasına taşındı.",
+              "Name": "Ertelendi",
+              "Type": 6
+            },
+            {
+              "Description": "Bir sonraki sulama zamanı bitki ihtiyaçları ve kullanılabilir hava durumu bilgileri kullanılarak seçildi.",
+              "Name": "Programlandı",
+              "Type": 7
+            },
+            {
+              "Description": "Sulama sistemi vananın değişikliği onaylamasını bekliyor.",
+              "Name": "Başlatılıyor veya durduruluyor",
+              "Type": 8
+            },
+            {
+              "Description": "Vana durumu kullanılamadığından otomatik sulama başlamayacak.",
+              "Name": "Vana durumu kullanılamıyor",
+              "Type": 9
+            },
+            {
+              "Description": "Bu alan şu anda sulanıyor.",
+              "Name": "Vana açık",
+              "Type": 10
+            },
+            {
+              "Description": "Vana bir sorun bildirdiği için otomatik sulama duraklatıldı.",
+              "Name": "Vana arızası",
+              "Type": 11
+            },
+            {
+              "Description": "Canlı hava durumu kullanılamadığından program en iyi kaydedilmiş veya mevsimsel tahmini kullanıyor.",
+              "Name": "Çevrimdışı hava durumu tahmini",
+              "Type": 12
+            }
+          ],
+          "Name": "Sulama durumu",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerScheduleConditionV1"
+    },
+    {
+      "Description": "Ölçeğini ET veya rüzgârla karıştırmadan gözlemlenen ve tahmini sıcaklığı gösterir.",
+      "DisplayName": "Sıcaklık",
+      "List": [
+        {
+          "Description": "Ölçeğini ET veya rüzgârla karıştırmadan gözlemlenen ve tahmini sıcaklığı gösterir.",
+          "Name": "Sıcaklık",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerTemperatureChartV1"
+    },
+    {
+      "Description": "Uyumsuz birimleri için bağımsız sol ve sağ y eksenlerini korurken sıcaklık ve nemi zaman üzerinde üst üste gösterir.",
+      "DisplayName": "Sıcaklık ve bağıl nem",
+      "List": [
+        {
+          "Description": "Uyumsuz birimleri için bağımsız sol ve sağ y eksenlerini korurken sıcaklık ve nemi zaman üzerinde üst üste gösterir.",
+          "Name": "Sıcaklık ve bağıl nem",
+          "Type": 0
+        },
+        {
+          "Description": "Sıcaklık ilk otomatik y kılavuzunu kullanır.",
+          "Name": "Sıcaklık",
+          "Type": 1
+        },
+        {
+          "Description": "Bağıl nem bağımsız ikinci y kılavuzunu kullanır.",
+          "Name": "Bağıl nem",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityChartV1"
+    },
+    {
+      "Description": "Birleşik hava durumu panelindeki bağımsız ölçeklendirilmiş iki çizgiyi ayırt eder.",
+      "DisplayName": "Sıcaklık ve nem ölçümü",
+      "List": [
+        {
+          "Description": "Birleşik hava durumu panelindeki bağımsız ölçeklendirilmiş iki çizgiyi ayırt eder.",
+          "Enum": [
+            {
+              "Description": "Santigrat derece cinsinden hava sıcaklığı.",
+              "Name": "Sıcaklık",
+              "Type": 1
+            },
+            {
+              "Description": "Bağıl nem yüzdesi.",
+              "Name": "Bağıl nem",
+              "Type": 2
+            }
+          ],
+          "Name": "Sıcaklık ve nem ölçümü",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityMeasurementV1"
+    },
+    {
+      "Description": "Gözlemlenmiş veya tahmini tek bir hava sıcaklığı örneği.",
+      "DisplayName": "Sıcaklık satırı",
+      "List": [
+        {
+          "Description": "Gözlemlenmiş veya tahmini tek bir hava sıcaklığı örneği.",
+          "Name": "Sıcaklık satırı",
+          "Type": 0
+        },
+        {
+          "Description": "Sağlayıcı döneminin başlangıcı.",
+          "Name": "Zaman",
+          "Type": 1
+        },
+        {
+          "Description": "Santigrat derece cinsinden hava sıcaklığı.",
+          "Name": "Sıcaklık",
+          "Type": 2
+        },
+        {
+          "Description": "Birleşik panelde bu çizginin sıcaklığı temsil ettiğini belirtir.",
+          "Name": "Ölçüm",
+          "Type": 3
+        },
+        {
+          "Description": "Gözlemlenmiş veya tahmini.",
+          "Name": "Kaynak",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerTemperatureRowV1"
+    },
+    {
+      "Description": "Sulama veya sulama duraklaması için bir başlangıç zamanı ve süre.",
+      "DisplayName": "Zaman dönemi",
+      "List": [
+        {
+          "Description": "Sulama veya sulama duraklaması için bir başlangıç zamanı ve süre.",
+          "Name": "Zaman dönemi",
+          "Type": 0
+        },
+        {
+          "Description": "Bu dönemin başladığı zaman.",
+          "Name": "Başlangıç zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "Bu dönemin ne kadar sürdüğü.",
+          "Name": "Süre",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTimeSlotV1"
+    },
+    {
+      "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+      "DisplayName": "Valve problems",
+      "List": [
+        {
+          "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+          "Enum": [
+            {
+              "Description": "The valve reported a problem without a more specific classification.",
+              "Name": "General problem",
+              "Type": 1
+            },
+            {
+              "Description": "The valve cannot move because it is blocked.",
+              "Name": "Blocked",
+              "Type": 2
+            },
+            {
+              "Description": "The valve detected an unexpected water leak.",
+              "Name": "Leak detected",
+              "Type": 3
+            },
+            {
+              "Description": "The controller cannot detect a connected valve.",
+              "Name": "Not connected",
+              "Type": 4
+            },
+            {
+              "Description": "The valve or its wiring has a short circuit.",
+              "Name": "Short circuit",
+              "Type": 5
+            },
+            {
+              "Description": "The valve exceeded the available electrical current.",
+              "Name": "Too much current",
+              "Type": 6
+            }
+          ],
+          "Name": "Valve problems",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerValveFaultFlagsV1"
+    },
+    {
+      "Description": "Her alan için tahmini su seviyelerini sulama olaylarıyla birleştirir.",
+      "DisplayName": "Su dengesi",
+      "List": [
+        {
+          "Description": "Her alan için tahmini su seviyelerini sulama olaylarıyla birleştirir.",
+          "Name": "Su dengesi",
+          "Type": 0
+        },
+        {
+          "Description": "Her alan için tahmini suyu ve önemli sulama seviyelerini gösterir.",
+          "Name": "Kullanılabilir su ve seviyeler",
+          "Type": 1
+        },
+        {
+          "Description": "Planlanmış, atlanmış, başarısız, manuel ve tamamlanmış sulama çalışmaları.",
+          "Name": "Sulama olayları",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterBalanceChartV1"
+    },
+    {
+      "Description": "Her alan için tahmini kullanılabilir su ve önemli sulama seviyeleri.",
+      "DisplayName": "Su dengesi çizgileri",
+      "List": [
+        {
+          "Description": "Her alan için tahmini kullanılabilir su ve önemli sulama seviyeleri.",
+          "Name": "Su dengesi çizgileri",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterBalanceLinesV1"
+    },
+    {
+      "Description": "Tahmini bitkilerin kullanabileceği suyu veya önemli bir sulama seviyesini gösteren tek bir nokta. Kullanılabilir su bir tahmindir, toprak sensörü ölçümü değildir.",
+      "DisplayName": "Su dengesi noktası",
+      "List": [
+        {
+          "Description": "Tahmini bitkilerin kullanabileceği suyu veya önemli bir sulama seviyesini gösteren tek bir nokta. Kullanılabilir su bir tahmindir, toprak sensörü ölçümü değildir.",
+          "Name": "Su dengesi noktası",
+          "Type": 0
+        },
+        {
+          "Description": "Bu su seviyesinin geçerli olduğu zaman.",
+          "Name": "Zaman",
+          "Type": 1
+        },
+        {
+          "Description": "Yüzde 0 ile 100 arasında, bitkilerin kullanabileceği tahmini su.",
+          "Name": "Kullanılabilir su",
+          "Type": 2
+        },
+        {
+          "Description": "Kullanılabilir su veya önemli sulama seviyelerinden biri.",
+          "Name": "Çizgi",
+          "Type": 3
+        },
+        {
+          "Description": "Grafiğin bu bölümü tarafından temsil edilen sulanan alan.",
+          "Name": "Alan",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWaterBalancePointV1"
+    },
+    {
+      "Description": "Kullanılabilir suyu ve önemli sulama seviyelerini tanımlar.",
+      "DisplayName": "Su dengesi çizgisi",
+      "List": [
+        {
+          "Description": "Kullanılabilir suyu ve önemli sulama seviyelerini tanımlar.",
+          "Enum": [
+            {
+              "Description": "Bitkilerin kullanabileceği tahmini su.",
+              "Name": "Kullanılabilir su",
+              "Type": 1
+            },
+            {
+              "Description": "Toprağın kullanabileceği tüm suyu tuttuğu tahmin edilir.",
+              "Name": "Tarla kapasitesi",
+              "Type": 2
+            },
+            {
+              "Description": "Sulamanın normalde gerekli hâle geldiği seviye.",
+              "Name": "Sulama eşiği",
+              "Type": 3
+            },
+            {
+              "Description": "Sulamanın acil hâle geldiği seviye.",
+              "Name": "Kritik eşik",
+              "Type": 4
+            }
+          ],
+          "Name": "Su dengesi çizgisi",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterBalanceSeriesV1"
+    },
+    {
+      "Description": "Bitkilerin suyu ne kadar hızlı kaybettiğini tahmin etmek için hangi bilgilerin kullanıldığını gösterir.",
+      "DisplayName": "Su kullanımı tahmini",
+      "List": [
+        {
+          "Description": "Bitkilerin suyu ne kadar hızlı kaybettiğini tahmin etmek için hangi bilgilerin kullanıldığını gösterir.",
+          "Enum": [
+            {
+              "Description": "Bu konumdaki yakın zamandaki hava durumuna dayanır.",
+              "Name": "Yakın zamandaki hava durumu",
+              "Type": 1
+            },
+            {
+              "Description": "Konuma ve yılın zamanına dayanır.",
+              "Name": "Konum ve mevsim",
+              "Type": 2
+            },
+            {
+              "Description": "Yakın zamandaki hava durumu ve konum bilgileri kullanılamadığında kullanılır.",
+              "Name": "Yerleşik tahmin",
+              "Type": 3
+            }
+          ],
+          "Name": "Su kullanımı tahmini",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterDemandSourceV1"
+    },
+    {
+      "Description": "Yedi günlük su geçmişinde bağımsız olarak dizinlenmiş tek bir hava durumu dönemini veya gözlemlenen sulama aralığını saklar.",
+      "DisplayName": "Sulama sistemi su olayı",
+      "List": [
+        {
+          "Description": "Yedi günlük su geçmişinde bağımsız olarak dizinlenmiş tek bir hava durumu dönemini veya gözlemlenen sulama aralığını saklar.",
+          "Name": "Sulama sistemi su olayı",
+          "Type": 0
+        },
+        {
+          "Description": "Tamamlanmış bir geçmiş dönem için sağlayıcı yağışını ve referans evapotranspirasyonu kaydeder.",
+          "Name": "Hava durumu dönemi",
+          "Type": 1
+        },
+        {
+          "Description": "Tamamlanmış hava durumu döneminin dahil başlangıcı.",
+          "Name": "Başlangıç zamanı",
+          "Type": 2
+        },
+        {
+          "Description": "Tamamlanmış hava durumu döneminin saniye cinsinden uzunluğu.",
+          "Name": "Süre",
+          "Type": 3
+        },
+        {
+          "Description": "Dönem boyunca biriken sağlayıcı yağışı, milimetre cinsinden.",
+          "Name": "Yağış",
+          "Type": 4
+        },
+        {
+          "Description": "Dönem boyunca biriken sağlayıcı FAO-56 referans evapotranspirasyonu, milimetre cinsinden.",
+          "Name": "Referans evapotranspirasyon",
+          "Type": 5
+        },
+        {
+          "Description": "Manuel açılmalar dahil olmak üzere gerçek Matter Vana açık kalma süresinden çıkarılan suyu, gözlemlenen aralık sırasında bölgenin su miktarı ayarlayıcısıyla birlikte kaydeder.",
+          "Name": "Sulama aralığı",
+          "Type": 6
+        },
+        {
+          "Description": "Hesaba katılan vana açık kalma aralığının dahil başlangıcı.",
+          "Name": "Başlangıç zamanı",
+          "Type": 7
+        },
+        {
+          "Description": "Gözlemlenen vana açık kalma aralığının saniye cinsinden uzunluğu.",
+          "Name": "Süre",
+          "Type": 8
+        },
+        {
+          "Description": "Bu vana açık kalma aralığı gözlemlenirken bölgenin yapılandırılmış sulama yüzdesi. Vana açıkken ayar değişirse geçmiş ayrı ve bitişik aralıklar kullanır.",
+          "Name": "Su miktarı ayarlayıcısı",
+          "Type": 9
+        },
+        {
+          "Description": "Gözlemlenen açık kalma süresinden ve yapılandırılmış sprinkler başlığı profilinden hesaplanan tahmini su derinliği, milimetre cinsinden.",
+          "Name": "Uygulanan su",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWaterEventV1"
+    },
+    {
+      "Description": "Eşleşen denetim satırı yazımından önce en son eksiksiz yaşam döngüsü anlık görüntüsünü saklar. Açık mevcut bayrağı, yeniden başlatma sırasında uzlaştırılması gereken sonlandırılmamış bir etkinliği, yalnızca denetim onarımı gereken sonlandırılmış bir anlık görüntüden ayırır.",
+      "DisplayName": "Yetkili sulama etkinliği durumu",
+      "List": [
+        {
+          "Description": "Eşleşen denetim satırı yazımından önce en son eksiksiz yaşam döngüsü anlık görüntüsünü saklar. Açık mevcut bayrağı, yeniden başlatma sırasında uzlaştırılması gereken sonlandırılmamış bir etkinliği, yalnızca denetim onarımı gereken sonlandırılmış bir anlık görüntüden ayırır.",
+          "Name": "Yetkili sulama etkinliği durumu",
+          "Type": 0
+        },
+        {
+          "Description": "Eksiksiz en son yaşam döngüsü anlık görüntüsü veya ilk etkinlikten önce değer yok. Sonlandırılmış anlık görüntüler daha yeni bir etkinlik başlayana kadar burada kalır.",
+          "Name": "En son etkinlik",
+          "Type": 1
+        },
+        {
+          "Description": "Yalnızca en son etkinlik programlanmış, komut bekliyor veya çalışıyor durumundaysa ve başlangıçta uzlaştırılması gerekiyorsa doğrudur.",
+          "Name": "Etkinlik mevcut",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWateringActivityStateV2"
+    },
+    {
+      "Description": "Planlanan ve gerçek zamanlamayı ayrı tutar; böylece rapor neyin planlandığını, ne olduğunu ve bir çalışmanın neden atlandığını veya başarısız olduğunu açıklayabilir.",
+      "DisplayName": "Kalıcı sulama etkinliği",
+      "List": [
+        {
+          "Description": "Planlanan ve gerçek zamanlamayı ayrı tutar; böylece rapor neyin planlandığını, ne olduğunu ve bir çalışmanın neden atlandığını veya başarısız olduğunu açıklayabilir.",
+          "Name": "Kalıcı sulama etkinliği",
+          "Type": 0
+        },
+        {
+          "Description": "Her yaşam döngüsü güncellemesi için yeniden kullanılan kararlı işaretli veritabanı dizini.",
+          "Name": "Etkinlik dizini",
+          "Type": 1
+        },
+        {
+          "Description": "Aynı sabitleme saniyesi ve kaynak içinde çakışmaya dayanıklı sıra.",
+          "Name": "Etkinlik sıra numarası",
+          "Type": 2
+        },
+        {
+          "Description": "Otomatik, manuel veya sınıflandırılamayan eski etkinlik.",
+          "Name": "Kaynak",
+          "Type": 3
+        },
+        {
+          "Description": "Mevcut veya sonlandırılmış kalıcı yaşam döngüsü durumu.",
+          "Name": "Sonuç",
+          "Type": 4
+        },
+        {
+          "Description": "Mevcut veya sonlandırılmış sonuç için kalıcı açıklama.",
+          "Name": "Neden",
+          "Type": 5
+        },
+        {
+          "Description": "Planlanan otomatik başlangıç. Manuel ve eski etkinliklerde belirtilmez.",
+          "Name": "Planlanan başlangıç",
+          "Type": 6
+        },
+        {
+          "Description": "Planlanan otomatik vana açık kalma süresi, saniye cinsinden. Gerçekte gözlemlenen süreyle hiçbir zaman üzerine yazılmaz.",
+          "Name": "Planlanan süre",
+          "Type": 7
+        },
+        {
+          "Description": "Milimetre cinsinden planlanan otomatik su derinliği.",
+          "Name": "Planlanan su",
+          "Type": 8
+        },
+        {
+          "Description": "İlk gözlemlenen vana açılma zamanı; bir açılma gözlemlenene kadar mevcut değildir.",
+          "Name": "Gerçek başlangıç",
+          "Type": 9
+        },
+        {
+          "Description": "Hesaba katılmış gözlemlenen vana açık kalma süresi, saniye cinsinden.",
+          "Name": "Gerçek süre",
+          "Type": 10
+        },
+        {
+          "Description": "Debimetreden değil, gerçek açık kalma süresinden ve sprinkler başlığı profilinden tahmin edilen su derinliği.",
+          "Name": "Uygulanan su",
+          "Type": 11
+        },
+        {
+          "Description": "Bu etkinlik oluşturulduğunda geçerli olan bölge ayarlayıcısı.",
+          "Name": "Su miktarı ayarlayıcısı",
+          "Type": 12
+        },
+        {
+          "Description": "En son kalıcı yaşam döngüsü güncellemesi tarafından temsil edilen UTC zamanı.",
+          "Name": "Güncellenme zamanı",
+          "Type": 13
+        }
+      ],
+      "Name": "SprinklerWateringActivityV1"
+    },
+    {
+      "Description": "Planlanmış, atlanmış, başarısız, manuel veya tamamlanmış bir sulama çalışması.",
+      "DisplayName": "Sulama olayı",
+      "List": [
+        {
+          "Description": "Planlanmış, atlanmış, başarısız, manuel veya tamamlanmış bir sulama çalışması.",
+          "Name": "Sulama olayı",
+          "Type": 0
+        },
+        {
+          "Description": "Sulamanın başladığı veya başlamasının planlandığı zaman.",
+          "Name": "Zaman",
+          "Type": 1
+        },
+        {
+          "Description": "O zamandaki tahmini bitkilerin kullanabileceği su.",
+          "Name": "Kullanılabilir su",
+          "Type": 2
+        },
+        {
+          "Description": "Bu olayın sulanan alanı.",
+          "Name": "Alan",
+          "Type": 3
+        },
+        {
+          "Description": "Bu sulama planı veya çalışmasına ne olduğu.",
+          "Name": "Sonuç",
+          "Type": 4
+        },
+        {
+          "Description": "Sulamanın otomatik, manuel veya bilinmeyen olup olmadığı.",
+          "Name": "Başlatan",
+          "Type": 5
+        },
+        {
+          "Description": "Çalışmanın neden planlandığı, değiştirildiği, durdurulduğu veya başarısız olduğu.",
+          "Name": "Neden",
+          "Type": 6
+        },
+        {
+          "Description": "Otomatik sulamanın ne kadar süre çalışmasının planlandığı.",
+          "Name": "Planlanan süre",
+          "Type": 7
+        },
+        {
+          "Description": "Vananın ne kadar süre açık gözlemlendiği.",
+          "Name": "Gerçek süre",
+          "Type": 8
+        },
+        {
+          "Description": "Yapılandırılmış tüm bölgelerde benzersiz olan kararlı odak anahtarı.",
+          "Name": "Karar anahtarı",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWateringDecisionRowV1"
+    },
+    {
+      "Description": "Su dengesi grafiğinde otomatik ve manuel sulamayı gösterir.",
+      "DisplayName": "Sulama olayları",
+      "List": [
+        {
+          "Description": "Su dengesi grafiğinde otomatik ve manuel sulamayı gösterir.",
+          "Name": "Sulama olayları",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWateringDecisionsV1"
+    },
+    {
+      "Description": "Sulama sisteminin etkin olarak sulama yapıp yapmadığını veya kışa hazırlanmış olup olmadığını seçer.",
+      "DisplayName": "Sulama modu",
+      "List": [
+        {
+          "Description": "Sulama sisteminin etkin olarak sulama yapıp yapmadığını veya kışa hazırlanmış olup olmadığını seçer.",
+          "Enum": [
+            {
+              "Description": "Otomatik sulama etkin.",
+              "Name": "Etkin",
+              "Type": 1
+            },
+            {
+              "Description": "Otomatik sulama soğuk mevsim için kapatıldı.",
+              "Name": "Kışa hazırlandı",
+              "Type": 2
+            }
+          ],
+          "Name": "Sulama modu",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringModeV1"
+    },
+    {
+      "Description": "Sulamanın otomatik mi yoksa başka bir şekilde mi başlatıldığını gösterir.",
+      "DisplayName": "Sulamanın nasıl başladığı",
+      "List": [
+        {
+          "Description": "Sulamanın otomatik mi yoksa başka bir şekilde mi başlatıldığını gösterir.",
+          "Enum": [
+            {
+              "Description": "Akıllı Sulama Sistemi bu sulama çalışmasını başlattı.",
+              "Name": "Otomatik",
+              "Type": 1
+            },
+            {
+              "Description": "Vana Akıllı Sulama Sistemi dışında açıldı.",
+              "Name": "Manuel",
+              "Type": 2
+            },
+            {
+              "Description": "Eski kaydedilmiş veriler bu sulama çalışmasının nasıl başladığını göstermiyor.",
+              "Name": "Bilinmiyor",
+              "Type": 3
+            }
+          ],
+          "Name": "Sulamanın nasıl başladığı",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOriginV1"
+    },
+    {
+      "Description": "Bir sulama planına veya çalışmasına ne olduğunu gösterir.",
+      "DisplayName": "Sulama sonucu",
+      "List": [
+        {
+          "Description": "Bir sulama planına veya çalışmasına ne olduğunu gösterir.",
+          "Enum": [
+            {
+              "Description": "Hesaplanmış gelecekteki otomatik çalışma hâlâ planlanmış durumda.",
+              "Name": "Programlandı",
+              "Type": 1
+            },
+            {
+              "Description": "Sulama sistemi vananın açılmasını istedi ve onay bekliyor.",
+              "Name": "Komut bekliyor",
+              "Type": 2
+            },
+            {
+              "Description": "Vana açık ve sulama hesaba katılıyor.",
+              "Name": "Çalışıyor",
+              "Type": 3
+            },
+            {
+              "Description": "Vana kapandıktan sonra sulama tamamlandı.",
+              "Name": "Tamamlandı",
+              "Type": 4
+            },
+            {
+              "Description": "Planlanmış bir çalışma hava durumu, ayarlar veya güvenlik nedeniyle başlamadı.",
+              "Name": "Atlandı",
+              "Type": 5
+            },
+            {
+              "Description": "Bir vana sorunu sulama çalışmasının tamamlanmasını engelledi.",
+              "Name": "Başarısız",
+              "Type": 6
+            },
+            {
+              "Description": "Başlamadan önce daha yeni bir sulama planı bunun yerini aldı.",
+              "Name": "Yerine yenisi geçti",
+              "Type": 7
+            }
+          ],
+          "Name": "Sulama sonucu",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOutcomeV1"
+    },
+    {
+      "Description": "Bir sulama çalışmasının neden planlandığını, değiştirildiğini, durdurulduğunu veya başarısız olduğunu açıklar.",
+      "DisplayName": "Sulama nedeni",
+      "List": [
+        {
+          "Description": "Bir sulama çalışmasının neden planlandığını, değiştirildiğini, durdurulduğunu veya başarısız olduğunu açıklar.",
+          "Enum": [
+            {
+              "Description": "Akıllı Sulama Sistemi bu çalışmayı bitki ihtiyaçları ve hava durumuna göre seçti.",
+              "Name": "Akıllı program",
+              "Type": 1
+            },
+            {
+              "Description": "Vana Akıllı Sulama Sistemi dışında açıldı.",
+              "Name": "Manuel işlem",
+              "Type": 2
+            },
+            {
+              "Description": "Beklenen yağmur planlanan sulamayı geciktirdi veya onun yerini aldı.",
+              "Name": "Tahmini yağmur",
+              "Type": 3
+            },
+            {
+              "Description": "Kaydedilen yağmur sulamayı durdurdu veya engelledi.",
+              "Name": "Gözlemlenen yağmur",
+              "Type": 4
+            },
+            {
+              "Description": "Sıcaklık güvenli sulama için fazla düşüktü.",
+              "Name": "Dondurucu hava",
+              "Type": 5
+            },
+            {
+              "Description": "Rüzgâr bu sulama yöntemi için fazla güçlüydü.",
+              "Name": "Aşırı rüzgâr",
+              "Type": 6
+            },
+            {
+              "Description": "Hava koşulları sulama için güvenli değildi.",
+              "Name": "Diğer güvensiz hava koşulları",
+              "Type": 7
+            },
+            {
+              "Description": "Sulama yapılmayacak bir dönem planlanan çalışmayı engelledi.",
+              "Name": "Sulama engeli",
+              "Type": 8
+            },
+            {
+              "Description": "Sistem kışa hazırlandığından otomatik sulama kapalıydı.",
+              "Name": "Kışa hazırlama",
+              "Type": 9
+            },
+            {
+              "Description": "Vana durumu kullanılamıyordu.",
+              "Name": "Vana kullanılamıyor",
+              "Type": 10
+            },
+            {
+              "Description": "Vana bir sorun bildirdi.",
+              "Name": "Vana arızası",
+              "Type": 11
+            },
+            {
+              "Description": "Vana isteği kabul etmedi.",
+              "Name": "Komut başarısız",
+              "Type": 12
+            },
+            {
+              "Description": "Vana isteği zamanında onaylamadı.",
+              "Name": "Komut zaman aşımı",
+              "Type": 13
+            },
+            {
+              "Description": "Vanadan açılması istendi ancak sulama algılanmadı.",
+              "Name": "Açılma gözlemlenmedi",
+              "Type": 14
+            },
+            {
+              "Description": "Daha yeni bir hesaplama planlanan çalışmanın yerini aldı.",
+              "Name": "Yeniden hesaplandı",
+              "Type": 15
+            },
+            {
+              "Description": "Eski kaydedilmiş veriler daha belirli bir neden içermiyor.",
+              "Name": "Bilinmiyor",
+              "Type": 16
+            },
+            {
+              "Description": "The valve was observed closed before its timed run was due to finish.",
+              "Name": "Stopped early",
+              "Type": 17
+            }
+          ],
+          "Name": "Sulama nedeni",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringReasonV1"
+    },
+    {
+      "Description": "Suyun nereden geldiğini veya daha sonra beklenip beklenmediğini gösterir.",
+      "DisplayName": "Su kaynağı",
+      "List": [
+        {
+          "Description": "Suyun nereden geldiğini veya daha sonra beklenip beklenmediğini gösterir.",
+          "Enum": [
+            {
+              "Description": "Hava durumu hizmeti tarafından daha önce kaydedilmiş yağmur.",
+              "Name": "Yağmur",
+              "Type": 1
+            },
+            {
+              "Description": "Vananın ne kadar süre açık kaldığından tahmin edilen su.",
+              "Name": "Sulama",
+              "Type": 2
+            },
+            {
+              "Description": "Tahminde beklenen yağmur.",
+              "Name": "Tahmini yağmur",
+              "Type": 3
+            },
+            {
+              "Description": "Planlanmış ancak henüz başlamamış otomatik sulama.",
+              "Name": "Planlanan su",
+              "Type": 4
+            }
+          ],
+          "Name": "Su kaynağı",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterInputTypeV1"
+    },
+    {
+      "Description": "Kompakt bir yağmur-sulama özetini günlük ayrıntılarla birleştirir.",
+      "DisplayName": "Su kullanımı",
+      "List": [
+        {
+          "Description": "Kompakt bir yağmur-sulama özetini günlük ayrıntılarla birleştirir.",
+          "Name": "Su kullanımı",
+          "Type": 0
+        },
+        {
+          "Description": "Shared rain and per-area irrigation during the selected dates.",
+          "Name": "Summary",
+          "Type": 1
+        },
+        {
+          "Description": "Rain and watering amounts by local calendar date.",
+          "Name": "Daily details",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterUsageChartV1"
+    },
+    {
+      "Description": "Seçilen tarihlerde yağmur veya sulama olmadığında bir alanı görünür tutar.",
+      "DisplayName": "Kaydedilmiş su bulunmayan alan",
+      "List": [
+        {
+          "Description": "Seçilen tarihlerde yağmur veya sulama olmadığında bir alanı görünür tutar.",
+          "Name": "Kaydedilmiş su bulunmayan alan",
+          "Type": 0
+        },
+        {
+          "Description": "Mesajı grafikte ortalar.",
+          "Name": "Etiket konumu",
+          "Type": 1
+        },
+        {
+          "Description": "Kaydedilmiş su bulunmayan sulanan alan.",
+          "Name": "Alan",
+          "Type": 2
+        },
+        {
+          "Description": "Bu alanda grafikte neden çubuk bulunmadığını açıklar.",
+          "Name": "Mesaj",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZoneRowV1"
+    },
+    {
+      "Description": "Seçilen tarihlerde yağmur veya sulama bulunmayan alanlar için mesajlar.",
+      "DisplayName": "Kaydedilmiş su bulunmayan alanlar",
+      "List": [
+        {
+          "Description": "Seçilen tarihlerde yağmur veya sulama bulunmayan alanlar için mesajlar.",
+          "Name": "Kaydedilmiş su bulunmayan alanlar",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZonesV1"
+    },
+    {
+      "Description": "Her alan için yağmur ve sulama miktarlarını tarihe göre gösterir.",
+      "DisplayName": "Su kullanımı",
+      "List": [
+        {
+          "Description": "Her alan için yağmur ve sulama miktarlarını tarihe göre gösterir.",
+          "Name": "Su kullanımı",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageMarksV1"
+    },
+    {
+      "Description": "Belirli bir tarihte bir alan için gösterilen tek bir yağmur veya sulama miktarı.",
+      "DisplayName": "Su kullanımı öğesi",
+      "List": [
+        {
+          "Description": "Belirli bir tarihte bir alan için gösterilen tek bir yağmur veya sulama miktarı.",
+          "Name": "Su kullanımı öğesi",
+          "Type": 0
+        },
+        {
+          "Description": "Bu yağmur veya sulama miktarının yerel takvim tarihi.",
+          "Name": "Tarih",
+          "Type": 1
+        },
+        {
+          "Description": "Bu miktarın grafikte başladığı yer.",
+          "Name": "Çubuk başlangıcı",
+          "Type": 2
+        },
+        {
+          "Description": "Bu miktarın grafikte bittiği yer.",
+          "Name": "Çubuk sonu",
+          "Type": 3
+        },
+        {
+          "Description": "Çubuğun bu bölümü tarafından temsil edilen yağmur veya sulama.",
+          "Name": "Su miktarı",
+          "Type": 4
+        },
+        {
+          "Description": "Kaydedilmiş yağmur, sulama, beklenen yağmur veya planlanan sulama.",
+          "Name": "Su kaynağı",
+          "Type": 5
+        },
+        {
+          "Description": "Bu satır tarafından temsil edilen sulanan alan.",
+          "Name": "Alan",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageRowV1"
+    },
+    {
+      "Description": "Shows shared rain and irrigation for every area together on one chart.",
+      "DisplayName": "Water-use summary",
+      "List": [
+        {
+          "Description": "Shows shared rain and irrigation for every area together on one chart.",
+          "Name": "Water-use summary",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryChartV1"
+    },
+    {
+      "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+      "DisplayName": "Water-use summary item",
+      "List": [
+        {
+          "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+          "Name": "Water-use summary item",
+          "Type": 0
+        },
+        {
+          "Description": "Millimeter scale for comparing rain and irrigation.",
+          "Name": "Water amount",
+          "Type": 1
+        },
+        {
+          "Description": "Where this contribution ends in its stacked total.",
+          "Name": "Amount end",
+          "Type": 2
+        },
+        {
+          "Description": "Total rain or irrigation represented by this part of the bar.",
+          "Name": "Amount",
+          "Type": 3
+        },
+        {
+          "Description": "Recorded rain, forecast rain, actual watering, or scheduled watering.",
+          "Name": "Water source",
+          "Type": 4
+        },
+        {
+          "Description": "Keeps shared rain first, followed by every configured area.",
+          "Name": "Lane",
+          "Type": 5
+        },
+        {
+          "Description": "Shows Rain or the configured area's name on the summary axis.",
+          "Name": "Rain or area",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryRowV1"
+    },
+    {
+      "Description": "Bir değerin kaydedilmiş mi yoksa tahmin edilmiş mi olduğunu gösterir.",
+      "DisplayName": "Hava durumu kaynağı",
+      "List": [
+        {
+          "Description": "Bir değerin kaydedilmiş mi yoksa tahmin edilmiş mi olduğunu gösterir.",
+          "Enum": [
+            {
+              "Description": "Tamamlanmış bir hava durumu gözlemi.",
+              "Name": "Kaydedilmiş geçmiş",
+              "Type": 1
+            },
+            {
+              "Description": "Yakın zamanda yapılan mevcut hava durumu gözlemi.",
+              "Name": "Mevcut koşullar",
+              "Type": 2
+            },
+            {
+              "Description": "En son tahminden gelecekteki bir değer.",
+              "Name": "Tahmin",
+              "Type": 3
+            }
+          ],
+          "Name": "Hava durumu kaynağı",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherChartSourceV1"
+    },
+    {
+      "Description": "Tahmini su kaybını, sıcaklığı, nemi ve rüzgârı birlikte gösterir.",
+      "DisplayName": "Hava durumu",
+      "List": [
+        {
+          "Description": "Tahmini su kaybını, sıcaklığı, nemi ve rüzgârı birlikte gösterir.",
+          "Name": "Hava durumu",
+          "Type": 0
+        },
+        {
+          "Description": "Buharlaşma ve bitki kullanımı yoluyla kaydedilmiş ve tahmini su kaybı.",
+          "Name": "Tahmini su kaybı",
+          "Type": 1
+        },
+        {
+          "Description": "Bağımsız y eksenlerine sahip gözlemlenmiş ve tahmini değerler.",
+          "Name": "Sıcaklık ve bağıl nem",
+          "Type": 2
+        },
+        {
+          "Description": "Gözlemlenen ve tahmini sürekli rüzgâr ve rüzgâr hamleleri.",
+          "Name": "Rüzgâr",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherEtChartV1"
+    },
+    {
+      "Description": "Gözlemlenen ve tahmini sürekli rüzgârı ve rüzgâr hamlelerini karşılaştırılabilir tek bir ölçekte gösterir.",
+      "DisplayName": "Rüzgâr ve rüzgâr hamleleri",
+      "List": [
+        {
+          "Description": "Gözlemlenen ve tahmini sürekli rüzgârı ve rüzgâr hamlelerini karşılaştırılabilir tek bir ölçekte gösterir.",
+          "Name": "Rüzgâr ve rüzgâr hamleleri",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWindChartV1"
+    },
+    {
+      "Description": "Tek bir sürekli rüzgâr veya rüzgâr hamlesi örneği.",
+      "DisplayName": "Rüzgâr satırı",
+      "List": [
+        {
+          "Description": "Tek bir sürekli rüzgâr veya rüzgâr hamlesi örneği.",
+          "Name": "Rüzgâr satırı",
+          "Type": 0
+        },
+        {
+          "Description": "Sağlayıcı döneminin başlangıcı.",
+          "Name": "Zaman",
+          "Type": 1
+        },
+        {
+          "Description": "Saniyede metre cinsinden sürekli rüzgâr veya rüzgâr hamlesi hızı.",
+          "Name": "Rüzgâr hızı",
+          "Type": 2
+        },
+        {
+          "Description": "Gözlemlenmiş veya tahmini sürekli rüzgâr ya da rüzgâr hamlesi.",
+          "Name": "Seri",
+          "Type": 3
+        },
+        {
+          "Description": "Bu zaman ve rüzgâr serisi için sunucu tarafından oluşturulan kimlik.",
+          "Name": "Kararlı anahtar",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWindRowV1"
+    },
+    {
+      "Description": "Gözlemlenen ve tahmini dönemler için sürekli rüzgârı ve rüzgâr hamlelerini birbirinden ayırır.",
+      "DisplayName": "Rüzgâr serisi",
+      "List": [
+        {
+          "Description": "Gözlemlenen ve tahmini dönemler için sürekli rüzgârı ve rüzgâr hamlelerini birbirinden ayırır.",
+          "Enum": [
+            {
+              "Description": "Tamamlanmış geçmiş bir dönemdeki sürekli rüzgâr.",
+              "Name": "Geçmiş sürekli rüzgâr",
+              "Type": 1
+            },
+            {
+              "Description": "Tamamlanmış geçmiş bir dönemdeki en yüksek rüzgâr hamlesi.",
+              "Name": "Geçmiş rüzgâr hamlesi",
+              "Type": 2
+            },
+            {
+              "Description": "Saklanan mevcut bir gözlemdeki sürekli rüzgâr.",
+              "Name": "Mevcut sürekli rüzgâr",
+              "Type": 3
+            },
+            {
+              "Description": "Saklanan mevcut bir gözlemdeki en yüksek rüzgâr hamlesi.",
+              "Name": "Mevcut rüzgâr hamlesi",
+              "Type": 4
+            },
+            {
+              "Description": "Tahmin edilen sürekli rüzgâr.",
+              "Name": "Tahmini sürekli rüzgâr",
+              "Type": 5
+            },
+            {
+              "Description": "Tahmin edilen en yüksek rüzgâr hamlesi.",
+              "Name": "Tahmini rüzgâr hamlesi",
+              "Type": 6
+            }
+          ],
+          "Name": "Rüzgâr serisi",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWindSeriesV1"
+    },
+    {
+      "Description": "Çok kısa süre içinde yeniden gönderilmemesi için en son hatırlatmayı hatırlar.",
+      "DisplayName": "En son kışa hazırlama hatırlatıcısı",
+      "List": [
+        {
+          "Description": "Çok kısa süre içinde yeniden gönderilmemesi için en son hatırlatmayı hatırlar.",
+          "Name": "En son kışa hazırlama hatırlatıcısı",
+          "Type": 0
+        },
+        {
+          "Description": "En son hatırlatmanın gönderildiği zaman.",
+          "Name": "Gönderilme zamanı",
+          "Type": 1
+        },
+        {
+          "Description": "En son hatırlatmanın neden gönderildiği.",
+          "Name": "Neden",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderMemoryV1"
+    },
+    {
+      "Description": "En son soğuk hava hatırlatıcısının neden gönderildiğini açıklar.",
+      "DisplayName": "Kışa hazırlama hatırlatıcısı nedeni",
+      "List": [
+        {
+          "Description": "En son soğuk hava hatırlatıcısının neden gönderildiğini açıklar.",
+          "Enum": [
+            {
+              "Description": "Sahanın enlemi ve mevcut mevsim, soğuk havanın yaklaştığını gösteriyor.",
+              "Name": "Konum ve mevsim",
+              "Type": 1
+            },
+            {
+              "Description": "Yeni mevcut koşullar veya tahmin verileri, sıcaklığın sulama sisteminin soğuk hava güvenlik eşiğinde veya altında olduğunu gösteriyor.",
+              "Name": "Dondurucu hava",
+              "Type": 2
+            }
+          ],
+          "Name": "Kışa hazırlama hatırlatıcısı nedeni",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderReasonV1"
+    },
+    {
+      "Description": "Mevcut sulama planının arkasındaki bilgileri gösterir.",
+      "DisplayName": "Bölge ayrıntıları",
+      "List": [
+        {
+          "Description": "Mevcut sulama planının arkasındaki bilgileri gösterir.",
+          "Name": "Bölge ayrıntıları",
+          "Type": 0
+        },
+        {
+          "Description": "Bitkilerin bir sonraki kez ne zaman suya ihtiyaç duyacağını tahmin etmek için kullanılan bilgiler.",
+          "Name": "Su kullanımı tahmini",
+          "Type": 1
+        },
+        {
+          "Description": "Buharlaşma ve bitki kullanımı yoluyla her gün kaybedildiği tahmin edilen su.",
+          "Name": "Tahmini günlük su kaybı",
+          "Type": 2
+        },
+        {
+          "Description": "Bu sulama planının hesaplandığı zaman.",
+          "Name": "Son güncelleme",
+          "Type": 3
+        },
+        {
+          "Description": "Mevcut sulama kararı veya gecikmenin nedeni.",
+          "Name": "Durum",
+          "Type": 4
+        },
+        {
+          "Description": "Planlanan başlangıç zamanı ve süre. Hava durumu veya vana kullanılabilirliği planı yine de değiştirebilir.",
+          "Name": "Sonraki sulama",
+          "Type": 5
+        },
+        {
+          "Description": "Bir sonraki otomatik çalışma için planlanan su miktarı.",
+          "Name": "Planlanan su",
+          "Type": 6
+        },
+        {
+          "Description": "Bitkilerin ihtiyaç duyduğu tahmini su miktarı.",
+          "Name": "Tahmini su açığı",
+          "Type": 7
+        },
+        {
+          "Description": "Son yedi gün içinde hesaba katılan yağmur.",
+          "Name": "Yakın zamandaki yağmur",
+          "Type": 8
+        },
+        {
+          "Description": "Son yedi gün içinde hesaba katılan sulama.",
+          "Name": "Yakın zamandaki sulama",
+          "Type": 9
+        },
+        {
+          "Description": "Vananın şu anda açık olup olmadığı.",
+          "Name": "Şu anda sulanıyor",
+          "Type": 10
+        },
+        {
+          "Description": "Otomatik sulama, vana durumu kullanılabilir olana kadar bekler.",
+          "Name": "Vana durumu kullanılabilir",
+          "Type": 11
+        },
+        {
+          "Description": "Vana tarafından bildirilen sorunlar. Birden fazla sorun bulunabilir.",
+          "Name": "Vana sorunları",
+          "Type": 12
+        }
+      ],
+      "Name": "SprinklerZoneActiveStateV1"
+    },
+    {
+      "Description": "Eksiksiz sulama planını veya sistemin kışa hazırlanmış olduğunu gösterir.",
+      "DisplayName": "Ayrıntılı sulama sistemi durumu",
+      "List": [
+        {
+          "Description": "Eksiksiz sulama planını veya sistemin kışa hazırlanmış olduğunu gösterir.",
+          "Name": "Ayrıntılı sulama sistemi durumu",
+          "Type": 0
+        },
+        {
+          "Description": "Otomatik sulama etkin ve tüm mevcut bölge verileri kullanılabilir.",
+          "Name": "Etkin",
+          "Type": 1
+        },
+        {
+          "Description": "Mevcut sulama planı, su tahmini ve vana durumu.",
+          "Name": "Bölge ayrıntıları",
+          "Type": 2
+        },
+        {
+          "Description": "Otomatik sulama tüm sulama sistemi için devre dışı ve herhangi bir sulama zaman aralığı programlanmamış.",
+          "Name": "Kışa hazırlandı",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerZoneAdvancedStateV1"
+    },
+    {
+      "Description": "Explains why a requested sprinkler setting was not changed.",
+      "DisplayName": "Configuration error",
+      "List": [
+        {
+          "Description": "Explains why a requested sprinkler setting was not changed.",
+          "Enum": [
+            {
+              "Description": "The percentage was outside the supported range or step.",
+              "Name": "Invalid water amount",
+              "Type": 1
+            },
+            {
+              "Description": "The replacement contained too many periods or an invalid interval.",
+              "Name": "Invalid no-watering periods",
+              "Type": 2
+            }
+          ],
+          "Name": "Configuration error",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationErrorV1"
+    },
+    {
+      "Description": "Su miktarını, sulama yapılmayacak dönemleri veya otomatik sulamanın etkin olup olmadığını ayarlayın.",
+      "DisplayName": "Bölge ayarları",
+      "List": [
+        {
+          "Description": "Su miktarını, sulama yapılmayacak dönemleri veya otomatik sulamanın etkin olup olmadığını ayarlayın.",
+          "Name": "Bölge ayarları",
+          "Type": 0
+        },
+        {
+          "Description": "Önerilen miktar için %100, daha az su için daha düşük veya daha fazla su için daha yüksek bir değer kullanın.",
+          "Name": "Su miktarı",
+          "Type": 1
+        },
+        {
+          "Description": "Times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 2
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 3
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationV1"
+    },
+    {
+      "Description": "Yapılandırılmış bir vana için kompakt, yeniden başlatmaya dayanıklı su miktarı ayarlayıcısını, kısıtları ve birleştirilmiş su dengesi temel değerini kalıcı olarak saklar. Su olayları ayrı artımlı dizinlenmiş kayıtlar olarak saklanır.",
+      "DisplayName": "Sulama bölgesi belleği",
+      "List": [
+        {
+          "Description": "Yapılandırılmış bir vana için kompakt, yeniden başlatmaya dayanıklı su miktarı ayarlayıcısını, kısıtları ve birleştirilmiş su dengesi temel değerini kalıcı olarak saklar. Su olayları ayrı artımlı dizinlenmiş kayıtlar olarak saklanır.",
+          "Name": "Sulama bölgesi belleği",
+          "Type": 0
+        },
+        {
+          "Description": "Uygulanacak uyarlanabilir sulama miktarının yüzdesi. Varsayılan değer %100'dür.",
+          "Name": "Su miktarı ayarlayıcısı",
+          "Type": 1
+        },
+        {
+          "Description": "Normalleştirilmiş çalışma zamanı programlama kısıtları.",
+          "Name": "Sulama engelleme dönemleri",
+          "Type": 2
+        },
+        {
+          "Description": "Bölgenin sulama yapamayacağı yarı açık bir aralık.",
+          "Name": "Sulama engelleme dönemi",
+          "Type": 3
+        },
+        {
+          "Description": "Daha eski su girdilerinin `baseline_deficit_millimeters` içine birleştirildiği tarih ve zaman.",
+          "Name": "Denge temel zamanı",
+          "Type": 4
+        },
+        {
+          "Description": "`balance_baseline_at` zamanındaki kök bölgesi su açığı, milimetre cinsinden.",
+          "Name": "Temel açık",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerZoneMemoryV1"
+    },
+    {
+      "Description": "Bu alanın durumunu ve ayrıntılarını görüntüleyin veya sulama ayarlarını değiştirin.",
+      "DisplayName": "Sulama sistemi kontrolleri",
+      "List": [
+        {
+          "Description": "Bu alanın durumunu ve ayrıntılarını görüntüleyin veya sulama ayarlarını değiştirin.",
+          "Name": "Sulama sistemi kontrolleri",
+          "Type": 0
+        },
+        {
+          "Description": "Bu alanın ne yaptığını ve bir sonraki sulamanın ne zaman yapılacağını gösterir.",
+          "Name": "Durumu görüntüle",
+          "Type": 1
+        },
+        {
+          "Description": "Mevcut sulama durumu ve bir sonraki sulama planı.",
+          "Name": "Mevcut durum",
+          "Type": 2
+        },
+        {
+          "Description": "Bu alanın veya kışa hazırlanmış sistemin mevcut durumu.",
+          "Name": "Sulama sistemi durumu",
+          "Type": 3
+        },
+        {
+          "Description": "Su tahminini, sulama planını ve vana durumunu gösterir.",
+          "Name": "Ayrıntıları görüntüle",
+          "Type": 4
+        },
+        {
+          "Description": "Su tahmini, sulama planı ve vana durumu.",
+          "Name": "Bölge ayrıntıları",
+          "Type": 5
+        },
+        {
+          "Description": "Su miktarını, sulama yapılmayacak dönemleri ve etkin durumunu gösterir.",
+          "Name": "Ayarları görüntüle",
+          "Type": 6
+        },
+        {
+          "Description": "Mevcut su miktarı, sulama yapılmayacak dönemler ve etkin durumu. Daha sonra kabul edilen değişiklikler, son onaylarından önce abonelik verisi olarak iletilir.",
+          "Name": "Bölge ayarları",
+          "Type": 7
+        },
+        {
+          "Description": "Bu alanın mevcut ayarları.",
+          "Name": "Ayarlar",
+          "Type": 8
+        },
+        {
+          "Description": "Önerilen miktardan daha fazla veya daha az su kullanın.",
+          "Name": "Su miktarını değiştir",
+          "Type": 9
+        },
+        {
+          "Description": "Use more or less water than the recommended amount.",
+          "Name": "Change water amount",
+          "Type": 10
+        },
+        {
+          "Description": "Use 100% for the recommended amount, a lower value for less water, or a higher value for more water.",
+          "Name": "Water amount",
+          "Type": 11
+        },
+        {
+          "Description": "Replace the times when this area must not be watered.",
+          "Name": "Change no-watering periods",
+          "Type": 12
+        },
+        {
+          "Description": "The complete list of times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 13
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 14
+        },
+        {
+          "Description": "Turn automatic watering on or off.",
+          "Name": "Change active state",
+          "Type": 15
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 16
+        },
+        {
+          "Description": "Confirms that a requested setting was persisted and applied. The current subscribed configuration remains installed.",
+          "Name": "Change accepted",
+          "Type": 17
+        },
+        {
+          "Description": "Explains why a requested setting was not changed while preserving the current subscribed configuration for correction and retry.",
+          "Name": "Change rejected",
+          "Type": 18
+        },
+        {
+          "Description": "A localized explanation of the invalid setting.",
+          "Name": "Error message",
+          "Type": 19
+        },
+        {
+          "Description": "The reason the setting was rejected.",
+          "Name": "Error",
+          "Type": 20
+        }
+      ],
+      "Name": "SprinklerZoneProtocol"
+    },
+    {
+      "Description": "Mevcut durumu ve bir sonraki sulama planını gösterir.",
+      "DisplayName": "Sulama sistemi durumu",
+      "List": [
+        {
+          "Description": "Mevcut durumu ve bir sonraki sulama planını gösterir.",
+          "Name": "Sulama sistemi durumu",
+          "Type": 0
+        },
+        {
+          "Description": "Otomatik sulama etkin.",
+          "Name": "Etkin",
+          "Type": 1
+        },
+        {
+          "Description": "Mevcut sulama kararı veya gecikmenin nedeni.",
+          "Name": "Durum",
+          "Type": 2
+        },
+        {
+          "Description": "Planlanan başlangıç zamanı ve süre.",
+          "Name": "Sonraki sulama",
+          "Type": 3
+        },
+        {
+          "Description": "Otomatik sulama tüm sulama sistemi için devre dışı ve herhangi bir sulama zaman aralığı programlanmamış.",
+          "Name": "Kışa hazırlandı",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneStateV1"
+    },
+    {
+      "Description": "Bağımsız olarak sulanan tek bir çimi, bahçeyi veya ekili alanı yapılandırın.",
+      "DisplayName": "Sulanan alan",
+      "List": [
+        {
+          "Description": "Bağımsız olarak sulanan tek bir çimi, bahçeyi veya ekili alanı yapılandırın.",
+          "Name": "Sulanan alan",
+          "Type": 0
+        },
+        {
+          "Description": "Bu alanı kontrol eden vanayı seçin.",
+          "Name": "Su vanası",
+          "Type": 1
+        },
+        {
+          "Description": "Bu alanda ne yetiştiğini seçin.",
+          "Name": "Bitki türü",
+          "Type": 2
+        },
+        {
+          "Description": "Bu alanda suyun nasıl dağıtıldığını seçin.",
+          "Name": "Sulama yöntemi",
+          "Type": 3
+        },
+        {
+          "Description": "Bu alanın durumunun, ayarlarının ve kontrollerinin nerede kullanılabileceğini seçin.",
+          "Name": "Alan kontrolleri",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "System record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "System record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "ArchiveState",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "WateringMode",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WinterizationReminder",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "WeatherHistory",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "WeatherObservation",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 10
+        }
+      ],
+      "Name": "SystemRecord"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Valve record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Valve record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Memory",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "ActivityState",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "Restart",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WaterEvent",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Activity",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "DailyReport",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "ModeledWeatherGap",
+          "Type": 10
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 11
+        }
+      ],
+      "Name": "ZoneRecord"
+    }
+  ]
+}

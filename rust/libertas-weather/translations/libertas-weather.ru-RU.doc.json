@@ -1,0 +1,1825 @@
+{
+  "Description": "Определяет данные о погоде, адаптированные для принятия решений приложениями Libertas. Схема системы полива хранит предоставленное концентратором местоположение объекта отдельно от недавней истории, текущих условий и данных прогноза. Каждый раздел данных о погоде имеет собственный интервал обновления, и его обновление может завершиться успешно или с ошибкой независимо от других разделов. Снимки состояния во время выполнения могут содержать любое сочетание разделов. Приложения сохраняют каждый успешно полученный раздел отдельно и оставляют более старые версии разделов, если обновить данные о погоде не удаётся. Инкрементальные подписки используют курсоры, состоящие из временной метки эпохи и порядкового номера, чтобы клиенты могли отличить сброс серверного курсора от устаревших или поступивших не по порядку данных, повторно получить сохранённые изменения или восстановить выбранные временные диапазоны из кэшированных данных. Схема ОВК здания предоставляет только те наружные параметры, которые необходимы для прогнозирования тепловой нагрузки, работы теплового насоса, принятия решений экономайзером и регулируемой вентиляции наружным воздухом. Данные о погоде и качестве наружного воздуха хранятся в независимых разделах, поскольку они поступают от разных поставщиков и имеют разные характеристики актуальности. Локальное оборудование и системы безопасности жизнедеятельности должны продолжать использовать собственные датчики; кэшированные данные о погоде из интернета являются входными данными для диспетчерского управления, а не сигналом безопасности.",
+  "DisplayName": "Погода Libertas",
+  "DocumentVersion": "0.0.2",
+  "List": [],
+  "Locale": "ru-RU",
+  "StringResources": {},
+  "Types": [
+    {
+      "Description": "Содержит последние смоделированные наружные условия, используемые диспетчерским управлением ОВК. Не заменяет локальный датчик наружной температуры, используемый для защиты оборудования или от замерзания.",
+      "DisplayName": "Текущая погода для ОВК здания",
+      "List": [
+        {
+          "Description": "Содержит последние смоделированные наружные условия, используемые диспетчерским управлением ОВК. Не заменяет локальный датчик наружной температуры, используемый для защиты оборудования или от замерзания.",
+          "Name": "Текущая погода для ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
+          "Name": "Retrieved at",
+          "Type": 1
+        },
+        {
+          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
+          "Name": "Valid until",
+          "Type": 2
+        },
+        {
+          "Description": "The provider-supplied date and time represented by these current conditions.",
+          "Name": "Valid at",
+          "Type": 3
+        },
+        {
+          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
+          "Name": "Observation interval",
+          "Type": 4
+        },
+        {
+          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
+          "Name": "Outdoor conditions",
+          "Type": 5
+        }
+      ],
+      "Name": "BuildingHvacCurrentWeatherV1"
+    },
+    {
+      "Description": "Содержит смоделированные концентрации загрязняющих веществ в наружном воздухе, используемые для предотвращения увеличения механического притока наружного воздуха при вредных для здоровья условиях. Эти значения региональной модели не заменяют локальные датчики безопасности или официальные указания при чрезвычайных ситуациях.",
+      "DisplayName": "Период качества наружного воздуха для ОВК здания",
+      "List": [
+        {
+          "Description": "Содержит смоделированные концентрации загрязняющих веществ в наружном воздухе, используемые для предотвращения увеличения механического притока наружного воздуха при вредных для здоровья условиях. Эти значения региональной модели не заменяют локальные датчики безопасности или официальные указания при чрезвычайных ситуациях.",
+          "Name": "Период качества наружного воздуха для ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время начала данного периода качества воздуха включительно.",
+          "Name": "Время начала",
+          "Type": 1
+        },
+        {
+          "Description": "Продолжительность данного периода в секундах. Для смоделированного качества наружного воздуха обычно используются периоды продолжительностью 3 600 секунд.",
+          "Name": "Продолжительность",
+          "Type": 2
+        },
+        {
+          "Description": "Смоделированная концентрация PM2.5 в наружном воздухе в микрограммах на кубический метр.",
+          "Name": "Мелкодисперсные частицы",
+          "Type": 3
+        },
+        {
+          "Description": "Смоделированная концентрация PM10 в наружном воздухе в микрограммах на кубический метр.",
+          "Name": "Взвешенные частицы",
+          "Type": 4
+        },
+        {
+          "Description": "Смоделированная концентрация озона в наружном воздухе в микрограммах на кубический метр.",
+          "Name": "Озон",
+          "Type": 5
+        },
+        {
+          "Description": "Смоделированная концентрация диоксида азота в наружном воздухе в микрограммах на кубический метр.",
+          "Name": "Диоксид азота",
+          "Type": 6
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityPeriodV1"
+    },
+    {
+      "Description": "Содержит текущие и прогнозные смоделированные периоды загрязнения наружного воздуха для планирования вентиляции. Этот раздел является необязательным и кэшируется независимо от данных о физических погодных условиях.",
+      "DisplayName": "Качество наружного воздуха для ОВК здания",
+      "List": [
+        {
+          "Description": "Содержит текущие и прогнозные смоделированные периоды загрязнения наружного воздуха для планирования вентиляции. Этот раздел является необязательным и кэшируется независимо от данных о физических погодных условиях.",
+          "Name": "Качество наружного воздуха для ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время, когда этот полный раздел данных о качестве воздуха был получен, проверен и принят.",
+          "Name": "Время получения",
+          "Type": 1
+        },
+        {
+          "Description": "Исключительная граница актуальности. Устаревшие смоделированные значения нельзя считать подтверждением безопасности наружного воздуха.",
+          "Name": "Действительно до",
+          "Type": 2
+        },
+        {
+          "Description": "Текущий и будущие периоды, упорядоченные от самого раннего к самому позднему. Обычный ответ охватывает не более 48 часов.",
+          "Name": "Периоды качества воздуха",
+          "Type": 3
+        },
+        {
+          "Description": "Смоделированные концентрации загрязняющих веществ в наружном воздухе за один период.",
+          "Name": "Период качества воздуха",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityV1"
+    },
+    {
+      "Description": "Содержит физические параметры наружной среды, необходимые для прогнозирования нагрузки ОВК, психрометрических расчётов, принятия решений экономайзером, оценки инфильтрации и работы подверженного воздействию окружающей среды оборудования с учётом погоды.",
+      "DisplayName": "Наружные условия для ОВК здания",
+      "List": [
+        {
+          "Description": "Содержит физические параметры наружной среды, необходимые для прогнозирования нагрузки ОВК, психрометрических расчётов, принятия решений экономайзером, оценки инфильтрации и работы подверженного воздействию окружающей среды оборудования с учётом погоды.",
+          "Name": "Наружные условия для ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
+          "Name": "Dry-bulb temperature",
+          "Type": 1
+        },
+        {
+          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
+          "Name": "Dew-point temperature",
+          "Type": 2
+        },
+        {
+          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
+          "Name": "Relative humidity",
+          "Type": 3
+        },
+        {
+          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
+          "Name": "Surface pressure",
+          "Type": 4
+        },
+        {
+          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
+          "Name": "Wind speed",
+          "Type": 5
+        },
+        {
+          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
+          "Name": "Wind gust",
+          "Type": 6
+        },
+        {
+          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
+          "Name": "Wind direction",
+          "Type": 7
+        },
+        {
+          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
+          "Name": "Precipitation",
+          "Type": 8
+        },
+        {
+          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
+          "Name": "Precipitation kind",
+          "Type": 9
+        },
+        {
+          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
+          "Name": "Solar elevation",
+          "Type": 10
+        },
+        {
+          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
+          "Name": "Solar azimuth",
+          "Type": 11
+        },
+        {
+          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
+          "Name": "Global horizontal irradiance",
+          "Type": 12
+        },
+        {
+          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
+          "Name": "Direct normal irradiance",
+          "Type": 13
+        },
+        {
+          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
+          "Name": "Diffuse horizontal irradiance",
+          "Type": 14
+        }
+      ],
+      "Name": "BuildingHvacOutdoorConditionsV1"
+    },
+    {
+      "Description": "Классифицирует осадки, когда их фазовое состояние может влиять на наружные теплообменники, воздухозаборники, заслонки или другое подверженное воздействию окружающей среды оборудование ОВК.",
+      "DisplayName": "Вид осадков для ОВК здания",
+      "List": [
+        {
+          "Description": "Классифицирует осадки, когда их фазовое состояние может влиять на наружные теплообменники, воздухозаборники, заслонки или другое подверженное воздействию окружающей среды оборудование ОВК.",
+          "Enum": [
+            {
+              "Description": "Для данного периода указано отсутствие осадков.",
+              "Name": "Без осадков",
+              "Type": 1
+            },
+            {
+              "Description": "Для данного периода указан жидкий дождь или ливни.",
+              "Name": "Дождь",
+              "Type": 2
+            },
+            {
+              "Description": "Для данного периода указаны переохлаждённые жидкие осадки, способные замерзать на открытом оборудовании.",
+              "Name": "Ледяной дождь",
+              "Type": 3
+            },
+            {
+              "Description": "Для данного периода указаны замёрзшие осадки с преобладанием снега.",
+              "Name": "Снег",
+              "Type": 4
+            },
+            {
+              "Description": "Указано более одного фазового состояния жидких или замёрзших осадков.",
+              "Name": "Смешанные осадки",
+              "Type": 5
+            },
+            {
+              "Description": "Осадки присутствуют, но поставщик не может классифицировать их фазовое состояние.",
+              "Name": "Неизвестные осадки",
+              "Type": 6
+            }
+          ],
+          "Name": "Вид осадков для ОВК здания",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacPrecipitationKindV1"
+    },
+    {
+      "Description": "Определяет одну атомарную мутацию в инкрементальном потоке данных о погоде для ОВК здания. Вариант и порядок полей являются частью контракта передачи данных Avro.",
+      "DisplayName": "Изменение погоды для ОВК здания",
+      "List": [
+        {
+          "Description": "Определяет одну атомарную мутацию в инкрементальном потоке данных о погоде для ОВК здания. Вариант и порядок полей являются частью контракта передачи данных Avro.",
+          "Name": "Изменение погоды для ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
+          "Name": "Upsert historical periods",
+          "Type": 1
+        },
+        {
+          "Description": "The retrieval and validation time for the updated history section.",
+          "Name": "Retrieved at",
+          "Type": 2
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the history section.",
+          "Name": "Valid until",
+          "Type": 3
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from oldest to newest.",
+          "Name": "Historical periods",
+          "Type": 4
+        },
+        {
+          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
+          "Name": "Historical period",
+          "Type": 5
+        },
+        {
+          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove historical periods",
+          "Type": 6
+        },
+        {
+          "Description": "The half-open range of historical period start times to remove.",
+          "Name": "Time range",
+          "Type": 7
+        },
+        {
+          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
+          "Name": "Replace current conditions",
+          "Type": 8
+        },
+        {
+          "Description": "The complete newly accepted current-condition section.",
+          "Name": "Current conditions",
+          "Type": 9
+        },
+        {
+          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
+          "Name": "Upsert forecast periods",
+          "Type": 10
+        },
+        {
+          "Description": "The retrieval and validation time for the updated forecast section.",
+          "Name": "Retrieved at",
+          "Type": 11
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the forecast section.",
+          "Name": "Valid until",
+          "Type": 12
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Forecast periods",
+          "Type": 13
+        },
+        {
+          "Description": "One future outdoor-condition period keyed by `starts_at`.",
+          "Name": "Forecast period",
+          "Type": 14
+        },
+        {
+          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove forecast periods",
+          "Type": 15
+        },
+        {
+          "Description": "The half-open range of forecast period start times to remove.",
+          "Name": "Time range",
+          "Type": 16
+        },
+        {
+          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
+          "Name": "Upsert outdoor-air-quality periods",
+          "Type": 17
+        },
+        {
+          "Description": "The retrieval and validation time for the updated air-quality section.",
+          "Name": "Retrieved at",
+          "Type": 18
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the air-quality section.",
+          "Name": "Valid until",
+          "Type": 19
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Air-quality periods",
+          "Type": 20
+        },
+        {
+          "Description": "One modeled pollutant period keyed by `starts_at`.",
+          "Name": "Air-quality period",
+          "Type": 21
+        },
+        {
+          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove outdoor-air-quality periods",
+          "Type": 22
+        },
+        {
+          "Description": "The half-open range of air-quality period start times to remove.",
+          "Name": "Time range",
+          "Type": 23
+        },
+        {
+          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
+          "Name": "Clear weather section",
+          "Type": 24
+        },
+        {
+          "Description": "The independently cached section to clear.",
+          "Name": "Weather section",
+          "Type": 25
+        },
+        {
+          "Description": "Replaces the complete historical section after a successful refresh.",
+          "Name": "Replace history",
+          "Type": 26
+        },
+        {
+          "Description": "The complete newly accepted history section.",
+          "Name": "History",
+          "Type": 27
+        },
+        {
+          "Description": "Replaces the complete forecast section after a successful refresh.",
+          "Name": "Replace forecast",
+          "Type": 28
+        },
+        {
+          "Description": "The complete newly accepted forecast section.",
+          "Name": "Forecast",
+          "Type": 29
+        },
+        {
+          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
+          "Name": "Replace outdoor air quality",
+          "Type": 30
+        },
+        {
+          "Description": "The complete newly accepted outdoor-air-quality section.",
+          "Name": "Outdoor air quality",
+          "Type": 31
+        }
+      ],
+      "Name": "BuildingHvacWeatherChangeV1"
+    },
+    {
+      "Description": "Идентифицирует одно полностью применённое состояние в инкрементальном потоке данных о погоде для ОВК здания. Клиенты сопоставляют временную метку эпохи и порядковый номер вместе.",
+      "DisplayName": "Курсор погоды для ОВК здания",
+      "List": [
+        {
+          "Description": "Идентифицирует одно полностью применённое состояние в инкрементальном потоке данных о погоде для ОВК здания. Клиенты сопоставляют временную метку эпохи и порядковый номер вместе.",
+          "Name": "Курсор погоды для ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Назначенные сервером дата и время, идентифицирующие поколение потока. Они остаются неизменными при обычном увеличении порядкового номера. Сервер, утративший временное состояние курсора, назначает строго более позднюю временную метку.",
+          "Name": "Временная метка эпохи",
+          "Type": 1
+        },
+        {
+          "Description": "Номер последнего применённого атомарного изменения в последовательности. После сброса курсора сервером отсчёт снова начинается с нуля, хотя клиент может впервые получить более поздний номер последовательности после сброса.",
+          "Name": "Последовательность",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherCursorV1"
+    },
+    {
+      "Description": "Содержит прогнозируемые наружные условия для одного периода модельно-прогнозного планирования работы системы ОВК.",
+      "DisplayName": "Период прогноза погоды для системы ОВК здания",
+      "List": [
+        {
+          "Description": "Содержит прогнозируемые наружные условия для одного периода модельно-прогнозного планирования работы системы ОВК.",
+          "Name": "Период прогноза погоды для системы ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время начала этого периода прогноза включительно.",
+          "Name": "Время начала",
+          "Type": 1
+        },
+        {
+          "Description": "Продолжительность этого периода прогноза в секундах. Поставщики могут предоставлять 900-секундные периоды для ближайшего времени и 3 600-секундные периоды для более отдалённого времени.",
+          "Name": "Продолжительность",
+          "Type": 2
+        },
+        {
+          "Description": "Вероятность измеримых осадков в течение этого периода, выраженная целым числом процентов от 0 до 100.",
+          "Name": "Вероятность осадков",
+          "Type": 3
+        },
+        {
+          "Description": "Прогнозируемые для этого периода температура, влажность, давление, ветер, осадки и солнечное излучение.",
+          "Name": "Наружные условия",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "Содержит будущие наружные условия для прогнозирования нагрузки, предварительного нагрева, предварительного охлаждения, аккумулирования тепловой энергии и планирования вентиляции с учётом погоды.",
+      "DisplayName": "Прогноз погоды для системы ОВК здания",
+      "List": [
+        {
+          "Description": "Содержит будущие наружные условия для прогнозирования нагрузки, предварительного нагрева, предварительного охлаждения, аккумулирования тепловой энергии и планирования вентиляции с учётом погоды.",
+          "Name": "Прогноз погоды для системы ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время, когда этот полный раздел прогноза был получен, проверен и принят.",
+          "Name": "Время получения",
+          "Type": 1
+        },
+        {
+          "Description": "Невключительный предельный срок актуальности. Более старые прогнозы остаются доступными для планирования в ограниченном режиме, но не должны разрешать выполнение операций, критичных для безопасности.",
+          "Name": "Действителен до",
+          "Type": 2
+        },
+        {
+          "Description": "Будущие периоды, упорядоченные от самого раннего к самому позднему. Обычный ответ охватывает 72 часа и может содержать 15-минутные периоды для первых шести часов и часовые периоды для последующего времени.",
+          "Name": "Периоды прогноза",
+          "Type": 3
+        },
+        {
+          "Description": "Прогнозируемые наружные условия для системы ОВК на один период планирования.",
+          "Name": "Период прогноза",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastV1"
+    },
+    {
+      "Description": "Содержит наружные условия за один завершённый период, используемые для восстановления или обновления оценки теплового состояния здания.",
+      "DisplayName": "Период исторических данных о погоде для системы ОВК здания",
+      "List": [
+        {
+          "Description": "Содержит наружные условия за один завершённый период, используемые для восстановления или обновления оценки теплового состояния здания.",
+          "Name": "Период исторических данных о погоде для системы ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время начала этого исторического периода включительно.",
+          "Name": "Время начала",
+          "Type": 1
+        },
+        {
+          "Description": "Продолжительность этого завершённого периода в секундах. Для исторических данных обычно используются периоды продолжительностью 3 600 секунд.",
+          "Name": "Продолжительность",
+          "Type": 2
+        },
+        {
+          "Description": "Температура, влажность, давление, ветер, осадки и солнечное излучение, представленные этим завершённым периодом.",
+          "Name": "Наружные условия",
+          "Type": 3
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryPeriodV1"
+    },
+    {
+      "Description": "Содержит недавние завершённые периоды наружных условий, используемые для краткосрочного восстановления теплового состояния. Долгосрочное обучение параметрам здания относится к собственной телеметрии и сохраняемой модели приложения системы ОВК.",
+      "DisplayName": "История погоды для системы ОВК здания",
+      "List": [
+        {
+          "Description": "Содержит недавние завершённые периоды наружных условий, используемые для краткосрочного восстановления теплового состояния. Долгосрочное обучение параметрам здания относится к собственной телеметрии и сохраняемой модели приложения системы ОВК.",
+          "Name": "История погоды для системы ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время, когда этот полный раздел исторических данных был получен, проверен и принят.",
+          "Name": "Время получения",
+          "Type": 1
+        },
+        {
+          "Description": "Невключительный предельный срок актуальности. После этого момента более старые исторические данные остаются доступными в качестве входных данных модели в ограниченном режиме.",
+          "Name": "Действительна до",
+          "Type": 2
+        },
+        {
+          "Description": "Завершённые периоды, упорядоченные от самого старого к самому новому. Обычный ответ охватывает предыдущие 72 часа; более короткий список является допустимой неполной историей.",
+          "Name": "Периоды исторических данных",
+          "Type": 3
+        },
+        {
+          "Description": "Наружные условия для системы ОВК за один завершённый период.",
+          "Name": "Период исторических данных",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryV1"
+    },
+    {
+      "Description": "Содержит упорядоченный атомарный диапазон изменений погодных данных для системы ОВК здания. Клиент применяет его только в том случае, если `from_cursor` соответствует его последнему курсору. Пустой отчёт означает завершение восстановления до актуального состояния; для периодического подтверждения активности при отсутствии изменений используется PeerAlive.",
+      "DisplayName": "Инкрементальный отчёт о погоде для системы ОВК здания",
+      "List": [
+        {
+          "Description": "Содержит упорядоченный атомарный диапазон изменений погодных данных для системы ОВК здания. Клиент применяет его только в том случае, если `from_cursor` соответствует его последнему курсору. Пустой отчёт означает завершение восстановления до актуального состояния; для периодического подтверждения активности при отсутствии изменений используется PeerAlive.",
+          "Name": "Инкрементальный отчёт о погоде для системы ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Невключительная нижняя граница курсора и точное состояние клиента, необходимые перед применением отчёта.",
+          "Name": "Начальный курсор",
+          "Type": 1
+        },
+        {
+          "Description": "Включительный курсор, достигнутый после атомарного применения всех изменений.",
+          "Name": "Конечный курсор",
+          "Type": 2
+        },
+        {
+          "Description": "Изменения, упорядоченные по последовательности курсора. Каждое изменение увеличивает номер последовательности ровно на единицу; пустой список сохраняет курсор.",
+          "Name": "Изменения погодных данных",
+          "Type": 3
+        },
+        {
+          "Description": "Одно атомарное изменение состояния в порядке курсора.",
+          "Name": "Изменение погодных данных",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Хранит местоположение Libertas Hub, используемое для получения данных о погоде для всего дома или здания.",
+      "DisplayName": "Местоположение для получения погоды для системы ОВК здания",
+      "List": [
+        {
+          "Description": "Хранит местоположение Libertas Hub, используемое для получения данных о погоде для всего дома или здания.",
+          "Name": "Местоположение для получения погоды для системы ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Долгота по WGS84 в десятичных градусах. Для местоположений к западу от Гринвича используются отрицательные значения.",
+          "Name": "Долгота",
+          "Type": 1
+        },
+        {
+          "Description": "Широта по WGS84 в десятичных градусах.",
+          "Name": "Широта",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherLocationV1"
+    },
+    {
+      "Description": "Определяет все значения, которые агент погодных данных ОВК здания может записывать в базу данных Libertas. Каждый вариант хранится под собственным стабильным идентификатором ресурса, поэтому частичный сбой поставщика не может стереть другой раздел. Курсоры подписок, журналы, одноранговые узлы и сроки PeerAlive не являются постоянными.",
+      "DisplayName": "Постоянные погодные данные ОВК здания",
+      "List": [
+        {
+          "Description": "Определяет все значения, которые агент погодных данных ОВК здания может записывать в базу данных Libertas. Каждый вариант хранится под собственным стабильным идентификатором ресурса, поэтому частичный сбой поставщика не может стереть другой раздел. Курсоры подписок, журналы, одноранговые узлы и сроки PeerAlive не являются постоянными.",
+          "Name": "Постоянные погодные данные ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Хранит последние действительные координаты объекта, полученные от Libertas Hub.",
+          "Name": "Местоположение здания",
+          "Type": 1
+        },
+        {
+          "Description": "Координаты объекта по WGS84, используемые для запросов к поставщику.",
+          "Name": "Местоположение",
+          "Type": 2
+        },
+        {
+          "Description": "Хранит последнюю успешно принятую историю физических погодных условий.",
+          "Name": "Недавняя история",
+          "Type": 3
+        },
+        {
+          "Description": "Недавние периоды наружных условий с временными метками получения и актуальности.",
+          "Name": "История",
+          "Type": 4
+        },
+        {
+          "Description": "Хранит последние успешно принятые текущие физические погодные данные.",
+          "Name": "Текущие условия",
+          "Type": 5
+        },
+        {
+          "Description": "Текущие входные данные ОВК о наружных условиях с временными метками срока действия и получения.",
+          "Name": "Текущие условия",
+          "Type": 6
+        },
+        {
+          "Description": "Хранит последний успешно принятый прогноз физических погодных условий.",
+          "Name": "Прогноз",
+          "Type": 7
+        },
+        {
+          "Description": "Будущие входные данные ОВК о наружных условиях с временными метками получения и актуальности.",
+          "Name": "Прогноз",
+          "Type": 8
+        },
+        {
+          "Description": "Хранит последние успешно принятые смоделированные данные о загрязняющих веществах отдельно от физических погодных данных.",
+          "Name": "Качество наружного воздуха",
+          "Type": 9
+        },
+        {
+          "Description": "Текущие и будущие периоды загрязнения наружного воздуха с временными метками получения и актуальности.",
+          "Name": "Качество наружного воздуха",
+          "Type": 10
+        }
+      ],
+      "Name": "BuildingHvacWeatherPersistentData"
+    },
+    {
+      "Description": "Определяет однократные транзакции и транзакции подписки для погодных данных ОВК всего дома или здания. Однократный режим или режим подписки выбирается операцией конечной точки Libertas, а не полем этого контракта произвольных сообщений.",
+      "DisplayName": "Протокол погодных данных ОВК здания",
+      "List": [
+        {
+          "Description": "Определяет однократные транзакции и транзакции подписки для погодных данных ОВК всего дома или здания. Однократный режим или режим подписки выбирается операцией конечной точки Libertas, а не полем этого контракта произвольных сообщений.",
+          "Name": "Протокол погодных данных ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
+          "Name": "Get building HVAC weather",
+          "Type": 1
+        },
+        {
+          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
+          "Name": "Resume cursor",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
+          "Name": "Historical recovery range",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
+          "Name": "Include current conditions",
+          "Type": 4
+        },
+        {
+          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
+          "Name": "Forecast recovery range",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
+          "Name": "Outdoor-air-quality recovery range",
+          "NullText": "No outdoor air quality",
+          "SetText": "Include outdoor air quality for",
+          "Type": 6
+        },
+        {
+          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
+          "Name": "Building HVAC weather recovery",
+          "Type": 7
+        },
+        {
+          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
+          "Name": "Maximum wait interval",
+          "Type": 8
+        },
+        {
+          "Description": "The replay, reset snapshot, or typed error result.",
+          "Name": "Recovery",
+          "Type": 9
+        },
+        {
+          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
+          "Name": "Building HVAC weather increment",
+          "Type": 10
+        },
+        {
+          "Description": "The ordered, atomic cursor range and its weather changes.",
+          "Name": "Incremental report",
+          "Type": 11
+        }
+      ],
+      "Name": "BuildingHvacWeatherProtocol"
+    },
+    {
+      "Description": "Обозначает запрос на восстановление, который невозможно выполнить посредством повторного воспроизведения или ограниченного диапазоном кэшированного снимка.",
+      "DisplayName": "Ошибка восстановления погодных данных ОВК здания",
+      "List": [
+        {
+          "Description": "Обозначает запрос на восстановление, который невозможно выполнить посредством повторного воспроизведения или ограниченного диапазоном кэшированного снимка.",
+          "Enum": [
+            {
+              "Description": "Как минимум один запрошенный полуоткрытый диапазон пуст или задан в обратном порядке.",
+              "Name": "Недопустимый временной диапазон",
+              "Type": 1
+            },
+            {
+              "Description": "Предоставленный курсор невозможно согласовать с текущим состоянием курсора или сохранённым журналом.",
+              "Name": "Опережающий курсор",
+              "Type": 2
+            },
+            {
+              "Description": "Как минимум один запрошенный диапазон восстановления превышает ограниченную ёмкость ответа.",
+              "Name": "Слишком большой запрос",
+              "Type": 3
+            },
+            {
+              "Description": "Необходимая кэшированная запись или ресурс восстановления временно недоступны.",
+              "Name": "Временно недоступно",
+              "Type": 4
+            }
+          ],
+          "Name": "Ошибка восстановления погодных данных ОВК здания",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "Повторно воспроизводит сохранённые изменения, устанавливает новый курсор и снимок либо сообщает об устранимой ошибке запроса.",
+      "DisplayName": "Восстановление погодных данных ОВК здания",
+      "List": [
+        {
+          "Description": "Повторно воспроизводит сохранённые изменения, устанавливает новый курсор и снимок либо сообщает об устранимой ошибке запроса.",
+          "Name": "Восстановление погодных данных ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
+          "Name": "Replayed changes",
+          "Type": 1
+        },
+        {
+          "Description": "The contiguous retained change range beginning at the request cursor.",
+          "Name": "Incremental report",
+          "Type": 2
+        },
+        {
+          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
+          "Name": "Reset with snapshot",
+          "Type": 3
+        },
+        {
+          "Description": "The reason the response contains a snapshot rather than replay.",
+          "Name": "Reset reason",
+          "Type": 4
+        },
+        {
+          "Description": "The cursor representing the returned snapshot.",
+          "Name": "Current cursor",
+          "Type": 5
+        },
+        {
+          "Description": "The available cached sections constrained by requested ranges.",
+          "Name": "Weather snapshot",
+          "Type": 6
+        },
+        {
+          "Description": "Rejects the request without changing client cursor or cached weather.",
+          "Name": "Recovery error",
+          "Type": 7
+        },
+        {
+          "Description": "The reason recovery could not be completed.",
+          "Name": "Error",
+          "Type": 8
+        },
+        {
+          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
+          "Name": "Retry delay",
+          "Type": 9
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryV1"
+    },
+    {
+      "Description": "Объясняет, почему при восстановлении состояние было установлено из ограниченного диапазоном снимка вместо повторного воспроизведения последовательных изменений.",
+      "DisplayName": "Причина сброса погодных данных ОВК здания",
+      "List": [
+        {
+          "Description": "Объясняет, почему при восстановлении состояние было установлено из ограниченного диапазоном снимка вместо повторного воспроизведения последовательных изменений.",
+          "Enum": [
+            {
+              "Description": "Предыдущий курсор не был предоставлен.",
+              "Name": "Первоначальная подписка",
+              "Type": 1
+            },
+            {
+              "Description": "Запрошенная последовательность старше сохранённого журнала повторного воспроизведения.",
+              "Name": "Срок действия курсора истёк",
+              "Type": 2
+            },
+            {
+              "Description": "Сервер потерял или намеренно удалил только временный курсор и журнал повторного воспроизведения; независимо сохранённые разделы погодных данных остаются пригодными для использования.",
+              "Name": "Сброс курсора сервера",
+              "Type": 3
+            }
+          ],
+          "Name": "Причина сброса погодных данных ОВК здания",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherResetReasonV1"
+    },
+    {
+      "Description": "Обозначает один независимо кэшируемый раздел погодных данных ОВК здания.",
+      "DisplayName": "Раздел погодных данных ОВК здания",
+      "List": [
+        {
+          "Description": "Обозначает один независимо кэшируемый раздел погодных данных ОВК здания.",
+          "Enum": [
+            {
+              "Description": "Выбирает недавнюю историю физических условий наружной среды.",
+              "Name": "Недавняя история",
+              "Type": 1
+            },
+            {
+              "Description": "Выбирает смоделированные текущие физические условия на открытом воздухе.",
+              "Name": "Текущие условия",
+              "Type": 2
+            },
+            {
+              "Description": "Выбирает прогноз будущих физических условий на открытом воздухе.",
+              "Name": "Прогноз погоды",
+              "Type": 3
+            },
+            {
+              "Description": "Выбирает смоделированные текущие и прогнозируемые концентрации загрязняющих веществ в наружном воздухе.",
+              "Name": "Качество наружного воздуха",
+              "Type": 4
+            }
+          ],
+          "Name": "Раздел погодных данных ОВК здания",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherSectionV1"
+    },
+    {
+      "Description": "Содержит последнее успешно принятое значение каждого запрошенного раздела. Для отсутствующих разделов пригодные к использованию кэшированные данные отсутствуют; устаревшие разделы сохраняются с исходными сроками актуальности.",
+      "DisplayName": "Сводка погоды для системы ОВК здания",
+      "List": [
+        {
+          "Description": "Содержит последнее успешно принятое значение каждого запрошенного раздела. Для отсутствующих разделов пригодные к использованию кэшированные данные отсутствуют; устаревшие разделы сохраняются с исходными сроками актуальности.",
+          "Name": "Сводка погоды для системы ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Запрошенные недавние периоды условий на открытом воздухе при наличии пригодных к использованию кэшированных исторических данных.",
+          "Name": "Недавняя история",
+          "Type": 1
+        },
+        {
+          "Description": "Последние принятые текущие условия на открытом воздухе, если они были запрошены и доступны.",
+          "Name": "Текущие условия",
+          "Type": 2
+        },
+        {
+          "Description": "Запрошенные будущие периоды условий на открытом воздухе при наличии пригодных к использованию кэшированных прогнозных данных.",
+          "Name": "Прогноз погоды",
+          "Type": 3
+        },
+        {
+          "Description": "Запрошенные текущие и прогнозные периоды концентрации загрязняющих веществ при наличии пригодных к использованию смоделированных данных о качестве воздуха.",
+          "Name": "Качество наружного воздуха",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherSnapshotV1"
+    },
+    {
+      "Description": "Выбирает полуоткрытый интервал периодов исторических данных, прогноза или качества наружного воздуха по времени их начала.",
+      "DisplayName": "Диапазон времени погодных данных для системы ОВК здания",
+      "List": [
+        {
+          "Description": "Выбирает полуоткрытый интервал периодов исторических данных, прогноза или качества наружного воздуха по времени их начала.",
+          "Name": "Диапазон времени погодных данных для системы ОВК здания",
+          "Type": 0
+        },
+        {
+          "Description": "Включительная нижняя граница времени начала выбранных периодов.",
+          "Name": "Время начала",
+          "Type": 1
+        },
+        {
+          "Description": "Исключительная верхняя граница времени начала выбранных периодов. Она должна быть позже `starts_at`.",
+          "Name": "Время окончания",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherTimeRangeV1"
+    },
+    {
+      "Description": "Содержит актуальные данные об осадках, заморозках, влажности, ветре и водном балансе, используемые для определения того, может ли запланированный полив безопасно начаться или продолжаться.",
+      "DisplayName": "Текущая погода для дождевателя",
+      "List": [
+        {
+          "Description": "Содержит актуальные данные об осадках, заморозках, влажности, ветре и водном балансе, используемые для определения того, может ли запланированный полив безопасно начаться или продолжаться.",
+          "Name": "Текущая погода для дождевателя",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время последнего получения, проверки и принятия полного раздела текущей погоды.",
+          "Name": "Время получения",
+          "Type": 1
+        },
+        {
+          "Description": "Исключительный крайний срок актуальности. Текущая погода считается актуальной, пока текущее время предшествует этому значению. По достижении этого значения или после него раздел сохраняется в кэше, но не должен рассматриваться как подтверждение безопасности полива.",
+          "Name": "Действительно до",
+          "Type": 2
+        },
+        {
+          "Description": "Предоставленные поставщиком дата и время, к которым относятся значения текущих условий. Они могут отличаться от `retrieved_at`.",
+          "Name": "Время актуальности данных",
+          "Type": 3
+        },
+        {
+          "Description": "Предшествующий текущему моменту интервал в секундах, за который накоплены данные об осадках и эвапотранспирации. Для текущей погоды Open-Meteo обычно используется интервал в 900 секунд.",
+          "Name": "Интервал наблюдения",
+          "Type": 4
+        },
+        {
+          "Description": "Температура воздуха на высоте двух метров над землей в градусах Цельсия. Дождеватель использует ее для предотвращения полива при температуре около или ниже точки замерзания.",
+          "Name": "Температура",
+          "Type": 5
+        },
+        {
+          "Description": "Относительная влажность на высоте двух метров над землей, выраженная в процентах от 0 до 100. Дождеватель использует ее, чтобы избежать излишне продолжительного увлажнения листвы, когда требуется верхний полив.",
+          "Name": "Относительная влажность",
+          "Type": 6
+        },
+        {
+          "Description": "Общее количество дождя, ливней и замерзших осадков в водном эквиваленте, накопившихся за период `interval_seconds`, в миллиметрах. Дождеватель использует ненулевое значение для предотвращения полива во время выпадения осадков.",
+          "Name": "Осадки",
+          "Type": 7
+        },
+        {
+          "Description": "Эталонная эвапотранспирация по методу ФАО-56, накопленная за период `interval_seconds`, в миллиметрах. Она позволяет продлить расчет водного баланса до появления данных за следующий завершенный исторический период.",
+          "Name": "Эталонная эвапотранспирация",
+          "Type": 8
+        },
+        {
+          "Description": "Устойчивая скорость ветра на высоте 10 метров над землей в метрах в секунду. Использующий эти данные дождеватель применяет настроенное для него пороговое значение скорости ветра.",
+          "Name": "Скорость ветра",
+          "Type": 9
+        },
+        {
+          "Description": "Пиковая скорость порыва ветра на высоте 10 метров над землей в метрах в секунду. Использующий эти данные дождеватель учитывает ее вместе с устойчивой скоростью ветра, чтобы избежать сноса распыляемой воды.",
+          "Name": "Порыв ветра",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerCurrentWeatherV1"
+    },
+    {
+      "Description": "Определяет одно атомарное изменение в инкрементальном потоке погодных данных для дождевателя. Порядок вариантов и полей является частью дополняемого только в конец формата передачи данных Avro.",
+      "DisplayName": "Изменение погодных данных для дождевателя",
+      "List": [
+        {
+          "Description": "Определяет одно атомарное изменение в инкрементальном потоке погодных данных для дождевателя. Порядок вариантов и полей является частью дополняемого только в конец формата передачи данных Avro.",
+          "Name": "Изменение погодных данных для дождевателя",
+          "Type": 0
+        },
+        {
+          "Description": "Удаляет кэшированные исторические периоды, время начала которых входит в заданный полуоткрытый диапазон.",
+          "Name": "Удалить исторические периоды",
+          "Type": 1
+        },
+        {
+          "Description": "Полуоткрытый диапазон времени начала исторических периодов, которые необходимо удалить.",
+          "Name": "Диапазон времени",
+          "Type": 2
+        },
+        {
+          "Description": "Заменяет полный раздел текущих условий после успешного получения и проверки данных.",
+          "Name": "Заменить текущие условия",
+          "Type": 3
+        },
+        {
+          "Description": "Новый принятый раздел текущих условий.",
+          "Name": "Текущие условия",
+          "Type": 4
+        },
+        {
+          "Description": "Отмечает успешное обновление прогноза и вставляет или заменяет периоды по `starts_at`. Пустой список периодов обновляет только метаданные о получении и актуальности.",
+          "Name": "Добавить или обновить прогнозные периоды",
+          "Type": 5
+        },
+        {
+          "Description": "Время успешного получения и проверки раздела прогноза.",
+          "Name": "Получено в",
+          "Type": 6
+        },
+        {
+          "Description": "Новый момент окончания срока актуальности раздела прогноза, не входящий в этот срок.",
+          "Name": "Действительно до",
+          "Type": 7
+        },
+        {
+          "Description": "Периоды для вставки или замены, упорядоченные от самого раннего к самому позднему.",
+          "Name": "Периоды прогноза",
+          "Type": 8
+        },
+        {
+          "Description": "Один период планирования полива с ключом `starts_at`.",
+          "Name": "Период прогноза",
+          "Type": 9
+        },
+        {
+          "Description": "Удаляет кэшированные периоды прогноза, время начала которых входит в указанный полуинтервал.",
+          "Name": "Удалить периоды прогноза",
+          "Type": 10
+        },
+        {
+          "Description": "Полуинтервал времени начала периодов прогноза, подлежащих удалению.",
+          "Name": "Диапазон времени",
+          "Type": 11
+        },
+        {
+          "Description": "Очищает отдельный раздел только в том случае, если известно, что его кэшированное значение недействительно, например после неудачной проверки или несовместимой миграции. Один лишь сбой обновления данных поставщика не должен приводить к формированию этого изменения.",
+          "Name": "Очистить раздел погоды",
+          "Type": 12
+        },
+        {
+          "Description": "Независимо кэшируемый раздел, подлежащий очистке.",
+          "Name": "Раздел погоды",
+          "Type": 13
+        },
+        {
+          "Description": "Заменяет весь раздел прогноза после успешного обновления данных поставщика. Периоды, отсутствующие в замене, больше не кэшируются.",
+          "Name": "Заменить прогноз",
+          "Type": 14
+        },
+        {
+          "Description": "Весь новый принятый раздел прогноза.",
+          "Name": "Прогноз",
+          "Type": 15
+        },
+        {
+          "Description": "Определяет физическое местоположение для всех последующих изменений погоды. Клиент использует это значение, чтобы сохранять накопленную историю для разных местоположений концентратора Hub в отдельных поколениях независимо от порядка обратных вызовов.",
+          "Name": "Заменить метеорологическую площадку",
+          "Type": 16
+        },
+        {
+          "Description": "Местоположение в системе WGS84, используемое поставщиком для наблюдений и прогнозов.",
+          "Name": "Местоположение площадки",
+          "Type": 17
+        },
+        {
+          "Description": "Отмечает успешное обновление истории и вставляет либо заменяет периоды с полными метеорологическими данными по ключу `starts_at`.",
+          "Name": "Добавить или обновить исторические периоды V2",
+          "Type": 18
+        },
+        {
+          "Description": "Время успешного получения и проверки раздела истории.",
+          "Name": "Получено в",
+          "Type": 19
+        },
+        {
+          "Description": "Новый момент окончания срока актуальности раздела истории, не входящий в этот срок.",
+          "Name": "Действительно до",
+          "Type": 20
+        },
+        {
+          "Description": "Периоды с полными метеорологическими данными для вставки или замены, упорядоченные от самого старого к самому новому.",
+          "Name": "Исторические периоды",
+          "Type": 21
+        },
+        {
+          "Description": "Одно завершённое наблюдение V2 с ключом `starts_at`.",
+          "Name": "Исторический период",
+          "Type": 22
+        },
+        {
+          "Description": "Заменяет весь раздел истории полных наблюдений после успешного обновления данных поставщика.",
+          "Name": "Заменить историю V2",
+          "Type": 23
+        },
+        {
+          "Description": "Весь новый принятый раздел исторических данных V2.",
+          "Name": "История",
+          "Type": 24
+        }
+      ],
+      "Name": "SprinklerWeatherChangeV1"
+    },
+    {
+      "Description": "Определяет одно применённое состояние в инкрементальном потоке метеорологических данных для полива. Клиент сравнивает оба поля и не должен интерпретировать одно лишь уменьшение номера последовательности как сброс сервера.",
+      "DisplayName": "Курсор погоды для полива",
+      "List": [
+        {
+          "Description": "Определяет одно применённое состояние в инкрементальном потоке метеорологических данных для полива. Клиент сравнивает оба поля и не должен интерпретировать одно лишь уменьшение номера последовательности как сброс сервера.",
+          "Name": "Курсор погоды для полива",
+          "Type": 0
+        },
+        {
+          "Description": "Назначенные сервером дата и время, определяющие поколение курсора. Это единственное поле одновременно является эпохой потока и упорядоченной меткой времени; отдельной непрозрачной эпохи не существует. При обычном продвижении последовательности оно не изменяется. Если сервер теряет временный курсор или журнал повторного воспроизведения, он назначает метку времени эпохи, которая строго позже предыдущей, и снова начинает `sequence` с нуля. Клиент может сначала получить более поздний номер последовательности после сброса, а не ноль. Эта метка времени описывает состояние курсора, а не время наблюдения метеорологических значений.",
+          "Name": "Метка времени эпохи",
+          "Type": 1
+        },
+        {
+          "Description": "Определяет последнее применённое изменение состояния. Сервер увеличивает это значение на единицу для каждого принятого изменения погоды. При сбросе временного серверного курсора это значение сбрасывается до нуля, а затем увеличивается для последующих изменений; сброс не удаляет исторические, текущие или прогнозные метеорологические данные.",
+          "Name": "Последовательность",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherCursorV1"
+    },
+    {
+      "Description": "Содержит прогнозируемые поступление и потерю воды, температуру, влажность и опасные ветровые условия, используемые для определения времени и объёма полива в течение одного периода планирования.",
+      "DisplayName": "Период прогноза погоды для полива",
+      "List": [
+        {
+          "Description": "Содержит прогнозируемые поступление и потерю воды, температуру, влажность и опасные ветровые условия, используемые для определения времени и объёма полива в течение одного периода планирования.",
+          "Name": "Период прогноза погоды для полива",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время начала этого периода прогноза включительно.",
+          "Name": "Время начала",
+          "Type": 1
+        },
+        {
+          "Description": "Продолжительность этого периода прогноза в секундах. Прогнозы Open-Meteo обычно используют периоды продолжительностью 3 600 секунд.",
+          "Name": "Продолжительность",
+          "Type": 2
+        },
+        {
+          "Description": "Прогнозируемая температура воздуха на высоте двух метров над землёй в градусах Цельсия. Система полива использует её, чтобы не выполнять полив при прогнозируемых заморозках.",
+          "Name": "Температура",
+          "Type": 3
+        },
+        {
+          "Description": "Прогнозируемая относительная влажность на высоте двух метров над землёй, выраженная целым числом процентов от 0 до 100. Вместе с положением солнца и типом дождевальной головки это помогает избежать продолжительного увлажнения листвы.",
+          "Name": "Относительная влажность",
+          "Type": 4
+        },
+        {
+          "Description": "Вероятность измеримых осадков в течение этого периода, выраженная целым числом процентов от 0 до 100. Это значение отражает неопределённость прогноза отдельно от ожидаемого количества осадков.",
+          "Name": "Вероятность осадков",
+          "Type": 5
+        },
+        {
+          "Description": "Прогнозируемое суммарное количество дождя, ливневых и замёрзших осадков в водном эквиваленте, накопившихся за этот период, в миллиметрах.",
+          "Name": "Ожидаемые осадки",
+          "Type": 6
+        },
+        {
+          "Description": "Прогнозируемая эталонная эвапотранспирация по методике FAO-56, накопленная за этот период, в миллиметрах.",
+          "Name": "Эталонная эвапотранспирация",
+          "Type": 7
+        },
+        {
+          "Description": "Прогнозируемая установившаяся скорость ветра на высоте 10 метров над землёй в метрах в секунду.",
+          "Name": "Скорость ветра",
+          "Type": 8
+        },
+        {
+          "Description": "Прогнозируемая максимальная скорость порыва ветра на высоте 10 метров над землёй в метрах в секунду. Дождевальная установка использует этот показатель вместе с установившейся скоростью ветра, чтобы не планировать полив при вероятном сносе распыляемой воды.",
+          "Name": "Порыв ветра",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "Содержит будущие почасовые метеорологические данные, используемые для планирования полива дождевальной установкой на следующие семь дней. Последнее успешно полученное значение сохраняется, если последующее обновление прогноза завершается сбоем.",
+      "DisplayName": "Прогноз погоды для дождевальной установки",
+      "List": [
+        {
+          "Description": "Содержит будущие почасовые метеорологические данные, используемые для планирования полива дождевальной установкой на следующие семь дней. Последнее успешно полученное значение сохраняется, если последующее обновление прогноза завершается сбоем.",
+          "Name": "Прогноз погоды для дождевальной установки",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время последнего получения, проверки и принятия полного раздела прогноза.",
+          "Name": "Время получения",
+          "Type": 1
+        },
+        {
+          "Description": "Исключительная граница актуальности. Прогноз считается актуальным, пока текущее время предшествует этому значению, и устаревшим начиная с этого значения. Устаревший прогноз остаётся доступным в качестве кэшированных входных данных с пониженным качеством.",
+          "Name": "Действительно до",
+          "Type": 2
+        },
+        {
+          "Description": "Будущие периоды, упорядоченные от самого раннего к самому позднему. Обычный ответ охватывает следующие семь дней с часовым разрешением; более короткий список является допустимым частичным прогнозом.",
+          "Name": "Периоды прогноза",
+          "Type": 3
+        },
+        {
+          "Description": "Прогнозируемые осадки, эталонная эвапотранспирация, температура, влажность и ветер для одного планового периода.",
+          "Name": "Период прогноза",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherForecastV1"
+    },
+    {
+      "Description": "Хранит временные метки актуальности для динамически реконструируемых индексированных периодов истории.",
+      "DisplayName": "Метаданные истории погоды для дождевальной установки",
+      "List": [
+        {
+          "Description": "Хранит временные метки актуальности для динамически реконструируемых индексированных периодов истории.",
+          "Name": "Метаданные истории погоды для дождевальной установки",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время последнего получения, проверки и принятия полного индексированного набора исторических данных.",
+          "Name": "Время получения",
+          "Type": 1
+        },
+        {
+          "Description": "Исключительная граница актуальности для реконструированного раздела истории.",
+          "Name": "Действительно до",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryMetadataV1"
+    },
+    {
+      "Description": "Дополняет водный баланс завершённого периода данными наблюдений за температурой, влажностью, установившимся ветром и порывами ветра, необходимыми для объяснения решений о поливе.",
+      "DisplayName": "Период истории погоды для дождевальной установки V2",
+      "List": [
+        {
+          "Description": "Дополняет водный баланс завершённого периода данными наблюдений за температурой, влажностью, установившимся ветром и порывами ветра, необходимыми для объяснения решений о поливе.",
+          "Name": "Период истории погоды для дождевальной установки V2",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время начала этого исторического периода включительно.",
+          "Name": "Время начала",
+          "Type": 1
+        },
+        {
+          "Description": "Продолжительность этого исторического периода в секундах. В исторических данных Open-Meteo обычно используются периоды продолжительностью 3 600 секунд.",
+          "Name": "Продолжительность",
+          "Type": 2
+        },
+        {
+          "Description": "Общее количество осадков, включая водный эквивалент замёрзших осадков, накопившихся за этот период, в миллиметрах.",
+          "Name": "Осадки",
+          "Type": 3
+        },
+        {
+          "Description": "Эталонная эвапотранспирация по FAO-56, накопленная за этот период, в миллиметрах.",
+          "Name": "Эталонная эвапотранспирация",
+          "Type": 4
+        },
+        {
+          "Description": "Температура воздуха на высоте двух метров над землёй в градусах Цельсия в течение этого исторического периода.",
+          "Name": "Температура",
+          "Type": 5
+        },
+        {
+          "Description": "Относительная влажность на высоте двух метров над землёй, выраженная целым числом процентов от 0 до 100 в течение этого исторического периода.",
+          "Name": "Относительная влажность",
+          "Type": 6
+        },
+        {
+          "Description": "Установившаяся скорость ветра на высоте 10 метров над землёй в метрах в секунду в течение этого исторического периода.",
+          "Name": "Скорость ветра",
+          "Type": 7
+        },
+        {
+          "Description": "Максимальная скорость порыва ветра на высоте 10 метров над землёй в метрах в секунду в течение этого исторического периода.",
+          "Name": "Порыв ветра",
+          "Type": 8
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryPeriodV2"
+    },
+    {
+      "Description": "Содержит последние завершённые периоды с полным набором метеорологических наблюдений, используемых как для расчётов полива, так и для диаграмм, поясняющих принятые решения.",
+      "DisplayName": "История погоды для дождевальной установки V2",
+      "List": [
+        {
+          "Description": "Содержит последние завершённые периоды с полным набором метеорологических наблюдений, используемых как для расчётов полива, так и для диаграмм, поясняющих принятые решения.",
+          "Name": "История погоды для дождевальной установки V2",
+          "Type": 0
+        },
+        {
+          "Description": "Дата и время последнего получения, проверки и принятия полного раздела истории.",
+          "Name": "Время получения",
+          "Type": 1
+        },
+        {
+          "Description": "Исключительная граница актуальности. Устаревшая история остаётся доступной в качестве кэшированных входных данных с пониженным качеством.",
+          "Name": "Действительно до",
+          "Type": 2
+        },
+        {
+          "Description": "Завершённые периоды, упорядоченные от самого старого к самому новому.",
+          "Name": "Периоды истории",
+          "Type": 3
+        },
+        {
+          "Description": "Температура, влажность, осадки, эталонная эвапотранспирация и ветер за один завершённый период.",
+          "Name": "Период истории",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryV2"
+    },
+    {
+      "Description": "Содержит упорядоченный атомарный диапазон изменений погоды. Клиент применяет отчёт только в том случае, если сохранённый им курсор равен `from_cursor`, после чего сохраняет `through_cursor`. Пустой отчёт является результатом восстановления, означающим, что все данные получены; для периодического подтверждения работоспособности при отсутствии изменений используется PeerAlive.",
+      "DisplayName": "Инкрементальный отчёт о погоде для дождевальной установки",
+      "List": [
+        {
+          "Description": "Содержит упорядоченный атомарный диапазон изменений погоды. Клиент применяет отчёт только в том случае, если сохранённый им курсор равен `from_cursor`, после чего сохраняет `through_cursor`. Пустой отчёт является результатом восстановления, означающим, что все данные получены; для периодического подтверждения работоспособности при отсутствии изменений используется PeerAlive.",
+          "Name": "Инкрементальный отчёт о погоде для дождевальной установки",
+          "Type": 0
+        },
+        {
+          "Description": "Исключительная нижняя граница курсора для этого отчёта и точное значение курсора, которое уже должно иметься у клиента перед применением отчёта.",
+          "Name": "Начальный курсор",
+          "Type": 1
+        },
+        {
+          "Description": "Включительная верхняя граница курсора, достигаемая после применения всех изменений в этом отчёте. Она должна сохранять ту же временную метку эпохи, что и `from_cursor`. Сброс курсора сервера никогда не передаётся в виде инкрементального отчёта; для него требуется полный сброс.",
+          "Name": "Конечный курсор",
+          "Type": 2
+        },
+        {
+          "Description": "Упорядоченные изменения, применяемые атомарно. Каждый элемент увеличивает последовательность ровно на единицу; пустой список означает, что восстановление завершено, и не продвигает курсор и не служит периодическим сигналом активности.",
+          "Name": "Изменения погодных данных",
+          "Type": 3
+        },
+        {
+          "Description": "Одно атомарное изменение состояния в порядке курсора.",
+          "Name": "Изменение погодных данных",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Records for one endpoint share a transaction and scan prefix.",
+      "DisplayName": "Saved weather keys",
+      "List": [
+        {
+          "Description": "Records for one endpoint share a transaction and scan prefix.",
+          "Name": "Saved weather keys",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Weather belonging to one service endpoint",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherKey"
+    },
+    {
+      "Description": "Хранит местоположение Libertas Hub, используемое для получения погодных данных для одного участка с системой полива. Оно кэшируется независимо от данных поставщика, чтобы агент погоды мог продолжать обновление во время временного сбоя Hub.",
+      "DisplayName": "Местоположение системы полива для получения погодных данных",
+      "List": [
+        {
+          "Description": "Хранит местоположение Libertas Hub, используемое для получения погодных данных для одного участка с системой полива. Оно кэшируется независимо от данных поставщика, чтобы агент погоды мог продолжать обновление во время временного сбоя Hub.",
+          "Name": "Местоположение системы полива для получения погодных данных",
+          "Type": 0
+        },
+        {
+          "Description": "Долгота по WGS84 в десятичных градусах. Для местоположений к западу от Гринвича используются отрицательные значения.",
+          "Name": "Долгота",
+          "Type": 1
+        },
+        {
+          "Description": "Широта по WGS84 в десятичных градусах.",
+          "Name": "Широта",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherLocationV1"
+    },
+    {
+      "Description": "Определяет полный набор значений, которые агент погоды для системы полива может записывать в базу данных Libertas. Метаданные истории, текущие условия, прогноз и местоположение являются независимыми одиночными записями. Каждый завершённый период истории представляет собой индексированную запись с временной меткой начала в качестве ключа. Курсоры подписок и журналы повторного воспроизведения намеренно отсутствуют: их сброс не должен удалять эти записи.",
+      "DisplayName": "Постоянные данные о погоде для системы полива",
+      "List": [
+        {
+          "Description": "Определяет полный набор значений, которые агент погоды для системы полива может записывать в базу данных Libertas. Метаданные истории, текущие условия, прогноз и местоположение являются независимыми одиночными записями. Каждый завершённый период истории представляет собой индексированную запись с временной меткой начала в качестве ключа. Курсоры подписок и журналы повторного воспроизведения намеренно отсутствуют: их сброс не должен удалять эти записи.",
+          "Name": "Постоянные данные о погоде для системы полива",
+          "Type": 0
+        },
+        {
+          "Description": "Хранит последнее допустимое местоположение, переданное Libertas Hub. Кэшированное значение позволяет продолжать обновление данных поставщика, пока Hub временно недоступен.",
+          "Name": "Местоположение участка с системой полива",
+          "Type": 1
+        },
+        {
+          "Description": "Координаты WGS84, используемые для запросов к поставщику.",
+          "Name": "Местоположение",
+          "Type": 2
+        },
+        {
+          "Description": "Хранит сведения об актуальности динамически реконструируемой индексированной истории.",
+          "Name": "Метаданные истории",
+          "Type": 3
+        },
+        {
+          "Description": "Временные метки получения и актуальности принятого индексированного набора.",
+          "Name": "Метаданные истории",
+          "Type": 4
+        },
+        {
+          "Description": "Хранит один завершённый период со всеми погодными данными в индексированных данных. Он занимает позицию удалённого периода V1 в объединении; имя ресурса истории V2 обеспечивает раздельное хранение этих несовместимых индексированных записей.",
+          "Name": "Период истории V2",
+          "Type": 5
+        },
+        {
+          "Description": "Температура, влажность, осадки, эталонная эвапотранспирация, ветер и порывы ветра.",
+          "Name": "Период истории",
+          "Type": 6
+        },
+        {
+          "Description": "Хранит последний успешно полученный и проверенный раздел текущих условий. При сбое обновления существующая запись базы данных остаётся неизменной.",
+          "Name": "Текущие условия",
+          "Type": 7
+        },
+        {
+          "Description": "Входные данные о текущем дожде, заморозках, влажности, ветре и водном балансе, включая временные метки их получения и актуальности.",
+          "Name": "Текущие условия",
+          "Type": 8
+        },
+        {
+          "Description": "Хранит последний успешно полученный и проверенный раздел прогноза. При сбое обновления существующая запись базы данных остаётся неизменной.",
+          "Name": "Прогноз",
+          "Type": 9
+        },
+        {
+          "Description": "Входные данные о будущих осадках, эталонной эвапотранспирации, температуре, влажности и ветре, включая временные метки их получения и актуальности.",
+          "Name": "Прогноз",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherPersistentData"
+    },
+    {
+      "Description": "Определяет типизированную транзакцию конечной точки Libertas для запроса погодных данных для системы полива или подписки на них. Ответы предоставляют независимо доступные разделы истории, текущих условий и прогноза, поэтому сбой не скрывает пригодные для использования кэшированные данные. Контракт состояния конечной точки Libertas отклоняет некорректные данные Avro и значения, используемые в неверной роли сообщения; такие транспортные ошибки не являются вариантами восстановления.",
+      "DisplayName": "Протокол погодных данных для системы полива",
+      "List": [
+        {
+          "Description": "Определяет типизированную транзакцию конечной точки Libertas для запроса погодных данных для системы полива или подписки на них. Ответы предоставляют независимо доступные разделы истории, текущих условий и прогноза, поэтому сбой не скрывает пригодные для использования кэшированные данные. Контракт состояния конечной точки Libertas отклоняет некорректные данные Avro и значения, используемые в неверной роли сообщения; такие транспортные ошибки не являются вариантами восстановления.",
+          "Name": "Протокол погодных данных для системы полива",
+          "Type": 0
+        },
+        {
+          "Description": "Выполняет однократное инкрементальное чтение либо запускает или возобновляет инкрементальную подписку. Режим работы выбирается операцией конечной точки Libertas и не кодируется в этом сообщении. Сервер по возможности повторно воспроизводит сохранённые изменения после `after_cursor` либо возвращает кэшированный снимок с ограниченным диапазоном.",
+          "Name": "Получить погодные данные для системы полива",
+          "Type": 1
+        },
+        {
+          "Description": "Последний курсор, полностью и атомарно применённый клиентом. `None` запрашивает исходный снимок с ограниченным диапазоном. Сервер сравнивает оба поля; меньшее значение последовательности указывает на сброс только в том случае, если курсор ответа также содержит более новую временную метку эпохи.",
+          "Name": "Курсор возобновления",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "Полуоткрытый диапазон времени начала исторических периодов, включаемых при невозможности повторного воспроизведения. `None` исключает историю из снимка сброса.",
+          "Name": "Диапазон восстановления истории",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Определяет, должен ли снимок сброса включать кэшированные текущие условия.",
+          "Name": "Включить текущие условия",
+          "Type": 4
+        },
+        {
+          "Description": "Полуоткрытый диапазон времени начала прогнозных периодов, включаемых при невозможности повторного воспроизведения. `None` исключает данные прогноза из снимка сброса.",
+          "Name": "Диапазон восстановления прогноза",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "Отвечает на запрос погодных данных повторно воспроизведёнными изменениями, снимком сброса или устранимой ошибкой. Каждый ответ содержит максимальный интервал ожидания. Клиент подписки использует его после успешного повторного воспроизведения или сброса; клиент однократного запроса игнорирует его. После ошибки приоритет имеют ошибка восстановления и задержка перед повторной попыткой.",
+          "Name": "Восстановление погодных данных для системы полива",
+          "Type": 6
+        },
+        {
+          "Description": "Максимальное количество секунд, в течение которого клиент подписки ожидает после успешного восстановления, инкрементального отчёта или PeerAlive. Сервер сначала отправляет изменённые данные или PeerAlive. Клиенты однократных запросов игнорируют это обязательное ненулевое значение.",
+          "Name": "Максимальный интервал ожидания",
+          "Type": 7
+        },
+        {
+          "Description": "Результат запроса возобновления: повторное воспроизведение, сброс или ошибка.",
+          "Name": "Восстановление",
+          "Type": 8
+        },
+        {
+          "Description": "Сообщает только об изменениях состояния после успешного запроса погодных данных. Несоответствие курсора или несмежный диапазон требует нового запроса подписки; клиент не должен применять отчёт частично. Допустимый отчёт или PeerAlive перезапускает таймер ожидания из ответа восстановления; PeerAlive никогда не включается в эту схему данных и не изменяет курсор.",
+          "Name": "Приращение погодных данных для системы полива",
+          "Type": 9
+        },
+        {
+          "Description": "Упорядоченный атомарный диапазон курсора и соответствующие изменения погодных данных.",
+          "Name": "Инкрементальный отчёт",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherProtocol"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved weather record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved weather record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "HistoryMetadata",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "HistoryPeriod",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "starts_at",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "Current",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Forecast",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWeatherRecordKey"
+    },
+    {
+      "Description": "Обозначает запрос восстановления, который невозможно выполнить ни посредством повторного воспроизведения изменений, ни посредством кэшированного снимка с ограниченным диапазоном.",
+      "DisplayName": "Ошибка восстановления погодных данных для системы полива",
+      "List": [
+        {
+          "Description": "Обозначает запрос восстановления, который невозможно выполнить ни посредством повторного воспроизведения изменений, ни посредством кэшированного снимка с ограниченным диапазоном.",
+          "Enum": [
+            {
+              "Description": "По крайней мере один запрошенный полуоткрытый временной диапазон пуст или задан в обратном порядке.",
+              "Name": "Недопустимый временной диапазон",
+              "Type": 1
+            },
+            {
+              "Description": "Предоставленный курсор, состоящий из временной метки эпохи и порядкового номера, невозможно согласовать с текущим курсором сервера или сохранённым журналом повторного воспроизведения.",
+              "Name": "Курсор опережает текущий",
+              "Type": 2
+            },
+            {
+              "Description": "Запрошенные диапазоны восстановления превышают ограниченную ёмкость ответа сервера.",
+              "Name": "Слишком большой запрос",
+              "Type": 3
+            },
+            {
+              "Description": "Кэшированные данные или другой необходимый для восстановления ресурс временно недоступны; клиент может повторить попытку по истечении указанной задержки.",
+              "Name": "Временно недоступно",
+              "Type": 4
+            }
+          ],
+          "Name": "Ошибка восстановления погодных данных для системы полива",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "Возвращает повторно воспроизведённые изменения, устанавливает новый курсор со снимком, ограниченным диапазоном, или сообщает об устранимой ошибке запроса.",
+      "DisplayName": "Восстановление погодных данных для полива",
+      "List": [
+        {
+          "Description": "Возвращает повторно воспроизведённые изменения, устанавливает новый курсор со снимком, ограниченным диапазоном, или сообщает об устранимой ошибке запроса.",
+          "Name": "Восстановление погодных данных для полива",
+          "Type": 0
+        },
+        {
+          "Description": "Продолжает запрошенный поток, повторно воспроизводя все сохранённые изменения после предоставленного курсора. Пустой отчёт означает, что клиент уже получил все изменения.",
+          "Name": "Повторно воспроизведённые изменения",
+          "Type": 1
+        },
+        {
+          "Description": "Непрерывный диапазон изменений, начинающийся с запрошенного курсора.",
+          "Name": "Инкрементальный отчёт",
+          "Type": 2
+        },
+        {
+          "Description": "Отклоняет запрос, не изменяя курсор клиента или локальное состояние погодных данных.",
+          "Name": "Ошибка восстановления",
+          "Type": 3
+        },
+        {
+          "Description": "Причина, по которой не удалось завершить восстановление.",
+          "Name": "Ошибка",
+          "Type": 4
+        },
+        {
+          "Description": "Рекомендуемая задержка в секундах перед повторной попыткой. `None` означает, что для успешной повторной попытки необходимо изменить параметры запроса.",
+          "Name": "Задержка повторной попытки",
+          "Type": 5
+        },
+        {
+          "Description": "Устанавливает новый курсор и связывает снимок истории полных наблюдений с сайтом поставщика данных.",
+          "Name": "Сброс со снимком сайта V2",
+          "Type": 6
+        },
+        {
+          "Description": "Причина, по которой снимок заменил инкрементальное повторное воспроизведение.",
+          "Name": "Причина сброса",
+          "Type": 7
+        },
+        {
+          "Description": "Курсор, соответствующий возвращённому снимку.",
+          "Name": "Текущий курсор",
+          "Type": 8
+        },
+        {
+          "Description": "Местоположение в системе WGS84, использованное для получения возвращённых разделов погодных данных.",
+          "Name": "Местоположение сайта",
+          "Type": 9
+        },
+        {
+          "Description": "Доступные кэшированные разделы V2, ограниченные запрошенными диапазонами.",
+          "Name": "Снимок погодных данных",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryV1"
+    },
+    {
+      "Description": "Объясняет, почему при восстановлении был возвращён снимок, ограниченный диапазоном, вместо повторного воспроизведения инкрементальных изменений после запрошенного курсора.",
+      "DisplayName": "Причина сброса погодных данных для полива",
+      "List": [
+        {
+          "Description": "Объясняет, почему при восстановлении был возвращён снимок, ограниченный диапазоном, вместо повторного воспроизведения инкрементальных изменений после запрошенного курсора.",
+          "Enum": [
+            {
+              "Description": "Предыдущий курсор не был предоставлен, поэтому снимок устанавливает начальное состояние.",
+              "Name": "Начальная подписка",
+              "Type": 1
+            },
+            {
+              "Description": "Запрошенный порядковый номер старше записей, сохранённых в журнале повторного воспроизведения.",
+              "Name": "Срок действия курсора истёк",
+              "Type": 2
+            },
+            {
+              "Description": "Сервер утратил или намеренно удалил только временный курсор и журнал повторного воспроизведения. Сохранённые разделы погодных данных остаются пригодными для использования, а недостающие исторические данные можно повторно получить из Open-Meteo.",
+              "Name": "Сброс курсора сервера",
+              "Type": 3
+            }
+          ],
+          "Name": "Причина сброса погодных данных для полива",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherResetReasonV1"
+    },
+    {
+      "Description": "Определяет один независимо кэшируемый раздел погодных данных для полива.",
+      "DisplayName": "Раздел погодных данных для полива",
+      "List": [
+        {
+          "Description": "Определяет один независимо кэшируемый раздел погодных данных для полива.",
+          "Enum": [
+            {
+              "Description": "Выбирает раздел исторического водного баланса.",
+              "Name": "Недавняя история",
+              "Type": 1
+            },
+            {
+              "Description": "Выбирает раздел текущих условий безопасного полива.",
+              "Name": "Текущие условия",
+              "Type": 2
+            },
+            {
+              "Description": "Выбирает раздел планирования будущего полива.",
+              "Name": "Прогноз",
+              "Type": 3
+            }
+          ],
+          "Name": "Раздел погодных данных для полива",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherSectionV1"
+    },
+    {
+      "Description": "Содержит независимо доступные разделы истории полных наблюдений, текущих условий и прогноза. Для отсутствующих разделов нет пригодного кэшированного значения; устаревшие разделы сохраняют исходные временные метки действительности.",
+      "DisplayName": "Снимок погодных данных для полива V2",
+      "List": [
+        {
+          "Description": "Содержит независимо доступные разделы истории полных наблюдений, текущих условий и прогноза. Для отсутствующих разделов нет пригодного кэшированного значения; устаревшие разделы сохраняют исходные временные метки действительности.",
+          "Name": "Снимок погодных данных для полива V2",
+          "Type": 0
+        },
+        {
+          "Description": "Запрошенные исторические периоды V2 при наличии пригодной кэшированной истории.",
+          "Name": "Недавняя история",
+          "Type": 1
+        },
+        {
+          "Description": "Последние принятые текущие условия, если они были запрошены и доступны.",
+          "Name": "Текущие условия",
+          "Type": 2
+        },
+        {
+          "Description": "Запрошенные периоды прогноза при наличии пригодных кэшированных данных.",
+          "Name": "Прогноз",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherSnapshotV2"
+    },
+    {
+      "Description": "Выбирает полуоткрытый интервал исторических или прогнозных периодов для восстановления. Период выбирается, если время его начала не предшествует `starts_at` и наступает раньше `ends_before`.",
+      "DisplayName": "Временной диапазон погодных данных для полива",
+      "List": [
+        {
+          "Description": "Задаёт полуоткрытый интервал исторических или прогнозных периодов для получения данных. Период выбирается, если время его начала не раньше `starts_at` и раньше `ends_before`.",
+          "Name": "Диапазон времени погодных данных для системы полива",
+          "Type": 0
+        },
+        {
+          "Description": "Включительная нижняя граница времени начала выбранных периодов.",
+          "Name": "Время начала",
+          "Type": 1
+        },
+        {
+          "Description": "Исключительная верхняя граница времени начала выбранных периодов. Это значение должно быть позже `starts_at`.",
+          "Name": "Время окончания",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherTimeRangeV1"
+    }
+  ]
+}

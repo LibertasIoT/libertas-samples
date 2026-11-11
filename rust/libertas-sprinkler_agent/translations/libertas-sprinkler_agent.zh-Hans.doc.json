@@ -1,0 +1,2555 @@
+{
+  "Description": "仅在院子各区域需要水时才进行浇水。 选择每个区域种植的植物、浇水方式以及必须暂停浇水的时间。智能喷灌会根据近期降雨、当前天气和天气预报选择安全的浇水时间和水量。它还会计入手动浇水，在短暂断网期间继续工作，并提醒您为冰冻天气做好系统准备。",
+  "DisplayName": "智能喷灌",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Smart sprinkler",
+      "Description": "根据每片草坪、花园或种植区域的植物、浇水方式、近期降雨、预报天气以及用户选择的调整量进行浇水。用户可选择天气来源、区域控制和报告的可用位置、提醒接收人，以及每个区域的阀门、植物类型和浇水方式。用户可随时手动更改每个区域的浇水百分比和禁止浇水时段，也可对整个系统进行冬季防护并重新启用。喷灌系统会根据降雨、预报降水、风、冰冻温度、植物需求和禁止浇水时段自动安排并操作各个阀门，并在短暂天气服务中断期间使用已保存的估算值。喷灌系统会显示每个区域的当前状态、水量估算、阀门状态和即将执行的浇水计划。喷灌系统提供水量平衡、每日用水量以及实测和预报天气图表，并在冰冻天气到来前向选定人员发送提醒。 变更日志：更新了协议变体。",
+      "DisplayName": "智能喷灌",
+      "List": [
+        {
+          "Description": "选择用于降雨、温度、风和天气预报的本地天气服务。智能喷灌可在短暂服务中断期间使用已保存的估算值。",
+          "Name": "天气服务",
+          "Type": 0
+        },
+        {
+          "Description": "选择可查看水量平衡、用水量和天气图表的位置。",
+          "Name": "喷灌报告",
+          "Type": 1
+        },
+        {
+          "Description": "选择应接收提醒以便为冰冻天气准备喷灌系统的人员。",
+          "Name": "提醒接收人",
+          "Type": 2
+        },
+        {
+          "Description": "一名应接收喷灌提醒的人员。",
+          "Name": "通知对象",
+          "Type": 3
+        },
+        {
+          "Description": "添加每个需要独立浇水的草坪、花园或种植区域。",
+          "Name": "浇水区域",
+          "Type": 4
+        },
+        {
+          "Description": "一个具有独立阀门、植物和浇水方式的区域。",
+          "Name": "浇水区域",
+          "Type": 5
+        }
+      ],
+      "Name": "libertas_sprinkler"
+    }
+  ],
+  "Locale": "zh-Hans",
+  "StringResources": {
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "已保存 {0} 的每日水量平衡。",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "最多可设置 64 个禁止浇水时段，每个时段都必须具有有效的开始时间且持续时间大于零。",
+    "SPRINKLER_INVALID_WATERING_PERCENT": "水量必须在 20% 到 200% 之间，并以 10% 为步进。",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "已保存 {0} 在服务中断期间使用的天气估算值。",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "开始日期不能晚于结束日期。",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "已保存 {0} 的喷灌天气报告所用地点。",
+    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "已保存 {0} 的喷灌报告详细天气历史记录。",
+    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "已保存 {0} 的喷灌报告当前天气观测数据。",
+    "SPRINKLER_SITE_LOCATION_V1": "已保存 {0} 用于喷灌天气的地点。",
+    "SPRINKLER_UI_CHANGE_DATES": "Change dates",
+    "SPRINKLER_UI_SYSTEM_ACTIVE": "System active",
+    "SPRINKLER_UI_VALVE": "Valve",
+    "SPRINKLER_UI_WATERING_PLAN": "Watering plan",
+    "SPRINKLER_UI_WATER_BALANCE": "Water balance",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "已保存 {0} 的浇水历史记录。",
+    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "{0} 的当前浇水活动。",
+    "SPRINKLER_WATERING_MODE_V1": "已保存 {0} 的浇水模式。",
+    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
+    "SPRINKLER_WATER_EVENTS_V1": "已保存 {0} 的近期降雨和浇水记录。",
+    "SPRINKLER_WATER_USAGE_RAIN_LANE": "降雨",
+    "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
+    "SPRINKLER_WINTERIZATION_REMINDER_V1": "已保存 {0} 的冬季防护提醒历史记录。",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "此位置即将进入寒冷季节。请对喷灌系统进行冬季防护，然后关闭“启用”。",
+    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "冰冻天气（{0}）可能损坏您的喷灌系统。请进行冬季防护，然后关闭“启用”。",
+    "SPRINKLER_ZONE_MEMORY_V1": "已保存 {0} 的水量平衡和设置。",
+    "libertas.permission.ACCESS_FINE_LOCATION": "使用此 Hub 的位置获取用于自动浇水的当地天气。"
+  },
+  "Types": [
+    {
+      "Description": "永久保留的 UTC 日检查点和用水核算汇总。无需重放自安装以来的每个事件，即可查询较早的水量平衡时间窗口。",
+      "DisplayName": "每日喷灌报告",
+      "List": [
+        {
+          "Description": "永久保留的 UTC 日检查点和用水核算汇总。无需重放自安装以来的每个事件，即可查询较早的水量平衡时间窗口。",
+          "Name": "每日喷灌报告",
+          "Type": 0
+        },
+        {
+          "Description": "作为索引记录键使用的包含式 UTC 日历日边界。",
+          "Name": "日期开始",
+          "Type": 1
+        },
+        {
+          "Description": "不包含式 UTC 日历日边界。",
+          "Name": "日期结束",
+          "Type": 2
+        },
+        {
+          "Description": "此检查点所表示的第一个时刻。在安装日或站点转换日，它可能晚于 UTC 日边界。",
+          "Name": "覆盖开始",
+          "Type": 3
+        },
+        {
+          "Description": "此检查点所表示的不包含式最后时刻。对于当前未完整的一天，它可能早于日期边界。",
+          "Name": "覆盖结束",
+          "Type": 4
+        },
+        {
+          "Description": "以毫米表示的建模植物配置根区容量。",
+          "Name": "根区容量",
+          "Type": 5
+        },
+        {
+          "Description": "在所表示日期开始时计算的根区缺水量。",
+          "Name": "期初缺水量",
+          "Type": 6
+        },
+        {
+          "Description": "在所表示结束时刻或最新已知时刻计算的根区缺水量。",
+          "Name": "期末缺水量",
+          "Type": 7
+        },
+        {
+          "Description": "天气提供方记录并归入此 UTC 日的降水量。",
+          "Name": "降雨",
+          "Type": 8
+        },
+        {
+          "Description": "在应用特定植物的作物系数之前，由天气提供方记录并归入此 UTC 日的参考蒸散量。",
+          "Name": "参考蒸散量",
+          "Type": 9
+        },
+        {
+          "Description": "用于填补天气提供方历史数据未覆盖时段的参考蒸散量。",
+          "Name": "建模参考蒸散量",
+          "Type": 10
+        },
+        {
+          "Description": "建模蒸散量的来源；当天气提供方历史数据覆盖整个所表示时段时省略。",
+          "Name": "建模需水来源",
+          "Type": 11
+        },
+        {
+          "Description": "所表示时段中由已接受的天气提供方天气周期覆盖的秒数。",
+          "Name": "天气提供方数据覆盖时长",
+          "Type": 12
+        },
+        {
+          "Description": "根据归入此 UTC 日的已观测阀门开启时段估算的水深。",
+          "Name": "灌溉",
+          "Type": 13
+        },
+        {
+          "Description": "此检查点表示完整 UTC 日还是当前未完整的一天。",
+          "Name": "完整日期",
+          "Type": 14
+        },
+        {
+          "Description": "此检查点上次重新构建时的 UTC 时间。",
+          "Name": "计算时间",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerDailyReportV1"
+    },
+    {
+      "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+      "DisplayName": "Daily water use",
+      "List": [
+        {
+          "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+          "Name": "Daily water use",
+          "Type": 0
+        },
+        {
+          "Description": "Recorded and planned water amounts.",
+          "Name": "Rain and watering",
+          "Type": 1
+        },
+        {
+          "Description": "Areas with no rain or watering during the selected dates.",
+          "Name": "Areas with no recorded water",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerDailyWaterUsageChartV1"
+    },
+    {
+      "Description": "定义喷灌应用写入的所有值。区域数据存储在各个 Matter 阀门下；共享系统数据使用天气端点。",
+      "DisplayName": "喷灌持久化数据",
+      "List": [
+        {
+          "Description": "定义喷灌应用写入的所有值。区域数据存储在各个 Matter 阀门下；共享系统数据使用天气端点。",
+          "Name": "喷灌持久化数据",
+          "Type": 0
+        },
+        {
+          "Description": "存储一个区域的运行时调节值、约束和折叠后的基线。",
+          "Name": "区域存储",
+          "Type": 1
+        },
+        {
+          "Description": "已配置阀门的完整、可安全重启状态。",
+          "Name": "区域存储",
+          "Type": 2
+        },
+        {
+          "Description": "存储一个独立索引的天气或灌溉事件。",
+          "Name": "用水事件",
+          "Type": 3
+        },
+        {
+          "Description": "一个已完成的天气周期或已核算的阀门开启时段。",
+          "Name": "用水事件",
+          "Type": 4
+        },
+        {
+          "Description": "存储最后一个有效的 Hub 位置，以用于离线季节性估算。",
+          "Name": "站点位置",
+          "Type": 5
+        },
+        {
+          "Description": "喷灌站点缓存的 WGS84 坐标。",
+          "Name": "站点位置",
+          "Type": 6
+        },
+        {
+          "Description": "存储喷灌系统共享的“启用”或“冬季防护”模式。",
+          "Name": "浇水模式",
+          "Type": 7
+        },
+        {
+          "Description": "所有区域共享的可安全重启运行模式。",
+          "Name": "浇水模式",
+          "Type": 8
+        },
+        {
+          "Description": "存储最近一次系统级提醒的时间和原因。",
+          "Name": "冬季防护提醒",
+          "Type": 9
+        },
+        {
+          "Description": "冬季防护通知的可安全重启节流状态。",
+          "Name": "提醒存储",
+          "Type": 10
+        },
+        {
+          "Description": "永久归档一个精确的备用蒸散量时段。",
+          "Name": "建模天气缺口",
+          "Type": 11
+        },
+        {
+          "Description": "具有不可变来源和速率溯源信息的精确时段。",
+          "Name": "建模缺口",
+          "Type": 12
+        },
+        {
+          "Description": "永久归档一条已计划、正在运行、已完成、已跳过、失败、被替代、手动或旧版浇水活动。",
+          "Name": "浇水活动",
+          "Type": 13
+        },
+        {
+          "Description": "完整且持久的计划时间与实际情况生命周期数据。",
+          "Name": "活动",
+          "Type": 14
+        },
+        {
+          "Description": "永久归档一个 UTC 日的用水核算和水量平衡检查点，使较早的时间范围仍可查询。",
+          "Name": "每日报告",
+          "Type": 15
+        },
+        {
+          "Description": "降雨、蒸散量、估算灌溉量以及期初/期末建模缺水量。",
+          "Name": "每日报告",
+          "Type": 16
+        },
+        {
+          "Description": "Its generation is bound only by explicit provider site messages.",
+          "Name": "Report weather archive state V2",
+          "Type": 17
+        },
+        {
+          "Description": "Active indefinitely retained provider-site generation.",
+          "Name": "Archive state",
+          "Type": 18
+        },
+        {
+          "Description": "永久归档一个已接受的当前状况样本。它保留 15 分钟粒度的决策证据，同时避免重复计算已由完整小时历史记录表示的降雨或蒸散量。",
+          "Name": "报告天气观测",
+          "Type": 19
+        },
+        {
+          "Description": "天气提供方所表示时刻的温度、湿度、风、阵风和即时水量输入。",
+          "Name": "天气观测",
+          "Type": 20
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 21
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 22
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 23
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 24
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 25
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 26
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 27
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 28
+        }
+      ],
+      "Name": "SprinklerData"
+    },
+    {
+      "Description": "通过蒸发和植物消耗产生的已记录及预报水分损失。",
+      "DisplayName": "估算水分损失",
+      "List": [
+        {
+          "Description": "通过蒸发和植物消耗产生的已记录及预报水分损失。",
+          "Name": "估算水分损失",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerEtChartV1"
+    },
+    {
+      "Description": "一条已记录或预报的、因蒸发和植物消耗而损失的水量。",
+      "DisplayName": "每日水分损失",
+      "List": [
+        {
+          "Description": "一条已记录或预报的、因蒸发和植物消耗而损失的水量。",
+          "Name": "每日水分损失",
+          "Type": 0
+        },
+        {
+          "Description": "此天气周期开始的时间。",
+          "Name": "开始时间",
+          "Type": 1
+        },
+        {
+          "Description": "此天气周期结束的时间。",
+          "Name": "结束时间",
+          "Type": 2
+        },
+        {
+          "Description": "通过蒸发和植物消耗损失的水量。",
+          "Name": "估算水分损失",
+          "Type": 3
+        },
+        {
+          "Description": "此值是已记录值还是预报值。",
+          "Name": "来源",
+          "Type": 4
+        },
+        {
+          "Description": "服务器为此时段和来源生成的标识。",
+          "Name": "稳定键",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerEtRowV1"
+    },
+    {
+      "Description": "选择此区域安装的喷头或滴灌系统类型。",
+      "DisplayName": "浇水方式",
+      "List": [
+        {
+          "Description": "选择此区域安装的喷头或滴灌系统类型。",
+          "Enum": [
+            {
+              "Description": "通过地表滴头缓慢、定向供水。",
+              "Name": "地表滴灌",
+              "Type": 1
+            },
+            {
+              "Description": "在树木、灌木或种植池周围集中供水。",
+              "Name": "涌泉式喷头",
+              "Type": 2
+            },
+            {
+              "Description": "通过固定弹出式喷头进行较广范围且相对快速的供水。",
+              "Name": "弹出式喷头",
+              "Type": 3
+            },
+            {
+              "Description": "通过高效或多流旋转喷头进行缓慢的大范围供水。",
+              "Name": "低流量旋转喷头",
+              "Type": 4
+            },
+            {
+              "Description": "通过传统旋转喷头进行较快的大范围供水。",
+              "Name": "高流量旋转喷头",
+              "Type": 5
+            }
+          ],
+          "Name": "浇水方式",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerHeadTypeV1"
+    },
+    {
+      "Description": "按独立的 0% 到 100% 刻度显示观测和预报湿度。",
+      "DisplayName": "相对湿度",
+      "List": [
+        {
+          "Description": "按独立的 0% 到 100% 刻度显示观测和预报湿度。",
+          "Name": "相对湿度",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerHumidityChartV1"
+    },
+    {
+      "Description": "一个观测或预报的相对湿度样本。",
+      "DisplayName": "湿度数据行",
+      "List": [
+        {
+          "Description": "一个观测或预报的相对湿度样本。",
+          "Name": "湿度数据行",
+          "Type": 0
+        },
+        {
+          "Description": "天气提供方周期的开始时间。",
+          "Name": "时间",
+          "Type": 1
+        },
+        {
+          "Description": "相对湿度百分比。",
+          "Name": "相对湿度",
+          "Type": 2
+        },
+        {
+          "Description": "标识此线在组合面板中表示相对湿度。",
+          "Name": "测量项",
+          "Type": 3
+        },
+        {
+          "Description": "观测或预报。",
+          "Name": "来源",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerHumidityRowV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved sprinkler identities",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved sprinkler identities",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "System settings and weather archives",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "One valve's settings, accounting and reports",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerKey"
+    },
+    {
+      "Description": "一个未被天气提供方数据覆盖的精确时段；首次记录该时段时，其备用参考蒸散量来源和速率即被冻结。后续接受的天气提供方周期可能裁剪或取代此时段；之后备用估算值的变化不会改写其溯源信息。",
+      "DisplayName": "建模天气缺口",
+      "List": [
+        {
+          "Description": "一个未被天气提供方数据覆盖的精确时段；首次记录该时段时，其备用参考蒸散量来源和速率即被冻结。后续接受的天气提供方周期可能裁剪或取代此时段；之后备用估算值的变化不会改写其溯源信息。",
+          "Name": "建模天气缺口",
+          "Type": 0
+        },
+        {
+          "Description": "天气提供方未覆盖时段的包含式开始时间。",
+          "Name": "开始时间",
+          "Type": 1
+        },
+        {
+          "Description": "天气提供方未覆盖时段的不包含式结束时间。",
+          "Name": "结束时间",
+          "Type": 2
+        },
+        {
+          "Description": "冻结的备用参考蒸散速率，以每 UTC 日毫米数表示。",
+          "Name": "参考蒸散速率",
+          "Type": 3
+        },
+        {
+          "Description": "冻结的近期天气、位置/季节或保守估算来源。",
+          "Name": "需水来源",
+          "Type": 4
+        },
+        {
+          "Description": "此时段首次获得冻结溯源信息时的 UTC 时间。",
+          "Name": "记录时间",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerModeledWeatherGapV1"
+    },
+    {
+      "Description": "选择此区域种植的植物，使浇水符合其需求。",
+      "DisplayName": "植物类型",
+      "List": [
+        {
+          "Description": "选择此区域种植的植物，使浇水符合其需求。",
+          "Enum": [
+            {
+              "Description": "密集种植、根系较浅且需水规律的草坪草。",
+              "Name": "草坪",
+              "Type": 1
+            },
+            {
+              "Description": "根系和需水量适中的观赏开花植物。",
+              "Name": "花卉",
+              "Type": 2
+            },
+            {
+              "Description": "根系适中且需水量相对较高的季节性食用作物。",
+              "Name": "蔬菜",
+              "Type": 3
+            },
+            {
+              "Description": "根系较深且需水量适中的成熟果树。",
+              "Name": "果树",
+              "Type": 4
+            },
+            {
+              "Description": "根系深、需水量中等至较高的柑橘树。",
+              "Name": "柑橘类",
+              "Type": 5
+            },
+            {
+              "Description": "根系较深的成熟木本景观植物。",
+              "Name": "树木和灌木",
+              "Type": 6
+            },
+            {
+              "Description": "适应干旱、受天气驱动的需水量较低的种植。",
+              "Name": "节水型景观植物",
+              "Type": 7
+            }
+          ],
+          "Name": "植物类型",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerPlantTypeV1"
+    },
+    {
+      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+      "DisplayName": "Available report range",
+      "List": [
+        {
+          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+          "Name": "Available report range",
+          "Type": 0
+        },
+        {
+          "Description": "Earliest currently selectable date after applying this chart's maximum range length.",
+          "Name": "Earliest date",
+          "Type": 1
+        },
+        {
+          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts.",
+          "Name": "Latest date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportAvailableRangeV1"
+    },
+    {
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "DisplayName": "Effective report range",
+      "List": [
+        {
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+          "Name": "Effective report range",
+          "Type": 0
+        },
+        {
+          "Description": "First calendar date included in the generated report.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Last calendar date included in the generated report.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportEffectiveRangeV1"
+    },
+    {
+      "Description": "说明已配置区域为何在所选日期内没有可显示的数据。",
+      "DisplayName": "无报告数据",
+      "List": [
+        {
+          "Description": "说明已配置区域为何在所选日期内没有可显示的数据。",
+          "Enum": [
+            {
+              "Description": "所选日期内未记录此区域的降雨或浇水。",
+              "Name": "无已记录的水量输入",
+              "Type": 1
+            }
+          ],
+          "Name": "无报告数据",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerReportEmptyStateV1"
+    },
+    {
+      "Description": "查看每个区域的水量平衡、用水量或天气。日期留空可查看最近时段。超出可用历史范围的日期会自动调整为最早或最晚的可用日期。",
+      "DisplayName": "喷灌报告",
+      "List": [
+        {
+          "Description": "查看每个区域的水量平衡、用水量或天气。日期留空可查看最近时段。超出可用历史范围的日期会自动调整为最早或最晚的可用日期。",
+          "Name": "喷灌报告",
+          "Type": 0
+        },
+        {
+          "Description": "显示每个区域的估算植物可用水量和浇水事件。所选时段最长可覆盖 365 天；如果选择更长时段，则保留最新的 365 天。",
+          "Name": "查看水量平衡",
+          "Type": 1
+        },
+        {
+          "Description": "实际用于生成此响应的包含式日期。",
+          "Name": "实际范围",
+          "Type": 2
+        },
+        {
+          "Description": "Water-balance chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 3
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 4
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 5
+        },
+        {
+          "Description": "当前日期选择器的限制以及下次请求的默认值。",
+          "Name": "可用范围",
+          "Type": 6
+        },
+        {
+          "Description": "实际报告范围的用水量图表。",
+          "Name": "图表",
+          "Type": 7
+        },
+        {
+          "Description": "Water-use chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 8
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 9
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 10
+        },
+        {
+          "Description": "实际用于生成此响应的包含式日期。",
+          "Name": "实际范围",
+          "Type": 11
+        },
+        {
+          "Description": "已记录和预报的温度、湿度、风以及估算水分损失。",
+          "Name": "天气",
+          "Type": 12
+        },
+        {
+          "Description": "Weather chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 13
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 14
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerReportProtocol"
+    },
+    {
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "DisplayName": "Report date range",
+      "List": [
+        {
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+          "Name": "Report date range",
+          "Type": 0
+        },
+        {
+          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportRequestRangeV1"
+    },
+    {
+      "Description": "选择当前启用的物理站点代，同时保留较旧的代，但不会将其混入当前喷灌报告。明确的天气流站点替换或站点绑定重置会绑定一个代；清除分区绝不会被视为站点边界确认。",
+      "DisplayName": "报告天气归档状态",
+      "List": [
+        {
+          "Description": "选择当前启用的物理站点代，同时保留较旧的代，但不会将其混入当前喷灌报告。明确的天气流站点替换或站点绑定重置会绑定一个代；清除分区绝不会被视为站点边界确认。",
+          "Name": "报告天气归档状态",
+          "Type": 0
+        },
+        {
+          "Description": "每次接受不同天气提供方站点之间的转换时单调递增。",
+          "Name": "代",
+          "Type": 1
+        },
+        {
+          "Description": "已知时，明确绑定到此代的天气提供方位置。",
+          "Name": "站点位置",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportWeatherArchiveStateV2"
+    },
+    {
+      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+      "DisplayName": "Restart accounting checkpoint",
+      "List": [
+        {
+          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+          "Name": "Restart accounting checkpoint",
+          "Type": 0
+        },
+        {
+          "Description": "Authoritative lifecycle snapshot at the checkpoint.",
+          "Name": "Activity",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusive end of the already accounted valve-open interval.",
+          "Name": "Accounted through",
+          "Type": 2
+        },
+        {
+          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted.",
+          "Name": "Ledger segment",
+          "Type": 3
+        },
+        {
+          "Description": "Expected end of an automatic timed run; manual runs have no known end.",
+          "Name": "Expected finish",
+          "Type": 4
+        },
+        {
+          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour.",
+          "Name": "Delivery rate",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerRestartAccountingV1"
+    },
+    {
+      "Description": "说明喷灌系统正在做什么，或为何延迟浇水。",
+      "DisplayName": "浇水状态",
+      "List": [
+        {
+          "Description": "说明喷灌系统正在做什么，或为何延迟浇水。",
+          "Enum": [
+            {
+              "Description": "正在准备最新信息。",
+              "Name": "正在初始化",
+              "Type": 1
+            },
+            {
+              "Description": "植物当前水分充足。",
+              "Name": "无需浇水",
+              "Type": 2
+            },
+            {
+              "Description": "预计降雨目前应能提供足够水分。",
+              "Name": "预报有雨",
+              "Type": 3
+            },
+            {
+              "Description": "由于正在下雨、接近冰冻温度或风太大，浇水已延迟。",
+              "Name": "等待安全天气",
+              "Type": 4
+            },
+            {
+              "Description": "植物可能会在禁止浇水时段内变得过于干燥，因此会在该时段开始前安排一次安全浇水。",
+              "Name": "暂停前浇水",
+              "Type": 5
+            },
+            {
+              "Description": "浇水已推迟到禁止浇水时段结束后。",
+              "Name": "已推迟",
+              "Type": 6
+            },
+            {
+              "Description": "已根据植物需求和可用天气信息选定下一次浇水时间。",
+              "Name": "已计划",
+              "Type": 7
+            },
+            {
+              "Description": "喷灌系统正在等待阀门确认状态变化。",
+              "Name": "正在启动或停止",
+              "Type": 8
+            },
+            {
+              "Description": "阀门状态不可用，因此不会开始自动浇水。",
+              "Name": "阀门状态不可用",
+              "Type": 9
+            },
+            {
+              "Description": "此区域正在浇水。",
+              "Name": "阀门已打开",
+              "Type": 10
+            },
+            {
+              "Description": "阀门报告了问题，因此自动浇水已暂停。",
+              "Name": "阀门故障",
+              "Type": 11
+            },
+            {
+              "Description": "实时天气不可用，因此计划使用最佳的已保存估算值或季节性估算值。",
+              "Name": "离线天气估算",
+              "Type": 12
+            }
+          ],
+          "Name": "浇水状态",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerScheduleConditionV1"
+    },
+    {
+      "Description": "显示观测和预报温度，并避免将其刻度与蒸散量或风速混用。",
+      "DisplayName": "温度",
+      "List": [
+        {
+          "Description": "显示观测和预报温度，并避免将其刻度与蒸散量或风速混用。",
+          "Name": "温度",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerTemperatureChartV1"
+    },
+    {
+      "Description": "按时间叠加温度和湿度，同时为两种不兼容的单位保留独立的左、右 y 轴。",
+      "DisplayName": "温度和相对湿度",
+      "List": [
+        {
+          "Description": "按时间叠加温度和湿度，同时为两种不兼容的单位保留独立的左、右 y 轴。",
+          "Name": "温度和相对湿度",
+          "Type": 0
+        },
+        {
+          "Description": "温度使用第一个自动 y 轴。",
+          "Name": "温度",
+          "Type": 1
+        },
+        {
+          "Description": "相对湿度使用独立的第二个 y 轴。",
+          "Name": "相对湿度",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityChartV1"
+    },
+    {
+      "Description": "区分组合天气面板中两条独立缩放的曲线。",
+      "DisplayName": "温度和湿度测量项",
+      "List": [
+        {
+          "Description": "区分组合天气面板中两条独立缩放的曲线。",
+          "Enum": [
+            {
+              "Description": "以摄氏度表示的空气温度。",
+              "Name": "温度",
+              "Type": 1
+            },
+            {
+              "Description": "相对湿度百分比。",
+              "Name": "相对湿度",
+              "Type": 2
+            }
+          ],
+          "Name": "温度和湿度测量项",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityMeasurementV1"
+    },
+    {
+      "Description": "一个观测或预报的空气温度样本。",
+      "DisplayName": "温度数据行",
+      "List": [
+        {
+          "Description": "一个观测或预报的空气温度样本。",
+          "Name": "温度数据行",
+          "Type": 0
+        },
+        {
+          "Description": "天气提供方周期的开始时间。",
+          "Name": "时间",
+          "Type": 1
+        },
+        {
+          "Description": "以摄氏度表示的空气温度。",
+          "Name": "温度",
+          "Type": 2
+        },
+        {
+          "Description": "标识此线在组合面板中表示温度。",
+          "Name": "测量项",
+          "Type": 3
+        },
+        {
+          "Description": "观测或预报。",
+          "Name": "来源",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerTemperatureRowV1"
+    },
+    {
+      "Description": "用于浇水或暂停浇水的开始时间和持续时长。",
+      "DisplayName": "时间段",
+      "List": [
+        {
+          "Description": "用于浇水或暂停浇水的开始时间和持续时长。",
+          "Name": "时间段",
+          "Type": 0
+        },
+        {
+          "Description": "此时段开始的时间。",
+          "Name": "开始时间",
+          "Type": 1
+        },
+        {
+          "Description": "此时段持续的时间。",
+          "Name": "持续时间",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTimeSlotV1"
+    },
+    {
+      "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+      "DisplayName": "Valve problems",
+      "List": [
+        {
+          "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+          "Enum": [
+            {
+              "Description": "The valve reported a problem without a more specific classification.",
+              "Name": "General problem",
+              "Type": 1
+            },
+            {
+              "Description": "The valve cannot move because it is blocked.",
+              "Name": "Blocked",
+              "Type": 2
+            },
+            {
+              "Description": "The valve detected an unexpected water leak.",
+              "Name": "Leak detected",
+              "Type": 3
+            },
+            {
+              "Description": "The controller cannot detect a connected valve.",
+              "Name": "Not connected",
+              "Type": 4
+            },
+            {
+              "Description": "The valve or its wiring has a short circuit.",
+              "Name": "Short circuit",
+              "Type": 5
+            },
+            {
+              "Description": "The valve exceeded the available electrical current.",
+              "Name": "Too much current",
+              "Type": 6
+            }
+          ],
+          "Name": "Valve problems",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerValveFaultFlagsV1"
+    },
+    {
+      "Description": "将每个区域的估算水位与浇水事件组合显示。",
+      "DisplayName": "水量平衡",
+      "List": [
+        {
+          "Description": "将每个区域的估算水位与浇水事件组合显示。",
+          "Name": "水量平衡",
+          "Type": 0
+        },
+        {
+          "Description": "每个区域的估算水量和重要浇水水位。",
+          "Name": "可用水量和水位",
+          "Type": 1
+        },
+        {
+          "Description": "计划、跳过、未成功、手动和已完成的浇水运行。",
+          "Name": "浇水事件",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterBalanceChartV1"
+    },
+    {
+      "Description": "每个区域的估算可用水量和重要浇水水位。",
+      "DisplayName": "水量平衡曲线",
+      "List": [
+        {
+          "Description": "每个区域的估算可用水量和重要浇水水位。",
+          "Name": "水量平衡曲线",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterBalanceLinesV1"
+    },
+    {
+      "Description": "一个显示估算植物可用水量或重要浇水水位的点。可用水量是估算值，并非土壤传感器读数。",
+      "DisplayName": "水量平衡点",
+      "List": [
+        {
+          "Description": "一个显示估算植物可用水量或重要浇水水位的点。可用水量是估算值，并非土壤传感器读数。",
+          "Name": "水量平衡点",
+          "Type": 0
+        },
+        {
+          "Description": "此水位所对应的时间。",
+          "Name": "时间",
+          "Type": 1
+        },
+        {
+          "Description": "估算的植物可用水量，范围为 0% 到 100%。",
+          "Name": "可用水量",
+          "Type": 2
+        },
+        {
+          "Description": "可用水量或一个重要浇水水位。",
+          "Name": "曲线",
+          "Type": 3
+        },
+        {
+          "Description": "图表此部分所表示的浇水区域。",
+          "Name": "区域",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWaterBalancePointV1"
+    },
+    {
+      "Description": "标识可用水量和重要浇水水位。",
+      "DisplayName": "水量平衡曲线",
+      "List": [
+        {
+          "Description": "标识可用水量和重要浇水水位。",
+          "Enum": [
+            {
+              "Description": "估算的植物可用水量。",
+              "Name": "可用水量",
+              "Type": 1
+            },
+            {
+              "Description": "估算土壤已保持其可利用的最大水量。",
+              "Name": "田间持水量",
+              "Type": 2
+            },
+            {
+              "Description": "通常需要开始浇水的水位。",
+              "Name": "浇水阈值",
+              "Type": 3
+            },
+            {
+              "Description": "需要紧急浇水的水位。",
+              "Name": "临界阈值",
+              "Type": 4
+            }
+          ],
+          "Name": "水量平衡曲线",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterBalanceSeriesV1"
+    },
+    {
+      "Description": "显示用于估算植物失水速度的信息来源。",
+      "DisplayName": "用水估算",
+      "List": [
+        {
+          "Description": "显示用于估算植物失水速度的信息来源。",
+          "Enum": [
+            {
+              "Description": "基于此位置的近期天气。",
+              "Name": "近期天气",
+              "Type": 1
+            },
+            {
+              "Description": "基于位置和一年中的时节。",
+              "Name": "位置和季节",
+              "Type": 2
+            },
+            {
+              "Description": "在近期天气和位置信息不可用时使用。",
+              "Name": "内置估算",
+              "Type": 3
+            }
+          ],
+          "Name": "用水估算",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterDemandSourceV1"
+    },
+    {
+      "Description": "在七天用水历史中存储一个独立索引的天气周期或已观测灌溉时段。",
+      "DisplayName": "喷灌水事件",
+      "List": [
+        {
+          "Description": "在七天用水历史中存储一个独立索引的天气周期或已观测灌溉时段。",
+          "Name": "喷灌水事件",
+          "Type": 0
+        },
+        {
+          "Description": "记录一个已完成历史周期内天气提供方的降水量和参考蒸散量。",
+          "Name": "天气周期",
+          "Type": 1
+        },
+        {
+          "Description": "已完成天气周期的包含式开始时间。",
+          "Name": "开始时间",
+          "Type": 2
+        },
+        {
+          "Description": "已完成天气周期的时长，以秒为单位。",
+          "Name": "持续时间",
+          "Type": 3
+        },
+        {
+          "Description": "该时段内天气提供方记录的累计降水量，以毫米为单位。",
+          "Name": "降水量",
+          "Type": 4
+        },
+        {
+          "Description": "该时段内天气提供方记录的累计 FAO-56 参考蒸散量，以毫米为单位。",
+          "Name": "参考蒸散量",
+          "Type": 5
+        },
+        {
+          "Description": "根据 Matter 阀门实际开启时间推算用水量（包括手动开启），并记录该观测时段内区域的水量调节值。",
+          "Name": "灌溉时段",
+          "Type": 6
+        },
+        {
+          "Description": "已核算阀门开启时段的包含式开始时间。",
+          "Name": "开始时间",
+          "Type": 7
+        },
+        {
+          "Description": "已观测阀门开启时段的时长，以秒为单位。",
+          "Name": "持续时间",
+          "Type": 8
+        },
+        {
+          "Description": "观测到此阀门开启时段时，该区域配置的浇水百分比。如果阀门开启期间设置发生变化，历史记录会使用彼此相邻的独立时段。",
+          "Name": "水量调节值",
+          "Type": 9
+        },
+        {
+          "Description": "根据观测到的开启时间和已配置喷头配置计算出的估算水深，以毫米为单位。",
+          "Name": "实际施水量",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWaterEventV1"
+    },
+    {
+      "Description": "在写入对应审计行之前存储最新的完整生命周期快照。明确的当前标志用于区分需要在重启后协调的非终止活动与仅需修复审计记录的终止快照。",
+      "DisplayName": "权威浇水活动状态",
+      "List": [
+        {
+          "Description": "在写入对应审计行之前存储最新的完整生命周期快照。明确的当前标志用于区分需要在重启后协调的非终止活动与仅需修复审计记录的终止快照。",
+          "Name": "权威浇水活动状态",
+          "Type": 0
+        },
+        {
+          "Description": "最新活动的完整生命周期快照；在第一次活动之前无值。终止快照会保留在此，直到更新的活动开始。",
+          "Name": "最新活动",
+          "Type": 1
+        },
+        {
+          "Description": "仅当最新活动处于已计划、命令待确认或正在运行状态，并且必须在启动时进行协调时为 true。",
+          "Name": "活动为当前活动",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWateringActivityStateV2"
+    },
+    {
+      "Description": "将计划时间与实际时间分开保存，使报告能够说明计划内容、实际发生的情况，以及某次运行为何被跳过或失败。",
+      "DisplayName": "持久化浇水活动",
+      "List": [
+        {
+          "Description": "将计划时间与实际时间分开保存，使报告能够说明计划内容、实际发生的情况，以及某次运行为何被跳过或失败。",
+          "Name": "持久化浇水活动",
+          "Type": 0
+        },
+        {
+          "Description": "在每次生命周期更新中重复使用的稳定有符号数据库索引。",
+          "Name": "活动索引",
+          "Type": 1
+        },
+        {
+          "Description": "同一锚定秒和来源内避免冲突的序列号。",
+          "Name": "活动序号",
+          "Type": 2
+        },
+        {
+          "Description": "自动、手动或无法分类的旧版活动。",
+          "Name": "来源",
+          "Type": 3
+        },
+        {
+          "Description": "当前或终止的持久生命周期状态。",
+          "Name": "结果",
+          "Type": 4
+        },
+        {
+          "Description": "对当前或终止结果的持久化说明。",
+          "Name": "原因",
+          "Type": 5
+        },
+        {
+          "Description": "计划的自动开始时间。手动活动和旧版活动省略此项。",
+          "Name": "计划开始时间",
+          "Type": 6
+        },
+        {
+          "Description": "计划的自动阀门开启时长，以秒为单位。该值绝不会被实际观测时长覆盖。",
+          "Name": "计划持续时间",
+          "Type": 7
+        },
+        {
+          "Description": "计划的自动浇水深度，以毫米为单位。",
+          "Name": "计划水量",
+          "Type": 8
+        },
+        {
+          "Description": "首次观测到阀门开启的时间；在观测到开启之前无值。",
+          "Name": "实际开始时间",
+          "Type": 9
+        },
+        {
+          "Description": "已核算的观测阀门开启时长，以秒为单位。",
+          "Name": "实际持续时间",
+          "Type": 10
+        },
+        {
+          "Description": "根据实际开启时间和喷头配置估算的水深，而非来自流量计。",
+          "Name": "实际施水量",
+          "Type": 11
+        },
+        {
+          "Description": "创建此活动时生效的区域调节值。",
+          "Name": "水量调节值",
+          "Type": 12
+        },
+        {
+          "Description": "最新持久化生命周期更新所表示的 UTC 时间。",
+          "Name": "更新时间",
+          "Type": 13
+        }
+      ],
+      "Name": "SprinklerWateringActivityV1"
+    },
+    {
+      "Description": "一次计划、跳过、未成功、手动或已完成的浇水运行。",
+      "DisplayName": "浇水事件",
+      "List": [
+        {
+          "Description": "一次计划、跳过、未成功、手动或已完成的浇水运行。",
+          "Name": "浇水事件",
+          "Type": 0
+        },
+        {
+          "Description": "浇水实际开始的时间，或原计划开始的时间。",
+          "Name": "时间",
+          "Type": 1
+        },
+        {
+          "Description": "当时估算的植物可用水量。",
+          "Name": "可用水量",
+          "Type": 2
+        },
+        {
+          "Description": "此事件对应的浇水区域。",
+          "Name": "区域",
+          "Type": 3
+        },
+        {
+          "Description": "此浇水计划或运行的结果。",
+          "Name": "结果",
+          "Type": 4
+        },
+        {
+          "Description": "浇水是自动启动、手动启动还是未知。",
+          "Name": "启动方式",
+          "Type": 5
+        },
+        {
+          "Description": "此次运行被计划、更改、停止或未成功的原因。",
+          "Name": "原因",
+          "Type": 6
+        },
+        {
+          "Description": "自动浇水原计划运行的时长。",
+          "Name": "计划持续时间",
+          "Type": 7
+        },
+        {
+          "Description": "观测到阀门保持开启的时长。",
+          "Name": "实际持续时间",
+          "Type": 8
+        },
+        {
+          "Description": "在所有已配置区域中唯一的稳定焦点键。",
+          "Name": "决策键",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWateringDecisionRowV1"
+    },
+    {
+      "Description": "在水量平衡图表中显示自动和手动浇水。",
+      "DisplayName": "浇水事件",
+      "List": [
+        {
+          "Description": "在水量平衡图表中显示自动和手动浇水。",
+          "Name": "浇水事件",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWateringDecisionsV1"
+    },
+    {
+      "Description": "选择喷灌系统处于启用浇水状态还是冬季防护状态。",
+      "DisplayName": "浇水模式",
+      "List": [
+        {
+          "Description": "选择喷灌系统处于启用浇水状态还是冬季防护状态。",
+          "Enum": [
+            {
+              "Description": "自动浇水已启用。",
+              "Name": "启用",
+              "Type": 1
+            },
+            {
+              "Description": "寒冷季节期间自动浇水已关闭。",
+              "Name": "已冬季防护",
+              "Type": 2
+            }
+          ],
+          "Name": "浇水模式",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringModeV1"
+    },
+    {
+      "Description": "显示浇水是自动启动还是通过其他方式启动。",
+      "DisplayName": "浇水启动方式",
+      "List": [
+        {
+          "Description": "显示浇水是自动启动还是通过其他方式启动。",
+          "Enum": [
+            {
+              "Description": "此次浇水运行由智能喷灌启动。",
+              "Name": "自动",
+              "Type": 1
+            },
+            {
+              "Description": "阀门是在智能喷灌之外被打开的。",
+              "Name": "手动",
+              "Type": 2
+            },
+            {
+              "Description": "较早保存的数据未记录此次浇水运行的启动方式。",
+              "Name": "未知",
+              "Type": 3
+            }
+          ],
+          "Name": "浇水启动方式",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOriginV1"
+    },
+    {
+      "Description": "显示浇水计划或运行的结果。",
+      "DisplayName": "浇水结果",
+      "List": [
+        {
+          "Description": "显示浇水计划或运行的结果。",
+          "Enum": [
+            {
+              "Description": "计算出的未来自动浇水运行仍处于计划中。",
+              "Name": "已计划",
+              "Type": 1
+            },
+            {
+              "Description": "喷灌系统已请求阀门打开，正在等待确认。",
+              "Name": "命令待确认",
+              "Type": 2
+            },
+            {
+              "Description": "阀门已打开，正在统计浇水量。",
+              "Name": "正在运行",
+              "Type": 3
+            },
+            {
+              "Description": "阀门关闭后浇水已完成。",
+              "Name": "已完成",
+              "Type": 4
+            },
+            {
+              "Description": "由于天气、设置或安全条件阻止，计划的运行未开始。",
+              "Name": "已跳过",
+              "Type": 5
+            },
+            {
+              "Description": "阀门问题导致浇水运行未能完成。",
+              "Name": "失败",
+              "Type": 6
+            },
+            {
+              "Description": "在此计划开始之前，更新的浇水计划已将其替代。",
+              "Name": "已被替代",
+              "Type": 7
+            }
+          ],
+          "Name": "浇水结果",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOutcomeV1"
+    },
+    {
+      "Description": "说明某次浇水运行为何被计划、更改、停止或未成功。",
+      "DisplayName": "浇水原因",
+      "List": [
+        {
+          "Description": "说明某次浇水运行为何被计划、更改、停止或未成功。",
+          "Enum": [
+            {
+              "Description": "智能喷灌根据植物需求和天气选择了此次运行。",
+              "Name": "智能计划",
+              "Type": 1
+            },
+            {
+              "Description": "阀门是在智能喷灌之外被打开的。",
+              "Name": "手动操作",
+              "Type": 2
+            },
+            {
+              "Description": "预计降雨使计划浇水延迟或被替代。",
+              "Name": "预报有雨",
+              "Type": 3
+            },
+            {
+              "Description": "已记录的降雨停止或阻止了浇水。",
+              "Name": "实测降雨",
+              "Type": 4
+            },
+            {
+              "Description": "温度过低，不适合安全浇水。",
+              "Name": "冰冻天气",
+              "Type": 5
+            },
+            {
+              "Description": "风力过强，不适合此浇水方式。",
+              "Name": "风力过大",
+              "Type": 6
+            },
+            {
+              "Description": "天气条件不适合安全浇水。",
+              "Name": "其他不安全天气",
+              "Type": 7
+            },
+            {
+              "Description": "禁止浇水时段阻止了计划运行。",
+              "Name": "暂停",
+              "Type": 8
+            },
+            {
+              "Description": "系统已进行冬季防护，因此自动浇水已关闭。",
+              "Name": "冬季防护",
+              "Type": 9
+            },
+            {
+              "Description": "阀门状态不可用。",
+              "Name": "阀门不可用",
+              "Type": 10
+            },
+            {
+              "Description": "阀门报告了问题。",
+              "Name": "阀门故障",
+              "Type": 11
+            },
+            {
+              "Description": "阀门未接受请求。",
+              "Name": "命令失败",
+              "Type": 12
+            },
+            {
+              "Description": "阀门未及时确认请求。",
+              "Name": "命令超时",
+              "Type": 13
+            },
+            {
+              "Description": "已请求阀门打开，但未检测到浇水。",
+              "Name": "未观测到开启",
+              "Type": 14
+            },
+            {
+              "Description": "更新的计算结果替代了计划运行。",
+              "Name": "已重新计算",
+              "Type": 15
+            },
+            {
+              "Description": "较早保存的数据不包含更具体的原因。",
+              "Name": "未知",
+              "Type": 16
+            },
+            {
+              "Description": "The valve was observed closed before its timed run was due to finish.",
+              "Name": "Stopped early",
+              "Type": 17
+            }
+          ],
+          "Name": "浇水原因",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringReasonV1"
+    },
+    {
+      "Description": "显示水的来源，或水是否预计稍后到来。",
+      "DisplayName": "水源",
+      "List": [
+        {
+          "Description": "显示水的来源，或水是否预计稍后到来。",
+          "Enum": [
+            {
+              "Description": "天气服务已记录的降雨。",
+              "Name": "降雨",
+              "Type": 1
+            },
+            {
+              "Description": "根据阀门开启时长估算的浇水量。",
+              "Name": "灌溉",
+              "Type": 2
+            },
+            {
+              "Description": "天气预报中预计的降雨。",
+              "Name": "预报有雨",
+              "Type": 3
+            },
+            {
+              "Description": "已计划但尚未开始的自动浇水。",
+              "Name": "计划浇水",
+              "Type": 4
+            }
+          ],
+          "Name": "水源",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterInputTypeV1"
+    },
+    {
+      "Description": "将紧凑的降雨与灌溉汇总和每日明细组合显示。",
+      "DisplayName": "用水量",
+      "List": [
+        {
+          "Description": "将紧凑的降雨与灌溉汇总和每日明细组合显示。",
+          "Name": "用水量",
+          "Type": 0
+        },
+        {
+          "Description": "Shared rain and per-area irrigation during the selected dates.",
+          "Name": "Summary",
+          "Type": 1
+        },
+        {
+          "Description": "Rain and watering amounts by local calendar date.",
+          "Name": "Daily details",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterUsageChartV1"
+    },
+    {
+      "Description": "当某区域在所选日期内没有降雨或浇水时，仍保持该区域可见。",
+      "DisplayName": "无已记录水量的区域",
+      "List": [
+        {
+          "Description": "当某区域在所选日期内没有降雨或浇水时，仍保持该区域可见。",
+          "Name": "无已记录水量的区域",
+          "Type": 0
+        },
+        {
+          "Description": "将消息居中显示在图表中。",
+          "Name": "标签位置",
+          "Type": 1
+        },
+        {
+          "Description": "没有已记录水量的浇水区域。",
+          "Name": "区域",
+          "Type": 2
+        },
+        {
+          "Description": "说明此区域为何在图表中没有柱形。",
+          "Name": "消息",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZoneRowV1"
+    },
+    {
+      "Description": "针对所选日期内没有降雨或浇水的区域显示的消息。",
+      "DisplayName": "无已记录水量的区域",
+      "List": [
+        {
+          "Description": "针对所选日期内没有降雨或浇水的区域显示的消息。",
+          "Name": "无已记录水量的区域",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZonesV1"
+    },
+    {
+      "Description": "按日期显示每个区域的降雨和浇水量。",
+      "DisplayName": "用水量",
+      "List": [
+        {
+          "Description": "按日期显示每个区域的降雨和浇水量。",
+          "Name": "用水量",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageMarksV1"
+    },
+    {
+      "Description": "某个区域在特定日期显示的一笔降雨量或浇水量。",
+      "DisplayName": "用水项",
+      "List": [
+        {
+          "Description": "某个区域在特定日期显示的一笔降雨量或浇水量。",
+          "Name": "用水项",
+          "Type": 0
+        },
+        {
+          "Description": "此降雨量或浇水量对应的本地日历日期。",
+          "Name": "日期",
+          "Type": 1
+        },
+        {
+          "Description": "此水量在图表中的起始位置。",
+          "Name": "柱形起点",
+          "Type": 2
+        },
+        {
+          "Description": "此水量在图表中的结束位置。",
+          "Name": "柱形终点",
+          "Type": 3
+        },
+        {
+          "Description": "柱形此部分所表示的降雨量或浇水量。",
+          "Name": "水量",
+          "Type": 4
+        },
+        {
+          "Description": "已记录降雨、浇水、预计降雨或计划浇水。",
+          "Name": "水源",
+          "Type": 5
+        },
+        {
+          "Description": "此数据行所表示的浇水区域。",
+          "Name": "区域",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageRowV1"
+    },
+    {
+      "Description": "Shows shared rain and irrigation for every area together on one chart.",
+      "DisplayName": "Water-use summary",
+      "List": [
+        {
+          "Description": "Shows shared rain and irrigation for every area together on one chart.",
+          "Name": "Water-use summary",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryChartV1"
+    },
+    {
+      "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+      "DisplayName": "Water-use summary item",
+      "List": [
+        {
+          "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+          "Name": "Water-use summary item",
+          "Type": 0
+        },
+        {
+          "Description": "Millimeter scale for comparing rain and irrigation.",
+          "Name": "Water amount",
+          "Type": 1
+        },
+        {
+          "Description": "Where this contribution ends in its stacked total.",
+          "Name": "Amount end",
+          "Type": 2
+        },
+        {
+          "Description": "Total rain or irrigation represented by this part of the bar.",
+          "Name": "Amount",
+          "Type": 3
+        },
+        {
+          "Description": "Recorded rain, forecast rain, actual watering, or scheduled watering.",
+          "Name": "Water source",
+          "Type": 4
+        },
+        {
+          "Description": "Keeps shared rain first, followed by every configured area.",
+          "Name": "Lane",
+          "Type": 5
+        },
+        {
+          "Description": "Shows Rain or the configured area's name on the summary axis.",
+          "Name": "Rain or area",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryRowV1"
+    },
+    {
+      "Description": "显示某个值是已记录值还是预报值。",
+      "DisplayName": "天气来源",
+      "List": [
+        {
+          "Description": "显示某个值是已记录值还是预报值。",
+          "Enum": [
+            {
+              "Description": "一条已完成的天气观测。",
+              "Name": "历史记录",
+              "Type": 1
+            },
+            {
+              "Description": "一条近期当前天气观测。",
+              "Name": "当前状况",
+              "Type": 2
+            },
+            {
+              "Description": "最新预报中的未来值。",
+              "Name": "预报",
+              "Type": 3
+            }
+          ],
+          "Name": "天气来源",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherChartSourceV1"
+    },
+    {
+      "Description": "一起显示估算水分损失、温度、湿度和风。",
+      "DisplayName": "天气",
+      "List": [
+        {
+          "Description": "一起显示估算水分损失、温度、湿度和风。",
+          "Name": "天气",
+          "Type": 0
+        },
+        {
+          "Description": "通过蒸发和植物消耗产生的已记录及预报水分损失。",
+          "Name": "估算水分损失",
+          "Type": 1
+        },
+        {
+          "Description": "使用独立 y 轴显示观测值和预报值。",
+          "Name": "温度和相对湿度",
+          "Type": 2
+        },
+        {
+          "Description": "观测和预报的持续风与阵风。",
+          "Name": "风",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherEtChartV1"
+    },
+    {
+      "Description": "在同一可比刻度上显示观测和预报的持续风与阵风。",
+      "DisplayName": "风和阵风",
+      "List": [
+        {
+          "Description": "在同一可比刻度上显示观测和预报的持续风与阵风。",
+          "Name": "风和阵风",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWindChartV1"
+    },
+    {
+      "Description": "一个持续风或阵风样本。",
+      "DisplayName": "风数据行",
+      "List": [
+        {
+          "Description": "一个持续风或阵风样本。",
+          "Name": "风数据行",
+          "Type": 0
+        },
+        {
+          "Description": "天气提供方周期的开始时间。",
+          "Name": "时间",
+          "Type": 1
+        },
+        {
+          "Description": "以米/秒表示的持续风或阵风速度。",
+          "Name": "风速",
+          "Type": 2
+        },
+        {
+          "Description": "观测或预报的持续风或阵风。",
+          "Name": "系列",
+          "Type": 3
+        },
+        {
+          "Description": "服务器为此时间和风系列生成的标识。",
+          "Name": "稳定键",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWindRowV1"
+    },
+    {
+      "Description": "区分观测和预报时段中的持续风与阵风。",
+      "DisplayName": "风系列",
+      "List": [
+        {
+          "Description": "区分观测和预报时段中的持续风与阵风。",
+          "Enum": [
+            {
+              "Description": "已完成历史时段中的持续风。",
+              "Name": "历史持续风",
+              "Type": 1
+            },
+            {
+              "Description": "已完成历史时段中的峰值阵风。",
+              "Name": "历史阵风",
+              "Type": 2
+            },
+            {
+              "Description": "保留的当前观测中的持续风。",
+              "Name": "当前持续风",
+              "Type": 3
+            },
+            {
+              "Description": "保留的当前观测中的峰值阵风。",
+              "Name": "当前阵风",
+              "Type": 4
+            },
+            {
+              "Description": "预测的持续风。",
+              "Name": "预报持续风",
+              "Type": 5
+            },
+            {
+              "Description": "预测的峰值阵风。",
+              "Name": "预报阵风",
+              "Type": 6
+            }
+          ],
+          "Name": "风系列",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWindSeriesV1"
+    },
+    {
+      "Description": "记住最近一次提醒，避免过早再次发送。",
+      "DisplayName": "最新冬季防护提醒",
+      "List": [
+        {
+          "Description": "记住最近一次提醒，避免过早再次发送。",
+          "Name": "最新冬季防护提醒",
+          "Type": 0
+        },
+        {
+          "Description": "最近一次提醒的发送时间。",
+          "Name": "发送时间",
+          "Type": 1
+        },
+        {
+          "Description": "最近一次提醒的发送原因。",
+          "Name": "原因",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderMemoryV1"
+    },
+    {
+      "Description": "说明最近一次寒冷天气提醒的发送原因。",
+      "DisplayName": "冬季防护提醒原因",
+      "List": [
+        {
+          "Description": "说明最近一次寒冷天气提醒的发送原因。",
+          "Enum": [
+            {
+              "Description": "站点的纬度和当前季节表明寒冷天气即将到来。",
+              "Name": "位置和季节",
+              "Type": 1
+            },
+            {
+              "Description": "最新当前状况或预报数据显示温度已达到或低于喷灌系统的寒冷天气安全阈值。",
+              "Name": "冰冻天气",
+              "Type": 2
+            }
+          ],
+          "Name": "冬季防护提醒原因",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderReasonV1"
+    },
+    {
+      "Description": "显示当前浇水计划所依据的信息。",
+      "DisplayName": "区域详情",
+      "List": [
+        {
+          "Description": "显示当前浇水计划所依据的信息。",
+          "Name": "区域详情",
+          "Type": 0
+        },
+        {
+          "Description": "用于估算植物下次需要浇水时间的信息。",
+          "Name": "用水估算",
+          "Type": 1
+        },
+        {
+          "Description": "估算每天因蒸发和植物消耗而损失的水量。",
+          "Name": "估算每日水分损失",
+          "Type": 2
+        },
+        {
+          "Description": "此浇水计划的计算时间。",
+          "Name": "最后更新",
+          "Type": 3
+        },
+        {
+          "Description": "当前浇水决策或延迟原因。",
+          "Name": "状态",
+          "Type": 4
+        },
+        {
+          "Description": "计划的开始时间和持续时间。天气或阀门可用性仍可能改变计划。",
+          "Name": "下次浇水",
+          "Type": 5
+        },
+        {
+          "Description": "下一次自动运行计划使用的水量。",
+          "Name": "计划水量",
+          "Type": 6
+        },
+        {
+          "Description": "估算植物所需的水量。",
+          "Name": "估算缺水量",
+          "Type": 7
+        },
+        {
+          "Description": "过去七天内计入的降雨。",
+          "Name": "近期降雨",
+          "Type": 8
+        },
+        {
+          "Description": "过去七天内计入的浇水。",
+          "Name": "近期浇水",
+          "Type": 9
+        },
+        {
+          "Description": "阀门当前是否处于打开状态。",
+          "Name": "正在浇水",
+          "Type": 10
+        },
+        {
+          "Description": "自动浇水会等待阀门状态可用后再继续。",
+          "Name": "阀门状态可用",
+          "Type": 11
+        },
+        {
+          "Description": "阀门报告的问题。可能同时存在多个问题。",
+          "Name": "阀门问题",
+          "Type": 12
+        }
+      ],
+      "Name": "SprinklerZoneActiveStateV1"
+    },
+    {
+      "Description": "显示完整浇水计划，或显示系统已进行冬季防护。",
+      "DisplayName": "详细喷灌状态",
+      "List": [
+        {
+          "Description": "显示完整浇水计划，或显示系统已进行冬季防护。",
+          "Name": "详细喷灌状态",
+          "Type": 0
+        },
+        {
+          "Description": "自动浇水已启用，并且当前所有区域数据均可用。",
+          "Name": "启用",
+          "Type": 1
+        },
+        {
+          "Description": "当前浇水计划、水量估算和阀门状态。",
+          "Name": "区域详情",
+          "Type": 2
+        },
+        {
+          "Description": "整个喷灌系统的自动浇水已禁用，并且未安排任何浇水时段。",
+          "Name": "已冬季防护",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerZoneAdvancedStateV1"
+    },
+    {
+      "Description": "Explains why a requested sprinkler setting was not changed.",
+      "DisplayName": "Configuration error",
+      "List": [
+        {
+          "Description": "Explains why a requested sprinkler setting was not changed.",
+          "Enum": [
+            {
+              "Description": "The percentage was outside the supported range or step.",
+              "Name": "Invalid water amount",
+              "Type": 1
+            },
+            {
+              "Description": "The replacement contained too many periods or an invalid interval.",
+              "Name": "Invalid no-watering periods",
+              "Type": 2
+            }
+          ],
+          "Name": "Configuration error",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationErrorV1"
+    },
+    {
+      "Description": "调整水量、禁止浇水时段，或自动浇水是否启用。",
+      "DisplayName": "区域设置",
+      "List": [
+        {
+          "Description": "调整水量、禁止浇水时段，或自动浇水是否启用。",
+          "Name": "区域设置",
+          "Type": 0
+        },
+        {
+          "Description": "推荐水量使用 100%；较低值表示减少水量，较高值表示增加水量。",
+          "Name": "水量",
+          "Type": 1
+        },
+        {
+          "Description": "Times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 2
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 3
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationV1"
+    },
+    {
+      "Description": "为一个已配置阀门持久化紧凑、可安全重启的水量调节值、约束以及折叠后的水量平衡基线。用水事件作为增量索引记录单独存储。",
+      "DisplayName": "喷灌区域存储",
+      "List": [
+        {
+          "Description": "为一个已配置阀门持久化紧凑、可安全重启的水量调节值、约束以及折叠后的水量平衡基线。用水事件作为增量索引记录单独存储。",
+          "Name": "喷灌区域存储",
+          "Type": 0
+        },
+        {
+          "Description": "要应用的自适应浇水量百分比。默认值为 100%。",
+          "Name": "水量调节值",
+          "Type": 1
+        },
+        {
+          "Description": "规范化后的运行时调度约束。",
+          "Name": "暂停时段",
+          "Type": 2
+        },
+        {
+          "Description": "该区域不能浇水的半开时间区间。",
+          "Name": "暂停时段",
+          "Type": 3
+        },
+        {
+          "Description": "截至此日期和时间，更早的水量输入已折叠进 `baseline_deficit_millimeters`。",
+          "Name": "平衡基线时间",
+          "Type": 4
+        },
+        {
+          "Description": "`balance_baseline_at` 时刻的根区缺水量，以毫米为单位。",
+          "Name": "基线缺水量",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerZoneMemoryV1"
+    },
+    {
+      "Description": "查看此区域的状态和详情，或更改其浇水设置。",
+      "DisplayName": "喷灌控制",
+      "List": [
+        {
+          "Description": "查看此区域的状态和详情，或更改其浇水设置。",
+          "Name": "喷灌控制",
+          "Type": 0
+        },
+        {
+          "Description": "显示此区域当前正在做什么以及下次浇水时间。",
+          "Name": "查看状态",
+          "Type": 1
+        },
+        {
+          "Description": "当前浇水状态和下一次浇水计划。",
+          "Name": "当前状态",
+          "Type": 2
+        },
+        {
+          "Description": "此区域的当前状态，或已进行冬季防护的系统状态。",
+          "Name": "喷灌状态",
+          "Type": 3
+        },
+        {
+          "Description": "显示水量估算、浇水计划和阀门状态。",
+          "Name": "查看详情",
+          "Type": 4
+        },
+        {
+          "Description": "水量估算、浇水计划和阀门状态。",
+          "Name": "区域详情",
+          "Type": 5
+        },
+        {
+          "Description": "显示水量、禁止浇水时段和启用状态。",
+          "Name": "查看设置",
+          "Type": 6
+        },
+        {
+          "Description": "当前水量、禁止浇水时段和启用状态。后续被接受的更改会在最终确认之前作为订阅数据传送。",
+          "Name": "区域设置",
+          "Type": 7
+        },
+        {
+          "Description": "此区域的当前设置。",
+          "Name": "设置",
+          "Type": 8
+        },
+        {
+          "Description": "使用比推荐量更多或更少的水。",
+          "Name": "更改水量",
+          "Type": 9
+        },
+        {
+          "Description": "Use more or less water than the recommended amount.",
+          "Name": "Change water amount",
+          "Type": 10
+        },
+        {
+          "Description": "Use 100% for the recommended amount, a lower value for less water, or a higher value for more water.",
+          "Name": "Water amount",
+          "Type": 11
+        },
+        {
+          "Description": "Replace the times when this area must not be watered.",
+          "Name": "Change no-watering periods",
+          "Type": 12
+        },
+        {
+          "Description": "The complete list of times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 13
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 14
+        },
+        {
+          "Description": "Turn automatic watering on or off.",
+          "Name": "Change active state",
+          "Type": 15
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 16
+        },
+        {
+          "Description": "Confirms that a requested setting was persisted and applied. The current subscribed configuration remains installed.",
+          "Name": "Change accepted",
+          "Type": 17
+        },
+        {
+          "Description": "Explains why a requested setting was not changed while preserving the current subscribed configuration for correction and retry.",
+          "Name": "Change rejected",
+          "Type": 18
+        },
+        {
+          "Description": "A localized explanation of the invalid setting.",
+          "Name": "Error message",
+          "Type": 19
+        },
+        {
+          "Description": "The reason the setting was rejected.",
+          "Name": "Error",
+          "Type": 20
+        }
+      ],
+      "Name": "SprinklerZoneProtocol"
+    },
+    {
+      "Description": "显示当前状态和下一次浇水计划。",
+      "DisplayName": "喷灌状态",
+      "List": [
+        {
+          "Description": "显示当前状态和下一次浇水计划。",
+          "Name": "喷灌状态",
+          "Type": 0
+        },
+        {
+          "Description": "自动浇水已启用。",
+          "Name": "启用",
+          "Type": 1
+        },
+        {
+          "Description": "当前浇水决策或延迟原因。",
+          "Name": "状态",
+          "Type": 2
+        },
+        {
+          "Description": "计划的开始时间和持续时间。",
+          "Name": "下次浇水",
+          "Type": 3
+        },
+        {
+          "Description": "整个喷灌系统的自动浇水已禁用，并且未安排任何浇水时段。",
+          "Name": "已冬季防护",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneStateV1"
+    },
+    {
+      "Description": "设置一个独立浇水的草坪、花园或种植区域。",
+      "DisplayName": "浇水区域",
+      "List": [
+        {
+          "Description": "设置一个独立浇水的草坪、花园或种植区域。",
+          "Name": "浇水区域",
+          "Type": 0
+        },
+        {
+          "Description": "选择控制此区域的阀门。",
+          "Name": "水阀",
+          "Type": 1
+        },
+        {
+          "Description": "选择此区域种植的植物。",
+          "Name": "植物类型",
+          "Type": 2
+        },
+        {
+          "Description": "选择此区域的供水方式。",
+          "Name": "浇水方式",
+          "Type": 3
+        },
+        {
+          "Description": "选择可查看此区域状态、设置和控制项的位置。",
+          "Name": "区域控制",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "System record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "System record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "ArchiveState",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "WateringMode",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WinterizationReminder",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "WeatherHistory",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "WeatherObservation",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 10
+        }
+      ],
+      "Name": "SystemRecord"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Valve record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Valve record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Memory",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "ActivityState",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "Restart",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WaterEvent",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Activity",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "DailyReport",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "ModeledWeatherGap",
+          "Type": 10
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 11
+        }
+      ],
+      "Name": "ZoneRecord"
+    }
+  ]
+}

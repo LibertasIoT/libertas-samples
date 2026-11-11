@@ -1,0 +1,2555 @@
+{
+  "Description": "Menyiram setiap bagian halaman hanya ketika membutuhkan air.\nPilih tanaman yang tumbuh di setiap area, cara penyiramannya, dan waktu ketika penyiraman harus dijeda. Penyiram Cerdas menggunakan hujan terkini, cuaca saat ini, dan prakiraan untuk memilih waktu dan jumlah penyiraman yang aman. Sistem ini juga memperhitungkan penyiraman manual, tetap bekerja selama gangguan internet singkat, dan mengingatkan Anda untuk mempersiapkan sistem menghadapi cuaca beku.",
+  "DisplayName": "Penyiram Cerdas",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Smart sprinkler",
+      "Description": "Menyiram setiap halaman rumput, kebun, atau area tanaman berdasarkan tanamannya, metode penyiraman, hujan terkini, prakiraan cuaca, dan penyesuaian yang dipilih pengguna. Pengguna memilih sumber cuaca, tempat kontrol area dan laporan akan tersedia, penerima pengingat, serta katup, jenis tanaman, dan metode penyiraman setiap area. Pengguna dapat mengubah persentase penyiraman dan periode tanpa penyiraman untuk setiap area secara manual kapan saja, atau menyiapkan seluruh sistem untuk musim dingin dan mengaktifkannya kembali. Penyiram secara otomatis menjadwalkan dan mengoperasikan setiap katup dengan mempertimbangkan hujan, prakiraan curah hujan, angin, suhu beku, kebutuhan tanaman, dan periode tanpa penyiraman, serta menggunakan perkiraan tersimpan selama gangguan cuaca singkat. Penyiram menampilkan status saat ini, perkiraan air, status katup, dan rencana penyiraman mendatang untuk setiap area. Penyiram menyediakan grafik neraca air, penggunaan air harian, serta cuaca yang tercatat dan diprakirakan, dan mengirim pengingat kepada orang yang dipilih sebelum cuaca beku.\nLog perubahan: varian protokol diperbarui.",
+      "DisplayName": "Penyiram Cerdas",
+      "List": [
+        {
+          "Description": "Pilih layanan cuaca setempat yang digunakan untuk hujan, suhu, angin, dan prakiraan. Penyiram Cerdas dapat menggunakan perkiraan tersimpan selama gangguan singkat.",
+          "Name": "Layanan cuaca",
+          "Type": 0
+        },
+        {
+          "Description": "Pilih tempat grafik neraca air, penggunaan air, dan cuaca akan tersedia.",
+          "Name": "Laporan penyiram",
+          "Type": 1
+        },
+        {
+          "Description": "Pilih orang yang harus menerima pengingat untuk mempersiapkan sistem penyiram menghadapi cuaca beku.",
+          "Name": "Penerima pengingat",
+          "Type": 2
+        },
+        {
+          "Description": "Satu orang yang harus menerima pengingat penyiram.",
+          "Name": "Orang yang akan diberi tahu",
+          "Type": 3
+        },
+        {
+          "Description": "Tambahkan setiap halaman rumput, kebun, atau area tanaman yang harus disiram secara terpisah.",
+          "Name": "Area yang disiram",
+          "Type": 4
+        },
+        {
+          "Description": "Satu area dengan katup, tanaman, dan metode penyiramannya sendiri.",
+          "Name": "Area yang disiram",
+          "Type": 5
+        }
+      ],
+      "Name": "libertas_sprinkler"
+    }
+  ],
+  "Locale": "id-ID",
+  "StringResources": {
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "Neraca air harian disimpan untuk {0}.",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "Gunakan tidak lebih dari 64 periode tanpa penyiraman, masing-masing dengan waktu mulai yang valid dan durasi lebih dari nol.",
+    "SPRINKLER_INVALID_WATERING_PERCENT": "Jumlah air harus dari 20% hingga 200% dengan kenaikan 10%.",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "Perkiraan cuaca yang digunakan selama gangguan layanan disimpan pada {0}.",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "Tanggal pertama tidak boleh lebih akhir daripada tanggal terakhir.",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "Lokasi yang digunakan oleh laporan cuaca penyiram disimpan pada {0}.",
+    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "Riwayat cuaca terperinci untuk laporan penyiram disimpan pada {0}.",
+    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "Pengamatan cuaca saat ini untuk laporan penyiram disimpan pada {0}.",
+    "SPRINKLER_SITE_LOCATION_V1": "Lokasi yang digunakan untuk cuaca penyiram disimpan pada {0}.",
+    "SPRINKLER_UI_CHANGE_DATES": "Change dates",
+    "SPRINKLER_UI_SYSTEM_ACTIVE": "System active",
+    "SPRINKLER_UI_VALVE": "Valve",
+    "SPRINKLER_UI_WATERING_PLAN": "Watering plan",
+    "SPRINKLER_UI_WATER_BALANCE": "Water balance",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "Riwayat penyiraman disimpan untuk {0}.",
+    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "Aktivitas penyiraman saat ini untuk {0}.",
+    "SPRINKLER_WATERING_MODE_V1": "Mode penyiraman disimpan untuk {0}.",
+    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
+    "SPRINKLER_WATER_EVENTS_V1": "Hujan dan penyiraman terkini disimpan untuk {0}.",
+    "SPRINKLER_WATER_USAGE_RAIN_LANE": "Hujan",
+    "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
+    "SPRINKLER_WINTERIZATION_REMINDER_V1": "Riwayat pengingat persiapan musim dingin disimpan untuk {0}.",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "Musim dingin akan segera tiba di lokasi ini. Siapkan sistem penyiram Anda untuk musim dingin, lalu nonaktifkan Aktif.",
+    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "Cuaca beku ({0}) dapat merusak sistem penyiram Anda. Siapkan sistem untuk musim dingin, lalu nonaktifkan Aktif.",
+    "SPRINKLER_ZONE_MEMORY_V1": "Neraca air dan pengaturan disimpan untuk {0}.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Gunakan lokasi Hub ini untuk mendapatkan cuaca setempat bagi penyiraman otomatis."
+  },
+  "Types": [
+    {
+      "Description": "Titik pemeriksaan hari UTC dan rangkuman perhitungan air yang disimpan tanpa batas waktu. Ini memungkinkan rentang neraca air lama ditanyakan tanpa memutar ulang setiap peristiwa sejak pemasangan.",
+      "DisplayName": "Laporan penyiram harian",
+      "List": [
+        {
+          "Description": "Titik pemeriksaan hari UTC dan rangkuman perhitungan air yang disimpan tanpa batas waktu. Ini memungkinkan rentang neraca air lama ditanyakan tanpa memutar ulang setiap peristiwa sejak pemasangan.",
+          "Name": "Laporan penyiram harian",
+          "Type": 0
+        },
+        {
+          "Description": "Batas hari kalender UTC inklusif yang digunakan sebagai kunci rekaman terindeks.",
+          "Name": "Awal hari",
+          "Type": 1
+        },
+        {
+          "Description": "Batas hari kalender UTC eksklusif.",
+          "Name": "Akhir hari",
+          "Type": 2
+        },
+        {
+          "Description": "Saat pertama yang diwakili oleh titik pemeriksaan ini. Waktunya dapat lebih akhir daripada batas hari UTC pada hari pemasangan atau perpindahan lokasi.",
+          "Name": "Awal cakupan",
+          "Type": 3
+        },
+        {
+          "Description": "Saat terakhir eksklusif yang diwakili oleh titik pemeriksaan ini. Waktunya dapat sebelum batas hari untuk hari parsial saat ini.",
+          "Name": "Akhir cakupan",
+          "Type": 4
+        },
+        {
+          "Description": "Kapasitas profil tanaman yang dimodelkan dalam milimeter.",
+          "Name": "Kapasitas zona akar",
+          "Type": 5
+        },
+        {
+          "Description": "Defisit zona akar yang dihitung pada awal hari yang diwakili.",
+          "Name": "Defisit awal",
+          "Type": 6
+        },
+        {
+          "Description": "Defisit zona akar yang dihitung pada akhir yang diwakili atau waktu terbaru yang diketahui.",
+          "Name": "Defisit akhir",
+          "Type": 7
+        },
+        {
+          "Description": "Curah hujan yang dicatat penyedia dan ditetapkan ke hari UTC ini.",
+          "Name": "Hujan",
+          "Type": 8
+        },
+        {
+          "Description": "ET acuan yang dicatat penyedia dan ditetapkan ke hari UTC ini sebelum koefisien tanaman khusus diterapkan.",
+          "Name": "Evapotranspirasi acuan",
+          "Type": 9
+        },
+        {
+          "Description": "ET acuan yang digunakan untuk mengisi interval yang tidak tercakup oleh riwayat penyedia.",
+          "Name": "Evapotranspirasi acuan yang dimodelkan",
+          "Type": 10
+        },
+        {
+          "Description": "Sumber jumlah ET yang dimodelkan, dihilangkan ketika riwayat penyedia mencakup seluruh interval yang diwakili.",
+          "Name": "Sumber kebutuhan yang dimodelkan",
+          "Type": 11
+        },
+        {
+          "Description": "Jumlah detik dalam interval yang diwakili yang dicakup oleh periode cuaca penyedia yang diterima.",
+          "Name": "Cakupan cuaca penyedia",
+          "Type": 12
+        },
+        {
+          "Description": "Kedalaman air yang diperkirakan dari interval katup terbuka yang diamati dan ditetapkan ke hari UTC ini.",
+          "Name": "Irigasi",
+          "Type": 13
+        },
+        {
+          "Description": "Apakah titik pemeriksaan mewakili seluruh hari UTC, bukan hari parsial saat ini.",
+          "Name": "Hari lengkap",
+          "Type": 14
+        },
+        {
+          "Description": "Waktu UTC saat titik pemeriksaan ini terakhir dibangun ulang.",
+          "Name": "Dihitung pada",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerDailyReportV1"
+    },
+    {
+      "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+      "DisplayName": "Daily water use",
+      "List": [
+        {
+          "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+          "Name": "Daily water use",
+          "Type": 0
+        },
+        {
+          "Description": "Recorded and planned water amounts.",
+          "Name": "Rain and watering",
+          "Type": 1
+        },
+        {
+          "Description": "Areas with no rain or watering during the selected dates.",
+          "Name": "Areas with no recorded water",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerDailyWaterUsageChartV1"
+    },
+    {
+      "Description": "Mendefinisikan setiap nilai yang ditulis oleh aplikasi penyiram. Data zona disimpan di bawah setiap Katup Matter; data sistem bersama menggunakan endpoint cuaca.",
+      "DisplayName": "Data persisten penyiram",
+      "List": [
+        {
+          "Description": "Mendefinisikan setiap nilai yang ditulis oleh aplikasi penyiram. Data zona disimpan di bawah setiap Katup Matter; data sistem bersama menggunakan endpoint cuaca.",
+          "Name": "Data persisten penyiram",
+          "Type": 0
+        },
+        {
+          "Description": "Menyimpan penyesuai waktu proses, batasan, dan baseline terlipat untuk satu zona.",
+          "Name": "Memori zona",
+          "Type": 1
+        },
+        {
+          "Description": "Status lengkap yang aman terhadap mulai ulang untuk katup yang dikonfigurasi.",
+          "Name": "Memori zona",
+          "Type": 2
+        },
+        {
+          "Description": "Menyimpan satu peristiwa cuaca atau irigasi yang diindeks secara independen.",
+          "Name": "Peristiwa air",
+          "Type": 3
+        },
+        {
+          "Description": "Satu periode cuaca yang selesai atau interval katup terbuka yang telah diperhitungkan.",
+          "Name": "Peristiwa air",
+          "Type": 4
+        },
+        {
+          "Description": "Menyimpan lokasi Hub valid terakhir untuk perkiraan musiman secara offline.",
+          "Name": "Lokasi situs",
+          "Type": 5
+        },
+        {
+          "Description": "Koordinat WGS84 yang disimpan dalam cache untuk lokasi penyiram.",
+          "Name": "Lokasi situs",
+          "Type": 6
+        },
+        {
+          "Description": "Menyimpan mode Aktif atau Persiapan Musim Dingin bersama untuk sistem penyiram.",
+          "Name": "Mode penyiraman",
+          "Type": 7
+        },
+        {
+          "Description": "Mode operasi bersama yang aman terhadap mulai ulang untuk setiap zona.",
+          "Name": "Mode penyiraman",
+          "Type": 8
+        },
+        {
+          "Description": "Menyimpan waktu dan alasan pengingat terbaru untuk seluruh sistem.",
+          "Name": "Pengingat persiapan musim dingin",
+          "Type": 9
+        },
+        {
+          "Description": "Status pembatasan pengiriman notifikasi persiapan musim dingin yang aman terhadap mulai ulang.",
+          "Name": "Memori pengingat",
+          "Type": 10
+        },
+        {
+          "Description": "Mengarsipkan satu interval ET cadangan yang tepat tanpa batas waktu.",
+          "Name": "Celah cuaca yang dimodelkan",
+          "Type": 11
+        },
+        {
+          "Description": "Interval tepat dengan sumber dan asal-usul laju yang tidak dapat diubah.",
+          "Name": "Celah yang dimodelkan",
+          "Type": 12
+        },
+        {
+          "Description": "Mengarsipkan satu aktivitas penyiraman terjadwal, sedang berjalan, selesai, dilewati, gagal, digantikan, manual, atau warisan tanpa batas waktu.",
+          "Name": "Aktivitas penyiraman",
+          "Type": 13
+        },
+        {
+          "Description": "Data siklus hidup lengkap dan tahan lama yang memisahkan jadwal dan kejadian aktual.",
+          "Name": "Aktivitas",
+          "Type": 14
+        },
+        {
+          "Description": "Mengarsipkan satu titik pemeriksaan perhitungan air dan neraca untuk satu hari UTC tanpa batas waktu sehingga rentang lama tetap dapat ditanyakan.",
+          "Name": "Laporan harian",
+          "Type": 15
+        },
+        {
+          "Description": "Hujan, ET, perkiraan irigasi, serta defisit hasil pemodelan pada awal dan akhir.",
+          "Name": "Laporan harian",
+          "Type": 16
+        },
+        {
+          "Description": "Its generation is bound only by explicit provider site messages.",
+          "Name": "Report weather archive state V2",
+          "Type": 17
+        },
+        {
+          "Description": "Active indefinitely retained provider-site generation.",
+          "Name": "Archive state",
+          "Type": 18
+        },
+        {
+          "Description": "Mengarsipkan satu sampel kondisi saat ini yang diterima tanpa batas waktu. Ini mempertahankan bukti keputusan 15 menit tanpa menghitung ganda hujan atau ET yang sudah diwakili oleh riwayat per jam yang selesai.",
+          "Name": "Pengamatan cuaca laporan",
+          "Type": 19
+        },
+        {
+          "Description": "Suhu, kelembapan, angin, hembusan, dan masukan air langsung pada waktu yang diwakili oleh penyedia.",
+          "Name": "Pengamatan cuaca",
+          "Type": 20
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 21
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 22
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 23
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 24
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 25
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 26
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 27
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 28
+        }
+      ],
+      "Name": "SprinklerData"
+    },
+    {
+      "Description": "Kehilangan air yang tercatat dan diprakirakan melalui penguapan dan penggunaan oleh tanaman.",
+      "DisplayName": "Perkiraan kehilangan air",
+      "List": [
+        {
+          "Description": "Kehilangan air yang tercatat dan diprakirakan melalui penguapan dan penggunaan oleh tanaman.",
+          "Name": "Perkiraan kehilangan air",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerEtChartV1"
+    },
+    {
+      "Description": "Satu jumlah air yang tercatat atau diprakirakan hilang melalui penguapan dan tanaman.",
+      "DisplayName": "Kehilangan air harian",
+      "List": [
+        {
+          "Description": "Satu jumlah air yang tercatat atau diprakirakan hilang melalui penguapan dan tanaman.",
+          "Name": "Kehilangan air harian",
+          "Type": 0
+        },
+        {
+          "Description": "Saat periode cuaca ini dimulai.",
+          "Name": "Mulai pada",
+          "Type": 1
+        },
+        {
+          "Description": "Saat periode cuaca ini berakhir.",
+          "Name": "Berakhir pada",
+          "Type": 2
+        },
+        {
+          "Description": "Air yang hilang melalui penguapan dan penggunaan oleh tanaman.",
+          "Name": "Perkiraan kehilangan air",
+          "Type": 3
+        },
+        {
+          "Description": "Apakah nilai ini tercatat atau diprakirakan.",
+          "Name": "Sumber",
+          "Type": 4
+        },
+        {
+          "Description": "Identitas yang dibuat server untuk interval dan sumber ini.",
+          "Name": "Kunci stabil",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerEtRowV1"
+    },
+    {
+      "Description": "Pilih jenis penyiram atau sistem tetes yang dipasang di area ini.",
+      "DisplayName": "Metode penyiraman",
+      "List": [
+        {
+          "Description": "Pilih jenis penyiram atau sistem tetes yang dipasang di area ini.",
+          "Enum": [
+            {
+              "Description": "Penyaluran lambat dan terarah dari emiter tetes permukaan.",
+              "Name": "Tetes permukaan",
+              "Type": 1
+            },
+            {
+              "Description": "Penyaluran terkonsentrasi di sekitar pohon, semak, atau cekungan tanam.",
+              "Name": "Bubbler",
+              "Type": 2
+            },
+            {
+              "Description": "Penyaluran luas dan relatif cepat dari kepala semprot pop-up tetap.",
+              "Name": "Semprotan pop-up",
+              "Type": 3
+            },
+            {
+              "Description": "Penyaluran lambat ke area luas dari rotor efisiensi tinggi atau multi-aliran.",
+              "Name": "Rotor laju rendah",
+              "Type": 4
+            },
+            {
+              "Description": "Penyaluran lebih cepat ke area luas dari kepala rotor konvensional.",
+              "Name": "Rotor laju tinggi",
+              "Type": 5
+            }
+          ],
+          "Name": "Metode penyiraman",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerHeadTypeV1"
+    },
+    {
+      "Description": "Kelembapan yang diamati dan diprakirakan pada skala tersendiri dari nol hingga 100 persen.",
+      "DisplayName": "Kelembapan relatif",
+      "List": [
+        {
+          "Description": "Kelembapan yang diamati dan diprakirakan pada skala tersendiri dari nol hingga 100 persen.",
+          "Name": "Kelembapan relatif",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerHumidityChartV1"
+    },
+    {
+      "Description": "Satu sampel kelembapan relatif yang diamati atau diprakirakan.",
+      "DisplayName": "Baris kelembapan",
+      "List": [
+        {
+          "Description": "Satu sampel kelembapan relatif yang diamati atau diprakirakan.",
+          "Name": "Baris kelembapan",
+          "Type": 0
+        },
+        {
+          "Description": "Awal periode penyedia.",
+          "Name": "Waktu",
+          "Type": 1
+        },
+        {
+          "Description": "Persentase kelembapan relatif.",
+          "Name": "Kelembapan relatif",
+          "Type": 2
+        },
+        {
+          "Description": "Mengidentifikasi garis ini sebagai kelembapan relatif pada panel gabungan.",
+          "Name": "Pengukuran",
+          "Type": 3
+        },
+        {
+          "Description": "Diamati atau diprakirakan.",
+          "Name": "Sumber",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerHumidityRowV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved sprinkler identities",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved sprinkler identities",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "System settings and weather archives",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "One valve's settings, accounting and reports",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerKey"
+    },
+    {
+      "Description": "Satu interval tepat yang tidak tercakup penyedia, dengan sumber dan laju ET acuan cadangan dibekukan saat interval pertama kali dicatat. Periode penyedia yang diterima kemudian dapat memangkas atau menggantikan interval ini; perubahan perkiraan cadangan berikutnya tidak menulis ulang asal-usulnya.",
+      "DisplayName": "Celah cuaca yang dimodelkan",
+      "List": [
+        {
+          "Description": "Satu interval tepat yang tidak tercakup penyedia, dengan sumber dan laju ET acuan cadangan dibekukan saat interval pertama kali dicatat. Periode penyedia yang diterima kemudian dapat memangkas atau menggantikan interval ini; perubahan perkiraan cadangan berikutnya tidak menulis ulang asal-usulnya.",
+          "Name": "Celah cuaca yang dimodelkan",
+          "Type": 0
+        },
+        {
+          "Description": "Awal inklusif interval yang tidak tercakup penyedia.",
+          "Name": "Waktu mulai",
+          "Type": 1
+        },
+        {
+          "Description": "Akhir eksklusif interval yang tidak tercakup penyedia.",
+          "Name": "Waktu akhir",
+          "Type": 2
+        },
+        {
+          "Description": "Laju ET acuan cadangan yang dibekukan dalam milimeter per hari UTC.",
+          "Name": "Laju evapotranspirasi acuan",
+          "Type": 3
+        },
+        {
+          "Description": "Asal-usul yang dibekukan dari cuaca terkini, lokasi/musim, atau perkiraan konservatif.",
+          "Name": "Sumber kebutuhan",
+          "Type": 4
+        },
+        {
+          "Description": "Waktu UTC saat interval ini pertama kali memperoleh asal-usulnya yang dibekukan.",
+          "Name": "Dicatat pada",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerModeledWeatherGapV1"
+    },
+    {
+      "Description": "Pilih tanaman yang tumbuh di area ini agar penyiraman dapat disesuaikan dengan kebutuhannya.",
+      "DisplayName": "Jenis tanaman",
+      "List": [
+        {
+          "Description": "Pilih tanaman yang tumbuh di area ini agar penyiraman dapat disesuaikan dengan kebutuhannya.",
+          "Enum": [
+            {
+              "Description": "Rumput yang ditanam rapat dengan akar dangkal dan kebutuhan air teratur.",
+              "Name": "Rumput",
+              "Type": 1
+            },
+            {
+              "Description": "Tanaman berbunga hias dengan akar dan kebutuhan air sedang.",
+              "Name": "Bunga",
+              "Type": 2
+            },
+            {
+              "Description": "Tanaman pangan musiman dengan akar sedang dan kebutuhan air relatif tinggi.",
+              "Name": "Sayuran",
+              "Type": 3
+            },
+            {
+              "Description": "Pohon buah yang sudah mapan dengan akar lebih dalam dan kebutuhan air sedang.",
+              "Name": "Pohon buah",
+              "Type": 4
+            },
+            {
+              "Description": "Pohon jeruk dengan akar dalam dan kebutuhan air sedang hingga tinggi.",
+              "Name": "Jeruk",
+              "Type": 5
+            },
+            {
+              "Description": "Tanaman lanskap berkayu yang sudah mapan dengan akar dalam.",
+              "Name": "Pohon dan semak",
+              "Type": 6
+            },
+            {
+              "Description": "Penanaman yang beradaptasi dengan kekeringan dan memiliki kebutuhan air rendah yang dipengaruhi cuaca.",
+              "Name": "Xeriscape",
+              "Type": 7
+            }
+          ],
+          "Name": "Jenis tanaman",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerPlantTypeV1"
+    },
+    {
+      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+      "DisplayName": "Available report range",
+      "List": [
+        {
+          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+          "Name": "Available report range",
+          "Type": 0
+        },
+        {
+          "Description": "Earliest currently selectable date after applying this chart's maximum range length.",
+          "Name": "Earliest date",
+          "Type": 1
+        },
+        {
+          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts.",
+          "Name": "Latest date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportAvailableRangeV1"
+    },
+    {
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "DisplayName": "Effective report range",
+      "List": [
+        {
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+          "Name": "Effective report range",
+          "Type": 0
+        },
+        {
+          "Description": "First calendar date included in the generated report.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Last calendar date included in the generated report.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportEffectiveRangeV1"
+    },
+    {
+      "Description": "Menjelaskan mengapa area yang dikonfigurasi tidak memiliki apa pun untuk ditampilkan pada tanggal yang dipilih.",
+      "DisplayName": "Tidak ada data laporan",
+      "List": [
+        {
+          "Description": "Menjelaskan mengapa area yang dikonfigurasi tidak memiliki apa pun untuk ditampilkan pada tanggal yang dipilih.",
+          "Enum": [
+            {
+              "Description": "Tidak ada hujan atau penyiraman yang tercatat untuk area ini selama tanggal yang dipilih.",
+              "Name": "Tidak ada masukan air tercatat",
+              "Type": 1
+            }
+          ],
+          "Name": "Tidak ada data laporan",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerReportEmptyStateV1"
+    },
+    {
+      "Description": "Lihat neraca air, penggunaan air, atau cuaca untuk setiap area. Biarkan tanggal kosong untuk melihat periode terkini. Tanggal di luar riwayat yang tersedia secara otomatis disesuaikan ke tanggal paling awal atau paling akhir yang tersedia.",
+      "DisplayName": "Laporan penyiram",
+      "List": [
+        {
+          "Description": "Lihat neraca air, penggunaan air, atau cuaca untuk setiap area. Biarkan tanggal kosong untuk melihat periode terkini. Tanggal di luar riwayat yang tersedia secara otomatis disesuaikan ke tanggal paling awal atau paling akhir yang tersedia.",
+          "Name": "Laporan penyiram",
+          "Type": 0
+        },
+        {
+          "Description": "Menampilkan perkiraan air yang tersedia bagi tanaman dan peristiwa penyiraman untuk setiap area. Periode yang dipilih dapat mencakup hingga 365 hari; pilihan yang lebih panjang mempertahankan 365 hari terakhirnya.",
+          "Name": "Lihat neraca air",
+          "Type": 1
+        },
+        {
+          "Description": "Tanggal inklusif yang benar-benar digunakan untuk menghasilkan respons ini.",
+          "Name": "Rentang efektif",
+          "Type": 2
+        },
+        {
+          "Description": "Water-balance chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 3
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 4
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 5
+        },
+        {
+          "Description": "Batas pemilih tanggal saat ini dan nilai awal untuk permintaan berikutnya.",
+          "Name": "Rentang tersedia",
+          "Type": 6
+        },
+        {
+          "Description": "Grafik penggunaan air untuk rentang laporan efektif.",
+          "Name": "Grafik",
+          "Type": 7
+        },
+        {
+          "Description": "Water-use chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 8
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 9
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 10
+        },
+        {
+          "Description": "Tanggal inklusif yang benar-benar digunakan untuk menghasilkan respons ini.",
+          "Name": "Rentang efektif",
+          "Type": 11
+        },
+        {
+          "Description": "Suhu, kelembapan, angin, dan perkiraan kehilangan air yang tercatat dan diprakirakan.",
+          "Name": "Cuaca",
+          "Type": 12
+        },
+        {
+          "Description": "Weather chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 13
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 14
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerReportProtocol"
+    },
+    {
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "DisplayName": "Report date range",
+      "List": [
+        {
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+          "Name": "Report date range",
+          "Type": 0
+        },
+        {
+          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportRequestRangeV1"
+    },
+    {
+      "Description": "Memilih generasi lokasi fisik yang aktif sementara generasi lama tetap disimpan tetapi tidak dicampurkan ke dalam laporan penyiram saat ini. Penggantian situs aliran cuaca yang eksplisit atau reset yang terikat situs akan mengikat sebuah generasi; penghapusan bagian tidak pernah dianggap sebagai pengakuan batas situs.",
+      "DisplayName": "Status arsip cuaca laporan",
+      "List": [
+        {
+          "Description": "Memilih generasi lokasi fisik yang aktif sementara generasi lama tetap disimpan tetapi tidak dicampurkan ke dalam laporan penyiram saat ini. Penggantian situs aliran cuaca yang eksplisit atau reset yang terikat situs akan mengikat sebuah generasi; penghapusan bagian tidak pernah dianggap sebagai pengakuan batas situs.",
+          "Name": "Status arsip cuaca laporan",
+          "Type": 0
+        },
+        {
+          "Description": "Meningkat secara monoton untuk setiap transisi yang diterima antara situs penyedia yang berbeda.",
+          "Name": "Generasi",
+          "Type": 1
+        },
+        {
+          "Description": "Lokasi penyedia yang secara eksplisit diikat ke generasi ini, jika diketahui.",
+          "Name": "Lokasi situs",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportWeatherArchiveStateV2"
+    },
+    {
+      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+      "DisplayName": "Restart accounting checkpoint",
+      "List": [
+        {
+          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+          "Name": "Restart accounting checkpoint",
+          "Type": 0
+        },
+        {
+          "Description": "Authoritative lifecycle snapshot at the checkpoint.",
+          "Name": "Activity",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusive end of the already accounted valve-open interval.",
+          "Name": "Accounted through",
+          "Type": 2
+        },
+        {
+          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted.",
+          "Name": "Ledger segment",
+          "Type": 3
+        },
+        {
+          "Description": "Expected end of an automatic timed run; manual runs have no known end.",
+          "Name": "Expected finish",
+          "Type": 4
+        },
+        {
+          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour.",
+          "Name": "Delivery rate",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerRestartAccountingV1"
+    },
+    {
+      "Description": "Menjelaskan apa yang sedang dilakukan penyiram atau mengapa penyiraman ditunda.",
+      "DisplayName": "Status penyiraman",
+      "List": [
+        {
+          "Description": "Menjelaskan apa yang sedang dilakukan penyiram atau mengapa penyiraman ditunda.",
+          "Enum": [
+            {
+              "Description": "Menyiapkan informasi terbaru.",
+              "Name": "Menginisialisasi",
+              "Type": 1
+            },
+            {
+              "Description": "Tanaman memiliki cukup air saat ini.",
+              "Name": "Air tidak diperlukan",
+              "Type": 2
+            },
+            {
+              "Description": "Hujan yang diperkirakan seharusnya menyediakan cukup air untuk saat ini.",
+              "Name": "Prakiraan hujan",
+              "Type": 3
+            },
+            {
+              "Description": "Penyiraman ditunda karena sedang hujan, mendekati suhu beku, atau terlalu berangin.",
+              "Name": "Menunggu cuaca aman",
+              "Type": 4
+            },
+            {
+              "Description": "Tanaman dapat menjadi terlalu kering selama periode tanpa penyiraman, sehingga penyiraman yang aman direncanakan sebelum periode tersebut dimulai.",
+              "Name": "Menyiram sebelum jeda",
+              "Type": 5
+            },
+            {
+              "Description": "Penyiraman dipindahkan hingga setelah periode tanpa penyiraman.",
+              "Name": "Ditunda",
+              "Type": 6
+            },
+            {
+              "Description": "Waktu penyiraman berikutnya telah dipilih menggunakan kebutuhan tanaman dan informasi cuaca yang tersedia.",
+              "Name": "Terjadwal",
+              "Type": 7
+            },
+            {
+              "Description": "Penyiram menunggu katup mengonfirmasi perubahan.",
+              "Name": "Memulai atau menghentikan",
+              "Type": 8
+            },
+            {
+              "Description": "Status katup tidak tersedia, sehingga penyiraman otomatis tidak akan dimulai.",
+              "Name": "Status katup tidak tersedia",
+              "Type": 9
+            },
+            {
+              "Description": "Area ini sedang disiram.",
+              "Name": "Katup terbuka",
+              "Type": 10
+            },
+            {
+              "Description": "Katup melaporkan masalah, sehingga penyiraman otomatis dijeda.",
+              "Name": "Gangguan katup",
+              "Type": 11
+            },
+            {
+              "Description": "Cuaca langsung tidak tersedia, sehingga jadwal menggunakan perkiraan tersimpan atau musiman terbaik.",
+              "Name": "Perkiraan cuaca offline",
+              "Type": 12
+            }
+          ],
+          "Name": "Status penyiraman",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerScheduleConditionV1"
+    },
+    {
+      "Description": "Suhu yang diamati dan diprakirakan tanpa mencampurkan skalanya dengan ET atau angin.",
+      "DisplayName": "Suhu",
+      "List": [
+        {
+          "Description": "Suhu yang diamati dan diprakirakan tanpa mencampurkan skalanya dengan ET atau angin.",
+          "Name": "Suhu",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerTemperatureChartV1"
+    },
+    {
+      "Description": "Menumpangtindihkan suhu dan kelembapan sepanjang waktu sambil mempertahankan sumbu y kiri dan kanan yang independen untuk satuan yang tidak kompatibel.",
+      "DisplayName": "Suhu dan kelembapan relatif",
+      "List": [
+        {
+          "Description": "Menumpangtindihkan suhu dan kelembapan sepanjang waktu sambil mempertahankan sumbu y kiri dan kanan yang independen untuk satuan yang tidak kompatibel.",
+          "Name": "Suhu dan kelembapan relatif",
+          "Type": 0
+        },
+        {
+          "Description": "Suhu menggunakan panduan y otomatis pertama.",
+          "Name": "Suhu",
+          "Type": 1
+        },
+        {
+          "Description": "Kelembapan relatif menggunakan panduan y kedua yang independen.",
+          "Name": "Kelembapan relatif",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityChartV1"
+    },
+    {
+      "Description": "Membedakan dua garis dengan skala independen pada panel cuaca gabungan.",
+      "DisplayName": "Pengukuran suhu dan kelembapan",
+      "List": [
+        {
+          "Description": "Membedakan dua garis dengan skala independen pada panel cuaca gabungan.",
+          "Enum": [
+            {
+              "Description": "Suhu udara dalam derajat Celsius.",
+              "Name": "Suhu",
+              "Type": 1
+            },
+            {
+              "Description": "Persentase kelembapan relatif.",
+              "Name": "Kelembapan relatif",
+              "Type": 2
+            }
+          ],
+          "Name": "Pengukuran suhu dan kelembapan",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityMeasurementV1"
+    },
+    {
+      "Description": "Satu sampel suhu udara yang diamati atau diprakirakan.",
+      "DisplayName": "Baris suhu",
+      "List": [
+        {
+          "Description": "Satu sampel suhu udara yang diamati atau diprakirakan.",
+          "Name": "Baris suhu",
+          "Type": 0
+        },
+        {
+          "Description": "Awal periode penyedia.",
+          "Name": "Waktu",
+          "Type": 1
+        },
+        {
+          "Description": "Suhu udara dalam derajat Celsius.",
+          "Name": "Suhu",
+          "Type": 2
+        },
+        {
+          "Description": "Mengidentifikasi garis ini sebagai suhu pada panel gabungan.",
+          "Name": "Pengukuran",
+          "Type": 3
+        },
+        {
+          "Description": "Diamati atau diprakirakan.",
+          "Name": "Sumber",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerTemperatureRowV1"
+    },
+    {
+      "Description": "Waktu mulai dan lamanya waktu untuk penyiraman atau jeda penyiraman.",
+      "DisplayName": "Periode waktu",
+      "List": [
+        {
+          "Description": "Waktu mulai dan lamanya waktu untuk penyiraman atau jeda penyiraman.",
+          "Name": "Periode waktu",
+          "Type": 0
+        },
+        {
+          "Description": "Saat periode ini dimulai.",
+          "Name": "Mulai pada",
+          "Type": 1
+        },
+        {
+          "Description": "Berapa lama periode ini berlangsung.",
+          "Name": "Durasi",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTimeSlotV1"
+    },
+    {
+      "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+      "DisplayName": "Valve problems",
+      "List": [
+        {
+          "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+          "Enum": [
+            {
+              "Description": "The valve reported a problem without a more specific classification.",
+              "Name": "General problem",
+              "Type": 1
+            },
+            {
+              "Description": "The valve cannot move because it is blocked.",
+              "Name": "Blocked",
+              "Type": 2
+            },
+            {
+              "Description": "The valve detected an unexpected water leak.",
+              "Name": "Leak detected",
+              "Type": 3
+            },
+            {
+              "Description": "The controller cannot detect a connected valve.",
+              "Name": "Not connected",
+              "Type": 4
+            },
+            {
+              "Description": "The valve or its wiring has a short circuit.",
+              "Name": "Short circuit",
+              "Type": 5
+            },
+            {
+              "Description": "The valve exceeded the available electrical current.",
+              "Name": "Too much current",
+              "Type": 6
+            }
+          ],
+          "Name": "Valve problems",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerValveFaultFlagsV1"
+    },
+    {
+      "Description": "Menggabungkan perkiraan tingkat air dengan peristiwa penyiraman untuk setiap area.",
+      "DisplayName": "Neraca air",
+      "List": [
+        {
+          "Description": "Menggabungkan perkiraan tingkat air dengan peristiwa penyiraman untuk setiap area.",
+          "Name": "Neraca air",
+          "Type": 0
+        },
+        {
+          "Description": "Perkiraan air dan tingkat penyiraman penting untuk setiap area.",
+          "Name": "Air tersedia dan tingkatnya",
+          "Type": 1
+        },
+        {
+          "Description": "Penyiraman yang direncanakan, dilewati, tidak berhasil, manual, dan selesai.",
+          "Name": "Peristiwa penyiraman",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterBalanceChartV1"
+    },
+    {
+      "Description": "Perkiraan air yang tersedia dan tingkat penyiraman penting untuk setiap area.",
+      "DisplayName": "Garis neraca air",
+      "List": [
+        {
+          "Description": "Perkiraan air yang tersedia dan tingkat penyiraman penting untuk setiap area.",
+          "Name": "Garis neraca air",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterBalanceLinesV1"
+    },
+    {
+      "Description": "Satu titik yang menunjukkan perkiraan air yang tersedia bagi tanaman atau tingkat penyiraman penting. Air yang tersedia adalah perkiraan, bukan pembacaan sensor tanah.",
+      "DisplayName": "Titik neraca air",
+      "List": [
+        {
+          "Description": "Satu titik yang menunjukkan perkiraan air yang tersedia bagi tanaman atau tingkat penyiraman penting. Air yang tersedia adalah perkiraan, bukan pembacaan sensor tanah.",
+          "Name": "Titik neraca air",
+          "Type": 0
+        },
+        {
+          "Description": "Saat tingkat air ini berlaku.",
+          "Name": "Waktu",
+          "Type": 1
+        },
+        {
+          "Description": "Perkiraan air yang tersedia bagi tanaman, dari 0 hingga 100 persen.",
+          "Name": "Air tersedia",
+          "Type": 2
+        },
+        {
+          "Description": "Air tersedia atau salah satu tingkat penyiraman penting.",
+          "Name": "Garis",
+          "Type": 3
+        },
+        {
+          "Description": "Area yang disiram yang diwakili oleh bagian grafik ini.",
+          "Name": "Area",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWaterBalancePointV1"
+    },
+    {
+      "Description": "Mengidentifikasi air yang tersedia dan tingkat penyiraman penting.",
+      "DisplayName": "Garis neraca air",
+      "List": [
+        {
+          "Description": "Mengidentifikasi air yang tersedia dan tingkat penyiraman penting.",
+          "Enum": [
+            {
+              "Description": "Perkiraan air yang tersedia bagi tanaman.",
+              "Name": "Air tersedia",
+              "Type": 1
+            },
+            {
+              "Description": "Tanah diperkirakan menahan seluruh air yang dapat digunakannya.",
+              "Name": "Kapasitas lapang",
+              "Type": 2
+            },
+            {
+              "Description": "Tingkat ketika penyiraman biasanya mulai diperlukan.",
+              "Name": "Ambang penyiraman",
+              "Type": 3
+            },
+            {
+              "Description": "Tingkat ketika penyiraman menjadi mendesak.",
+              "Name": "Ambang kritis",
+              "Type": 4
+            }
+          ],
+          "Name": "Garis neraca air",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterBalanceSeriesV1"
+    },
+    {
+      "Description": "Menunjukkan informasi yang digunakan untuk memperkirakan seberapa cepat tanaman kehilangan air.",
+      "DisplayName": "Perkiraan penggunaan air",
+      "List": [
+        {
+          "Description": "Menunjukkan informasi yang digunakan untuk memperkirakan seberapa cepat tanaman kehilangan air.",
+          "Enum": [
+            {
+              "Description": "Berdasarkan cuaca terkini di lokasi ini.",
+              "Name": "Cuaca terkini",
+              "Type": 1
+            },
+            {
+              "Description": "Berdasarkan lokasi dan waktu dalam setahun.",
+              "Name": "Lokasi dan musim",
+              "Type": 2
+            },
+            {
+              "Description": "Digunakan ketika informasi cuaca terkini dan lokasi tidak tersedia.",
+              "Name": "Perkiraan bawaan",
+              "Type": 3
+            }
+          ],
+          "Name": "Perkiraan penggunaan air",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterDemandSourceV1"
+    },
+    {
+      "Description": "Menyimpan satu periode cuaca atau interval irigasi yang diamati dan diindeks secara independen dalam riwayat air tujuh hari.",
+      "DisplayName": "Peristiwa air penyiram",
+      "List": [
+        {
+          "Description": "Menyimpan satu periode cuaca atau interval irigasi yang diamati dan diindeks secara independen dalam riwayat air tujuh hari.",
+          "Name": "Peristiwa air penyiram",
+          "Type": 0
+        },
+        {
+          "Description": "Mencatat curah hujan dan evapotranspirasi acuan dari penyedia untuk satu periode historis yang telah selesai.",
+          "Name": "Periode cuaca",
+          "Type": 1
+        },
+        {
+          "Description": "Awal inklusif periode cuaca yang telah selesai.",
+          "Name": "Waktu mulai",
+          "Type": 2
+        },
+        {
+          "Description": "Panjang periode cuaca yang telah selesai dalam detik.",
+          "Name": "Durasi",
+          "Type": 3
+        },
+        {
+          "Description": "Curah hujan penyedia yang terakumulasi selama periode tersebut, dalam milimeter.",
+          "Name": "Curah hujan",
+          "Type": 4
+        },
+        {
+          "Description": "Evapotranspirasi acuan FAO-56 penyedia yang terakumulasi selama periode tersebut, dalam milimeter.",
+          "Name": "Evapotranspirasi acuan",
+          "Type": 5
+        },
+        {
+          "Description": "Mencatat air yang disimpulkan dari waktu buka aktual Katup Matter, termasuk pembukaan manual, bersama dengan penyesuai jumlah air zona selama interval yang diamati tersebut.",
+          "Name": "Interval irigasi",
+          "Type": 6
+        },
+        {
+          "Description": "Awal inklusif interval katup terbuka yang diperhitungkan.",
+          "Name": "Waktu mulai",
+          "Type": 7
+        },
+        {
+          "Description": "Panjang interval katup terbuka yang diamati dalam detik.",
+          "Name": "Durasi",
+          "Type": 8
+        },
+        {
+          "Description": "Persentase penyiraman yang dikonfigurasi untuk zona saat interval katup terbuka ini diamati. Jika pengaturan berubah saat katup terbuka, riwayat menggunakan interval berdekatan yang terpisah.",
+          "Name": "Penyesuai jumlah air",
+          "Type": 9
+        },
+        {
+          "Description": "Perkiraan kedalaman air yang dihitung dari waktu buka yang diamati dan profil kepala penyiram yang dikonfigurasi, dalam milimeter.",
+          "Name": "Air yang diberikan",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWaterEventV1"
+    },
+    {
+      "Description": "Menyimpan snapshot siklus hidup lengkap terbaru sebelum penulisan baris audit yang sesuai. Penanda saat ini yang eksplisit membedakan aktivitas nonterminal yang dapat direkonsiliasi setelah mulai ulang dari snapshot terminal yang hanya memerlukan perbaikan audit.",
+      "DisplayName": "Status aktivitas penyiraman otoritatif",
+      "List": [
+        {
+          "Description": "Menyimpan snapshot siklus hidup lengkap terbaru sebelum penulisan baris audit yang sesuai. Penanda saat ini yang eksplisit membedakan aktivitas nonterminal yang dapat direkonsiliasi setelah mulai ulang dari snapshot terminal yang hanya memerlukan perbaikan audit.",
+          "Name": "Status aktivitas penyiraman otoritatif",
+          "Type": 0
+        },
+        {
+          "Description": "Snapshot siklus hidup terbaru yang lengkap, atau tanpa nilai sebelum aktivitas pertama. Snapshot terminal tetap berada di sini hingga aktivitas yang lebih baru dimulai.",
+          "Name": "Aktivitas terbaru",
+          "Type": 1
+        },
+        {
+          "Description": "Benar hanya ketika aktivitas terbaru dijadwalkan, menunggu perintah, atau sedang berjalan dan harus direkonsiliasi saat mulai.",
+          "Name": "Aktivitas sedang berlaku",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWateringActivityStateV2"
+    },
+    {
+      "Description": "Menjaga waktu terjadwal dan aktual tetap terpisah sehingga laporan dapat menjelaskan apa yang direncanakan, apa yang terjadi, dan mengapa suatu penyiraman dilewati atau gagal.",
+      "DisplayName": "Aktivitas penyiraman tersimpan",
+      "List": [
+        {
+          "Description": "Menjaga waktu terjadwal dan aktual tetap terpisah sehingga laporan dapat menjelaskan apa yang direncanakan, apa yang terjadi, dan mengapa suatu penyiraman dilewati atau gagal.",
+          "Name": "Aktivitas penyiraman tersimpan",
+          "Type": 0
+        },
+        {
+          "Description": "Indeks basis data bertanda yang stabil dan digunakan kembali untuk setiap pembaruan siklus hidup.",
+          "Name": "Indeks aktivitas",
+          "Type": 1
+        },
+        {
+          "Description": "Urutan yang aman terhadap benturan dalam detik jangkar dan asal yang sama.",
+          "Name": "Urutan aktivitas",
+          "Type": 2
+        },
+        {
+          "Description": "Aktivitas otomatis, manual, atau warisan yang tidak dapat diklasifikasikan.",
+          "Name": "Asal",
+          "Type": 3
+        },
+        {
+          "Description": "Status siklus hidup tahan lama saat ini atau terminal.",
+          "Name": "Hasil",
+          "Type": 4
+        },
+        {
+          "Description": "Penjelasan tahan lama untuk hasil saat ini atau terminal.",
+          "Name": "Alasan",
+          "Type": 5
+        },
+        {
+          "Description": "Waktu mulai otomatis yang direncanakan. Aktivitas manual dan warisan tidak menyertakannya.",
+          "Name": "Mulai terjadwal",
+          "Type": 6
+        },
+        {
+          "Description": "Durasi buka katup otomatis yang direncanakan dalam detik. Nilai ini tidak pernah ditimpa dengan durasi aktual yang diamati.",
+          "Name": "Durasi terjadwal",
+          "Type": 7
+        },
+        {
+          "Description": "Kedalaman air otomatis yang direncanakan dalam milimeter.",
+          "Name": "Air yang direncanakan",
+          "Type": 8
+        },
+        {
+          "Description": "Waktu pertama katup terbuka yang diamati, tidak ada hingga pembukaan diamati.",
+          "Name": "Mulai aktual",
+          "Type": 9
+        },
+        {
+          "Description": "Durasi katup terbuka yang diamati dan diperhitungkan dalam detik.",
+          "Name": "Durasi aktual",
+          "Type": 10
+        },
+        {
+          "Description": "Kedalaman air yang diperkirakan dari waktu buka aktual dan profil kepala penyiram, bukan dari pengukur aliran.",
+          "Name": "Air yang diberikan",
+          "Type": 11
+        },
+        {
+          "Description": "Penyesuai zona yang berlaku ketika aktivitas ini dibuat.",
+          "Name": "Penyesuai jumlah air",
+          "Type": 12
+        },
+        {
+          "Description": "Waktu UTC yang diwakili oleh pembaruan siklus hidup tersimpan terbaru.",
+          "Name": "Diperbarui pada",
+          "Type": 13
+        }
+      ],
+      "Name": "SprinklerWateringActivityV1"
+    },
+    {
+      "Description": "Satu penyiraman yang direncanakan, dilewati, tidak berhasil, manual, atau selesai.",
+      "DisplayName": "Peristiwa penyiraman",
+      "List": [
+        {
+          "Description": "Satu penyiraman yang direncanakan, dilewati, tidak berhasil, manual, atau selesai.",
+          "Name": "Peristiwa penyiraman",
+          "Type": 0
+        },
+        {
+          "Description": "Saat penyiraman dimulai, atau saat direncanakan untuk dimulai.",
+          "Name": "Waktu",
+          "Type": 1
+        },
+        {
+          "Description": "Perkiraan air yang tersedia bagi tanaman pada saat itu.",
+          "Name": "Air tersedia",
+          "Type": 2
+        },
+        {
+          "Description": "Area yang disiram untuk peristiwa ini.",
+          "Name": "Area",
+          "Type": 3
+        },
+        {
+          "Description": "Apa yang terjadi pada rencana atau penyiraman ini.",
+          "Name": "Hasil",
+          "Type": 4
+        },
+        {
+          "Description": "Apakah penyiraman dimulai secara otomatis, manual, atau tidak diketahui.",
+          "Name": "Dimulai oleh",
+          "Type": 5
+        },
+        {
+          "Description": "Mengapa penyiraman direncanakan, diubah, dihentikan, atau tidak berhasil.",
+          "Name": "Alasan",
+          "Type": 6
+        },
+        {
+          "Description": "Berapa lama penyiraman otomatis direncanakan berjalan.",
+          "Name": "Durasi terencana",
+          "Type": 7
+        },
+        {
+          "Description": "Berapa lama katup diamati terbuka.",
+          "Name": "Durasi aktual",
+          "Type": 8
+        },
+        {
+          "Description": "Kunci fokus stabil yang unik di seluruh zona yang dikonfigurasi.",
+          "Name": "Kunci keputusan",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWateringDecisionRowV1"
+    },
+    {
+      "Description": "Menampilkan penyiraman otomatis dan manual pada grafik neraca air.",
+      "DisplayName": "Peristiwa penyiraman",
+      "List": [
+        {
+          "Description": "Menampilkan penyiraman otomatis dan manual pada grafik neraca air.",
+          "Name": "Peristiwa penyiraman",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWateringDecisionsV1"
+    },
+    {
+      "Description": "Memilih apakah sistem penyiram aktif menyiram atau telah disiapkan untuk musim dingin.",
+      "DisplayName": "Mode penyiraman",
+      "List": [
+        {
+          "Description": "Memilih apakah sistem penyiram aktif menyiram atau telah disiapkan untuk musim dingin.",
+          "Enum": [
+            {
+              "Description": "Penyiraman otomatis diaktifkan.",
+              "Name": "Aktif",
+              "Type": 1
+            },
+            {
+              "Description": "Penyiraman otomatis dinonaktifkan untuk musim dingin.",
+              "Name": "Disiapkan untuk musim dingin",
+              "Type": 2
+            }
+          ],
+          "Name": "Mode penyiraman",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringModeV1"
+    },
+    {
+      "Description": "Menunjukkan apakah penyiraman dimulai secara otomatis atau dengan cara lain.",
+      "DisplayName": "Cara penyiraman dimulai",
+      "List": [
+        {
+          "Description": "Menunjukkan apakah penyiraman dimulai secara otomatis atau dengan cara lain.",
+          "Enum": [
+            {
+              "Description": "Penyiram Cerdas memulai penyiraman ini.",
+              "Name": "Otomatis",
+              "Type": 1
+            },
+            {
+              "Description": "Katup dibuka di luar Penyiram Cerdas.",
+              "Name": "Manual",
+              "Type": 2
+            },
+            {
+              "Description": "Data lama yang tersimpan tidak menunjukkan bagaimana penyiraman ini dimulai.",
+              "Name": "Tidak diketahui",
+              "Type": 3
+            }
+          ],
+          "Name": "Cara penyiraman dimulai",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOriginV1"
+    },
+    {
+      "Description": "Menunjukkan apa yang terjadi pada rencana atau penyiraman.",
+      "DisplayName": "Hasil penyiraman",
+      "List": [
+        {
+          "Description": "Menunjukkan apa yang terjadi pada rencana atau penyiraman.",
+          "Enum": [
+            {
+              "Description": "Penyiraman otomatis mendatang yang telah dihitung masih direncanakan.",
+              "Name": "Terjadwal",
+              "Type": 1
+            },
+            {
+              "Description": "Penyiram meminta katup terbuka dan sedang menunggu konfirmasi.",
+              "Name": "Perintah tertunda",
+              "Type": 2
+            },
+            {
+              "Description": "Katup terbuka dan penyiraman sedang dihitung.",
+              "Name": "Sedang berjalan",
+              "Type": 3
+            },
+            {
+              "Description": "Penyiraman selesai setelah katup menutup.",
+              "Name": "Selesai",
+              "Type": 4
+            },
+            {
+              "Description": "Penyiraman yang direncanakan tidak dimulai karena cuaca, pengaturan, atau keselamatan mencegahnya.",
+              "Name": "Dilewati",
+              "Type": 5
+            },
+            {
+              "Description": "Masalah katup mencegah penyiraman selesai.",
+              "Name": "Gagal",
+              "Type": 6
+            },
+            {
+              "Description": "Rencana penyiraman yang lebih baru menggantikan rencana ini sebelum dimulai.",
+              "Name": "Digantikan",
+              "Type": 7
+            }
+          ],
+          "Name": "Hasil penyiraman",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOutcomeV1"
+    },
+    {
+      "Description": "Menjelaskan mengapa penyiraman direncanakan, diubah, dihentikan, atau tidak berhasil.",
+      "DisplayName": "Alasan penyiraman",
+      "List": [
+        {
+          "Description": "Menjelaskan mengapa penyiraman direncanakan, diubah, dihentikan, atau tidak berhasil.",
+          "Enum": [
+            {
+              "Description": "Penyiram Cerdas memilih penyiraman ini berdasarkan kebutuhan tanaman dan cuaca.",
+              "Name": "Jadwal cerdas",
+              "Type": 1
+            },
+            {
+              "Description": "Katup dibuka di luar Penyiram Cerdas.",
+              "Name": "Operasi manual",
+              "Type": 2
+            },
+            {
+              "Description": "Hujan yang diperkirakan menunda atau menggantikan penyiraman yang direncanakan.",
+              "Name": "Prakiraan hujan",
+              "Type": 3
+            },
+            {
+              "Description": "Hujan yang tercatat menghentikan atau mencegah penyiraman.",
+              "Name": "Hujan yang diamati",
+              "Type": 4
+            },
+            {
+              "Description": "Suhu terlalu rendah untuk penyiraman yang aman.",
+              "Name": "Cuaca beku",
+              "Type": 5
+            },
+            {
+              "Description": "Angin terlalu kencang untuk metode penyiraman ini.",
+              "Name": "Angin berlebihan",
+              "Type": 6
+            },
+            {
+              "Description": "Cuaca tidak aman untuk penyiraman.",
+              "Name": "Cuaca tidak aman lainnya",
+              "Type": 7
+            },
+            {
+              "Description": "Periode tanpa penyiraman mencegah penyiraman yang direncanakan.",
+              "Name": "Penundaan",
+              "Type": 8
+            },
+            {
+              "Description": "Sistem telah disiapkan untuk musim dingin, sehingga penyiraman otomatis dinonaktifkan.",
+              "Name": "Persiapan musim dingin",
+              "Type": 9
+            },
+            {
+              "Description": "Status katup tidak tersedia.",
+              "Name": "Katup tidak tersedia",
+              "Type": 10
+            },
+            {
+              "Description": "Katup melaporkan masalah.",
+              "Name": "Gangguan katup",
+              "Type": 11
+            },
+            {
+              "Description": "Katup tidak menerima permintaan.",
+              "Name": "Perintah gagal",
+              "Type": 12
+            },
+            {
+              "Description": "Katup tidak mengonfirmasi permintaan tepat waktu.",
+              "Name": "Waktu tunggu perintah habis",
+              "Type": 13
+            },
+            {
+              "Description": "Katup diminta terbuka, tetapi tidak ada penyiraman yang terdeteksi.",
+              "Name": "Tidak ada pembukaan teramati",
+              "Type": 14
+            },
+            {
+              "Description": "Perhitungan yang lebih baru menggantikan penyiraman yang direncanakan.",
+              "Name": "Dihitung ulang",
+              "Type": 15
+            },
+            {
+              "Description": "Data lama yang tersimpan tidak memiliki alasan yang lebih spesifik.",
+              "Name": "Tidak diketahui",
+              "Type": 16
+            },
+            {
+              "Description": "The valve was observed closed before its timed run was due to finish.",
+              "Name": "Stopped early",
+              "Type": 17
+            }
+          ],
+          "Name": "Alasan penyiraman",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringReasonV1"
+    },
+    {
+      "Description": "Menunjukkan dari mana air berasal atau apakah air diperkirakan akan datang nanti.",
+      "DisplayName": "Sumber air",
+      "List": [
+        {
+          "Description": "Menunjukkan dari mana air berasal atau apakah air diperkirakan akan datang nanti.",
+          "Enum": [
+            {
+              "Description": "Hujan yang sudah dicatat oleh layanan cuaca.",
+              "Name": "Hujan",
+              "Type": 1
+            },
+            {
+              "Description": "Air yang diperkirakan dari lamanya katup terbuka.",
+              "Name": "Irigasi",
+              "Type": 2
+            },
+            {
+              "Description": "Hujan yang diperkirakan dalam prakiraan.",
+              "Name": "Prakiraan hujan",
+              "Type": 3
+            },
+            {
+              "Description": "Penyiraman otomatis yang direncanakan tetapi belum dimulai.",
+              "Name": "Air terjadwal",
+              "Type": 4
+            }
+          ],
+          "Name": "Sumber air",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterInputTypeV1"
+    },
+    {
+      "Description": "Menggabungkan ringkasan ringkas hujan dibanding irigasi dengan detail harian.",
+      "DisplayName": "Penggunaan air",
+      "List": [
+        {
+          "Description": "Menggabungkan ringkasan ringkas hujan dibanding irigasi dengan detail harian.",
+          "Name": "Penggunaan air",
+          "Type": 0
+        },
+        {
+          "Description": "Shared rain and per-area irrigation during the selected dates.",
+          "Name": "Summary",
+          "Type": 1
+        },
+        {
+          "Description": "Rain and watering amounts by local calendar date.",
+          "Name": "Daily details",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterUsageChartV1"
+    },
+    {
+      "Description": "Menjaga area tetap terlihat ketika tidak ada hujan atau penyiraman selama tanggal yang dipilih.",
+      "DisplayName": "Area tanpa air tercatat",
+      "List": [
+        {
+          "Description": "Menjaga area tetap terlihat ketika tidak ada hujan atau penyiraman selama tanggal yang dipilih.",
+          "Name": "Area tanpa air tercatat",
+          "Type": 0
+        },
+        {
+          "Description": "Memusatkan pesan dalam grafik.",
+          "Name": "Posisi label",
+          "Type": 1
+        },
+        {
+          "Description": "Area yang disiram tanpa air tercatat.",
+          "Name": "Area",
+          "Type": 2
+        },
+        {
+          "Description": "Menjelaskan mengapa area ini tidak memiliki batang pada grafik.",
+          "Name": "Pesan",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZoneRowV1"
+    },
+    {
+      "Description": "Pesan untuk area tanpa hujan atau penyiraman selama tanggal yang dipilih.",
+      "DisplayName": "Area tanpa air tercatat",
+      "List": [
+        {
+          "Description": "Pesan untuk area tanpa hujan atau penyiraman selama tanggal yang dipilih.",
+          "Name": "Area tanpa air tercatat",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZonesV1"
+    },
+    {
+      "Description": "Menampilkan jumlah hujan dan penyiraman berdasarkan tanggal untuk setiap area.",
+      "DisplayName": "Penggunaan air",
+      "List": [
+        {
+          "Description": "Menampilkan jumlah hujan dan penyiraman berdasarkan tanggal untuk setiap area.",
+          "Name": "Penggunaan air",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageMarksV1"
+    },
+    {
+      "Description": "Satu jumlah hujan atau penyiraman yang ditampilkan untuk sebuah area pada tanggal tertentu.",
+      "DisplayName": "Item penggunaan air",
+      "List": [
+        {
+          "Description": "Satu jumlah hujan atau penyiraman yang ditampilkan untuk sebuah area pada tanggal tertentu.",
+          "Name": "Item penggunaan air",
+          "Type": 0
+        },
+        {
+          "Description": "Tanggal kalender lokal untuk jumlah hujan atau penyiraman ini.",
+          "Name": "Tanggal",
+          "Type": 1
+        },
+        {
+          "Description": "Tempat jumlah ini dimulai dalam grafik.",
+          "Name": "Awal batang",
+          "Type": 2
+        },
+        {
+          "Description": "Tempat jumlah ini berakhir dalam grafik.",
+          "Name": "Akhir batang",
+          "Type": 3
+        },
+        {
+          "Description": "Hujan atau penyiraman yang diwakili oleh bagian batang ini.",
+          "Name": "Jumlah air",
+          "Type": 4
+        },
+        {
+          "Description": "Hujan tercatat, penyiraman, hujan yang diperkirakan, atau penyiraman yang direncanakan.",
+          "Name": "Sumber air",
+          "Type": 5
+        },
+        {
+          "Description": "Area yang disiram yang diwakili oleh baris ini.",
+          "Name": "Area",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageRowV1"
+    },
+    {
+      "Description": "Shows shared rain and irrigation for every area together on one chart.",
+      "DisplayName": "Water-use summary",
+      "List": [
+        {
+          "Description": "Shows shared rain and irrigation for every area together on one chart.",
+          "Name": "Water-use summary",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryChartV1"
+    },
+    {
+      "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+      "DisplayName": "Water-use summary item",
+      "List": [
+        {
+          "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+          "Name": "Water-use summary item",
+          "Type": 0
+        },
+        {
+          "Description": "Millimeter scale for comparing rain and irrigation.",
+          "Name": "Water amount",
+          "Type": 1
+        },
+        {
+          "Description": "Where this contribution ends in its stacked total.",
+          "Name": "Amount end",
+          "Type": 2
+        },
+        {
+          "Description": "Total rain or irrigation represented by this part of the bar.",
+          "Name": "Amount",
+          "Type": 3
+        },
+        {
+          "Description": "Recorded rain, forecast rain, actual watering, or scheduled watering.",
+          "Name": "Water source",
+          "Type": 4
+        },
+        {
+          "Description": "Keeps shared rain first, followed by every configured area.",
+          "Name": "Lane",
+          "Type": 5
+        },
+        {
+          "Description": "Shows Rain or the configured area's name on the summary axis.",
+          "Name": "Rain or area",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryRowV1"
+    },
+    {
+      "Description": "Menunjukkan apakah suatu nilai tercatat atau diprakirakan.",
+      "DisplayName": "Sumber cuaca",
+      "List": [
+        {
+          "Description": "Menunjukkan apakah suatu nilai tercatat atau diprakirakan.",
+          "Enum": [
+            {
+              "Description": "Pengamatan cuaca yang telah selesai.",
+              "Name": "Riwayat tercatat",
+              "Type": 1
+            },
+            {
+              "Description": "Pengamatan cuaca saat ini yang terbaru.",
+              "Name": "Kondisi saat ini",
+              "Type": 2
+            },
+            {
+              "Description": "Nilai masa depan dari prakiraan terbaru.",
+              "Name": "Prakiraan",
+              "Type": 3
+            }
+          ],
+          "Name": "Sumber cuaca",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherChartSourceV1"
+    },
+    {
+      "Description": "Menampilkan perkiraan kehilangan air, suhu, kelembapan, dan angin secara bersama-sama.",
+      "DisplayName": "Cuaca",
+      "List": [
+        {
+          "Description": "Menampilkan perkiraan kehilangan air, suhu, kelembapan, dan angin secara bersama-sama.",
+          "Name": "Cuaca",
+          "Type": 0
+        },
+        {
+          "Description": "Kehilangan air yang tercatat dan diprakirakan melalui penguapan dan penggunaan oleh tanaman.",
+          "Name": "Perkiraan kehilangan air",
+          "Type": 1
+        },
+        {
+          "Description": "Nilai yang diamati dan diprakirakan dengan sumbu y independen.",
+          "Name": "Suhu dan kelembapan relatif",
+          "Type": 2
+        },
+        {
+          "Description": "Angin berkelanjutan dan hembusan yang diamati dan diprakirakan.",
+          "Name": "Angin",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherEtChartV1"
+    },
+    {
+      "Description": "Angin berkelanjutan dan hembusan yang diamati dan diprakirakan pada satu skala yang dapat dibandingkan.",
+      "DisplayName": "Angin dan hembusan",
+      "List": [
+        {
+          "Description": "Angin berkelanjutan dan hembusan yang diamati dan diprakirakan pada satu skala yang dapat dibandingkan.",
+          "Name": "Angin dan hembusan",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWindChartV1"
+    },
+    {
+      "Description": "Satu sampel angin berkelanjutan atau hembusan.",
+      "DisplayName": "Baris angin",
+      "List": [
+        {
+          "Description": "Satu sampel angin berkelanjutan atau hembusan.",
+          "Name": "Baris angin",
+          "Type": 0
+        },
+        {
+          "Description": "Awal periode penyedia.",
+          "Name": "Waktu",
+          "Type": 1
+        },
+        {
+          "Description": "Kecepatan angin berkelanjutan atau hembusan dalam meter per detik.",
+          "Name": "Kecepatan angin",
+          "Type": 2
+        },
+        {
+          "Description": "Angin berkelanjutan atau hembusan yang diamati atau diprakirakan.",
+          "Name": "Seri",
+          "Type": 3
+        },
+        {
+          "Description": "Identitas yang dibuat server untuk waktu dan seri angin ini.",
+          "Name": "Kunci stabil",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWindRowV1"
+    },
+    {
+      "Description": "Memisahkan angin berkelanjutan dan hembusan untuk periode yang diamati dan diprakirakan.",
+      "DisplayName": "Seri angin",
+      "List": [
+        {
+          "Description": "Memisahkan angin berkelanjutan dan hembusan untuk periode yang diamati dan diprakirakan.",
+          "Enum": [
+            {
+              "Description": "Angin berkelanjutan dari periode historis yang telah selesai.",
+              "Name": "Angin berkelanjutan historis",
+              "Type": 1
+            },
+            {
+              "Description": "Hembusan puncak dari periode historis yang telah selesai.",
+              "Name": "Hembusan historis",
+              "Type": 2
+            },
+            {
+              "Description": "Angin berkelanjutan dari pengamatan saat ini yang dipertahankan.",
+              "Name": "Angin berkelanjutan saat ini",
+              "Type": 3
+            },
+            {
+              "Description": "Hembusan puncak dari pengamatan saat ini yang dipertahankan.",
+              "Name": "Hembusan saat ini",
+              "Type": 4
+            },
+            {
+              "Description": "Angin berkelanjutan yang diprediksi.",
+              "Name": "Prakiraan angin berkelanjutan",
+              "Type": 5
+            },
+            {
+              "Description": "Hembusan puncak yang diprediksi.",
+              "Name": "Prakiraan hembusan",
+              "Type": 6
+            }
+          ],
+          "Name": "Seri angin",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWindSeriesV1"
+    },
+    {
+      "Description": "Mengingat pengingat terbaru agar tidak dikirim lagi terlalu cepat.",
+      "DisplayName": "Pengingat persiapan musim dingin terbaru",
+      "List": [
+        {
+          "Description": "Mengingat pengingat terbaru agar tidak dikirim lagi terlalu cepat.",
+          "Name": "Pengingat persiapan musim dingin terbaru",
+          "Type": 0
+        },
+        {
+          "Description": "Saat pengingat terbaru dikirim.",
+          "Name": "Dikirim pada",
+          "Type": 1
+        },
+        {
+          "Description": "Mengapa pengingat terbaru dikirim.",
+          "Name": "Alasan",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderMemoryV1"
+    },
+    {
+      "Description": "Menjelaskan mengapa pengingat cuaca dingin terbaru dikirim.",
+      "DisplayName": "Alasan pengingat persiapan musim dingin",
+      "List": [
+        {
+          "Description": "Menjelaskan mengapa pengingat cuaca dingin terbaru dikirim.",
+          "Enum": [
+            {
+              "Description": "Lintang situs dan musim saat ini menunjukkan bahwa cuaca dingin akan segera tiba.",
+              "Name": "Lokasi dan musim",
+              "Type": 1
+            },
+            {
+              "Description": "Kondisi saat ini yang baru atau data prakiraan menunjukkan suhu pada atau di bawah ambang keselamatan cuaca dingin penyiram.",
+              "Name": "Cuaca beku",
+              "Type": 2
+            }
+          ],
+          "Name": "Alasan pengingat persiapan musim dingin",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderReasonV1"
+    },
+    {
+      "Description": "Menampilkan informasi yang mendasari rencana penyiraman saat ini.",
+      "DisplayName": "Detail zona",
+      "List": [
+        {
+          "Description": "Menampilkan informasi yang mendasari rencana penyiraman saat ini.",
+          "Name": "Detail zona",
+          "Type": 0
+        },
+        {
+          "Description": "Informasi yang digunakan untuk memperkirakan kapan tanaman berikutnya membutuhkan air.",
+          "Name": "Perkiraan penggunaan air",
+          "Type": 1
+        },
+        {
+          "Description": "Perkiraan air yang hilang setiap hari melalui penguapan dan penggunaan oleh tanaman.",
+          "Name": "Perkiraan kehilangan air harian",
+          "Type": 2
+        },
+        {
+          "Description": "Saat rencana penyiraman ini dihitung.",
+          "Name": "Terakhir diperbarui",
+          "Type": 3
+        },
+        {
+          "Description": "Keputusan penyiraman saat ini atau alasan penundaan.",
+          "Name": "Status",
+          "Type": 4
+        },
+        {
+          "Description": "Waktu mulai dan durasi yang direncanakan. Cuaca atau ketersediaan katup masih dapat mengubah rencana.",
+          "Name": "Penyiraman berikutnya",
+          "Type": 5
+        },
+        {
+          "Description": "Jumlah air yang direncanakan untuk penyiraman otomatis berikutnya.",
+          "Name": "Air yang direncanakan",
+          "Type": 6
+        },
+        {
+          "Description": "Berapa banyak air yang diperkirakan dibutuhkan tanaman.",
+          "Name": "Perkiraan kekurangan air",
+          "Type": 7
+        },
+        {
+          "Description": "Hujan yang diperhitungkan selama tujuh hari terakhir.",
+          "Name": "Hujan terkini",
+          "Type": 8
+        },
+        {
+          "Description": "Penyiraman yang diperhitungkan selama tujuh hari terakhir.",
+          "Name": "Penyiraman terkini",
+          "Type": 9
+        },
+        {
+          "Description": "Apakah katup saat ini terbuka.",
+          "Name": "Sedang menyiram",
+          "Type": 10
+        },
+        {
+          "Description": "Penyiraman otomatis menunggu hingga status katup tersedia.",
+          "Name": "Status katup tersedia",
+          "Type": 11
+        },
+        {
+          "Description": "Masalah yang dilaporkan oleh katup. Lebih dari satu masalah dapat terjadi.",
+          "Name": "Masalah katup",
+          "Type": 12
+        }
+      ],
+      "Name": "SprinklerZoneActiveStateV1"
+    },
+    {
+      "Description": "Menampilkan rencana penyiraman lengkap atau bahwa sistem telah disiapkan untuk musim dingin.",
+      "DisplayName": "Status penyiram terperinci",
+      "List": [
+        {
+          "Description": "Menampilkan rencana penyiraman lengkap atau bahwa sistem telah disiapkan untuk musim dingin.",
+          "Name": "Status penyiram terperinci",
+          "Type": 0
+        },
+        {
+          "Description": "Penyiraman otomatis diaktifkan dan semua data zona saat ini tersedia.",
+          "Name": "Aktif",
+          "Type": 1
+        },
+        {
+          "Description": "Rencana penyiraman saat ini, perkiraan air, dan status katup.",
+          "Name": "Detail zona",
+          "Type": 2
+        },
+        {
+          "Description": "Penyiraman otomatis dinonaktifkan untuk seluruh sistem penyiram dan tidak ada slot penyiraman yang dijadwalkan.",
+          "Name": "Disiapkan untuk musim dingin",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerZoneAdvancedStateV1"
+    },
+    {
+      "Description": "Explains why a requested sprinkler setting was not changed.",
+      "DisplayName": "Configuration error",
+      "List": [
+        {
+          "Description": "Explains why a requested sprinkler setting was not changed.",
+          "Enum": [
+            {
+              "Description": "The percentage was outside the supported range or step.",
+              "Name": "Invalid water amount",
+              "Type": 1
+            },
+            {
+              "Description": "The replacement contained too many periods or an invalid interval.",
+              "Name": "Invalid no-watering periods",
+              "Type": 2
+            }
+          ],
+          "Name": "Configuration error",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationErrorV1"
+    },
+    {
+      "Description": "Sesuaikan jumlah air, periode tanpa penyiraman, atau apakah penyiraman otomatis aktif.",
+      "DisplayName": "Pengaturan zona",
+      "List": [
+        {
+          "Description": "Sesuaikan jumlah air, periode tanpa penyiraman, atau apakah penyiraman otomatis aktif.",
+          "Name": "Pengaturan zona",
+          "Type": 0
+        },
+        {
+          "Description": "Gunakan 100% untuk jumlah yang disarankan, nilai lebih rendah untuk lebih sedikit air, atau nilai lebih tinggi untuk lebih banyak air.",
+          "Name": "Jumlah air",
+          "Type": 1
+        },
+        {
+          "Description": "Times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 2
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 3
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationV1"
+    },
+    {
+      "Description": "Menyimpan secara persisten penyesuai jumlah air yang ringkas dan aman terhadap mulai ulang, batasan, serta baseline neraca air yang telah dilipat untuk satu katup yang dikonfigurasi. Peristiwa air disimpan secara terpisah sebagai rekaman terindeks inkremental.",
+      "DisplayName": "Memori zona penyiram",
+      "List": [
+        {
+          "Description": "Menyimpan secara persisten penyesuai jumlah air yang ringkas dan aman terhadap mulai ulang, batasan, serta baseline neraca air yang telah dilipat untuk satu katup yang dikonfigurasi. Peristiwa air disimpan secara terpisah sebagai rekaman terindeks inkremental.",
+          "Name": "Memori zona penyiram",
+          "Type": 0
+        },
+        {
+          "Description": "Persentase jumlah penyiraman adaptif yang akan diterapkan. Nilai awalnya adalah 100%.",
+          "Name": "Penyesuai jumlah air",
+          "Type": 1
+        },
+        {
+          "Description": "Batasan penjadwalan waktu proses yang telah dinormalisasi.",
+          "Name": "Periode penundaan",
+          "Type": 2
+        },
+        {
+          "Description": "Interval setengah terbuka ketika zona tidak boleh menyiram.",
+          "Name": "Periode penundaan",
+          "Type": 3
+        },
+        {
+          "Description": "Tanggal dan waktu hingga saat masukan air yang lebih lama telah dilipat ke dalam `baseline_deficit_millimeters`.",
+          "Name": "Waktu baseline neraca",
+          "Type": 4
+        },
+        {
+          "Description": "Defisit air zona akar pada `balance_baseline_at`, dalam milimeter.",
+          "Name": "Defisit baseline",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerZoneMemoryV1"
+    },
+    {
+      "Description": "Lihat status dan detail area ini, atau ubah pengaturan penyiramannya.",
+      "DisplayName": "Kontrol penyiram",
+      "List": [
+        {
+          "Description": "Lihat status dan detail area ini, atau ubah pengaturan penyiramannya.",
+          "Name": "Kontrol penyiram",
+          "Type": 0
+        },
+        {
+          "Description": "Menampilkan apa yang sedang dilakukan area ini dan kapan area ini akan disiram berikutnya.",
+          "Name": "Lihat status",
+          "Type": 1
+        },
+        {
+          "Description": "Status penyiraman saat ini dan rencana penyiraman berikutnya.",
+          "Name": "Status saat ini",
+          "Type": 2
+        },
+        {
+          "Description": "Status saat ini untuk area ini atau sistem yang telah disiapkan untuk musim dingin.",
+          "Name": "Status penyiram",
+          "Type": 3
+        },
+        {
+          "Description": "Menampilkan perkiraan air, rencana penyiraman, dan status katup.",
+          "Name": "Lihat detail",
+          "Type": 4
+        },
+        {
+          "Description": "Perkiraan air, rencana penyiraman, dan status katup.",
+          "Name": "Detail zona",
+          "Type": 5
+        },
+        {
+          "Description": "Menampilkan jumlah air, periode tanpa penyiraman, dan status aktif.",
+          "Name": "Lihat pengaturan",
+          "Type": 6
+        },
+        {
+          "Description": "Jumlah air saat ini, periode tanpa penyiraman, dan status aktif. Perubahan yang diterima kemudian dikirim sebagai data langganan sebelum pengakuan terminalnya.",
+          "Name": "Pengaturan zona",
+          "Type": 7
+        },
+        {
+          "Description": "Pengaturan saat ini untuk area ini.",
+          "Name": "Pengaturan",
+          "Type": 8
+        },
+        {
+          "Description": "Gunakan lebih banyak atau lebih sedikit air daripada jumlah yang disarankan.",
+          "Name": "Ubah jumlah air",
+          "Type": 9
+        },
+        {
+          "Description": "Use more or less water than the recommended amount.",
+          "Name": "Change water amount",
+          "Type": 10
+        },
+        {
+          "Description": "Use 100% for the recommended amount, a lower value for less water, or a higher value for more water.",
+          "Name": "Water amount",
+          "Type": 11
+        },
+        {
+          "Description": "Replace the times when this area must not be watered.",
+          "Name": "Change no-watering periods",
+          "Type": 12
+        },
+        {
+          "Description": "The complete list of times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 13
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 14
+        },
+        {
+          "Description": "Turn automatic watering on or off.",
+          "Name": "Change active state",
+          "Type": 15
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 16
+        },
+        {
+          "Description": "Confirms that a requested setting was persisted and applied. The current subscribed configuration remains installed.",
+          "Name": "Change accepted",
+          "Type": 17
+        },
+        {
+          "Description": "Explains why a requested setting was not changed while preserving the current subscribed configuration for correction and retry.",
+          "Name": "Change rejected",
+          "Type": 18
+        },
+        {
+          "Description": "A localized explanation of the invalid setting.",
+          "Name": "Error message",
+          "Type": 19
+        },
+        {
+          "Description": "The reason the setting was rejected.",
+          "Name": "Error",
+          "Type": 20
+        }
+      ],
+      "Name": "SprinklerZoneProtocol"
+    },
+    {
+      "Description": "Menampilkan status saat ini dan rencana penyiraman berikutnya.",
+      "DisplayName": "Status penyiram",
+      "List": [
+        {
+          "Description": "Menampilkan status saat ini dan rencana penyiraman berikutnya.",
+          "Name": "Status penyiram",
+          "Type": 0
+        },
+        {
+          "Description": "Penyiraman otomatis diaktifkan.",
+          "Name": "Aktif",
+          "Type": 1
+        },
+        {
+          "Description": "Keputusan penyiraman saat ini atau alasan penundaan.",
+          "Name": "Status",
+          "Type": 2
+        },
+        {
+          "Description": "Waktu mulai dan durasi yang direncanakan.",
+          "Name": "Penyiraman berikutnya",
+          "Type": 3
+        },
+        {
+          "Description": "Penyiraman otomatis dinonaktifkan untuk seluruh sistem penyiram dan tidak ada slot penyiraman yang dijadwalkan.",
+          "Name": "Disiapkan untuk musim dingin",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneStateV1"
+    },
+    {
+      "Description": "Siapkan satu halaman rumput, kebun, atau area tanaman yang disiram secara terpisah.",
+      "DisplayName": "Area yang disiram",
+      "List": [
+        {
+          "Description": "Siapkan satu halaman rumput, kebun, atau area tanaman yang disiram secara terpisah.",
+          "Name": "Area yang disiram",
+          "Type": 0
+        },
+        {
+          "Description": "Pilih katup yang mengontrol area ini.",
+          "Name": "Katup air",
+          "Type": 1
+        },
+        {
+          "Description": "Pilih tanaman yang tumbuh di area ini.",
+          "Name": "Jenis tanaman",
+          "Type": 2
+        },
+        {
+          "Description": "Pilih cara air disalurkan di area ini.",
+          "Name": "Metode penyiraman",
+          "Type": 3
+        },
+        {
+          "Description": "Pilih tempat status, pengaturan, dan kontrol area ini akan tersedia.",
+          "Name": "Kontrol area",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "System record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "System record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "ArchiveState",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "WateringMode",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WinterizationReminder",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "WeatherHistory",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "WeatherObservation",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 10
+        }
+      ],
+      "Name": "SystemRecord"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Valve record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Valve record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Memory",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "ActivityState",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "Restart",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WaterEvent",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Activity",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "DailyReport",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "ModeledWeatherGap",
+          "Type": 10
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 11
+        }
+      ],
+      "Name": "ZoneRecord"
+    }
+  ]
+}

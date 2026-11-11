@@ -1,0 +1,50 @@
+{
+  "Description": "Stellt Bewässerungs-Apps wie Smart Sprinkler lokale Wetterdaten bereit, damit sie die Bewässerung unter Berücksichtigung von Regen, Temperatur, Luftfeuchtigkeit und Wind planen können. Lokales Wetter verwendet den Standort des Hubs, um die aktuellen Bedingungen, die stündlichen Wetterdaten der letzten sieben Tage und eine Sieben-Tage-Vorhersage von Open-Meteo abzurufen. Der Dienst aktualisiert die Wetterdaten automatisch und bewahrt die letzten gültigen Wetterdaten auch nach Neustarts und bei vorübergehenden Unterbrechungen der Internetverbindung auf. Für aktuelle Wetterdaten sind Standortzugriff und eine Internetverbindung erforderlich. Auf jedem Hub kann ein Dienst für lokales Wetter für mehrere Bewässerungs-Apps ausgeführt werden.",
+  "DisplayName": "Lokales Wetter",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Local weather",
+      "Description": "Lokales Wetter stellt aktuelle Bedingungen, die neuesten Wetterdaten und Vorhersagen bereit, damit Bewässerungs-Apps planen können, wann und wie viel bewässert werden soll. Der Dienst erstellt eine gemeinsame Wetterdatenquelle für Apps wie Smart Sprinkler und verwendet den Standort des Hubs, um Wetterdaten von Open-Meteo abzurufen. Lokales Wetter stellt Temperatur, relative Luftfeuchtigkeit, Niederschlag, vorhergesagte Regenwahrscheinlichkeit, geschätzten Wasserverlust von Boden und Pflanzen, Windgeschwindigkeit und Windböen bereit. Lokales Wetter aktualisiert die aktuellen Bedingungen automatisch alle 15 Minuten und den stündlichen Verlauf sowie die Vorhersagen jede Stunde. Der Dienst bewahrt die stündlichen Wetterdaten der letzten sieben Tage und eine Sieben-Tage-Vorhersage auf und sendet Wetteränderungen an verbundene Bewässerungs-Apps. Verbundene Apps können die neuesten gespeicherten Wetterdaten abrufen oder nach einer Unterbrechung verpasste Aktualisierungen nachholen. Lokales Wetter speichert den letzten gültigen Standort, die aktuellen Bedingungen, den jüngsten Verlauf und die Vorhersage separat, sodass verfügbare Wetterdaten auch nach Neustarts und bei vorübergehenden Unterbrechungen der Internetverbindung oder der Standortdienste erhalten bleiben. Der Dienst stellt den Zeitpunkt und die Aktualitätsfrist jeder Aktualisierung bereit, damit Bewässerungs-Apps ältere Wetterdaten erkennen können. Wenn der Hub einen Standortwechsel meldet, löscht Lokales Wetter die Wetterdaten des vorherigen Standorts und ruft neue Wetterdaten ab. Für aktuelle Wetterdaten sind Standortzugriff und eine Internetverbindung erforderlich. Wetterdaten bleiben nicht verfügbar, bis der Dienst den Standort des Hubs kennt. Auf einem Hub kann nur ein Dienst für lokales Wetter ausgeführt werden, den sich mehrere Bewässerungs-Apps teilen können. Entwickelt von Smartonlabs Inc. (libertas).",
+      "DisplayName": "Lokales Wetter",
+      "List": [
+        {
+          "Description": "Die gemeinsame lokale Wetterdatenquelle, die dieser Dienst für Bewässerungs-Apps auf dem Hub erstellt. Verbundene Apps verwenden die aktuellen Bedingungen, die neuesten Wetterdaten und Vorhersagen dieses Dienstes, um die Bewässerung zu planen.",
+          "Name": "Wetterdienst für Bewässerungsanlagen",
+          "Type": 0
+        }
+      ],
+      "Name": "libertas_weather_server"
+    }
+  ],
+  "Locale": "de-DE",
+  "StringResources": {
+    "SPRINKLER_CURRENT_WEATHER_V1": "Aktuelle Wetterdaten für die Bewässerung von {0} gespeichert.",
+    "SPRINKLER_WEATHER_FORECAST_V1": "Wettervorhersage für die Bewässerung von {0} gespeichert.",
+    "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "Aktualisierungszeit der Wetterdaten für die Bewässerung von {0} gespeichert.",
+    "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "Neueste Wetterdaten für die Bewässerung von {0} gespeichert.",
+    "SPRINKLER_WEATHER_LOCATION_V1": "Für die Wetterdaten zur Bewässerung verwendeter Standort bei {0} gespeichert.",
+    "api.open-meteo.com": "Verbindung mit Open-Meteo herstellen, um aktuelle Bedingungen, den jüngsten Verlauf und Vorhersagen für die Bewässerungsplanung abzurufen.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Den Standort des Hubs verwenden, um die richtige lokale Wettervorhersage abzurufen."
+  },
+  "Types": [
+    {
+      "Description": "Stellt Bewässerungs-Apps anhand des Standorts des Hubs aktuelle Bedingungen, die stündlichen Wetterdaten der letzten Zeit und Vorhersagen bereit.",
+      "DisplayName": "Wetterdienst für Bewässerungsanlagen",
+      "List": [
+        {
+          "Description": "Stellt Bewässerungs-Apps anhand des Standorts des Hubs aktuelle Bedingungen, die stündlichen Wetterdaten der letzten Zeit und Vorhersagen bereit.",
+          "Name": "Wetterdienst für Bewässerungsanlagen",
+          "Type": 0
+        },
+        {
+          "DefaultText": "Wetterdienst für Bewässerungsanlagen",
+          "Description": "Lokales Wetter erstellt diesen Dienst, damit Bewässerungs-Apps lokale Wetterdaten abrufen und automatische Aktualisierungen für Bewässerungsentscheidungen erhalten können.",
+          "Name": "Wetterdienst für Bewässerungsanlagen",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWeatherEndpointServerV1"
+    }
+  ]
+}

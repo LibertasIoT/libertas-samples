@@ -1,0 +1,75 @@
+{
+  "Description": "Fiziksel sulama donanımı kurmadan yağmurlama uygulamalarını denemenizi sağlar.",
+  "DisplayName": "Yağmurlama denetimi simülatörü",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Virtual sprinkler valves",
+      "Description": "Fiziksel sulama donanımı kurmadan yağmurlama uygulamalarını denemeyi sağlar. Kullanıcı bir veya daha fazla sanal vana seçer ve her vananın varsayılan sulama süresini ayarlayabilir. Kullanıcı veya bir yağmurlama uygulaması vanayı süresiz olarak ya da seçilen bir süre boyunca açabilir veya kapatabilir. Vana denetleyicisi, süreli sulama sona erdiğinde vanayı otomatik olarak kapatır ve yeni bir vanayı açmadan önce açık olan diğer vanayı kapatır; böylece aynı anda yalnızca bir vana sulama yapar. Vana denetleyicisi her vananın açık veya kapalı durumunu, seçilen süreyi, varsayılan süreyi ve kalan süreyi gösterir; ayrıca varsayılan süreyi yeniden başlatmalar arasında hatırlar.",
+      "DisplayName": "Yağmurlama denetimi simülatörü",
+      "List": [
+        {
+          "Description": "Denemek istediğiniz her alan için bir sanal vana ekleyin.",
+          "Name": "Yağmurlama vanaları",
+          "Type": 0
+        },
+        {
+          "Description": "Bir sanal su vanası.",
+          "Name": "Yağmurlama vanası",
+          "Type": 1
+        }
+      ],
+      "Name": "virtual_irrigation_controller"
+    }
+  ],
+  "Locale": "tr-TR",
+  "StringResources": {
+    "DEFAULT_OPEN_DURATION": "{0} için sulama süresi kaydedildi."
+  },
+  "Types": [
+    {
+      "Description": "Libertas veritabanına yazılan her veri yapısı doğrudan bu birleşim içinde tanımlanır.",
+      "DisplayName": "Kalıcı vana verileri.",
+      "List": [
+        {
+          "Description": "Libertas veritabanına yazılan her veri yapısı doğrudan bu birleşim içinde tanımlanır.",
+          "Name": "Kalıcı vana verileri.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Matter DefaultOpenDuration özniteliği.",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "Saniye cinsinden DefaultOpenDuration.",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved valve settings",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved valve settings",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Default watering duration for one valve",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveKey"
+    }
+  ]
+}

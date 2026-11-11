@@ -1,0 +1,3116 @@
+{
+  "Description": "Entdecken Sie 22 interaktive Beispiele für Geschäfts-, Energie-, Temperatur- und Statistikdiagramme mit simulierten Beispieldaten. Die Galerie wird auf einem Libertas Hub ausgeführt und enthält Beispiele für eine Anzeigeanwendung, die Libertas-Diagramme unterstützt.",
+  "DisplayName": "Libertas-Diagrammgalerie",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "Description": "Mit der Diagrammgalerie kann der Nutzer 22 interaktive Beispiele für geschäftliche, energiebezogene, temperaturbezogene und statistische Vergleiche erkunden. Bei der Einrichtung wählt der Nutzer einen Namen für die Galerie. Anschließend kann er einzelne Beispiele oder Dashboards aus der Galerie öffnen. Die Galerie vergleicht die Reichweite und das Wachstum von Produkten in Blasendiagrammen, Quartalsumsätze in gruppierten Balkendiagrammen, den Energiebedarf in Liniendiagrammen, Energiebeiträge in gestapelten Balken- und Flächendiagrammen sowie die Aktivität während des Arbeitstags in einer Heatmap. Außerdem zeigt die Galerie Radarprofile von Leistungsmerkmalen, Ring- und Kreisdiagramme zu Verkehrsanteilen, radiale Leistungsbalken, Karten fiktiver Bezirke, Netzwerkbeziehungen, Besucherwege in einem Sankey-Flussdiagramm und erläuternde Diagrammanmerkungen. Der Nutzer kann Prognosebereiche und zentrale Schätzwerte, Messfehlerbalken, Histogramme und Boxplots für Antwortzeiten, Markt-Kerzencharts sowie ein Leistungsdiagramm erkunden, das Beobachtungen, einen Trend und einen Zielwert kombiniert. Die Galerie bietet außerdem einen Vergleich von Umsatz und Datenverkehr sowie ein Betriebs-Dashboard, das den bisherigen Energieverlauf, Prognosebereiche und Aktivitätsdaten kombiniert. Jedes Beispiel enthält die für den jeweiligen Vergleich relevanten Beschriftungen, Einheiten, Legenden und Beispieldetails. Alle Beispiele verwenden generierte Demonstrationswerte. Wenn der Nutzer das Temperaturbeispiel öffnet, erzeugt die Galerie simulierte Tiefst-, Höchst- und Endtemperaturen für 72 Stunden in Fünf-Minuten-Zeiträumen bis zum zuletzt abgeschlossenen Zeitraum. Wenn die Uhr des Hubs nicht verfügbar ist, verwendet die Galerie fest vorgegebene Beispieldatumsangaben. Die Galerie wird auf einem Libertas Hub ausgeführt und erfordert eine Anzeigeanwendung, die Libertas-Diagramme unterstützt. Entwickelt von Smartonlabs Inc. (libertas).",
+      "DisplayName": "Diagrammgalerie",
+      "List": [
+        {
+          "DefaultText": "Diagrammgalerie",
+          "Description": "Der Nutzer benennt die mit dieser Aufgabe erstellte Galerie. Er kann diese Galerie öffnen, um einzelne Diagramme und Dashboards mit simulierten Beispielen zu erkunden.",
+          "Name": "Galerieservice",
+          "Type": 0
+        }
+      ],
+      "Name": "chart_demo"
+    }
+  ],
+  "Locale": "de-DE",
+  "StringResources": {
+    "DIRECT_LABEL_ACT_NOW": "Jetzt handeln",
+    "DIRECT_LABEL_CLEAR": "Leeren",
+    "DIRECT_LABEL_FAST": "Schnell",
+    "TRAFFIC_SOURCE_LABEL": "{0,LibertasEnum,TrafficSourceV1}\n{1,number,integer}"
+  },
+  "Types": [
+    {
+      "Description": "Ein beispielhaftes Zeitintervall des Arbeitstags und das zugehörige Aktivitätsniveau.",
+      "DisplayName": "Aktivitätszeitraum",
+      "List": [
+        {
+          "Description": "Ein beispielhaftes Zeitintervall des Arbeitstags und das zugehörige Aktivitätsniveau.",
+          "Name": "Aktivitätszeitraum",
+          "Type": 0
+        },
+        {
+          "Description": "Der Beginn des Aktivitätszeitraums innerhalb des Arbeitstags.",
+          "Name": "Startzeit",
+          "Type": 1
+        },
+        {
+          "Description": "Das Ende des Aktivitätszeitraums innerhalb des Arbeitstags.",
+          "Name": "Endzeit",
+          "Type": 2
+        },
+        {
+          "Description": "Der durch diesen Aktivitätszeitraum dargestellte Abschnitt des Arbeitstags.",
+          "Name": "Zeitblock",
+          "Type": 3
+        },
+        {
+          "Description": "Der Anfang des Bereichs, der diesem Wochentag im Aktivitätsvergleich zugewiesen ist.",
+          "Name": "Startposition des Tages",
+          "Type": 4
+        },
+        {
+          "Description": "Das Ende des Bereichs, der diesem Wochentag im Aktivitätsvergleich zugewiesen ist.",
+          "Name": "Endposition des Tages",
+          "Type": 5
+        },
+        {
+          "Description": "Der durch diesen Aktivitätszeitraum dargestellte Wochentag.",
+          "Name": "Tag",
+          "Type": 6
+        },
+        {
+          "Description": "Das Aktivitätsniveau des Beispiels an diesem Wochentag und in diesem Zeitblock.",
+          "Name": "Aktivität",
+          "Type": 7
+        },
+        {
+          "Description": "Unterscheidet diesen Wochentag und Zeitblock von den anderen Aktivitätszeiträumen.",
+          "Name": "Aktivitätskennung",
+          "Type": 8
+        }
+      ],
+      "Name": "ActivityHeatmapCellV1"
+    },
+    {
+      "Description": "Vergleicht in einer Heatmap die Aktivitätsniveaus an verschiedenen Wochentagen und in verschiedenen Abschnitten des Arbeitstags.",
+      "DisplayName": "Aktivitätszeiträume",
+      "List": [
+        {
+          "Description": "Vergleicht in einer Heatmap die Aktivitätsniveaus an verschiedenen Wochentagen und in verschiedenen Abschnitten des Arbeitstags.",
+          "Name": "Aktivitätszeiträume",
+          "Type": 0
+        },
+        {
+          "Description": "Ein beispielhaftes Zeitintervall des Arbeitstags und das zugehörige Aktivitätsniveau.",
+          "Name": "Aktivitätszeitraum",
+          "Type": 1
+        }
+      ],
+      "Name": "ActivityHeatmapChartV1"
+    },
+    {
+      "Description": "Gibt an, ob eine Beispielmeldung positiv oder informativ ist oder Aufmerksamkeit erfordert.",
+      "DisplayName": "Bedeutung der Meldung",
+      "List": [
+        {
+          "Description": "Gibt an, ob eine Beispielmeldung positiv oder informativ ist oder Aufmerksamkeit erfordert.",
+          "Enum": [
+            {
+              "Description": "Ein positives Ergebnis.",
+              "Name": "Positiv",
+              "Type": 1
+            },
+            {
+              "Description": "Ein informatives Ergebnis.",
+              "Name": "Neutral",
+              "Type": 2
+            },
+            {
+              "Description": "Ein Ergebnis, das Aufmerksamkeit erfordert.",
+              "Name": "Aufmerksamkeit erforderlich",
+              "Type": 3
+            }
+          ],
+          "Name": "Bedeutung der Meldung",
+          "Type": 0
+        }
+      ],
+      "Name": "AnnotationMoodV1"
+    },
+    {
+      "Description": "Zeigt Verkehrsanteile in einem Kreisdiagramm und Bewertungen von Produktfamilien in einem radialen Balkendiagramm.",
+      "DisplayName": "Vergleich mit kreisförmigen Diagrammen",
+      "List": [
+        {
+          "Description": "Zeigt Verkehrsanteile in einem Kreisdiagramm und Bewertungen von Produktfamilien in einem radialen Balkendiagramm.",
+          "Name": "Vergleich mit kreisförmigen Diagrammen",
+          "Type": 0
+        },
+        {
+          "Description": "Der Anteil der Besucher, die über die jeweilige Verweisquelle kommen.",
+          "Name": "Segmente des Kreisdiagramms zum Datenverkehr",
+          "Type": 1
+        },
+        {
+          "Description": "Der beispielhafte Leistungswert für jede Produktfamilie.",
+          "Name": "Radiale Leistungsergebnisse",
+          "Type": 2
+        }
+      ],
+      "Name": "ArcFamilyChartV1"
+    },
+    {
+      "Description": "Vergleicht die mittlere Hälfte der Antwortzeiten in jeder beispielhaften Stichprobengruppe.",
+      "DisplayName": "Mittlere Antwortzeitbereiche",
+      "List": [
+        {
+          "Description": "Vergleicht die mittlere Hälfte der Antwortzeiten in jeder beispielhaften Stichprobengruppe.",
+          "Name": "Mittlere Antwortzeitbereiche",
+          "Type": 0
+        },
+        {
+          "Description": "Die mittlere Hälfte der Antwortzeiten des Beispiels für eine Stichprobengruppe.",
+          "Name": "Mittlerer Antwortzeitbereich",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotBodiesV1"
+    },
+    {
+      "Description": "Die mittlere Hälfte der Antwortzeiten des Beispiels für eine Stichprobengruppe.",
+      "DisplayName": "Mittlerer Antwortzeitbereich",
+      "List": [
+        {
+          "Description": "Die mittlere Hälfte der Antwortzeiten des Beispiels für eine Stichprobengruppe.",
+          "Name": "Mittlerer Antwortzeitbereich",
+          "Type": 0
+        },
+        {
+          "Description": "Die Beispielgruppe, deren Antwortzeiten zusammengefasst werden.",
+          "Name": "Stichprobengruppe",
+          "Type": 1
+        },
+        {
+          "Description": "Die Antwortzeit, die mindestens ein Viertel der Beobachtungen der Gruppe nicht überschreitet.",
+          "Name": "Erstes Quartil",
+          "Type": 2
+        },
+        {
+          "Description": "Die Antwortzeit, die mindestens drei Viertel der Beobachtungen der Gruppe nicht überschreiten.",
+          "Name": "Drittes Quartil",
+          "Type": 3
+        },
+        {
+          "Description": "Die in dieser Stichprobengruppe dargestellte beispielhafte Produktfamilie.",
+          "Name": "Produktfamilie",
+          "Type": 4
+        },
+        {
+          "Description": "Unterscheidet den mittleren Bereich dieser Stichprobengruppe von denen der anderen Gruppen.",
+          "Name": "Gruppenreferenz",
+          "Type": 5
+        }
+      ],
+      "Name": "BoxPlotBodyV1"
+    },
+    {
+      "Description": "Vergleicht die mittlere Hälfte, den Median, den typischen Bereich und die Ausreißer der Antwortzeiten jeder Beispielgruppe.",
+      "DisplayName": "Antwortzeitverteilungen",
+      "List": [
+        {
+          "Description": "Vergleicht die mittlere Hälfte, den Median, den typischen Bereich und die Ausreißer der Antwortzeiten jeder Beispielgruppe.",
+          "Name": "Antwortzeitverteilungen",
+          "Type": 0
+        },
+        {
+          "Description": "Die niedrigsten und höchsten Antwortzeiten jeder Beispielgruppe nach Ausschluss der Ausreißer.",
+          "Name": "Typische Bereiche",
+          "Type": 1
+        },
+        {
+          "Description": "Die mittlere Hälfte der Antwortzeiten jeder Beispielgruppe.",
+          "Name": "Mittlere Bereiche",
+          "Type": 2
+        },
+        {
+          "Description": "Die mittlere Antwortzeit in jeder Beispielgruppe.",
+          "Name": "Mediane Antwortzeiten",
+          "Type": 3
+        },
+        {
+          "Description": "Die einzelnen Antwortzeiten außerhalb der typischen Bereiche ihrer Gruppen.",
+          "Name": "Abweichende Antwortzeiten",
+          "Type": 4
+        }
+      ],
+      "Name": "BoxPlotChartV1"
+    },
+    {
+      "Description": "Vergleicht die mittlere Antwortzeit der einzelnen beispielhaften Stichprobengruppen.",
+      "DisplayName": "Mediane Antwortzeiten",
+      "List": [
+        {
+          "Description": "Vergleicht die mittlere Antwortzeit der einzelnen beispielhaften Stichprobengruppen.",
+          "Name": "Mediane Antwortzeiten",
+          "Type": 0
+        },
+        {
+          "Description": "Die mittlere Antwortzeit einer Beispielgruppe: Die Hälfte ihrer Beobachtungen liegt auf oder unter diesem Wert.",
+          "Name": "Mediane Antwortzeit",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotMediansV1"
+    },
+    {
+      "Description": "Die mittlere Antwortzeit einer Beispielgruppe: Die Hälfte ihrer Beobachtungen liegt auf oder unter diesem Wert.",
+      "DisplayName": "Mediane Antwortzeit",
+      "List": [
+        {
+          "Description": "Die mittlere Antwortzeit einer Beispielgruppe: Die Hälfte ihrer Beobachtungen liegt auf oder unter diesem Wert.",
+          "Name": "Mediane Antwortzeit",
+          "Type": 0
+        },
+        {
+          "Description": "Die Beispielgruppe, deren mediane Antwortzeit angezeigt wird.",
+          "Name": "Stichprobengruppe",
+          "Type": 1
+        },
+        {
+          "Description": "Die mittlere Antwortzeit dieser beispielhaften Stichprobengruppe.",
+          "Name": "Mediane Antwortzeit",
+          "Type": 2
+        },
+        {
+          "Description": "Dieselbe mediane Antwortzeit, sodass die Mediananzeige auf einen einzelnen Wert beschränkt bleibt.",
+          "Name": "Übereinstimmender Median",
+          "Type": 3
+        },
+        {
+          "Description": "Die Farbe, durch die sich die mediane Antwortzeit unterscheiden lässt.",
+          "Name": "Medianhervorhebung",
+          "Type": 4
+        },
+        {
+          "Description": "Ordnet diesen Median den anderen statistischen Werten derselben Stichprobengruppe zu.",
+          "Name": "Gruppenreferenz",
+          "Type": 5
+        }
+      ],
+      "Name": "BoxPlotMedianV1"
+    },
+    {
+      "Description": "Zeigt einzelne Antwortzeiten außerhalb der typischen Bereiche ihrer Beispielgruppen.",
+      "DisplayName": "Antwortzeitausreißer",
+      "List": [
+        {
+          "Description": "Zeigt einzelne Antwortzeiten außerhalb der typischen Bereiche ihrer Beispielgruppen.",
+          "Name": "Antwortzeitausreißer",
+          "Type": 0
+        },
+        {
+          "Description": "Eine simulierte Antwortzeit außerhalb des typischen Bereichs ihrer Stichprobengruppe.",
+          "Name": "Antwortzeitausreißer",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotOutliersV1"
+    },
+    {
+      "Description": "Eine simulierte Antwortzeit außerhalb des typischen Bereichs ihrer Stichprobengruppe.",
+      "DisplayName": "Antwortzeitausreißer",
+      "List": [
+        {
+          "Description": "Eine simulierte Antwortzeit außerhalb des typischen Bereichs ihrer Stichprobengruppe.",
+          "Name": "Antwortzeitausreißer",
+          "Type": 0
+        },
+        {
+          "Description": "Die Beispielgruppe, zu der diese ungewöhnliche Antwortzeit gehört.",
+          "Name": "Stichprobengruppe",
+          "Type": 1
+        },
+        {
+          "Description": "Die simulierte Antwortzeit außerhalb des typischen Bereichs der Gruppe.",
+          "Name": "Antwortzeit",
+          "Type": 2
+        },
+        {
+          "Description": "Die relative Punktgröße, durch die sich diese abweichende Antwortzeit unterscheiden lässt.",
+          "Name": "Ausreißerhervorhebung",
+          "Type": 3
+        },
+        {
+          "Description": "Unterscheidet diese abweichende Antwortzeit von den anderen Ausreißern.",
+          "Name": "Ausreißerreferenz",
+          "Type": 4
+        }
+      ],
+      "Name": "BoxPlotOutlierV1"
+    },
+    {
+      "Description": "Vergleicht die niedrigsten und höchsten Antwortzeiten jeder Beispielgruppe nach Ausschluss der Ausreißer.",
+      "DisplayName": "Typische Antwortzeitbereiche",
+      "List": [
+        {
+          "Description": "Vergleicht die niedrigste und höchste Reaktionszeit jeder Beispielgruppe nach Ausschluss von Ausreißern.",
+          "Name": "Typische Reaktionszeitspannen",
+          "Type": 0
+        },
+        {
+          "Description": "Die niedrigste und höchste Reaktionszeit der Beispielgruppe nach Ausschluss von Ausreißern.",
+          "Name": "Typische Reaktionszeitspanne",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotWhiskersV1"
+    },
+    {
+      "Description": "Die niedrigste und höchste Reaktionszeit der Beispielgruppe nach Ausschluss von Ausreißern.",
+      "DisplayName": "Typische Reaktionszeitspanne",
+      "List": [
+        {
+          "Description": "Die niedrigste und höchste Reaktionszeit der Beispielgruppe nach Ausschluss von Ausreißern.",
+          "Name": "Typische Reaktionszeitspanne",
+          "Type": 0
+        },
+        {
+          "Description": "Die Beispielgruppe, deren Reaktionszeiten zusammengefasst werden.",
+          "Name": "Beispielgruppe",
+          "Type": 1
+        },
+        {
+          "Description": "Niedrigster Wert, der kein Ausreißer ist.",
+          "Name": "Unterer Whisker",
+          "Type": 2
+        },
+        {
+          "Description": "Höchster Wert, der kein Ausreißer ist.",
+          "Name": "Oberer Whisker",
+          "Type": 3
+        },
+        {
+          "Description": "Die Farbe, mit der die typische Reaktionszeitspanne gekennzeichnet wird.",
+          "Name": "Bereichskennzeichnung",
+          "Type": 4
+        },
+        {
+          "Description": "Ordnet diese typische Spanne den anderen Statistiken derselben Beispielgruppe zu.",
+          "Name": "Gruppenreferenz",
+          "Type": 5
+        }
+      ],
+      "Name": "BoxPlotWhiskerV1"
+    },
+    {
+      "Description": "Kundenreichweite, Wachstum, jährliches Datenvolumen, Konfidenz und Marktklassifizierungen eines Beispielprodukts.",
+      "DisplayName": "Portfolioprodukt",
+      "List": [
+        {
+          "Description": "Kundenreichweite, Wachstum, jährliches Datenvolumen, Konfidenz und Marktklassifizierungen eines Beispielprodukts.",
+          "Name": "Portfolioprodukt",
+          "Type": 0
+        },
+        {
+          "Description": "Das Beispielprodukt, dessen Ergebnisse verglichen werden.",
+          "Name": "Produkt",
+          "Type": 1
+        },
+        {
+          "Description": "Die Anzahl der Kunden, die das Beispielprodukt nutzen.",
+          "Name": "Aktive Kunden",
+          "Type": 2
+        },
+        {
+          "Description": "Das jährliche Wachstum des Beispielprodukts; ein negativer Prozentsatz steht für einen Rückgang.",
+          "Name": "Jährliches Wachstum",
+          "Type": 3
+        },
+        {
+          "Description": "Das jährliche Datenvolumen des Beispielprodukts, wobei ein größeres Volumen als größere Blase dargestellt wird.",
+          "Name": "Jährliches Datenvolumen",
+          "Type": 4
+        },
+        {
+          "Description": "Die Art des in diesem Beispiel dargestellten Produkts.",
+          "Name": "Produktfamilie",
+          "Type": 5
+        },
+        {
+          "Description": "Die Servicestufe, die den Kunden dieses Beispielprodukts angeboten wird.",
+          "Name": "Kundenstufe",
+          "Type": 6
+        },
+        {
+          "Description": "Die visuelle Gewichtung der Konfidenz dieses Produkts, wobei eine höhere Deckkraft eine höhere Konfidenz anzeigt.",
+          "Name": "Konfidenzgewichtung",
+          "Type": 7
+        },
+        {
+          "Description": "Der Konfidenzprozentsatz des Beispiels für die Ergebnisse dieses Produkts.",
+          "Name": "Konfidenz",
+          "Type": 8
+        },
+        {
+          "Description": "Der geografische Markt, anhand dessen dieses Produkt mit Produkten im selben Markt verglichen wird.",
+          "Name": "Markt",
+          "Type": 9
+        },
+        {
+          "Description": "Der Reifegrad des Produkts, mit dem etablierte und aufstrebende Produkte getrennt verglichen werden.",
+          "Name": "Veröffentlichungsphase",
+          "Type": 10
+        }
+      ],
+      "Name": "BubblePointV1"
+    },
+    {
+      "Description": "Vergleicht Kundenreichweite und Wachstum von Beispielprodukten, gruppiert nach Markt und Reifegrad sowie unter Einbeziehung des jährlichen Datenvolumens und der Konfidenz.",
+      "DisplayName": "Portfolioprodukte",
+      "List": [
+        {
+          "Description": "Vergleicht Kundenreichweite und Wachstum von Beispielprodukten, gruppiert nach Markt und Reifegrad sowie unter Einbeziehung des jährlichen Datenvolumens und der Konfidenz.",
+          "Name": "Portfolioprodukte",
+          "Type": 0
+        },
+        {
+          "Description": "Kundenreichweite, Wachstum, jährliches Datenvolumen, Konfidenz und Marktklassifizierungen eines Beispielprodukts.",
+          "Name": "Portfolioprodukt",
+          "Type": 1
+        }
+      ],
+      "Name": "BubblePortfolioChartV1"
+    },
+    {
+      "Description": "Gibt an, ob der Schlusskurs des Beispiels mindestens dem Eröffnungskurs entspricht oder darunter liegt.",
+      "DisplayName": "Preisentwicklung",
+      "List": [
+        {
+          "Description": "Gibt an, ob der Schlusskurs des Beispiels mindestens dem Eröffnungskurs entspricht oder darunter liegt.",
+          "Enum": [
+            {
+              "Description": "Der Schlusskurs entspricht mindestens dem Eröffnungskurs.",
+              "Name": "Steigend oder unverändert",
+              "Type": 1
+            },
+            {
+              "Description": "Der Schlusskurs liegt unter dem Eröffnungskurs.",
+              "Name": "Fallend",
+              "Type": 2
+            }
+          ],
+          "Name": "Preisentwicklung",
+          "Type": 0
+        }
+      ],
+      "Name": "CandleDirectionV1"
+    },
+    {
+      "Description": "Vergleicht die simulierten Eröffnungs- und Schlusskurse für jede Marktperiode.",
+      "DisplayName": "Eröffnungs- und Schlusskurse des Marktes",
+      "List": [
+        {
+          "Description": "Vergleicht die simulierten Eröffnungs- und Schlusskurse für jede Marktperiode.",
+          "Name": "Eröffnungs- und Schlusskurse des Marktes",
+          "Type": 0
+        },
+        {
+          "Description": "Die Eröffnungs- und Schlusskurse einer simulierten Marktperiode zusammen mit ihrem Tiefst- und Höchstkurs sowie ihrem Handelsvolumen.",
+          "Name": "Eröffnungs- und Schlusskurse",
+          "Type": 1
+        }
+      ],
+      "Name": "CandlestickBodiesV1"
+    },
+    {
+      "Description": "Die Eröffnungs- und Schlusskurse einer simulierten Marktperiode zusammen mit ihrem Tiefst- und Höchstkurs sowie ihrem Handelsvolumen.",
+      "DisplayName": "Eröffnungs- und Schlusskurse",
+      "List": [
+        {
+          "Description": "Die simulierten Eröffnungs- und Schlusskurse einer Marktperiode sowie deren Tiefst- und Höchstkurs und Handelsvolumen.",
+          "Name": "Eröffnungs- und Schlusskurse",
+          "Type": 0
+        },
+        {
+          "Description": "Beginn des Zeitintervalls der Kerze.",
+          "Name": "Intervallbeginn",
+          "Type": 1
+        },
+        {
+          "Description": "Ende des Zeitintervalls der Kerze.",
+          "Name": "Intervallende",
+          "Type": 2
+        },
+        {
+          "Description": "Der simulierte Kurs zu Beginn der Marktperiode.",
+          "Name": "Eröffnungskurs",
+          "Type": 3
+        },
+        {
+          "Description": "Der simulierte Kurs am Ende der Marktperiode.",
+          "Name": "Schlusskurs",
+          "Type": 4
+        },
+        {
+          "Description": "Datum und Uhrzeit in der Mitte dieser Marktperiode.",
+          "Name": "Mitte der Marktperiode",
+          "Type": 5
+        },
+        {
+          "Description": "Niedrigster Wert im Intervall.",
+          "Name": "Tiefstkurs",
+          "Type": 6
+        },
+        {
+          "Description": "Höchster Wert im Intervall.",
+          "Name": "Höchstkurs",
+          "Type": 7
+        },
+        {
+          "Description": "Transaktionsvolumen im Intervall.",
+          "Name": "Volumen",
+          "Type": 8
+        },
+        {
+          "Description": "Gibt an, ob der Kurs im Intervall gestiegen oder gefallen ist.",
+          "Name": "Richtung",
+          "Type": 9
+        },
+        {
+          "Description": "Die Farbe, mit der ein gestiegener oder unveränderter Kurs von einem gefallenen Kurs unterschieden wird.",
+          "Name": "Kennzeichnung der Kursänderung",
+          "Type": 10
+        },
+        {
+          "Description": "Verknüpft diese Eröffnungs- und Schlusskurse mit der Kursspanne derselben Periode.",
+          "Name": "Marktperiodenreferenz",
+          "Type": 11
+        }
+      ],
+      "Name": "CandlestickBodyV1"
+    },
+    {
+      "Description": "Vergleicht für jede Marktperiode die simulierten Eröffnungs-, Schluss-, Tiefst- und Höchstkurse sowie das Handelsvolumen.",
+      "DisplayName": "Kerzendiagramm",
+      "List": [
+        {
+          "Description": "Vergleicht für jede Marktperiode die simulierten Eröffnungs-, Schluss-, Tiefst- und Höchstkurse sowie das Handelsvolumen.",
+          "Name": "Kerzendiagramm",
+          "Type": 0
+        },
+        {
+          "Description": "Die simulierten Tiefst- und Höchstkurse jeder Marktperiode.",
+          "Name": "Kursspannen",
+          "Type": 1
+        },
+        {
+          "Description": "Die simulierten Kurse zu Beginn und am Ende jeder Marktperiode.",
+          "Name": "Eröffnungs- und Schlusskurse",
+          "Type": 2
+        }
+      ],
+      "Name": "CandlestickChartV1"
+    },
+    {
+      "Description": "Zeigt die simulierten Tiefst- und Höchstkurse jeder Marktperiode.",
+      "DisplayName": "Marktkursspannen",
+      "List": [
+        {
+          "Description": "Zeigt die simulierten Tiefst- und Höchstkurse jeder Marktperiode.",
+          "Name": "Marktkursspannen",
+          "Type": 0
+        },
+        {
+          "Description": "Die simulierten Tiefst-, Höchst-, Eröffnungs- und Schlusskurse einer Marktperiode sowie deren Handelsvolumen.",
+          "Name": "Marktkursspanne",
+          "Type": 1
+        }
+      ],
+      "Name": "CandlestickWicksV1"
+    },
+    {
+      "Description": "Die simulierten Tiefst-, Höchst-, Eröffnungs- und Schlusskurse einer Marktperiode sowie deren Handelsvolumen.",
+      "DisplayName": "Marktkursspanne",
+      "List": [
+        {
+          "Description": "Die simulierten Tiefst-, Höchst-, Eröffnungs- und Schlusskurse einer Marktperiode sowie deren Handelsvolumen.",
+          "Name": "Marktkursspanne",
+          "Type": 0
+        },
+        {
+          "Description": "Mitte des Zeitintervalls der Kerze.",
+          "Name": "Intervallmitte",
+          "Type": 1
+        },
+        {
+          "Description": "Niedrigster Wert im Intervall.",
+          "Name": "Tiefstkurs",
+          "Type": 2
+        },
+        {
+          "Description": "Höchster Wert im Intervall.",
+          "Name": "Höchstkurs",
+          "Type": 3
+        },
+        {
+          "Description": "Eröffnungswert des Intervalls.",
+          "Name": "Eröffnungskurs",
+          "Type": 4
+        },
+        {
+          "Description": "Schlusswert des Intervalls.",
+          "Name": "Schlusskurs",
+          "Type": 5
+        },
+        {
+          "Description": "Transaktionsvolumen im Intervall.",
+          "Name": "Volumen",
+          "Type": 6
+        },
+        {
+          "Description": "Gibt an, ob der Kurs im Intervall gestiegen oder gefallen ist.",
+          "Name": "Richtung",
+          "Type": 7
+        },
+        {
+          "Description": "Die Farbe, mit der die Änderungsrichtung der beispielhaften Kursspanne gekennzeichnet wird.",
+          "Name": "Kennzeichnung der Kursspanne",
+          "Type": 8
+        },
+        {
+          "Description": "Verknüpft diese Kursspanne mit den Eröffnungs- und Schlusskursen derselben Periode.",
+          "Name": "Marktperiodenreferenz",
+          "Type": 9
+        }
+      ],
+      "Name": "CandlestickWickV1"
+    },
+    {
+      "Description": "Vergleicht Produktfamilien hinsichtlich Geschwindigkeit, Zuverlässigkeit, Effizienz, Einfachheit und Reichweite.",
+      "DisplayName": "Leistungsbewertungen",
+      "List": [
+        {
+          "Description": "Vergleicht Produktfamilien hinsichtlich Geschwindigkeit, Zuverlässigkeit, Effizienz, Einfachheit und Reichweite.",
+          "Name": "Leistungsbewertungen",
+          "Type": 0
+        },
+        {
+          "Description": "Bewertung eines Leistungsmerkmals für eine beispielhafte Produktfamilie in einem Vergleichsprofil.",
+          "Name": "Leistungsbewertung",
+          "Type": 1
+        }
+      ],
+      "Name": "CapabilityRadarChartV1"
+    },
+    {
+      "Description": "Bewertung eines Leistungsmerkmals für eine beispielhafte Produktfamilie in einem Vergleichsprofil.",
+      "DisplayName": "Leistungsbewertung",
+      "List": [
+        {
+          "Description": "Bewertung eines Leistungsmerkmals für eine beispielhafte Produktfamilie in einem Vergleichsprofil.",
+          "Name": "Leistungsbewertung",
+          "Type": 0
+        },
+        {
+          "Description": "Die diesem Leistungsmerkmal zugewiesene Position im Profil.",
+          "Name": "Winkel des Leistungsmerkmals",
+          "Type": 1
+        },
+        {
+          "Description": "Das durch diese Bewertung dargestellte Leistungsmerkmal.",
+          "Name": "Leistungsmerkmal",
+          "Type": 2
+        },
+        {
+          "Description": "Die Bewertung dieses Leistungsmerkmals für die beispielhafte Produktfamilie.",
+          "Name": "Bewertung",
+          "Type": 3
+        },
+        {
+          "Description": "Die Produktfamilie, deren Leistungsbewertung angezeigt wird.",
+          "Name": "Produktfamilie",
+          "Type": 4
+        },
+        {
+          "Description": "Die Produktfamilie, die durch den Umriss dieses Vergleichsprofils gekennzeichnet ist.",
+          "Name": "Profilumriss",
+          "Type": 5
+        },
+        {
+          "Description": "Die Deckkraft, mit der sich überlappende Leistungsprofile voneinander unterscheiden lassen.",
+          "Name": "Profilschattierung",
+          "Type": 6
+        },
+        {
+          "Description": "Die Position des Leistungsmerkmals in der Abfolge innerhalb des Profils seiner Produktfamilie.",
+          "Name": "Reihenfolge der Leistungsmerkmale",
+          "Type": 7
+        },
+        {
+          "Description": "Unterscheidet diese Produktfamilie und dieses Leistungsmerkmal von den anderen Bewertungen.",
+          "Name": "Bewertungsreferenz",
+          "Type": 8
+        }
+      ],
+      "Name": "CapabilityRadarPointV1"
+    },
+    {
+      "Description": "Kennzeichnet ein Leistungsmerkmal, anhand dessen Produktfamilien verglichen werden.",
+      "DisplayName": "Leistungsmerkmal",
+      "List": [
+        {
+          "Description": "Kennzeichnet ein Leistungsmerkmal, anhand dessen Produktfamilien verglichen werden.",
+          "Enum": [
+            {
+              "Description": "Reaktionsgeschwindigkeit und Durchsatz.",
+              "Name": "Geschwindigkeit",
+              "Type": 1
+            },
+            {
+              "Description": "Stabilität im normalen Betrieb.",
+              "Name": "Zuverlässigkeit",
+              "Type": 2
+            },
+            {
+              "Description": "Effiziente Ressourcennutzung.",
+              "Name": "Effizienz",
+              "Type": 3
+            },
+            {
+              "Description": "Benutzerfreundlichkeit.",
+              "Name": "Einfachheit",
+              "Type": 4
+            },
+            {
+              "Description": "Bandbreite der unterstützten Anwendungsfälle.",
+              "Name": "Reichweite",
+              "Type": 5
+            }
+          ],
+          "Name": "Leistungsmerkmal",
+          "Type": 0
+        }
+      ],
+      "Name": "CapabilityV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved stored values for the function's required data schema.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved stored values for the function's required data schema.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "value",
+          "Type": 2
+        }
+      ],
+      "Name": "ChartData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved storage keys; this demonstration currently writes no records.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved storage keys; this demonstration currently writes no records.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        }
+      ],
+      "Name": "ChartDataKey"
+    },
+    {
+      "Description": "Benutzer können ein Beispiel auswählen, um simulierte geschäftliche, energiebezogene, temperaturbezogene oder statistische Vergleiche zu untersuchen.",
+      "DisplayName": "Diagrammgalerie",
+      "List": [
+        {
+          "Description": "Benutzer können ein Beispiel auswählen, um simulierte geschäftliche, energiebezogene, temperaturbezogene oder statistische Vergleiche zu untersuchen.",
+          "Name": "Diagrammgalerie",
+          "Type": 0
+        },
+        {
+          "Description": "Benutzer können Produktreichweite, Wachstum, jährliches Datenvolumen und Konfidenz über verschiedene Märkte und Produktreifegrade hinweg vergleichen.",
+          "Name": "Blasenportfolio anzeigen",
+          "Type": 1
+        },
+        {
+          "Description": "Die Galerie vergleicht Beispielprodukte nach Kundenreichweite, Wachstum, jährlichem Datenvolumen, Konfidenz, Familie, Servicestufe, Markt und Reifegrad.",
+          "Name": "Blasenportfolio",
+          "Type": 2
+        },
+        {
+          "Description": "Benutzer können den simulierten erfassten, erwarteten und ambitionierten Leistungsbedarf im Zeitverlauf vergleichen.",
+          "Name": "Energieverlauf anzeigen",
+          "Type": 3
+        },
+        {
+          "Description": "Die Galerie zeigt Szenarien für den erfassten, erwarteten und ambitionierten Leistungsbedarf auf derselben Zeitachse.",
+          "Name": "Energieverlauf",
+          "Type": 4
+        },
+        {
+          "Description": "Benutzer können die Unsicherheitsbereiche der Temperaturprognosen zweier Beispielmodelle vergleichen.",
+          "Name": "Prognosebereiche anzeigen",
+          "Type": 5
+        },
+        {
+          "Description": "Die Galerie zeigt die niedrigen und hohen Temperaturschätzungen zweier Beispielmodelle im Zeitverlauf.",
+          "Name": "Prognosebereiche",
+          "Type": 6
+        },
+        {
+          "Description": "Benutzer können die Beispielumsätze der Produktfamilien innerhalb der einzelnen Quartale vergleichen.",
+          "Name": "Gruppierte Umsätze anzeigen",
+          "Type": 7
+        },
+        {
+          "Description": "Die Galerie zeigt den Quartalsumsatz nach Produktfamilie mit gruppierten Balken.",
+          "Name": "Gruppierte Umsätze",
+          "Type": 8
+        },
+        {
+          "Description": "Benutzer können vergleichen, wie häufig simulierte Reaktionszeiten in die einzelnen Bereiche fallen.",
+          "Name": "Reaktionszeit-Histogramm anzeigen",
+          "Type": 9
+        },
+        {
+          "Description": "Die Galerie zeigt die Anzahl der simulierten Interaktionen in jedem Reaktionszeitbereich.",
+          "Name": "Reaktionszeit-Histogramm",
+          "Type": 10
+        },
+        {
+          "Description": "Benutzer können die Beiträge von Solarenergie, Batterie und Stromnetz zur Gesamtenergie und zum sich ändernden Energieverbrauch vergleichen.",
+          "Name": "Energiebeiträge anzeigen",
+          "Type": 11
+        },
+        {
+          "Description": "Die Galerie zeigt die Beiträge der Energiequellen mit gestapelten Balken und Flächen.",
+          "Name": "Energiebeiträge",
+          "Type": 12
+        },
+        {
+          "Description": "Der Benutzer kann simulierte Aktivitäten nach Wochentag und Tageszeit vergleichen.",
+          "Name": "Aktivitäts-Heatmap anzeigen",
+          "Type": 13
+        },
+        {
+          "Description": "Die Galerie zeigt beispielhafte Aktivitätsniveaus an Arbeitstagen und zu verschiedenen Tageszeiten.",
+          "Name": "Aktivitäts-Heatmap",
+          "Type": 14
+        },
+        {
+          "Description": "Der Benutzer kann niedrige und hohe Schätzwerte für beispielhafte elektrische Messungen vergleichen.",
+          "Name": "Messunsicherheit anzeigen",
+          "Type": 15
+        },
+        {
+          "Description": "Die Galerie zeigt den Unsicherheitsbereich jeder elektrischen Beispielmessung mithilfe von Fehlerbalken.",
+          "Name": "Messunsicherheit",
+          "Type": 16
+        },
+        {
+          "Description": "Der Benutzer kann beispielhafte Diagrammhinweise mit unterschiedlicher Bedeutung, Hervorhebung und Ausrichtung erkunden.",
+          "Name": "Diagrammanmerkungen anzeigen",
+          "Type": 17
+        },
+        {
+          "Description": "Die Galerie zeigt beispielhafte Hinweise, die Ergebnisse innerhalb eines Diagramms hervorheben.",
+          "Name": "Diagrammanmerkungen",
+          "Type": 18
+        },
+        {
+          "Description": "Der Benutzer kann die Bewertungen von Produktfamilien hinsichtlich Geschwindigkeit, Zuverlässigkeit, Effizienz, Einfachheit und Reichweite vergleichen.",
+          "Name": "Leistungsmerkmale im Radardiagramm anzeigen",
+          "Type": 19
+        },
+        {
+          "Description": "Die Galerie vergleicht fünf Leistungsmerkmale jeder beispielhaften Produktfamilie in überlagerten Profilen.",
+          "Name": "Radardiagramm der Leistungsmerkmale",
+          "Type": 20
+        },
+        {
+          "Description": "Der Benutzer kann den Anteil jeder Verweisquelle am beispielhaften Besucherverkehr vergleichen.",
+          "Name": "Besucherquellen anzeigen",
+          "Type": 21
+        },
+        {
+          "Description": "Die Galerie zeigt ein Ringdiagramm mit den Namen der Quellen und ihren prozentualen Anteilen am Besucherverkehr.",
+          "Name": "Besucherquellen",
+          "Type": 22
+        },
+        {
+          "Description": "Der Benutzer kann ein Kreisdiagramm zu Besucheranteilen mit einem radialen Diagramm zur Produktleistung vergleichen.",
+          "Name": "Kreisförmige Diagramme anzeigen",
+          "Type": 23
+        },
+        {
+          "Description": "Die Galerie zeigt Besucheranteile und Bewertungen von Produktfamilien in zwei kreisförmigen Diagrammen.",
+          "Name": "Vergleich kreisförmiger Diagramme",
+          "Type": 24
+        },
+        {
+          "Description": "Der Benutzer kann fiktive Bezirke und ihre beispielhaften Auslastungswerte in Prozent vergleichen.",
+          "Name": "Bezirkskarte anzeigen",
+          "Type": 25
+        },
+        {
+          "Description": "Die Galerie zeigt Bezirksgrenzen und eine beispielhafte Auslastung auf einer Karte.",
+          "Name": "Bezirkskarte",
+          "Type": 26
+        },
+        {
+          "Description": "Der Benutzer kann zentrale Temperaturschätzwerte mit dem Unsicherheitsbereich jedes Beispielmodells vergleichen.",
+          "Name": "Prognosesicherheit anzeigen",
+          "Type": 27
+        },
+        {
+          "Description": "Die Galerie zeigt zentrale Schätzwerte zusammen mit ihren unteren und oberen Prognosebereichen.",
+          "Name": "Prognosesicherheit",
+          "Type": 28
+        },
+        {
+          "Description": "Der Benutzer kann simulierte Eröffnungs-, Schluss-, Tiefst- und Höchstkurse sowie das Handelsvolumen vergleichen.",
+          "Name": "Candlestick-Diagramm anzeigen",
+          "Type": 29
+        },
+        {
+          "Description": "Die Galerie zeigt für beispielhafte Marktzeiträume steigende oder unveränderte sowie fallende Kurse.",
+          "Name": "Candlestick-Diagramm",
+          "Type": 30
+        },
+        {
+          "Description": "Der Benutzer kann simulierte Temperaturwerte über 72 Stunden erkunden, die für jeden Fünf-Minuten-Zeitraum anhand von Tiefst-, Höchst- und Endwert zusammengefasst sind.",
+          "Name": "Temperaturverlauf anzeigen",
+          "Type": 31
+        },
+        {
+          "Description": "Die Galerie zeigt simulierte Temperaturbereiche und Endwerte für Fünf-Minuten-Zeiträume. Wenn die Uhrzeit des Hubs verfügbar ist, endet die Darstellung mit dem zuletzt abgeschlossenen Zeitraum.",
+          "Name": "Temperaturverlauf der letzten 72 Stunden",
+          "Type": 32
+        },
+        {
+          "Description": "Der Benutzer kann für jede Beispielgruppe den mittleren Wertebereich, den Median, den typischen Wertebereich und Ausreißer bei den Antwortzeiten vergleichen.",
+          "Name": "Verteilungen der Antwortzeiten anzeigen",
+          "Type": 33
+        },
+        {
+          "Description": "Die Galerie fasst simulierte Antwortzeiten für jede Gruppe in einem Boxplot zusammen.",
+          "Name": "Verteilungen der Antwortzeiten",
+          "Type": 34
+        },
+        {
+          "Description": "Der Benutzer kann Verbindungen zwischen dem beispielhaften Gateway, den Verarbeitungsdiensten und dem Speicher erkunden.",
+          "Name": "Netzwerkbeziehungen anzeigen",
+          "Type": 35
+        },
+        {
+          "Description": "Die Galerie zeigt die Komponenten und Verbindungen eines Beispielnetzwerks.",
+          "Name": "Netzwerkbeziehungen",
+          "Type": 36
+        },
+        {
+          "Description": "Der Benutzer kann Besucher vergleichen, die direkt aktiviert werden, mit Unterstützung aktiviert werden oder den Vorgang vorzeitig verlassen.",
+          "Name": "Besucherwege anzeigen",
+          "Type": 37
+        },
+        {
+          "Description": "Die Galerie zeigt die Anzahl und die Wege der Besucher über Ankunft, Bewertung, Aktivierung und Verlassen hinweg.",
+          "Name": "Besucherwege",
+          "Type": 38
+        },
+        {
+          "Description": "Der Benutzer kann simulierte Antwortzeiten mit einem geglätteten Trend und einem Zielwert vergleichen.",
+          "Name": "Leistungsvergleich anzeigen",
+          "Type": 39
+        },
+        {
+          "Description": "Die Galerie zeigt einzelne Antwortzeiten, ihren Trend und die gewünschte maximale Antwortzeit gemeinsam.",
+          "Name": "Leistungsvergleich",
+          "Type": 40
+        },
+        {
+          "Description": "Der Benutzer kann den Quartalsumsatz von Produktfamilien in zwei Balkendiagramm-Anordnungen vergleichen und die Besucheranteile nach Quelle untersuchen.",
+          "Name": "Umsatz und Besucherverkehr anzeigen",
+          "Type": 41
+        },
+        {
+          "Description": "Die Galerie zeigt gruppierte Umsätze, horizontale Umsatzvergleiche und die Anteile der Besucherquellen als separate Diagramme.",
+          "Name": "Vergleich von Umsatz und Besucherverkehr",
+          "Type": 42
+        },
+        {
+          "Description": "Der Benutzer kann Strombedarf, Prognoseunsicherheit und Aktivitäten an Arbeitstagen gemeinsam erkunden.",
+          "Name": "Betriebsübersicht anzeigen",
+          "Type": 43
+        },
+        {
+          "Description": "Die Galerie zeigt den Energieverlauf, Temperaturprognosebereiche und Aktivitätsmuster als separate Diagramme.",
+          "Name": "Betriebsübersicht",
+          "Type": 44
+        }
+      ],
+      "Name": "ChartDemoProtocol"
+    },
+    {
+      "Description": "Gibt den Leistungsumfang an, der den Kunden eines Beispielprodukts angeboten wird.",
+      "DisplayName": "Kundenstufe",
+      "List": [
+        {
+          "Description": "Gibt den Leistungsumfang an, der den Kunden eines Beispielprodukts angeboten wird.",
+          "Enum": [
+            {
+              "Description": "Standard-Leistungsstufe.",
+              "Name": "Standard",
+              "Type": 1
+            },
+            {
+              "Description": "Premium-Leistungsstufe.",
+              "Name": "Premium",
+              "Type": 2
+            }
+          ],
+          "Name": "Kundenstufe",
+          "Type": 0
+        }
+      ],
+      "Name": "CustomerTierV1"
+    },
+    {
+      "Description": "Eine Beispielmitteilung, die ein Ergebnis in einem Diagramm erläutert oder hervorhebt.",
+      "DisplayName": "Diagrammanmerkung",
+      "List": [
+        {
+          "Description": "Eine Beispielmitteilung, die ein Ergebnis in einem Diagramm erläutert oder hervorhebt.",
+          "Name": "Diagrammanmerkung",
+          "Type": 0
+        },
+        {
+          "Description": "Die horizontale Position der Anmerkung im Beispieldiagramm.",
+          "Name": "Horizontale Position",
+          "Type": 1
+        },
+        {
+          "Description": "Die vertikale Position der Anmerkung im Beispieldiagramm.",
+          "Name": "Vertikale Position",
+          "Type": 2
+        },
+        {
+          "Description": "Die an dieser Diagrammposition angezeigte Beispielmitteilung, sofern verfügbar in der Sprache des Betrachters.",
+          "Name": "Mitteilung",
+          "Type": 3
+        },
+        {
+          "Description": "Gibt an, ob die Mitteilung positiv oder informativ ist oder Aufmerksamkeit erfordert.",
+          "Name": "Mitteilungstyp",
+          "Type": 4
+        },
+        {
+          "Description": "Die relative Größe, mit der diese Anmerkung hervorgehoben wird.",
+          "Name": "Textgröße",
+          "Type": 5
+        },
+        {
+          "Description": "Die Drehung des Anmerkungstextes.",
+          "Name": "Textwinkel",
+          "Type": 6
+        },
+        {
+          "Description": "Die Deckkraft, mit der die Anmerkung hervorgehoben wird, während überlappende Inhalte sichtbar bleiben.",
+          "Name": "Textdeckkraft",
+          "Type": 7
+        },
+        {
+          "Description": "Unterscheidet diese Mitteilung von den anderen Anmerkungen im Beispiel.",
+          "Name": "Anmerkungsreferenz",
+          "Type": 8
+        }
+      ],
+      "Name": "DirectAnnotationV1"
+    },
+    {
+      "Description": "Zeigt, wie Mitteilungen Ergebnisse mit unterschiedlicher Hervorhebung und Ausrichtung erläutern können.",
+      "DisplayName": "Diagrammanmerkungen",
+      "List": [
+        {
+          "Description": "Zeigt, wie Mitteilungen Ergebnisse mit unterschiedlicher Hervorhebung und Ausrichtung erläutern können.",
+          "Name": "Diagrammanmerkungen",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Beispielmitteilung, die ein Ergebnis in einem Diagramm erläutert oder hervorhebt.",
+          "Name": "Diagrammanmerkung",
+          "Type": 1
+        }
+      ],
+      "Name": "DirectLabelsChartV1"
+    },
+    {
+      "Description": "Vergleicht anhand simulierter Messwerte den erfassten, erwarteten und als ehrgeiziges Ziel festgelegten Leistungsbedarf im Zeitverlauf.",
+      "DisplayName": "Verlauf des Leistungsbedarfs",
+      "List": [
+        {
+          "Description": "Vergleicht anhand simulierter Messwerte den erfassten, erwarteten und als ehrgeiziges Ziel festgelegten Leistungsbedarf im Zeitverlauf.",
+          "Name": "Verlauf des Leistungsbedarfs",
+          "Type": 0
+        },
+        {
+          "Description": "Ein Beispielmesswert zum Leistungsbedarf zu einem bestimmten Zeitpunkt für ein tatsächliches, erwartetes oder ehrgeiziges Zielszenario.",
+          "Name": "Messwert zum Leistungsbedarf",
+          "Type": 1
+        }
+      ],
+      "Name": "EnergyHistoryChartV1"
+    },
+    {
+      "Description": "Ein Beispielmesswert zum Leistungsbedarf zu einem bestimmten Zeitpunkt für ein tatsächliches, erwartetes oder ehrgeiziges Zielszenario.",
+      "DisplayName": "Messwert zum Leistungsbedarf",
+      "List": [
+        {
+          "Description": "Ein Beispielmesswert zum Leistungsbedarf zu einem bestimmten Zeitpunkt für ein tatsächliches, erwartetes oder ehrgeiziges Zielszenario.",
+          "Name": "Messwert zum Leistungsbedarf",
+          "Type": 0
+        },
+        {
+          "Description": "Datum und Uhrzeit, die durch diesen Beispielmesswert zum Leistungsbedarf dargestellt werden.",
+          "Name": "Zeitpunkt",
+          "Type": 1
+        },
+        {
+          "Description": "Der elektrische Leistungsbedarf zu diesem Zeitpunkt.",
+          "Name": "Leistung",
+          "Type": 2
+        },
+        {
+          "Description": "Gibt an, ob dieser Beispielbedarf erfasst oder erwartet wurde oder ein ehrgeiziges Ziel darstellt.",
+          "Name": "Szenario",
+          "Type": 3
+        },
+        {
+          "Description": "Gibt das Szenario an, dessen Linienmuster diesen Bedarfsverlauf kennzeichnet.",
+          "Name": "Linienstil des Szenarios",
+          "Type": 4
+        },
+        {
+          "Description": "Die relative Linienstärke, mit der dieses Bedarfsszenario hervorgehoben wird.",
+          "Name": "Linienhervorhebung",
+          "Type": 5
+        },
+        {
+          "Description": "Die Position des Messwerts in der zeitlichen Abfolge seines Szenarios.",
+          "Name": "Zeitliche Reihenfolge",
+          "Type": 6
+        }
+      ],
+      "Name": "EnergyHistoryPointV1"
+    },
+    {
+      "Description": "Gibt die Beiträge von Solarenergie, Batterie und Stromnetz zur Gesamtenergie im Beispiel an.",
+      "DisplayName": "Energiequelle",
+      "List": [
+        {
+          "Description": "Gibt die Beiträge von Solarenergie, Batterie und Stromnetz zur Gesamtenergie im Beispiel an.",
+          "Enum": [
+            {
+              "Description": "Lokal erzeugte Solarenergie.",
+              "Name": "Solarenergie",
+              "Type": 1
+            },
+            {
+              "Description": "Aus dem Speicher abgegebene Energie.",
+              "Name": "Batterie",
+              "Type": 2
+            },
+            {
+              "Description": "Aus dem Stromnetz bezogene Energie.",
+              "Name": "Stromnetz",
+              "Type": 3
+            }
+          ],
+          "Name": "Energiequelle",
+          "Type": 0
+        }
+      ],
+      "Name": "EnergySourceV1"
+    },
+    {
+      "Description": "Kennzeichnet einen Schritt von der Ankunft über die Produktbewertung und Aktivierung bis zum Verlassen.",
+      "DisplayName": "Besucherphase",
+      "List": [
+        {
+          "Description": "Kennzeichnet einen Schritt von der Ankunft über die Produktbewertung und Aktivierung bis zum Verlassen.",
+          "Enum": [
+            {
+              "Description": "Eingehende Besuche.",
+              "Name": "Besuche",
+              "Type": 1
+            },
+            {
+              "Description": "Besuche, bei denen das Produkt bewertet wird.",
+              "Name": "Bewertung",
+              "Type": 2
+            },
+            {
+              "Description": "Besuche, bei denen die Aktivierung abgeschlossen wurde.",
+              "Name": "Aktiviert",
+              "Type": 3
+            },
+            {
+              "Description": "Besuche, die vor der Aktivierung beendet wurden.",
+              "Name": "Verlassen",
+              "Type": 4
+            }
+          ],
+          "Name": "Besucherphase",
+          "Type": 0
+        }
+      ],
+      "Name": "FlowStageV1"
+    },
+    {
+      "Description": "Unterscheidet Besucher danach, ob sie die Aktivierung direkt oder mit Unterstützung abschließen oder den Vorgang vorzeitig verlassen.",
+      "DisplayName": "Besucherverlauf",
+      "List": [
+        {
+          "Description": "Unterscheidet Besucher danach, ob sie die Aktivierung direkt oder mit Unterstützung abschließen oder den Vorgang vorzeitig verlassen.",
+          "Enum": [
+            {
+              "Description": "Besuche, bei denen die Aktivierung direkt erfolgt.",
+              "Name": "Direkte Aktivierung",
+              "Type": 1
+            },
+            {
+              "Description": "Besuche, bei denen die Aktivierung nach Unterstützung erfolgt.",
+              "Name": "Unterstützte Aktivierung",
+              "Type": 2
+            },
+            {
+              "Description": "Besuche, die vor der Aktivierung beendet werden.",
+              "Name": "Vorzeitiges Verlassen",
+              "Type": 3
+            }
+          ],
+          "Name": "Besucherverlauf",
+          "Type": 0
+        }
+      ],
+      "Name": "FlowStreamV1"
+    },
+    {
+      "Description": "Vergleicht zentrale Temperaturschätzwerte mit den unteren und oberen Grenzwerten zweier beispielhafter Prognosemodelle.",
+      "DisplayName": "Prognosesicherheit",
+      "List": [
+        {
+          "Description": "Vergleicht zentrale Temperaturschätzwerte mit den unteren und oberen Grenzwerten zweier beispielhafter Prognosemodelle.",
+          "Name": "Prognosesicherheit",
+          "Type": 0
+        },
+        {
+          "Description": "Die unteren und oberen Temperaturschätzwerte für jedes Modell und jeden Prognosezeitpunkt.",
+          "Name": "Prognosebereiche",
+          "Type": 1
+        },
+        {
+          "Description": "Die zentralen Temperaturschätzwerte im Vergleich zum Bereich des jeweiligen Modells.",
+          "Name": "Zentrale Schätzwerte",
+          "Type": 2
+        }
+      ],
+      "Name": "ForecastConfidenceChartV1"
+    },
+    {
+      "Description": "Zeigt zentrale Temperaturschätzwerte zum Vergleich mit dem Unsicherheitsbereich des jeweiligen Modells.",
+      "DisplayName": "Prognoseschätzwerte",
+      "List": [
+        {
+          "Description": "Zeigt zentrale Temperaturschätzwerte zum Vergleich mit dem Unsicherheitsbereich des jeweiligen Modells.",
+          "Name": "Prognoseschätzwerte",
+          "Type": 0
+        },
+        {
+          "Description": "Der zentrale Temperaturschätzwert eines beispielhaften Modells zu einem Prognosezeitpunkt.",
+          "Name": "Prognoseschätzwert",
+          "Type": 1
+        }
+      ],
+      "Name": "ForecastEstimateChartV1"
+    },
+    {
+      "Description": "Der zentrale Temperaturschätzwert eines beispielhaften Modells zu einem Prognosezeitpunkt.",
+      "DisplayName": "Prognoseschätzwert",
+      "List": [
+        {
+          "Description": "Der zentrale Temperaturschätzwert eines beispielhaften Modells zu einem Prognosezeitpunkt.",
+          "Name": "Prognoseschätzwert",
+          "Type": 0
+        },
+        {
+          "Description": "Datum und Uhrzeit, auf die sich dieser Temperaturschätzwert bezieht.",
+          "Name": "Prognosezeitpunkt",
+          "Type": 1
+        },
+        {
+          "Description": "Der zentrale Temperaturschätzwert des beispielhaften Modells für diesen Zeitpunkt.",
+          "Name": "Temperaturschätzwert",
+          "Type": 2
+        },
+        {
+          "Description": "Das beispielhafte Modell, das diesen Temperaturschätzwert liefert.",
+          "Name": "Prognosemodell",
+          "Type": 3
+        },
+        {
+          "Description": "Die Position des Schätzwerts in der zeitlichen Abfolge seines Modells.",
+          "Name": "Zeitliche Reihenfolge",
+          "Type": 4
+        },
+        {
+          "Description": "Unterscheidet diese Kombination aus Modell und Prognosezeitpunkt von den anderen Schätzwerten.",
+          "Name": "Schätzwertreferenz",
+          "Type": 5
+        }
+      ],
+      "Name": "ForecastEstimatePointV1"
+    },
+    {
+      "Description": "Vergleicht die unteren und oberen Temperaturschätzwerte zweier beispielhafter Prognosemodelle im Zeitverlauf.",
+      "DisplayName": "Prognosebereiche",
+      "List": [
+        {
+          "Description": "Vergleicht die unteren und oberen Temperaturschätzwerte zweier beispielhafter Prognosemodelle im Zeitverlauf.",
+          "Name": "Prognosebereiche",
+          "Type": 0
+        },
+        {
+          "Description": "Ein beispielhafter Temperaturbereich zu einem Prognosezeitpunkt, der die Unsicherheit veranschaulicht.",
+          "Name": "Prognoseintervall",
+          "Type": 1
+        }
+      ],
+      "Name": "ForecastRangeChartV1"
+    },
+    {
+      "Description": "Ein beispielhafter Temperaturbereich zu einem Prognosezeitpunkt, der die Unsicherheit veranschaulicht.",
+      "DisplayName": "Prognoseintervall",
+      "List": [
+        {
+          "Description": "Ein beispielhafter Temperaturbereich zu einem Prognosezeitpunkt, der die Unsicherheit veranschaulicht.",
+          "Name": "Prognoseintervall",
+          "Type": 0
+        },
+        {
+          "Description": "Datum und Uhrzeit, auf die sich dieser Prognosebereich bezieht.",
+          "Name": "Prognosezeitpunkt",
+          "Type": 1
+        },
+        {
+          "Description": "Untergrenze des Prognoseintervalls.",
+          "Name": "Untere Schätzung",
+          "Type": 2
+        },
+        {
+          "Description": "Obergrenze des Prognoseintervalls.",
+          "Name": "Obere Schätzung",
+          "Type": 3
+        },
+        {
+          "Description": "Das Beispielprognosemodell, das diesen Temperaturbereich liefert.",
+          "Name": "Prognosemodell",
+          "Type": 4
+        },
+        {
+          "Description": "Kennzeichnet das Modell, dessen Kontur diesen Prognosebereich von anderen unterscheidet.",
+          "Name": "Modellkontur",
+          "Type": 5
+        },
+        {
+          "Description": "Die Deckkraft, mit der überlappende Prognosebereiche voneinander unterschieden werden, während beide sichtbar bleiben.",
+          "Name": "Bereichsschattierung",
+          "Type": 6
+        }
+      ],
+      "Name": "ForecastRangePointV1"
+    },
+    {
+      "Description": "Der Umsatz einer Beispielfamilie von Produkten in einem Quartal.",
+      "DisplayName": "Quartalsumsatz",
+      "List": [
+        {
+          "Description": "Der Umsatz einer Beispielfamilie von Produkten in einem Quartal.",
+          "Name": "Quartalsumsatz",
+          "Type": 0
+        },
+        {
+          "Description": "Der Dreimonatszeitraum, auf den sich dieses Umsatzergebnis bezieht.",
+          "Name": "Quartal",
+          "Type": 1
+        },
+        {
+          "Description": "Die Familie, deren Umsatz mit dem anderer Familien im selben Quartal verglichen wird.",
+          "Name": "Produktfamilie",
+          "Type": 2
+        },
+        {
+          "Description": "Kennzeichnet die Produktfamilie, auf die sich dieses Umsatzergebnis bezieht.",
+          "Name": "Familienkennzeichnung",
+          "Type": 3
+        },
+        {
+          "Description": "Quartalsumsatz.",
+          "Name": "Umsatz",
+          "Type": 4
+        },
+        {
+          "Description": "Unterscheidet dieses Quartal und diese Produktfamilie von den anderen Umsatzergebnissen.",
+          "Name": "Umsatzreferenz",
+          "Type": 5
+        }
+      ],
+      "Name": "GroupedSalesBarV1"
+    },
+    {
+      "Description": "Vergleicht die Umsätze der Produktfamilien innerhalb jedes Quartals mithilfe gruppierter Balken.",
+      "DisplayName": "Quartalsumsätze",
+      "List": [
+        {
+          "Description": "Vergleicht die Umsätze der Produktfamilien innerhalb jedes Quartals mithilfe gruppierter Balken.",
+          "Name": "Quartalsumsätze",
+          "Type": 0
+        },
+        {
+          "Description": "Der Umsatz einer Beispielfamilie von Produkten in einem Quartal.",
+          "Name": "Quartalsumsatz",
+          "Type": 1
+        }
+      ],
+      "Name": "GroupedSalesChartV1"
+    },
+    {
+      "Description": "Der Quartalsumsatz einer Beispielfamilie von Produkten im horizontalen Umsatzvergleich.",
+      "DisplayName": "Quartalsumsatzvergleich",
+      "List": [
+        {
+          "Description": "Der Quartalsumsatz einer Beispielfamilie von Produkten im horizontalen Umsatzvergleich.",
+          "Name": "Quartalsumsatzvergleich",
+          "Type": 0
+        },
+        {
+          "Description": "Der Umsatz der Beispielfamilie von Produkten in diesem Quartal.",
+          "Name": "Umsatz",
+          "Type": 1
+        },
+        {
+          "Description": "Der Dreimonatszeitraum, auf den sich dieser Vergleich bezieht.",
+          "Name": "Quartal",
+          "Type": 2
+        },
+        {
+          "Description": "Die Familie, deren Umsatz mit dem anderer Familien im selben Quartal verglichen wird.",
+          "Name": "Produktfamilie",
+          "Type": 3
+        },
+        {
+          "Description": "Kennzeichnet die Produktfamilie, auf die sich dieser Umsatzvergleich bezieht.",
+          "Name": "Familienkennzeichnung",
+          "Type": 4
+        },
+        {
+          "Description": "Unterscheidet dieses Quartal und diese Produktfamilie von den anderen Umsatzvergleichen.",
+          "Name": "Umsatzreferenz",
+          "Type": 5
+        }
+      ],
+      "Name": "HorizontalGroupedBarV1"
+    },
+    {
+      "Description": "Vergleicht die Quartalsumsätze der Produktfamilien mithilfe horizontaler gruppierter Balken.",
+      "DisplayName": "Horizontale Umsatzvergleiche",
+      "List": [
+        {
+          "Description": "Vergleicht die Quartalsumsätze der Produktfamilien mithilfe horizontaler gruppierter Balken.",
+          "Name": "Horizontale Umsatzvergleiche",
+          "Type": 0
+        },
+        {
+          "Description": "Der Quartalsumsatz einer Beispielfamilie von Produkten im horizontalen Umsatzvergleich.",
+          "Name": "Quartalsumsatzvergleich",
+          "Type": 1
+        }
+      ],
+      "Name": "HorizontalGroupedSalesChartV1"
+    },
+    {
+      "Description": "Ein Antwortzeitbereich und die Anzahl der simulierten Interaktionen, die in diesen Bereich fallen.",
+      "DisplayName": "Antwortzeitintervall",
+      "List": [
+        {
+          "Description": "Ein Antwortzeitbereich und die Anzahl der simulierten Interaktionen, die in diesen Bereich fallen.",
+          "Name": "Antwortzeitintervall",
+          "Type": 0
+        },
+        {
+          "Description": "Die in diesem Intervall enthaltene untere Antwortzeitgrenze.",
+          "Name": "Minimale Antwortzeit",
+          "Type": 1
+        },
+        {
+          "Description": "Die obere Antwortzeitgrenze, die zum nächsten Intervall gehört.",
+          "Name": "Maximale Antwortzeit",
+          "Type": 2
+        },
+        {
+          "Description": "Die Anzahl der simulierten Interaktionen, deren Antwortzeiten in dieses Intervall fallen.",
+          "Name": "Beobachtungen",
+          "Type": 3
+        },
+        {
+          "Description": "Unterscheidet dieses Antwortzeitintervall von den anderen Intervallen.",
+          "Name": "Intervallreferenz",
+          "Type": 4
+        }
+      ],
+      "Name": "LatencyHistogramBinV1"
+    },
+    {
+      "Description": "Zeigt, wie häufig simulierte Antwortzeiten in die einzelnen Bereiche fallen.",
+      "DisplayName": "Antwortzeitintervalle",
+      "List": [
+        {
+          "Description": "Zeigt, wie häufig simulierte Antwortzeiten in die einzelnen Bereiche fallen.",
+          "Name": "Antwortzeitintervalle",
+          "Type": 0
+        },
+        {
+          "Description": "Ein Antwortzeitbereich und die Anzahl der simulierten Interaktionen, die in diesen Bereich fallen.",
+          "Name": "Antwortzeitintervall",
+          "Type": 1
+        }
+      ],
+      "Name": "LatencyHistogramChartV1"
+    },
+    {
+      "Description": "Kennzeichnet einen fiktiven Bezirk im Kartenvergleich.",
+      "DisplayName": "Kartenregion",
+      "List": [
+        {
+          "Description": "Kennzeichnet einen fiktiven Bezirk im Kartenvergleich.",
+          "Enum": [
+            {
+              "Description": "Der nördliche Bezirk auf der Beispielkarte.",
+              "Name": "Nördlicher Bezirk",
+              "Type": 1
+            },
+            {
+              "Description": "Der zentrale Bezirk auf der Beispielkarte.",
+              "Name": "Zentraler Bezirk",
+              "Type": 2
+            },
+            {
+              "Description": "Der südliche Bezirk auf der Beispielkarte.",
+              "Name": "Südlicher Bezirk",
+              "Type": 3
+            }
+          ],
+          "Name": "Kartenregion",
+          "Type": 0
+        }
+      ],
+      "Name": "MapRegionV1"
+    },
+    {
+      "Description": "Kennzeichnet den geografischen Markt, der zum Vergleich der Beispielprodukte verwendet wird.",
+      "DisplayName": "Markt",
+      "List": [
+        {
+          "Description": "Kennzeichnet den geografischen Markt, der zum Vergleich der Beispielprodukte verwendet wird.",
+          "Enum": [
+            {
+              "Description": "Nord- und Südamerika.",
+              "Name": "Amerika",
+              "Type": 1
+            },
+            {
+              "Description": "Der Beispielmarkt, der Europa, den Nahen Osten und Afrika umfasst.",
+              "Name": "Europa, Naher Osten und Afrika",
+              "Type": 2
+            }
+          ],
+          "Name": "Markt",
+          "Type": 0
+        }
+      ],
+      "Name": "MarketV1"
+    },
+    {
+      "Description": "Vergleicht niedrige und hohe Schätzwerte elektrischer Messungen mithilfe von Fehlerbalken.",
+      "DisplayName": "Messintervalle",
+      "List": [
+        {
+          "Description": "Vergleicht niedrige und hohe Schätzwerte elektrischer Messungen mithilfe von Fehlerbalken.",
+          "Name": "Messintervalle",
+          "Type": 0
+        },
+        {
+          "Description": "Die niedrigen und hohen Schätzwerte einer beispielhaften elektrischen Messung zum Vergleich der Unsicherheit.",
+          "Name": "Messintervall",
+          "Type": 1
+        }
+      ],
+      "Name": "MeasurementUncertaintyChartV1"
+    },
+    {
+      "Description": "Kennzeichnet, welche Komponenten im Beispielnetzwerk miteinander verbunden sind.",
+      "DisplayName": "Netzwerkverbindung",
+      "List": [
+        {
+          "Description": "Kennzeichnet, welche Komponenten im Beispielnetzwerk miteinander verbunden sind.",
+          "Enum": [
+            {
+              "Description": "Verbindet das Gateway mit der Regelverarbeitung.",
+              "Name": "Gateway zur Regelverarbeitung",
+              "Type": 1
+            },
+            {
+              "Description": "Verbindet das Gateway mit der Analyseverarbeitung.",
+              "Name": "Gateway zur Analyseverarbeitung",
+              "Type": 2
+            },
+            {
+              "Description": "Verbindet die Regelverarbeitung mit dem Ereignisspeicher.",
+              "Name": "Regelverarbeitung zum Ereignisspeicher",
+              "Type": 3
+            },
+            {
+              "Description": "Verbindet die Analyseverarbeitung mit dem Speicher für historische Daten.",
+              "Name": "Analyseverarbeitung zum Speicher für historische Daten",
+              "Type": 4
+            },
+            {
+              "Description": "Verbindet die Regelverarbeitung mit dem Speicher für historische Daten.",
+              "Name": "Regelverarbeitung zum Speicher für historische Daten",
+              "Type": 5
+            }
+          ],
+          "Name": "Netzwerkverbindung",
+          "Type": 0
+        }
+      ],
+      "Name": "NetworkConnectionV1"
+    },
+    {
+      "Description": "Zeigt die Verbindungen zwischen dem Gateway, den Verarbeitungsdiensten und dem Speicher.",
+      "DisplayName": "Netzwerkverknüpfungen",
+      "List": [
+        {
+          "Description": "Zeigt die Verbindungen zwischen dem Gateway, den Verarbeitungsdiensten und dem Speicher.",
+          "Name": "Netzwerkverknüpfungen",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Verbindung zwischen zwei Komponenten des Beispielnetzwerks.",
+          "Name": "Netzwerkverknüpfung",
+          "Type": 1
+        }
+      ],
+      "Name": "NetworkEdgesV1"
+    },
+    {
+      "Description": "Eine Verbindung zwischen zwei Komponenten des Beispielnetzwerks.",
+      "DisplayName": "Netzwerkverknüpfung",
+      "List": [
+        {
+          "Description": "Eine Verbindung zwischen zwei Komponenten des Beispielnetzwerks.",
+          "Name": "Netzwerkverknüpfung",
+          "Type": 0
+        },
+        {
+          "Description": "Horizontale Quellkoordinate.",
+          "Name": "Quell-X-Koordinate",
+          "Type": 1
+        },
+        {
+          "Description": "Horizontale Zielkoordinate.",
+          "Name": "Ziel-X-Koordinate",
+          "Type": 2
+        },
+        {
+          "Description": "Vertikale Quellkoordinate.",
+          "Name": "Quell-Y-Koordinate",
+          "Type": 3
+        },
+        {
+          "Description": "Vertikale Zielkoordinate.",
+          "Name": "Ziel-Y-Koordinate",
+          "Type": 4
+        },
+        {
+          "Description": "Die beiden Netzwerkkomponenten, die durch diese Verknüpfung verbunden sind.",
+          "Name": "Verbindung",
+          "Type": 5
+        },
+        {
+          "Description": "Die Farbe, mit der diese Netzwerkverbindung gekennzeichnet wird.",
+          "Name": "Verknüpfungsfarbe",
+          "Type": 6
+        },
+        {
+          "Description": "Die relative Linienstärke, mit der diese Netzwerkverbindung hervorgehoben wird.",
+          "Name": "Verbindungsstärke",
+          "Type": 7
+        },
+        {
+          "Description": "Unterscheidet diese Verbindung von den anderen Verbindungen im Beispielnetzwerk.",
+          "Name": "Verbindungsreferenz",
+          "Type": 8
+        }
+      ],
+      "Name": "NetworkEdgeV1"
+    },
+    {
+      "Description": "Identifiziert das Gateway, die Verarbeitungsdienste und die Speicher im Beispielnetzwerk.",
+      "DisplayName": "Netzwerkkomponente",
+      "List": [
+        {
+          "Description": "Identifiziert das Gateway, die Verarbeitungsdienste und die Speicher im Beispielnetzwerk.",
+          "Enum": [
+            {
+              "Description": "Der Zugangspunkt zum Beispielnetzwerk.",
+              "Name": "Gateway",
+              "Type": 1
+            },
+            {
+              "Description": "Dienst zur Verarbeitung von Regeln.",
+              "Name": "Regeln",
+              "Type": 2
+            },
+            {
+              "Description": "Dienst zur Verarbeitung von Analysen.",
+              "Name": "Analysen",
+              "Type": 3
+            },
+            {
+              "Description": "Speicher für Ereignisse.",
+              "Name": "Ereignisse",
+              "Type": 4
+            },
+            {
+              "Description": "Speicher für Verlaufsdaten.",
+              "Name": "Verlauf",
+              "Type": 5
+            }
+          ],
+          "Name": "Netzwerkkomponente",
+          "Type": 0
+        }
+      ],
+      "Name": "NetworkNodeNameV1"
+    },
+    {
+      "Description": "Zeigt das Gateway, die Verarbeitungsdienste und die Speicher im Beispielnetzwerk.",
+      "DisplayName": "Netzwerkkomponenten",
+      "List": [
+        {
+          "Description": "Zeigt das Gateway, die Verarbeitungsdienste und die Speicher im Beispielnetzwerk.",
+          "Name": "Netzwerkkomponenten",
+          "Type": 0
+        },
+        {
+          "Description": "Ein beispielhaftes Gateway, ein Verarbeitungsdienst oder eine Speicherkomponente und die jeweilige Position im Netzwerkdiagramm.",
+          "Name": "Netzwerkkomponente",
+          "Type": 1
+        }
+      ],
+      "Name": "NetworkNodesV1"
+    },
+    {
+      "Description": "Ein beispielhaftes Gateway, ein Verarbeitungsdienst oder eine Speicherkomponente und die jeweilige Position im Netzwerkdiagramm.",
+      "DisplayName": "Netzwerkkomponente",
+      "List": [
+        {
+          "Description": "Ein beispielhaftes Gateway, ein Verarbeitungsdienst oder eine Speicherkomponente und die jeweilige Position im Netzwerkdiagramm.",
+          "Name": "Netzwerkkomponente",
+          "Type": 0
+        },
+        {
+          "Description": "Horizontale Koordinate des Knotens.",
+          "Name": "X-Position des Knotens",
+          "Type": 1
+        },
+        {
+          "Description": "Vertikale Koordinate des Knotens.",
+          "Name": "Y-Position des Knotens",
+          "Type": 2
+        },
+        {
+          "Description": "Die an dieser Position dargestellte Netzwerkkomponente.",
+          "Name": "Komponente",
+          "Type": 3
+        },
+        {
+          "Description": "Die Aufgabe dieser Komponente im Beispielnetzwerk.",
+          "Name": "Netzwerkrolle",
+          "Type": 4
+        },
+        {
+          "Description": "Die Rolle der Komponente, die im Netzwerkdiagramm zusätzlich durch ein Symbol gekennzeichnet ist.",
+          "Name": "Rollensymbol",
+          "Type": 5
+        },
+        {
+          "Description": "Die relative Größe, durch die sich diese Netzwerkkomponente von anderen unterscheiden lässt.",
+          "Name": "Komponentengröße",
+          "Type": 6
+        }
+      ],
+      "Name": "NetworkNodeV1"
+    },
+    {
+      "Description": "Identifiziert die Aufgabe einer Komponente im Beispielnetzwerk.",
+      "DisplayName": "Netzwerkrolle",
+      "List": [
+        {
+          "Description": "Identifiziert die Aufgabe einer Komponente im Beispielnetzwerk.",
+          "Enum": [
+            {
+              "Description": "Zugangspunkt zum Netzwerk.",
+              "Name": "Gateway",
+              "Type": 1
+            },
+            {
+              "Description": "Verarbeitungsdienst im Netzwerk.",
+              "Name": "Dienst",
+              "Type": 2
+            },
+            {
+              "Description": "Eine Komponente, in der die Datensätze des Beispielnetzwerks gespeichert werden.",
+              "Name": "Speicher",
+              "Type": 3
+            }
+          ],
+          "Name": "Netzwerkrolle",
+          "Type": 0
+        }
+      ],
+      "Name": "NetworkRoleV1"
+    },
+    {
+      "Description": "Zeigt, wie das beispielhafte Gateway, die Verarbeitungsdienste und die Speicher miteinander verbunden sind.",
+      "DisplayName": "Netzwerkbeziehungen",
+      "List": [
+        {
+          "Description": "Zeigt, wie das beispielhafte Gateway, die Verarbeitungsdienste und die Speicher miteinander verbunden sind.",
+          "Name": "Netzwerkbeziehungen",
+          "Type": 0
+        },
+        {
+          "Description": "Die Verbindungen zwischen den Komponenten des Beispielnetzwerks.",
+          "Name": "Netzwerkverbindungen",
+          "Type": 1
+        },
+        {
+          "Description": "Das Gateway, die Verarbeitungsdienste und die Speicher, die durch diese Verbindungen miteinander verknüpft sind.",
+          "Name": "Netzwerkkomponenten",
+          "Type": 2
+        }
+      ],
+      "Name": "NetworkTopologyChartV1"
+    },
+    {
+      "Description": "Zeigt den simulierten Verlauf des Strombedarfs, die Prognoseunsicherheit und die Aktivitätsmuster in einer gemeinsamen Übersicht.",
+      "DisplayName": "Betriebsübersicht",
+      "List": [
+        {
+          "Description": "Zeigt den simulierten Verlauf des Strombedarfs, die Prognoseunsicherheit und die Aktivitätsmuster in einer gemeinsamen Übersicht.",
+          "Name": "Betriebsübersicht",
+          "Type": 0
+        },
+        {
+          "Description": "Vergleicht den erfassten, erwarteten und maximal angenommenen Strombedarf im Zeitverlauf.",
+          "Name": "Strombedarfsverlauf",
+          "Type": 1
+        },
+        {
+          "Description": "Vergleicht Schätzungen der Tiefst- und Höchsttemperaturen aus zwei Beispiel-Prognosemodellen.",
+          "Name": "Prognosebereiche",
+          "Type": 2
+        },
+        {
+          "Description": "Vergleicht das Aktivitätsniveau an Werktagen zu verschiedenen Zeiten des Arbeitstags.",
+          "Name": "Aktivitätszeiträume",
+          "Type": 3
+        }
+      ],
+      "Name": "OperationsDashboardChartV1"
+    },
+    {
+      "Description": "Zeigt einzelne simulierte Antwortzeiten zum Vergleich mit einem Trend und einem Zielwert.",
+      "DisplayName": "Leistungsergebnisse",
+      "List": [
+        {
+          "Description": "Zeigt einzelne simulierte Antwortzeiten zum Vergleich mit einem Trend und einem Zielwert.",
+          "Name": "Leistungsergebnisse",
+          "Type": 0
+        },
+        {
+          "Description": "Ein simuliertes Antwortzeitergebnis für eine Produktfamilie.",
+          "Name": "Leistungsergebnis",
+          "Type": 1
+        }
+      ],
+      "Name": "PerformancePointsV1"
+    },
+    {
+      "Description": "Ein simuliertes Antwortzeitergebnis für eine Produktfamilie.",
+      "DisplayName": "Leistungsergebnis",
+      "List": [
+        {
+          "Description": "Ein simuliertes Antwortzeitergebnis für eine Produktfamilie.",
+          "Name": "Leistungsergebnis",
+          "Type": 0
+        },
+        {
+          "Description": "Das Datum und die Uhrzeit, für die dieses beispielhafte Antwortzeitergebnis steht.",
+          "Name": "Zeitpunkt",
+          "Type": 1
+        },
+        {
+          "Description": "Die in diesem Beispiel simulierte Zeit, die für eine Antwort benötigt wird.",
+          "Name": "Antwortzeit",
+          "Type": 2
+        },
+        {
+          "Description": "Die Produktfamilie, für die dieses Leistungsergebnis steht.",
+          "Name": "Produktfamilie",
+          "Type": 3
+        },
+        {
+          "Description": "Die relative Punktgröße, mit der dieses Leistungsergebnis hervorgehoben wird.",
+          "Name": "Hervorhebung des Ergebnisses",
+          "Type": 4
+        }
+      ],
+      "Name": "PerformancePointV1"
+    },
+    {
+      "Description": "Vergleicht einzelne Antwortzeiten, ihren geglätteten Trend und die angestrebte maximale Antwortzeit.",
+      "DisplayName": "Leistungsvergleich",
+      "List": [
+        {
+          "Description": "Vergleicht einzelne Antwortzeiten, ihren geglätteten Trend und die angestrebte maximale Antwortzeit.",
+          "Name": "Leistungsvergleich",
+          "Type": 0
+        },
+        {
+          "Description": "Die einzelnen simulierten Antwortzeiten, die für diesen Vergleich verwendet werden.",
+          "Name": "Leistungsergebnisse",
+          "Type": 1
+        },
+        {
+          "Description": "Die geglätteten Antwortzeiten, die die Veränderung im Vergleichszeitraum veranschaulichen.",
+          "Name": "Trendwerte",
+          "Type": 2
+        },
+        {
+          "Description": "Die angestrebte maximale Antwortzeit im gesamten Vergleichszeitraum.",
+          "Name": "Antwortzeit-Zielwerte",
+          "Type": 3
+        }
+      ],
+      "Name": "PerformanceStoryChartV1"
+    },
+    {
+      "Description": "Die angestrebte maximale Antwortzeit im Vergleichszeitraum des Beispiels.",
+      "DisplayName": "Antwortzeit-Zielwert",
+      "List": [
+        {
+          "Description": "Die angestrebte maximale Antwortzeit im Vergleichszeitraum des Beispiels.",
+          "Name": "Antwortzeit-Zielwert",
+          "Type": 0
+        },
+        {
+          "Description": "Der Beginn des Zeitraums, für den dieser Antwortzeit-Zielwert gilt.",
+          "Name": "Startzeitpunkt",
+          "Type": 1
+        },
+        {
+          "Description": "Das Ende des Zeitraums, für den dieser Antwortzeit-Zielwert gilt.",
+          "Name": "Endzeitpunkt",
+          "Type": 2
+        },
+        {
+          "Description": "Angestrebte maximale Antwortzeit.",
+          "Name": "Angestrebte Antwortzeit",
+          "Type": 3
+        },
+        {
+          "Description": "Das Szenario, für das dieser Antwortzeit-Zielwert steht.",
+          "Name": "Szenario",
+          "Type": 4
+        },
+        {
+          "Description": "Gibt das Szenario an, dessen Linienmuster diesen Zielwert unterscheidbar macht.",
+          "Name": "Linienstil des Zielwerts",
+          "Type": 5
+        },
+        {
+          "Description": "Die relative Linienstärke, durch die der Antwortzeit-Zielwert erkennbar wird.",
+          "Name": "Hervorhebung des Zielwerts",
+          "Type": 6
+        }
+      ],
+      "Name": "PerformanceTargetRuleV1"
+    },
+    {
+      "Description": "Zeigt die angestrebte maximale Antwortzeit zum Vergleich mit simulierten Ergebnissen und deren Trend.",
+      "DisplayName": "Antwortzeit-Zielwerte",
+      "List": [
+        {
+          "Description": "Zeigt die angestrebte maximale Antwortzeit zum Vergleich mit simulierten Ergebnissen und deren Trend.",
+          "Name": "Antwortzeit-Zielwerte",
+          "Type": 0
+        },
+        {
+          "Description": "Die angestrebte maximale Antwortzeit im Vergleichszeitraum des Beispiels.",
+          "Name": "Antwortzeit-Zielwert",
+          "Type": 1
+        }
+      ],
+      "Name": "PerformanceTargetV1"
+    },
+    {
+      "Description": "Eine beispielhafte geglättete Antwortzeit innerhalb eines zeitlichen Trends.",
+      "DisplayName": "Wert des Leistungstrends",
+      "List": [
+        {
+          "Description": "Eine beispielhafte geglättete Antwortzeit innerhalb eines zeitlichen Trends.",
+          "Name": "Wert des Leistungstrends",
+          "Type": 0
+        },
+        {
+          "Description": "Das Datum und die Uhrzeit, für die dieser Trendwert steht.",
+          "Name": "Zeitpunkt",
+          "Type": 1
+        },
+        {
+          "Description": "Geglättete Antwortzeit.",
+          "Name": "Antwortzeit",
+          "Type": 2
+        },
+        {
+          "Description": "Das Szenario, für das dieser Antwortzeittrend steht.",
+          "Name": "Szenario",
+          "Type": 3
+        },
+        {
+          "Description": "Die Position des Messwerts in der zeitlichen Abfolge des Trends.",
+          "Name": "Zeitliche Reihenfolge",
+          "Type": 4
+        }
+      ],
+      "Name": "PerformanceTrendPointV1"
+    },
+    {
+      "Description": "Zeigt die geglätteten Antwortzeiten des Beispiels zusammen mit den einzelnen Ergebnissen.",
+      "DisplayName": "Messwerte des Leistungstrends",
+      "List": [
+        {
+          "Description": "Zeigt die geglätteten Antwortzeiten des Beispiels zusammen mit den einzelnen Ergebnissen.",
+          "Name": "Messwerte des Leistungstrends",
+          "Type": 0
+        },
+        {
+          "Description": "Eine geglättete Beispielantwortzeit in einem zeitlichen Trend.",
+          "Name": "Messwert des Leistungstrends",
+          "Type": 1
+        }
+      ],
+      "Name": "PerformanceTrendV1"
+    },
+    {
+      "Description": "Der Anteil einer Verweisquelle am gesamten Beispieldatenverkehr im Kreisdiagramm.",
+      "DisplayName": "Kreissegment des Datenverkehrs",
+      "List": [
+        {
+          "Description": "Der Anteil einer Verweisquelle am gesamten Beispieldatenverkehr im Kreisdiagramm.",
+          "Name": "Kreissegment des Datenverkehrs",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position im Kreis, an der der Anteil dieser Quelle beginnt.",
+          "Name": "Startwinkel des Anteils",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position im Kreis, an der der Anteil dieser Quelle endet.",
+          "Name": "Endwinkel des Anteils",
+          "Type": 2
+        },
+        {
+          "Description": "Der innere Abstand vom Mittelpunkt; bei null reicht der Anteil bis zum Mittelpunkt des Kreises.",
+          "Name": "Innenradius",
+          "Type": 3
+        },
+        {
+          "Description": "Der äußere Abstand vom Mittelpunkt des Kreisdiagramms zum Datenverkehr.",
+          "Name": "Außenradius",
+          "Type": 4
+        },
+        {
+          "Description": "Die Verweisquelle, für deren Besucheranteil dieses Segment steht.",
+          "Name": "Datenverkehrsquelle",
+          "Type": 5
+        },
+        {
+          "Description": "Der prozentuale Anteil der Beispielbesucher, die über diese Quelle kamen.",
+          "Name": "Anteil",
+          "Type": 6
+        },
+        {
+          "Description": "Unterscheidet diese Verweisquelle von den anderen Datenverkehrsquellen.",
+          "Name": "Quellenreferenz",
+          "Type": 7
+        }
+      ],
+      "Name": "PieSliceV1"
+    },
+    {
+      "Description": "Kennzeichnet eine Produktfamilie in Vergleichsdiagrammen.",
+      "DisplayName": "Geschäftsportfolio",
+      "List": [
+        {
+          "Description": "Kennzeichnet eine Produktfamilie in Vergleichsdiagrammen.",
+          "Enum": [
+            {
+              "Description": "Produkte für Privatkunden.",
+              "Name": "Privat",
+              "Type": 1
+            },
+            {
+              "Description": "Produkte für professionelle Teams.",
+              "Name": "Unternehmen",
+              "Type": 2
+            },
+            {
+              "Description": "Gemeinsam genutzte Plattformdienste.",
+              "Name": "Plattform",
+              "Type": 3
+            }
+          ],
+          "Name": "Geschäftsportfolio",
+          "Type": 0
+        }
+      ],
+      "Name": "PortfolioV1"
+    },
+    {
+      "Description": "Zeigt die Umrisse fiktiver Bezirke und deren beispielhafte Auslastung in Prozent auf einer Karte.",
+      "DisplayName": "Bezirksgrenzen",
+      "List": [
+        {
+          "Description": "Zeigt die Umrisse fiktiver Bezirke und deren beispielhafte Auslastung in Prozent auf einer Karte.",
+          "Name": "Bezirksgrenzen",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Position entlang des Umrisses eines fiktiven Kartenbezirks.",
+          "Name": "Bezirksgrenzpunkt",
+          "Type": 1
+        }
+      ],
+      "Name": "ProjectedMapChartV1"
+    },
+    {
+      "Description": "Eine Position entlang des Umrisses eines fiktiven Kartenbezirks.",
+      "DisplayName": "Bezirksgrenzpunkt",
+      "List": [
+        {
+          "Description": "Eine Position entlang des Umrisses eines fiktiven Kartenbezirks.",
+          "Name": "Bezirksgrenzpunkt",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position des Grenzpunkts in X-Richtung der Karte.",
+          "Name": "X-Koordinate der Karte",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position des Grenzpunkts in Y-Richtung der Karte.",
+          "Name": "Y-Koordinate der Karte",
+          "Type": 2
+        },
+        {
+          "Description": "Der fiktive Bezirk, zu dem dieser Grenzpunkt gehört.",
+          "Name": "Bezirk",
+          "Type": 3
+        },
+        {
+          "Description": "Die beispielhafte Auslastung dieses Bezirks in Prozent.",
+          "Name": "Auslastung",
+          "Type": 4
+        },
+        {
+          "Description": "Die Position des Punkts in der Reihenfolge entlang des Bezirksumrisses.",
+          "Name": "Reihenfolge der Grenzpunkte",
+          "Type": 5
+        },
+        {
+          "Description": "Unterscheidet diesen Bezirksgrenzpunkt von den anderen Grenzpunkten.",
+          "Name": "Grenzpunktreferenz",
+          "Type": 6
+        }
+      ],
+      "Name": "ProjectedMapVertexV1"
+    },
+    {
+      "Description": "Kennzeichnet den Dreimonatszeitraum, der zum Vergleich der Beispielergebnisse verwendet wird.",
+      "DisplayName": "Quartal",
+      "List": [
+        {
+          "Description": "Kennzeichnet den Dreimonatszeitraum, der zum Vergleich der Beispielergebnisse verwendet wird.",
+          "Enum": [
+            {
+              "Description": "Januar bis März.",
+              "Name": "Erstes Quartal",
+              "Type": 1
+            },
+            {
+              "Description": "April bis Juni.",
+              "Name": "Zweites Quartal",
+              "Type": 2
+            },
+            {
+              "Description": "Juli bis September.",
+              "Name": "Drittes Quartal",
+              "Type": 3
+            },
+            {
+              "Description": "Oktober bis Dezember.",
+              "Name": "Viertes Quartal",
+              "Type": 4
+            }
+          ],
+          "Name": "Quartal",
+          "Type": 0
+        }
+      ],
+      "Name": "QuarterV1"
+    },
+    {
+      "Description": "Der Leistungswert einer beispielhaften Produktfamilie, der in einem kreisförmigen Vergleich von null nach außen gemessen wird.",
+      "DisplayName": "Radiales Leistungsergebnis",
+      "List": [
+        {
+          "Description": "Der Leistungswert einer beispielhaften Produktfamilie, der in einem kreisförmigen Vergleich von null nach außen gemessen wird.",
+          "Name": "Radiales Leistungsergebnis",
+          "Type": 0
+        },
+        {
+          "Description": "Der Anfang des Bereichs auf dem Kreis, der dieser Produktfamilie zugewiesen ist.",
+          "Name": "Startwinkel des Leistungswerts",
+          "Type": 1
+        },
+        {
+          "Description": "Das Ende des Bereichs auf dem Kreis, der dieser Produktfamilie zugewiesen ist.",
+          "Name": "Endwinkel des Leistungswerts",
+          "Type": 2
+        },
+        {
+          "Description": "Der Ausgangspunkt bei null Prozent für den Vergleich des Leistungswerts dieser Produktfamilie.",
+          "Name": "Ausgangswert",
+          "Type": 3
+        },
+        {
+          "Description": "Der Leistungswert der beispielhaften Produktfamilie.",
+          "Name": "Leistungswert",
+          "Type": 4
+        },
+        {
+          "Description": "Die durch diesen Leistungswert dargestellte Produktfamilie.",
+          "Name": "Produktfamilie",
+          "Type": 5
+        },
+        {
+          "Description": "Unterscheidet den Leistungswert dieser Produktfamilie von den anderen Leistungswerten.",
+          "Name": "Leistungswertreferenz",
+          "Type": 6
+        }
+      ],
+      "Name": "RadialPerformanceBarV1"
+    },
+    {
+      "Description": "Vergleicht die Leistungswerte von Produktfamilien, die in einem Kreisdiagramm von null nach außen gemessen werden.",
+      "DisplayName": "Radiale Leistungsergebnisse",
+      "List": [
+        {
+          "Description": "Vergleicht die Leistungswerte von Produktfamilien, die in einem Kreisdiagramm von null nach außen gemessen werden.",
+          "Name": "Radiale Leistungsergebnisse",
+          "Type": 0
+        },
+        {
+          "Description": "Der Leistungswert einer beispielhaften Produktfamilie, der in einem kreisförmigen Vergleich von null nach außen gemessen wird.",
+          "Name": "Radiales Leistungsergebnis",
+          "Type": 1
+        }
+      ],
+      "Name": "RadialPerformanceChartV1"
+    },
+    {
+      "Description": "Zeigt die vierteljährlichen Umsätze von Produktfamilien in zwei Balkendiagrammanordnungen zusammen mit den Anteilen der einzelnen Quellen am Besucheraufkommen.",
+      "DisplayName": "Vergleich von Umsatz und Besucheraufkommen",
+      "List": [
+        {
+          "Description": "Zeigt die vierteljährlichen Umsätze von Produktfamilien in zwei Balkendiagrammanordnungen zusammen mit den Anteilen der einzelnen Quellen am Besucheraufkommen.",
+          "Name": "Vergleich von Umsatz und Besucheraufkommen",
+          "Type": 0
+        },
+        {
+          "Description": "Vergleicht mithilfe gruppierter Balken die Umsätze der Produktfamilien innerhalb der einzelnen Quartale.",
+          "Name": "Vierteljährliche Umsatzergebnisse",
+          "Type": 1
+        },
+        {
+          "Description": "Zeigt denselben Vergleich der vierteljährlichen Umsätze mit horizontalen Balken.",
+          "Name": "Horizontale Umsatzvergleiche",
+          "Type": 2
+        },
+        {
+          "Description": "Vergleicht den Beitrag jeder Verweisquelle zum gesamten Besucheraufkommen.",
+          "Name": "Anteile am Besucheraufkommen",
+          "Type": 3
+        }
+      ],
+      "Name": "RegionalComparisonChartV1"
+    },
+    {
+      "Description": "Unterscheidet beim Vergleich der Ergebnisse etablierte Produkte von neueren Produkten.",
+      "DisplayName": "Veröffentlichungsphase",
+      "List": [
+        {
+          "Description": "Unterscheidet beim Vergleich der Ergebnisse etablierte Produkte von neueren Produkten.",
+          "Enum": [
+            {
+              "Description": "Ein allgemein verfügbares Produkt.",
+              "Name": "Etabliert",
+              "Type": 1
+            },
+            {
+              "Description": "Ein neueres Produkt, dessen Nutzerkreis noch wächst.",
+              "Name": "Aufstrebend",
+              "Type": 2
+            }
+          ],
+          "Name": "Veröffentlichungsphase",
+          "Type": 0
+        }
+      ],
+      "Name": "ReleaseStageV1"
+    },
+    {
+      "Description": "Zeigt in einem Sankey-Diagramm, wie sich beispielhafte Besucher von der Ankunft über die Evaluierung bis zur Aktivierung oder zum Absprung bewegen.",
+      "DisplayName": "Ablauf der Besucherreise",
+      "List": [
+        {
+          "Description": "Zeigt in einem Sankey-Diagramm, wie sich beispielhafte Besucher von der Ankunft über die Evaluierung bis zur Aktivierung oder zum Absprung bewegen.",
+          "Name": "Ablauf der Besucherreise",
+          "Type": 0
+        },
+        {
+          "Description": "Die Wege, denen Besucher zwischen den einzelnen Phasen folgen.",
+          "Name": "Besucherflüsse",
+          "Type": 1
+        },
+        {
+          "Description": "Die Besucherzahlen in den durch diese Flüsse verbundenen Phasen.",
+          "Name": "Besucherphasen",
+          "Type": 2
+        }
+      ],
+      "Name": "SankeyFlowChartV1"
+    },
+    {
+      "Description": "Zeigt die Besucherzahlen bei der Ankunft, Evaluierung, Aktivierung und beim Absprung.",
+      "DisplayName": "Besucherphasen",
+      "List": [
+        {
+          "Description": "Zeigt die Besucherzahlen bei der Ankunft, Evaluierung, Aktivierung und beim Absprung.",
+          "Name": "Besucherphasen",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Phase der beispielhaften Besucherreise und die Anzahl der dort dargestellten Besucher.",
+          "Name": "Besucherphase",
+          "Type": 1
+        }
+      ],
+      "Name": "SankeyNodesV1"
+    },
+    {
+      "Description": "Eine Phase der beispielhaften Besucherreise und die Anzahl der dort dargestellten Besucher.",
+      "DisplayName": "Besucherphase",
+      "List": [
+        {
+          "Description": "Eine Phase der beispielhaften Besucherreise und die Anzahl der dort dargestellten Besucher.",
+          "Name": "Besucherphase",
+          "Type": 0
+        },
+        {
+          "Description": "Linke Begrenzung des Knotens.",
+          "Name": "Start-x des Knotens",
+          "Type": 1
+        },
+        {
+          "Description": "Rechte Begrenzung des Knotens.",
+          "Name": "End-x des Knotens",
+          "Type": 2
+        },
+        {
+          "Description": "Untere Begrenzung des Knotens.",
+          "Name": "Start-y des Knotens",
+          "Type": 3
+        },
+        {
+          "Description": "Obere Begrenzung des Knotens.",
+          "Name": "End-y des Knotens",
+          "Type": 4
+        },
+        {
+          "Description": "Die hier dargestellte Ankunfts-, Bewertungs-, Aktivierungs- oder Abgangsphase.",
+          "Name": "Phase",
+          "Type": 5
+        },
+        {
+          "Description": "Die Anzahl der in dieser Phase dargestellten Beispielbesucher.",
+          "Name": "Besucher",
+          "Type": 6
+        },
+        {
+          "Description": "Die Farbe, durch die diese Besucherphase von anderen unterschieden wird.",
+          "Name": "Phasenfarbe",
+          "Type": 7
+        },
+        {
+          "Description": "Unterscheidet diese Phase von den anderen Phasen der Beispielreise.",
+          "Name": "Phasenreferenz",
+          "Type": 8
+        }
+      ],
+      "Name": "SankeyNodeV1"
+    },
+    {
+      "Description": "Eine Position entlang einer Besucherreise, deren Begrenzungen ihren Anteil am Strom zeigen.",
+      "DisplayName": "Besucherstrom-Messpunkt",
+      "List": [
+        {
+          "Description": "Eine Position entlang einer Besucherreise, deren Begrenzungen ihren Anteil am Strom zeigen.",
+          "Name": "Besucherstrom-Messpunkt",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position auf der Beispielreise von der Ankunft bis zur Aktivierung oder zum Abgang.",
+          "Name": "Reisefortschritt",
+          "Type": 1
+        },
+        {
+          "Description": "Die untere Begrenzung des Besucherstroms dieser Reise an der erfassten Position.",
+          "Name": "Untere Strombegrenzung",
+          "Type": 2
+        },
+        {
+          "Description": "Die obere Begrenzung des Besucherstroms dieser Reise an der erfassten Position.",
+          "Name": "Obere Strombegrenzung",
+          "Type": 3
+        },
+        {
+          "Description": "Die Aktivierungs- oder Abgangsreise, die durch diesen Teil des Stroms dargestellt wird.",
+          "Name": "Besucherreise",
+          "Type": 4
+        },
+        {
+          "Description": "Die Anzahl der Beispielbesucher, die dieser Reise folgen.",
+          "Name": "Besucher",
+          "Type": 5
+        },
+        {
+          "Description": "Die Deckkraft, durch die sich überlappende Besucherreisen voneinander unterscheiden lassen.",
+          "Name": "Stromtransparenz",
+          "Type": 6
+        },
+        {
+          "Description": "Die Position des Messpunkts in der Abfolge entlang seiner Besucherreise.",
+          "Name": "Reihenfolge der Reise",
+          "Type": 7
+        },
+        {
+          "Description": "Unterscheidet diese Reiseposition von den anderen Besucherstrom-Messpunkten.",
+          "Name": "Reisereferenz",
+          "Type": 8
+        }
+      ],
+      "Name": "SankeyRibbonPointV1"
+    },
+    {
+      "Description": "Zeigt die Wege von Besuchern, die sich direkt aktivieren, sich mit Unterstützung aktivieren oder vorzeitig abspringen.",
+      "DisplayName": "Besucherströme",
+      "List": [
+        {
+          "Description": "Zeigt die Wege von Besuchern, die sich direkt aktivieren, sich mit Unterstützung aktivieren oder vorzeitig abspringen.",
+          "Name": "Besucherströme",
+          "Type": 0
+        },
+        {
+          "Description": "Eine Position entlang einer Besucherreise, deren Begrenzungen ihren Anteil am Strom zeigen.",
+          "Name": "Besucherstrom-Messpunkt",
+          "Type": 1
+        }
+      ],
+      "Name": "SankeyRibbonsV1"
+    },
+    {
+      "Description": "Unterscheidet erfasste Werte, Erwartungswerte und ambitionierte Zielwerte.",
+      "DisplayName": "Szenario",
+      "List": [
+        {
+          "Description": "Unterscheidet erfasste Werte, Erwartungswerte und ambitionierte Zielwerte.",
+          "Enum": [
+            {
+              "Description": "Eine abgeschlossene Messung.",
+              "Name": "Erfasst",
+              "Type": 1
+            },
+            {
+              "Description": "Die aktuelle Prognose oder Planung.",
+              "Name": "Erwartet",
+              "Type": 2
+            },
+            {
+              "Description": "Ein ambitionierter Zielwert.",
+              "Name": "Ambitioniertes Ziel",
+              "Type": 3
+            }
+          ],
+          "Name": "Szenario",
+          "Type": 0
+        }
+      ],
+      "Name": "ScenarioV1"
+    },
+    {
+      "Description": "Der Anteil einer Energiequelle an der kumulierten Gesamtenergie zu einem Beispielzeitpunkt.",
+      "DisplayName": "Energiebeitrag im Zeitverlauf",
+      "List": [
+        {
+          "Description": "Der Anteil einer Energiequelle an der kumulierten Gesamtenergie zu einem Beispielzeitpunkt.",
+          "Name": "Energiebeitrag im Zeitverlauf",
+          "Type": 0
+        },
+        {
+          "Description": "Das Datum und die Uhrzeit dieses Energiequellenbeitrags.",
+          "Name": "Zeitpunkt",
+          "Type": 1
+        },
+        {
+          "Description": "Der kombinierte Energieverbrauch vor dem Hinzufügen des Beitrags dieser Quelle.",
+          "Name": "Kumulierter Anfangswert",
+          "Type": 2
+        },
+        {
+          "Description": "Der kombinierte Energieverbrauch nach dem Hinzufügen des Beitrags dieser Quelle.",
+          "Name": "Kumulierter Endwert",
+          "Type": 3
+        },
+        {
+          "Description": "Die Solar-, Batterie- oder Netzstromquelle, die diesen Teil des Bedarfs deckt.",
+          "Name": "Energiequelle",
+          "Type": 4
+        },
+        {
+          "Description": "Die Position des Beitrags in der zeitlichen Abfolge seiner Quelle.",
+          "Name": "Zeitliche Reihenfolge",
+          "Type": 5
+        },
+        {
+          "Description": "Unterscheidet diese Energiequelle und diesen Zeitpunkt von den anderen Beiträgen.",
+          "Name": "Beitragsreferenz",
+          "Type": 6
+        }
+      ],
+      "Name": "StackedEnergyAreaPointV1"
+    },
+    {
+      "Description": "Vergleicht, wie sich die Beiträge von Solaranlage, Batterie und Stromnetz zum Energieverbrauch im Laufe der Zeit verändern.",
+      "DisplayName": "Energiebeiträge im Zeitverlauf",
+      "List": [
+        {
+          "Description": "Vergleicht, wie sich die Beiträge von Solaranlage, Batterie und Stromnetz zum Energieverbrauch im Laufe der Zeit verändern.",
+          "Name": "Energiebeiträge im Zeitverlauf",
+          "Type": 0
+        },
+        {
+          "Description": "Der Anteil einer Energiequelle am kumulierten Gesamtenergieverbrauch zu einem beispielhaften Zeitpunkt.",
+          "Name": "Energiebeitrag im Zeitverlauf",
+          "Type": 1
+        }
+      ],
+      "Name": "StackedEnergyAreasV1"
+    },
+    {
+      "Description": "Der Beitrag einer Energiequelle zum kumulierten Quartalsgesamtwert des Beispiels.",
+      "DisplayName": "Vierteljährlicher Energiebeitrag",
+      "List": [
+        {
+          "Description": "Der Beitrag einer Energiequelle zum kumulierten Quartalsgesamtwert des Beispiels.",
+          "Name": "Vierteljährlicher Energiebeitrag",
+          "Type": 0
+        },
+        {
+          "Description": "Der Dreimonatszeitraum, den dieser Energiebeitrag abbildet.",
+          "Name": "Quartal",
+          "Type": 1
+        },
+        {
+          "Description": "Der Gesamtwert vor dem Hinzufügen des Energiebeitrags dieser Quelle.",
+          "Name": "Kumulierter Anfangswert",
+          "Type": 2
+        },
+        {
+          "Description": "Der Gesamtwert nach dem Hinzufügen des Energiebeitrags dieser Quelle.",
+          "Name": "Kumulierter Endwert",
+          "Type": 3
+        },
+        {
+          "Description": "Die Solaranlage, Batterie oder das Stromnetz, die beziehungsweise das diesen Anteil zum Gesamtwert beiträgt.",
+          "Name": "Energiequelle",
+          "Type": 4
+        },
+        {
+          "Description": "Unterscheidet diese Quelle und dieses Quartal von den anderen Energiebeiträgen.",
+          "Name": "Beitragsreferenz",
+          "Type": 5
+        }
+      ],
+      "Name": "StackedEnergyBarSegmentV1"
+    },
+    {
+      "Description": "Vergleicht die Beiträge von Solaranlage, Batterie und Stromnetz zu den vierteljährlichen Gesamtenergiemengen anhand gestapelter Balken.",
+      "DisplayName": "Vierteljährliche Energiebeiträge",
+      "List": [
+        {
+          "Description": "Vergleicht die Beiträge von Solaranlage, Batterie und Stromnetz zu den vierteljährlichen Gesamtenergiemengen anhand gestapelter Balken.",
+          "Name": "Vierteljährliche Energiebeiträge",
+          "Type": 0
+        },
+        {
+          "Description": "Der Beitrag einer Energiequelle zum kumulierten Quartalsgesamtwert des Beispiels.",
+          "Name": "Vierteljährlicher Energiebeitrag",
+          "Type": 1
+        }
+      ],
+      "Name": "StackedEnergyBarsV1"
+    },
+    {
+      "Description": "Vergleicht anhand gestapelter Balken und Flächen die vierteljährlichen Gesamtenergiemengen und die Veränderungen des Energieverbrauchs nach Quelle.",
+      "DisplayName": "Beiträge der Energiequellen",
+      "List": [
+        {
+          "Description": "Vergleicht anhand gestapelter Balken und Flächen die vierteljährlichen Gesamtenergiemengen und die Veränderungen des Energieverbrauchs nach Quelle.",
+          "Name": "Beiträge der Energiequellen",
+          "Type": 0
+        },
+        {
+          "Description": "Die Energiebeiträge von Solaranlage, Batterie und Stromnetz in jedem Quartal.",
+          "Name": "Vierteljährliche Beiträge",
+          "Type": 1
+        },
+        {
+          "Description": "Die Beiträge von Solaranlage, Batterie und Stromnetz zum Energieverbrauch zu jedem Zeitpunkt.",
+          "Name": "Beiträge im Zeitverlauf",
+          "Type": 2
+        }
+      ],
+      "Name": "StackedEnergyChartV1"
+    },
+    {
+      "Description": "Zeigt über einen Zeitraum von 72 Stunden die simulierte Endtemperatur für jeden abgeschlossenen Fünfminutenzeitraum.",
+      "DisplayName": "Fünfminütige Endtemperaturen",
+      "List": [
+        {
+          "Description": "Zeigt über einen Zeitraum von 72 Stunden die simulierte Endtemperatur für jeden abgeschlossenen Fünfminutenzeitraum.",
+          "Name": "Fünfminütige Endtemperaturen",
+          "Type": 0
+        },
+        {
+          "Description": "Die simulierte Temperatur am Ende eines abgeschlossenen Fünfminutenzeitraums zusammen mit dessen Tiefst- und Höchstwert.",
+          "Name": "Fünfminütige Endtemperatur",
+          "Type": 1
+        }
+      ],
+      "Name": "TemperatureCloseTicksV1"
+    },
+    {
+      "Description": "Die simulierte Temperatur am Ende eines abgeschlossenen Fünfminutenzeitraums zusammen mit dessen Tiefst- und Höchstwert.",
+      "DisplayName": "Fünfminütige Endtemperatur",
+      "List": [
+        {
+          "Description": "Die simulierte Temperatur am Ende eines abgeschlossenen Fünfminutenzeitraums zusammen mit dessen Tiefst- und Höchstwert.",
+          "Name": "Fünfminütige Endtemperatur",
+          "Type": 0
+        },
+        {
+          "Description": "Der Zeitpunkt in der Mitte des Fünfminutenzeitraums, den diese Endtemperatur abbildet.",
+          "Name": "Periodenmitte",
+          "Type": 1
+        },
+        {
+          "Description": "Das Ende des abgeschlossenen Fünfminutenzeitraums; zu diesem Zeitpunkt beginnt der nächste Zeitraum.",
+          "Name": "Periodenende",
+          "Type": 2
+        },
+        {
+          "Description": "Die letzte simulierte Temperatur in diesem Fünfminutenzeitraum.",
+          "Name": "Endtemperatur",
+          "Type": 3
+        },
+        {
+          "Description": "Die niedrigste simulierte Temperatur im selben Fünfminutenzeitraum.",
+          "Name": "Tiefsttemperatur",
+          "Type": 4
+        },
+        {
+          "Description": "Die höchste simulierte Temperatur im selben Fünfminutenzeitraum.",
+          "Name": "Höchsttemperatur",
+          "Type": 5
+        }
+      ],
+      "Name": "TemperatureCloseTickV1"
+    },
+    {
+      "Description": "Zeigt über einen Zeitraum von 72 Stunden die simulierten Tiefst- und Höchsttemperaturen für jeden abgeschlossenen Fünfminutenzeitraum.",
+      "DisplayName": "Fünfminütige Temperaturspannen",
+      "List": [
+        {
+          "Description": "Zeigt über einen Zeitraum von 72 Stunden die simulierten Tiefst- und Höchsttemperaturen für jeden abgeschlossenen Fünfminutenzeitraum.",
+          "Name": "Fünfminütige Temperaturspannen",
+          "Type": 0
+        },
+        {
+          "Description": "Die simulierte Tiefst-, Höchst- und Endtemperatur eines abgeschlossenen Fünfminutenzeitraums.",
+          "Name": "Fünfminütige Temperaturspanne",
+          "Type": 1
+        }
+      ],
+      "Name": "TemperatureHighLowRangesV1"
+    },
+    {
+      "Description": "Die simulierte Tiefst-, Höchst- und Endtemperatur eines abgeschlossenen Fünf-Minuten-Zeitraums.",
+      "DisplayName": "Temperaturbereich über fünf Minuten",
+      "List": [
+        {
+          "Description": "Die simulierte Tiefst-, Höchst- und Endtemperatur eines abgeschlossenen Fünf-Minuten-Zeitraums.",
+          "Name": "Temperaturbereich über fünf Minuten",
+          "Type": 0
+        },
+        {
+          "Description": "Datum und Uhrzeit zur Hälfte dieses Fünf-Minuten-Zeitraums.",
+          "Name": "Mitte des Zeitraums",
+          "Type": 1
+        },
+        {
+          "Description": "Die niedrigste simulierte Temperatur in diesem Fünf-Minuten-Zeitraum.",
+          "Name": "Tiefsttemperatur",
+          "Type": 2
+        },
+        {
+          "Description": "Die höchste simulierte Temperatur in diesem Fünf-Minuten-Zeitraum.",
+          "Name": "Höchsttemperatur",
+          "Type": 3
+        },
+        {
+          "Description": "Die letzte simulierte Temperatur in diesem Fünf-Minuten-Zeitraum.",
+          "Name": "Endtemperatur",
+          "Type": 4
+        }
+      ],
+      "Name": "TemperatureHighLowRuleV1"
+    },
+    {
+      "Description": "Vergleicht die simulierte Tiefst-, Höchst- und Endtemperatur für jeden abgeschlossenen Fünf-Minuten-Zeitraum.",
+      "DisplayName": "Temperaturverlauf der letzten 72 Stunden",
+      "List": [
+        {
+          "Description": "Vergleicht die simulierte Tiefst-, Höchst- und Endtemperatur für jeden abgeschlossenen Fünf-Minuten-Zeitraum.",
+          "Name": "Temperaturverlauf der letzten 72 Stunden",
+          "Type": 0
+        },
+        {
+          "Description": "Die simulierte Tiefst- und Höchsttemperatur für jeden abgeschlossenen Fünf-Minuten-Zeitraum.",
+          "Name": "Temperaturbereiche",
+          "Type": 1
+        },
+        {
+          "Description": "Die letzte simulierte Temperatur in jedem abgeschlossenen Fünf-Minuten-Zeitraum.",
+          "Name": "Endtemperaturen",
+          "Type": 2
+        }
+      ],
+      "Name": "TemperatureHlcChartV1"
+    },
+    {
+      "Description": "Gibt an, welcher Teil des Arbeitstags durch einen Aktivitätszeitraum dargestellt wird.",
+      "DisplayName": "Arbeitszeitabschnitt",
+      "List": [
+        {
+          "Description": "Gibt an, welcher Teil des Arbeitstags durch einen Aktivitätszeitraum dargestellt wird.",
+          "Enum": [
+            {
+              "Description": "Aktivität zu Beginn des Arbeitstags.",
+              "Name": "Morgen",
+              "Type": 1
+            },
+            {
+              "Description": "Aktivität zur Mittagszeit.",
+              "Name": "Mittagszeit",
+              "Type": 2
+            },
+            {
+              "Description": "Aktivität am Nachmittag.",
+              "Name": "Nachmittag",
+              "Type": 3
+            },
+            {
+              "Description": "Aktivität gegen Ende des Arbeitstags.",
+              "Name": "Abend",
+              "Type": 4
+            }
+          ],
+          "Name": "Arbeitszeitabschnitt",
+          "Type": 0
+        }
+      ],
+      "Name": "TimeBlockV1"
+    },
+    {
+      "Description": "Vergleicht Zugriffsquellen in einem Ringdiagramm. Beschriftungen geben die jeweilige Quelle und ihren prozentualen Anteil an.",
+      "DisplayName": "Anteile der Zugriffsquellen",
+      "List": [
+        {
+          "Description": "Vergleicht Zugriffsquellen in einem Ringdiagramm. Beschriftungen geben die jeweilige Quelle und ihren prozentualen Anteil an.",
+          "Name": "Anteile der Zugriffsquellen",
+          "Type": 0
+        },
+        {
+          "Description": "Der Anteil einer Zugriffsquelle am Besucheraufkommen des Beispiels.",
+          "Name": "Anteil der Zugriffsquelle",
+          "Type": 1
+        }
+      ],
+      "Name": "TrafficDonutChartV1"
+    },
+    {
+      "Description": "Der Anteil einer Zugriffsquelle am Besucheraufkommen des Beispiels.",
+      "DisplayName": "Anteil der Zugriffsquelle",
+      "List": [
+        {
+          "Description": "Der Anteil einer Zugriffsquelle am Besucheraufkommen des Beispiels.",
+          "Name": "Anteil der Zugriffsquelle",
+          "Type": 0
+        },
+        {
+          "Description": "Die Position auf dem Ring, an der der Anteil dieser Quelle beginnt.",
+          "Name": "Startwinkel des Anteils",
+          "Type": 1
+        },
+        {
+          "Description": "Die Position auf dem Ring, an der der Anteil dieser Quelle endet.",
+          "Name": "Endwinkel des Anteils",
+          "Type": 2
+        },
+        {
+          "Description": "Der Abstand vom Mittelpunkt zur Innenseite des Zugriffsquellenrings.",
+          "Name": "Innenradius",
+          "Type": 3
+        },
+        {
+          "Description": "Der Abstand vom Mittelpunkt zur Außenseite des Zugriffsquellenrings.",
+          "Name": "Außenradius",
+          "Type": 4
+        },
+        {
+          "Description": "Die durch diesen Anteil dargestellte Zugriffsquelle.",
+          "Name": "Zugriffsquelle",
+          "Type": 5
+        },
+        {
+          "Description": "Der Name der Quelle und ihr Anteil, gemeinsam dargestellt, um ihren Beitrag zum Besucheraufkommen kenntlich zu machen.",
+          "Name": "Beschriftung für Quelle und Anteil",
+          "Type": 6
+        },
+        {
+          "Description": "Der Prozentsatz der Besucher des Beispiels, die über diese Quelle kamen.",
+          "Name": "Anteil",
+          "Type": 7
+        },
+        {
+          "Description": "Die Deckkraft, mit der die Begrenzung dieses Anteils kenntlich gemacht wird.",
+          "Name": "Hervorhebung der Begrenzung",
+          "Type": 8
+        },
+        {
+          "Description": "Die Position der Quelle in der Reihenfolge auf dem Zugriffsquellenring.",
+          "Name": "Reihenfolge der Quellen",
+          "Type": 9
+        },
+        {
+          "Description": "Unterscheidet diese Zugriffsquelle von den anderen Zugriffsquellen.",
+          "Name": "Quellenreferenz",
+          "Type": 10
+        }
+      ],
+      "Name": "TrafficDonutSegmentV1"
+    },
+    {
+      "Description": "Vergleicht in einem Kuchendiagramm den Anteil jeder Zugriffsquelle am gesamten Besucheraufkommen des Beispiels.",
+      "DisplayName": "Segmente des Zugriffsquellen-Kuchendiagramms",
+      "List": [
+        {
+          "Description": "Vergleicht den Anteil jeder Verweisquelle an den gesamten beispielhaften Zugriffen in einem Kreisdiagramm.",
+          "Name": "Segmente des Kreisdiagramms zu den Zugriffen",
+          "Type": 0
+        },
+        {
+          "Description": "Der Anteil einer Verweisquelle an den gesamten beispielhaften Zugriffen im Kreisdiagramm.",
+          "Name": "Segment des Kreisdiagramms zu den Zugriffen",
+          "Type": 1
+        }
+      ],
+      "Name": "TrafficPieChartV1"
+    },
+    {
+      "Description": "Gibt an, wie Besucher auf das Produkt gelangt sind, um den Anteil der einzelnen Quellen an den Zugriffen zu vergleichen.",
+      "DisplayName": "Zugriffsquelle",
+      "List": [
+        {
+          "Description": "Gibt an, wie Besucher auf das Produkt gelangt sind, um den Anteil der einzelnen Quellen an den Zugriffen zu vergleichen.",
+          "Enum": [
+            {
+              "Description": "Personen, die das Produkt direkt aufrufen.",
+              "Name": "Direkt",
+              "Type": 1
+            },
+            {
+              "Description": "Zugriffe über Suchmaschinen.",
+              "Name": "Suche",
+              "Type": 2
+            },
+            {
+              "Description": "Zugriffe über Partner.",
+              "Name": "Partner",
+              "Type": 3
+            },
+            {
+              "Description": "Zugriffe über Kampagnen.",
+              "Name": "Kampagne",
+              "Type": 4
+            },
+            {
+              "Description": "Zugriffe über soziale Medien.",
+              "Name": "Soziale Medien",
+              "Type": 5
+            },
+            {
+              "Description": "Kleine, nicht kategorisierte Verweisquellen.",
+              "Name": "Sonstige",
+              "Type": 6
+            }
+          ],
+          "Name": "Zugriffsquelle",
+          "Type": 0
+        }
+      ],
+      "Name": "TrafficSourceV1"
+    },
+    {
+      "Description": "Die untere und obere Schätzung einer beispielhaften elektrischen Messung zum Vergleich der Unsicherheit.",
+      "DisplayName": "Messintervall",
+      "List": [
+        {
+          "Description": "Die untere und obere Schätzung einer beispielhaften elektrischen Messung zum Vergleich der Unsicherheit.",
+          "Name": "Messintervall",
+          "Type": 0
+        },
+        {
+          "Description": "Die beispielhafte elektrische Stichprobe, die durch dieses Intervall dargestellt wird.",
+          "Name": "Stichprobe",
+          "Type": 1
+        },
+        {
+          "Description": "Untere Grenze des Fehlerintervalls.",
+          "Name": "Untere Schätzung",
+          "Type": 2
+        },
+        {
+          "Description": "Obere Grenze des Fehlerintervalls.",
+          "Name": "Obere Schätzung",
+          "Type": 3
+        },
+        {
+          "Description": "Das Szenario, das durch dieses Messintervall dargestellt wird.",
+          "Name": "Szenario",
+          "Type": 4
+        },
+        {
+          "Description": "Kennzeichnet das Szenario, dessen Linienmuster dieses Intervall von anderen unterscheidet.",
+          "Name": "Linienstil des Szenarios",
+          "Type": 5
+        },
+        {
+          "Description": "Die relative Linienstärke, mit der dieses Messintervall hervorgehoben wird.",
+          "Name": "Hervorhebung des Intervalls",
+          "Type": 6
+        },
+        {
+          "Description": "Unterscheidet das Intervall dieser Stichprobe von den anderen Messintervallen.",
+          "Name": "Messungsreferenz",
+          "Type": 7
+        }
+      ],
+      "Name": "UncertaintyRuleV1"
+    },
+    {
+      "Description": "Gibt den Arbeitstag an, der durch einen Aktivitätszeitraum dargestellt wird.",
+      "DisplayName": "Wochentag",
+      "List": [
+        {
+          "Description": "Gibt den Arbeitstag an, der durch einen Aktivitätszeitraum dargestellt wird.",
+          "Enum": [
+            {
+              "Description": "Aktivität am Montag.",
+              "Name": "Montag",
+              "Type": 1
+            },
+            {
+              "Description": "Aktivität am Dienstag.",
+              "Name": "Dienstag",
+              "Type": 2
+            },
+            {
+              "Description": "Aktivität am Mittwoch.",
+              "Name": "Mittwoch",
+              "Type": 3
+            },
+            {
+              "Description": "Aktivität am Donnerstag.",
+              "Name": "Donnerstag",
+              "Type": 4
+            },
+            {
+              "Description": "Aktivität am Freitag.",
+              "Name": "Freitag",
+              "Type": 5
+            }
+          ],
+          "Name": "Wochentag",
+          "Type": 0
+        }
+      ],
+      "Name": "WeekdayV1"
+    }
+  ]
+}

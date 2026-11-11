@@ -1,0 +1,54 @@
+{
+  "Entries": {
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"changes\"/\"\"/property/\"Description\"": {
+      "Current": "sha256:2ed67abb384a13ce6701598fafa03cec66c220010622e87ed078230fde20eb52",
+      "Target": "Uma mutação atômica de estado na ordem do cursor."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"changes\"/\"\"/property/\"Name\"": {
+      "Current": "sha256:0c25a0811f996d4065f371610c24c98b339cc02fcb4089b3e8cd1b0122ff7298",
+      "Target": "Alteração meteorológica"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"changes\"/property/\"Description\"": {
+      "Current": "sha256:c73b184d7423a31a50bd74021875656a49888a56762bccb35324c0097031a069",
+      "Target": "Alterações ordenadas a serem aplicadas atomicamente. Cada item avança a sequência em exatamente uma unidade; uma lista vazia indica uma recuperação já atualizada e não avança o cursor nem serve como sinal periódico de atividade."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"changes\"/property/\"Name\"": {
+      "Current": "sha256:ccb1e66cfb038f86e84b8e06143e57dcac3b85fabcf5815e73707776c9c9dac4",
+      "Target": "Alterações meteorológicas"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"from_cursor\"/property/\"Description\"": {
+      "Current": "sha256:841c43abd3f6858d05c6deb03b72cce6ccd11f38b3a655b686dadb7a81220869",
+      "Target": "O cursor inferior exclusivo deste relatório e o cursor exato que um cliente já deve ter antes de aplicá-lo."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"from_cursor\"/property/\"Name\"": {
+      "Current": "sha256:c6b7438f9a71c87f588ac9fdf7b79bb9f6c58d56c4ae17840dec6677cd02366a",
+      "Target": "Cursor inicial"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"through_cursor\"/property/\"Description\"": {
+      "Current": "sha256:de50ddb243947ed921e961ff31601daac5f3275e56d891f333e3159e921e3cbf",
+      "Target": "O cursor superior inclusivo alcançado após a aplicação de todas as alterações deste relatório. Ele deve manter o mesmo registro de data e hora da época que `from_cursor`. Uma redefinição do cursor do servidor nunca é transportada como um relatório incremental; ela exige uma redefinição completa."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"through_cursor\"/property/\"Name\"": {
+      "Current": "sha256:1f1102fa2cfc4badd963885aa95ca71b4105941b76960bf7994ccf028acb22ef",
+      "Target": "Cursor final"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"Description\"": {
+      "Current": "sha256:968eaabb43d44f6e05685d682e91ff94a0a7d71cf3a5e0763455bc459c3b5bd5",
+      "Target": "Transporta um intervalo ordenado e atômico de alterações meteorológicas. Um cliente aplica o relatório somente quando seu cursor armazenado é igual a `from_cursor` e, em seguida, armazena `through_cursor`. Um relatório vazio é o resultado de uma recuperação que alcançou o estado atual; a sinalização periódica de atividade sem alterações usa PeerAlive."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"Name\"": {
+      "Current": "sha256:79e47a8ad9c5c5c70bfd5c208ffc969d7d455215d74c874e8193d9104185d2ad",
+      "Target": "Relatório meteorológico incremental do aspersor"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"Description\"": {
+      "Current": "sha256:35f5aeb2b271e1f9b69ed58d31abc20f3e873b8daef76ee92224d4edefce58ab",
+      "Target": "Transporta um intervalo ordenado e atômico de alterações meteorológicas. Um cliente aplica o relatório somente quando seu cursor armazenado é igual a `from_cursor` e, em seguida, armazena `through_cursor`. Um relatório vazio é o resultado de uma recuperação que alcançou o estado atual; a sinalização periódica de atividade sem alterações usa PeerAlive."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"DisplayName\"": {
+      "Current": "sha256:5ee8390834eb6657f5cfc4994e0abb5ea29a3f99d469f433c2da6367e9b6edb3",
+      "Target": "Relatório meteorológico incremental do aspersor"
+    }
+  },
+  "Reviewed": {},
+  "Translated": {}
+}

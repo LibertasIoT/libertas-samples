@@ -1,0 +1,1825 @@
+{
+  "Description": "Define dados meteorológicos adaptados às decisões tomadas pelos aplicativos Libertas. O esquema de irrigação mantém a localização do local fornecida pelo Hub separada do histórico recente, das condições atuais e dos dados de previsão. Cada seção meteorológica tem um intervalo de atualização diferente e pode ser obtida com sucesso ou falhar independentemente. Os instantâneos de tempo de execução podem conter qualquer combinação de seções. Os aplicativos persistem cada seção obtida com sucesso separadamente e mantêm as seções mais antigas quando uma atualização dos dados meteorológicos falha. As assinaturas incrementais usam cursores de carimbo de data e hora da época e sequência para que os clientes possam distinguir uma redefinição do cursor do servidor de dados obsoletos ou fora de ordem, reproduzir alterações retidas ou recuperar intervalos de tempo selecionados de dados armazenados em cache. O esquema de HVAC predial fornece somente os dados externos necessários para a previsão de carga térmica, a operação de bombas de calor, as decisões do economizador e a ventilação controlada com ar externo. Ele mantém as seções de clima e qualidade do ar externo independentes, pois elas têm provedores e comportamentos de atualização diferentes. Os controles dos equipamentos locais e de proteção à vida devem continuar usando seus próprios sensores; os dados meteorológicos da internet armazenados em cache são uma entrada de supervisão, não um sinal de segurança.",
+  "DisplayName": "Clima Libertas",
+  "DocumentVersion": "0.0.2",
+  "List": [],
+  "Locale": "pt-BR",
+  "StringResources": {},
+  "Types": [
+    {
+      "Description": "Contém as condições externas modeladas mais recentes usadas pelo controle de supervisão do HVAC. Não substitui um sensor externo local usado para a proteção dos equipamentos ou contra congelamento.",
+      "DisplayName": "Condições meteorológicas atuais do HVAC predial",
+      "List": [
+        {
+          "Description": "Contém as condições externas modeladas mais recentes usadas pelo controle de supervisão do HVAC. Não substitui um sensor externo local usado para a proteção dos equipamentos ou contra congelamento.",
+          "Name": "Condições meteorológicas atuais do HVAC predial",
+          "Type": 0
+        },
+        {
+          "Description": "The date and time when this complete current-condition section was retrieved, validated, and accepted.",
+          "Name": "Retrieved at",
+          "Type": 1
+        },
+        {
+          "Description": "The exclusive freshness deadline. At or after this time, the cached values must not authorize economizer operation or other weather-dependent optimizations that require known current conditions.",
+          "Name": "Valid until",
+          "Type": 2
+        },
+        {
+          "Description": "The provider-supplied date and time represented by these current conditions.",
+          "Name": "Valid at",
+          "Type": 3
+        },
+        {
+          "Description": "The backward-looking interval in seconds represented by accumulated precipitation. Current weather normally uses a 900-second interval.",
+          "Name": "Observation interval",
+          "Type": 4
+        },
+        {
+          "Description": "The latest modeled temperature, moisture, pressure, wind, precipitation, and solar inputs for supervisory HVAC control.",
+          "Name": "Outdoor conditions",
+          "Type": 5
+        }
+      ],
+      "Name": "BuildingHvacCurrentWeatherV1"
+    },
+    {
+      "Description": "Contém concentrações modeladas de poluentes externos usadas para evitar o aumento da entrada mecânica de ar externo durante condições insalubres. Esses valores de modelos regionais não substituem sensores de segurança locais nem instruções oficiais de emergência.",
+      "DisplayName": "Período de qualidade do ar externo do HVAC predial",
+      "List": [
+        {
+          "Description": "Contém concentrações modeladas de poluentes externos usadas para evitar o aumento da entrada mecânica de ar externo durante condições insalubres. Esses valores de modelos regionais não substituem sensores de segurança locais nem instruções oficiais de emergência.",
+          "Name": "Período de qualidade do ar externo do HVAC predial",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora inclusivas representadas por este período de qualidade do ar.",
+          "Name": "Horário de início",
+          "Type": 1
+        },
+        {
+          "Description": "A duração deste período em segundos. A qualidade modelada do ar externo normalmente usa períodos de 3.600 segundos.",
+          "Name": "Duração",
+          "Type": 2
+        },
+        {
+          "Description": "Concentração modelada de PM2,5 no ar externo em microgramas por metro cúbico.",
+          "Name": "Material particulado fino",
+          "Type": 3
+        },
+        {
+          "Description": "Concentração modelada de PM10 no ar externo em microgramas por metro cúbico.",
+          "Name": "Material particulado",
+          "Type": 4
+        },
+        {
+          "Description": "Concentração modelada de ozônio no ar externo em microgramas por metro cúbico.",
+          "Name": "Ozônio",
+          "Type": 5
+        },
+        {
+          "Description": "Concentração modelada de dióxido de nitrogênio no ar externo em microgramas por metro cúbico.",
+          "Name": "Dióxido de nitrogênio",
+          "Type": 6
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityPeriodV1"
+    },
+    {
+      "Description": "Contém períodos atuais e previstos de concentrações modeladas de poluentes externos para o planejamento da ventilação. É opcional de forma independente e armazenada em cache separadamente das condições meteorológicas físicas.",
+      "DisplayName": "Qualidade do ar externo do HVAC predial",
+      "List": [
+        {
+          "Description": "Contém períodos atuais e previstos de concentrações modeladas de poluentes externos para o planejamento da ventilação. É opcional de forma independente e armazenada em cache separadamente das condições meteorológicas físicas.",
+          "Name": "Qualidade do ar externo do HVAC predial",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora em que esta seção completa de qualidade do ar foi recuperada, validada e aceita.",
+          "Name": "Recuperado em",
+          "Type": 1
+        },
+        {
+          "Description": "O limite exclusivo de validade. Valores modelados obsoletos não devem ser interpretados como prova de que o ar externo é seguro.",
+          "Name": "Válido até",
+          "Type": 2
+        },
+        {
+          "Description": "Períodos atuais e futuros ordenados do mais antigo para o mais recente. Uma resposta normal abrange no máximo 48 horas.",
+          "Name": "Períodos de qualidade do ar",
+          "Type": 3
+        },
+        {
+          "Description": "Concentrações modeladas de poluentes externos durante um período.",
+          "Name": "Período de qualidade do ar",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacOutdoorAirQualityV1"
+    },
+    {
+      "Description": "Contém os dados físicos externos necessários para a previsão de carga do HVAC, os cálculos psicrométricos, as decisões do economizador, a estimativa de infiltração e a operação de equipamentos expostos considerando as condições meteorológicas.",
+      "DisplayName": "Condições externas do HVAC predial",
+      "List": [
+        {
+          "Description": "Contém os dados físicos externos necessários para a previsão de carga do HVAC, os cálculos psicrométricos, as decisões do economizador, a estimativa de infiltração e a operação de equipamentos expostos considerando as condições meteorológicas.",
+          "Name": "Condições externas do HVAC predial",
+          "Type": 0
+        },
+        {
+          "Description": "Outdoor air temperature at two meters above ground in degrees Celsius.",
+          "Name": "Dry-bulb temperature",
+          "Type": 1
+        },
+        {
+          "Description": "Outdoor dew-point temperature at two meters above ground in degrees Celsius. Together with pressure, this supports humidity-ratio, enthalpy, wet-bulb, condensation-risk, and latent-load calculations.",
+          "Name": "Dew-point temperature",
+          "Type": 2
+        },
+        {
+          "Description": "Outdoor relative humidity at two meters above ground as an integer percentage from 0 through 100. This provider value supports display and validation; psychrometric calculations should use one consistent input set rather than mixing disagreeing redundant values.",
+          "Name": "Relative humidity",
+          "Type": 3
+        },
+        {
+          "Description": "Atmospheric pressure at the building elevation in hectopascals. Surface pressure, rather than pressure reduced to sea level, is used for psychrometric calculations.",
+          "Name": "Surface pressure",
+          "Type": 4
+        },
+        {
+          "Description": "Sustained outdoor wind speed at 10 meters above ground in meters per second. A building model may use it to estimate infiltration and pressure-driven outdoor-air loads.",
+          "Name": "Wind speed",
+          "Type": 5
+        },
+        {
+          "Description": "Peak outdoor wind gust at 10 meters above ground in meters per second. It supports conservative control of exposed dampers and equipment.",
+          "Name": "Wind gust",
+          "Type": 6
+        },
+        {
+          "Description": "Direction from which the wind originates in degrees clockwise from true north. Zero and 360 both represent north. Direction is useful only when the building model knows façade orientation.",
+          "Name": "Wind direction",
+          "Type": 7
+        },
+        {
+          "Description": "Total liquid water equivalent accumulated over the containing interval, in millimeters.",
+          "Name": "Precipitation",
+          "Type": 8
+        },
+        {
+          "Description": "The liquid or frozen precipitation phase affecting exposed HVAC equipment during the containing interval.",
+          "Name": "Precipitation kind",
+          "Type": 9
+        },
+        {
+          "Description": "Geometric elevation of the sun's center in degrees above the astronomical horizon at the represented observation time. Negative values place the sun below the horizon. Use the containing current record's `valid_at` or the midpoint of a containing history or forecast period together with the building site coordinates to calculate this value.",
+          "Name": "Solar elevation",
+          "Type": 10
+        },
+        {
+          "Description": "Direction of the sun's center in degrees clockwise from true north at the same represented observation time. HVAC machine-learning consumers convert this cyclic angle to sine and cosine instead of interpreting the raw degree value as ordinal.",
+          "Name": "Solar azimuth",
+          "Type": 11
+        },
+        {
+          "Description": "Total direct and diffuse solar power incident on a horizontal surface in watts per square meter. This is the primary whole-building solar-gain input.",
+          "Name": "Global horizontal irradiance",
+          "Type": 12
+        },
+        {
+          "Description": "Direct solar power incident on a surface normal to the sun in watts per square meter. Oriented façade and shading models may use this value.",
+          "Name": "Direct normal irradiance",
+          "Type": 13
+        },
+        {
+          "Description": "Diffuse-sky solar power incident on a horizontal surface in watts per square meter. Oriented façade and shading models may use this value with direct normal irradiance.",
+          "Name": "Diffuse horizontal irradiance",
+          "Type": 14
+        }
+      ],
+      "Name": "BuildingHvacOutdoorConditionsV1"
+    },
+    {
+      "Description": "Classifica a precipitação quando sua fase pode afetar serpentinas externas, entradas de ar, dampers ou outros equipamentos de HVAC expostos.",
+      "DisplayName": "Tipo de precipitação para HVAC predial",
+      "List": [
+        {
+          "Description": "Classifica a precipitação quando sua fase pode afetar serpentinas externas, entradas de ar, dampers ou outros equipamentos de HVAC expostos.",
+          "Enum": [
+            {
+              "Description": "Nenhuma precipitação é representada para o período.",
+              "Name": "Sem precipitação",
+              "Type": 1
+            },
+            {
+              "Description": "Chuva líquida ou pancadas de chuva são representadas para o período.",
+              "Name": "Chuva",
+              "Type": 2
+            },
+            {
+              "Description": "Precipitação líquida super-resfriada que pode congelar sobre equipamentos expostos é representada para o período.",
+              "Name": "Chuva congelante",
+              "Type": 3
+            },
+            {
+              "Description": "Precipitação congelada predominantemente na forma de neve é representada para o período.",
+              "Name": "Neve",
+              "Type": 4
+            },
+            {
+              "Description": "Mais de uma fase de precipitação líquida ou congelada é representada.",
+              "Name": "Precipitação mista",
+              "Type": 5
+            },
+            {
+              "Description": "Há precipitação, mas o provedor não consegue classificar sua fase.",
+              "Name": "Precipitação desconhecida",
+              "Type": 6
+            }
+          ],
+          "Name": "Tipo de precipitação para HVAC predial",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacPrecipitationKindV1"
+    },
+    {
+      "Description": "Define uma mutação atômica no fluxo incremental de dados meteorológicos do HVAC predial. A variante e a ordem dos campos fazem parte do contrato de transmissão Avro.",
+      "DisplayName": "Alteração meteorológica do HVAC predial",
+      "List": [
+        {
+          "Description": "Define uma mutação atômica no fluxo incremental de dados meteorológicos do HVAC predial. A variante e a ordem dos campos fazem parte do contrato de transmissão Avro.",
+          "Name": "Alteração meteorológica do HVAC predial",
+          "Type": 0
+        },
+        {
+          "Description": "Inserts or replaces completed periods by `starts_at` after a successful history refresh.",
+          "Name": "Upsert historical periods",
+          "Type": 1
+        },
+        {
+          "Description": "The retrieval and validation time for the updated history section.",
+          "Name": "Retrieved at",
+          "Type": 2
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the history section.",
+          "Name": "Valid until",
+          "Type": 3
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from oldest to newest.",
+          "Name": "Historical periods",
+          "Type": 4
+        },
+        {
+          "Description": "One completed outdoor-condition period keyed by `starts_at`.",
+          "Name": "Historical period",
+          "Type": 5
+        },
+        {
+          "Description": "Removes historical periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove historical periods",
+          "Type": 6
+        },
+        {
+          "Description": "The half-open range of historical period start times to remove.",
+          "Name": "Time range",
+          "Type": 7
+        },
+        {
+          "Description": "Replaces the complete current-condition section after successful retrieval, validation, and persistence.",
+          "Name": "Replace current conditions",
+          "Type": 8
+        },
+        {
+          "Description": "The complete newly accepted current-condition section.",
+          "Name": "Current conditions",
+          "Type": 9
+        },
+        {
+          "Description": "Inserts or replaces future periods by `starts_at` after a successful forecast refresh.",
+          "Name": "Upsert forecast periods",
+          "Type": 10
+        },
+        {
+          "Description": "The retrieval and validation time for the updated forecast section.",
+          "Name": "Retrieved at",
+          "Type": 11
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the forecast section.",
+          "Name": "Valid until",
+          "Type": 12
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Forecast periods",
+          "Type": 13
+        },
+        {
+          "Description": "One future outdoor-condition period keyed by `starts_at`.",
+          "Name": "Forecast period",
+          "Type": 14
+        },
+        {
+          "Description": "Removes forecast periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove forecast periods",
+          "Type": 15
+        },
+        {
+          "Description": "The half-open range of forecast period start times to remove.",
+          "Name": "Time range",
+          "Type": 16
+        },
+        {
+          "Description": "Inserts or replaces pollutant periods by `starts_at` after a successful air-quality refresh.",
+          "Name": "Upsert outdoor-air-quality periods",
+          "Type": 17
+        },
+        {
+          "Description": "The retrieval and validation time for the updated air-quality section.",
+          "Name": "Retrieved at",
+          "Type": 18
+        },
+        {
+          "Description": "The new exclusive freshness deadline for the air-quality section.",
+          "Name": "Valid until",
+          "Type": 19
+        },
+        {
+          "Description": "Periods to insert or replace, ordered from earliest to latest.",
+          "Name": "Air-quality periods",
+          "Type": 20
+        },
+        {
+          "Description": "One modeled pollutant period keyed by `starts_at`.",
+          "Name": "Air-quality period",
+          "Type": 21
+        },
+        {
+          "Description": "Removes pollutant periods whose start times fall within the supplied half-open range.",
+          "Name": "Remove outdoor-air-quality periods",
+          "Type": 22
+        },
+        {
+          "Description": "The half-open range of air-quality period start times to remove.",
+          "Name": "Time range",
+          "Type": 23
+        },
+        {
+          "Description": "Clears one section only after its cached value is proven invalid. A provider, internet, or refresh failure alone must not clear a section.",
+          "Name": "Clear weather section",
+          "Type": 24
+        },
+        {
+          "Description": "The independently cached section to clear.",
+          "Name": "Weather section",
+          "Type": 25
+        },
+        {
+          "Description": "Replaces the complete historical section after a successful refresh.",
+          "Name": "Replace history",
+          "Type": 26
+        },
+        {
+          "Description": "The complete newly accepted history section.",
+          "Name": "History",
+          "Type": 27
+        },
+        {
+          "Description": "Replaces the complete forecast section after a successful refresh.",
+          "Name": "Replace forecast",
+          "Type": 28
+        },
+        {
+          "Description": "The complete newly accepted forecast section.",
+          "Name": "Forecast",
+          "Type": 29
+        },
+        {
+          "Description": "Replaces the complete modeled pollutant section after a successful refresh.",
+          "Name": "Replace outdoor air quality",
+          "Type": 30
+        },
+        {
+          "Description": "The complete newly accepted outdoor-air-quality section.",
+          "Name": "Outdoor air quality",
+          "Type": 31
+        }
+      ],
+      "Name": "BuildingHvacWeatherChangeV1"
+    },
+    {
+      "Description": "Identifica um estado totalmente aplicado em um fluxo incremental de dados meteorológicos do HVAC predial. Os clientes comparam o carimbo de data e hora da época e a sequência em conjunto.",
+      "DisplayName": "Cursor meteorológico do HVAC predial",
+      "List": [
+        {
+          "Description": "Identifica um estado totalmente aplicado em um fluxo incremental de dados meteorológicos do HVAC predial. Os clientes comparam o carimbo de data e hora da época e a sequência em conjunto.",
+          "Name": "Cursor meteorológico do HVAC predial",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora atribuídas pelo servidor que identificam a geração do fluxo. Permanecem constantes durante o avanço normal da sequência. Um servidor que perde o estado transitório do cursor atribui um carimbo de data e hora estritamente mais recente.",
+          "Name": "Carimbo de data e hora da época",
+          "Type": 1
+        },
+        {
+          "Description": "A sequência da alteração atômica aplicada mais recente. Uma redefinição do cursor do servidor reinicia a sequência em zero, embora um cliente possa observar primeiro uma sequência posterior à redefinição.",
+          "Name": "Sequência",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherCursorV1"
+    },
+    {
+      "Description": "Contém as condições externas previstas para um período de planejamento de HVAC preditivo baseado em modelo.",
+      "DisplayName": "Período de previsão de HVAC do edifício",
+      "List": [
+        {
+          "Description": "Contém as condições externas previstas para um período de planejamento de HVAC preditivo baseado em modelo.",
+          "Name": "Período de previsão de HVAC do edifício",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora inclusivas em que este período de previsão começa.",
+          "Name": "Horário de início",
+          "Type": 1
+        },
+        {
+          "Description": "A duração deste período de previsão em segundos. Os provedores podem fornecer períodos de 900 segundos para o futuro próximo e períodos de 3.600 segundos para momentos posteriores.",
+          "Name": "Duração",
+          "Type": 2
+        },
+        {
+          "Description": "Probabilidade de precipitação mensurável durante este período, expressa como uma porcentagem inteira de 0 a 100.",
+          "Name": "Probabilidade de precipitação",
+          "Type": 3
+        },
+        {
+          "Description": "Dados previstos de temperatura, umidade, pressão, vento, precipitação e radiação solar para o período.",
+          "Name": "Condições externas",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "Contém condições externas futuras para previsão de carga, pré-aquecimento, pré-resfriamento, armazenamento térmico e planejamento da ventilação com base nas condições meteorológicas.",
+      "DisplayName": "Previsão meteorológica para o HVAC do edifício",
+      "List": [
+        {
+          "Description": "Contém condições externas futuras para previsão de carga, pré-aquecimento, pré-resfriamento, armazenamento térmico e planejamento da ventilação com base nas condições meteorológicas.",
+          "Name": "Previsão meteorológica para o HVAC do edifício",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora em que esta seção completa da previsão foi obtida, validada e aceita.",
+          "Name": "Obtida em",
+          "Type": 1
+        },
+        {
+          "Description": "O prazo exclusivo de atualidade. As previsões mais antigas continuam disponíveis para planejamento em modo degradado, mas não devem autorizar operações críticas para a segurança.",
+          "Name": "Válida até",
+          "Type": 2
+        },
+        {
+          "Description": "Períodos futuros ordenados do mais próximo ao mais distante. Uma resposta normal abrange 72 horas e pode usar períodos de 15 minutos nas primeiras seis horas e períodos de uma hora posteriormente.",
+          "Name": "Períodos de previsão",
+          "Type": 3
+        },
+        {
+          "Description": "Condições externas de HVAC previstas para um período de planejamento.",
+          "Name": "Período de previsão",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherForecastV1"
+    },
+    {
+      "Description": "Contém as condições externas de um período concluído, usadas para restaurar ou atualizar uma estimativa do estado térmico do edifício.",
+      "DisplayName": "Período meteorológico histórico do HVAC do edifício",
+      "List": [
+        {
+          "Description": "Contém as condições externas de um período concluído, usadas para restaurar ou atualizar uma estimativa do estado térmico do edifício.",
+          "Name": "Período meteorológico histórico do HVAC do edifício",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora inclusivas em que este período histórico começa.",
+          "Name": "Horário de início",
+          "Type": 1
+        },
+        {
+          "Description": "A duração deste período concluído em segundos. Normalmente, o histórico usa períodos de 3.600 segundos.",
+          "Name": "Duração",
+          "Type": 2
+        },
+        {
+          "Description": "As condições de temperatura, umidade, pressão, vento, precipitação e radiação solar representadas por este período concluído.",
+          "Name": "Condições externas",
+          "Type": 3
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryPeriodV1"
+    },
+    {
+      "Description": "Contém períodos recentes e concluídos de condições externas, usados para a recuperação do estado térmico de curto prazo. O aprendizado de longo prazo do edifício pertence à telemetria e à persistência do modelo do próprio aplicativo de HVAC.",
+      "DisplayName": "Histórico meteorológico do HVAC do edifício",
+      "List": [
+        {
+          "Description": "Contém períodos recentes e concluídos de condições externas, usados para a recuperação do estado térmico de curto prazo. O aprendizado de longo prazo do edifício pertence à telemetria e à persistência do modelo do próprio aplicativo de HVAC.",
+          "Name": "Histórico meteorológico do HVAC do edifício",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora em que esta seção completa do histórico foi obtida, validada e aceita.",
+          "Name": "Obtido em",
+          "Type": 1
+        },
+        {
+          "Description": "O prazo exclusivo de atualidade. Após esse momento, o histórico mais antigo continua disponível como entrada de modelo em modo degradado.",
+          "Name": "Válido até",
+          "Type": 2
+        },
+        {
+          "Description": "Períodos concluídos ordenados do mais antigo ao mais recente. Uma resposta normal abrange as 72 horas anteriores; uma lista mais curta constitui um histórico parcial válido.",
+          "Name": "Períodos históricos",
+          "Type": 3
+        },
+        {
+          "Description": "Condições externas de HVAC de um período concluído.",
+          "Name": "Período histórico",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherHistoryV1"
+    },
+    {
+      "Description": "Transporta um intervalo ordenado e atômico de alterações meteorológicas do HVAC do edifício. Um cliente somente o aplica quando `from_cursor` corresponde ao seu último cursor. Um relatório vazio representa uma recuperação sincronizada; a sinalização periódica de atividade sem alterações usa PeerAlive.",
+      "DisplayName": "Relatório meteorológico incremental do HVAC do edifício",
+      "List": [
+        {
+          "Description": "Transporta um intervalo ordenado e atômico de alterações meteorológicas do HVAC do edifício. Um cliente somente o aplica quando `from_cursor` corresponde ao seu último cursor. Um relatório vazio representa uma recuperação sincronizada; a sinalização periódica de atividade sem alterações usa PeerAlive.",
+          "Name": "Relatório meteorológico incremental do HVAC do edifício",
+          "Type": 0
+        },
+        {
+          "Description": "O cursor inferior exclusivo e o estado exato do cliente necessários antes da aplicação do relatório.",
+          "Name": "Cursor de origem",
+          "Type": 1
+        },
+        {
+          "Description": "O cursor inclusivo alcançado após a aplicação atômica de todas as alterações.",
+          "Name": "Cursor final",
+          "Type": 2
+        },
+        {
+          "Description": "Alterações ordenadas conforme a sequência do cursor. Cada alteração avança a sequência em exatamente uma unidade; uma lista vazia preserva o cursor.",
+          "Name": "Alterações meteorológicas",
+          "Type": 3
+        },
+        {
+          "Description": "Uma mutação atômica de estado na ordem do cursor.",
+          "Name": "Alteração meteorológica",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Armazena a localização do Libertas Hub usada para obter dados meteorológicos de uma residência inteira ou de um edifício.",
+      "DisplayName": "Localização meteorológica do HVAC do edifício",
+      "List": [
+        {
+          "Description": "Armazena a localização do Libertas Hub usada para obter dados meteorológicos de uma residência inteira ou de um edifício.",
+          "Name": "Localização meteorológica do HVAC do edifício",
+          "Type": 0
+        },
+        {
+          "Description": "Longitude WGS84 em graus decimais. Locais a oeste de Greenwich usam valores negativos.",
+          "Name": "Longitude",
+          "Type": 1
+        },
+        {
+          "Description": "Latitude WGS84 em graus decimais.",
+          "Name": "Latitude",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherLocationV1"
+    },
+    {
+      "Description": "Define todos os valores que um agente de clima para HVAC predial pode gravar no banco de dados Libertas. Cada variante é armazenada sob seu próprio identificador de recurso estável, para que uma falha parcial do provedor não possa apagar outra seção. Cursores de assinatura, diários, pares e prazos de PeerAlive não são persistentes.",
+      "DisplayName": "Dados persistentes de clima para HVAC predial",
+      "List": [
+        {
+          "Description": "Define todos os valores que um agente de clima para HVAC predial pode gravar no banco de dados Libertas. Cada variante é armazenada sob seu próprio identificador de recurso estável, para que uma falha parcial do provedor não possa apagar outra seção. Cursores de assinatura, diários, pares e prazos de PeerAlive não são persistentes.",
+          "Name": "Dados persistentes de clima para HVAC predial",
+          "Type": 0
+        },
+        {
+          "Description": "Armazena as últimas coordenadas válidas do local recebidas do Libertas Hub.",
+          "Name": "Localização do edifício",
+          "Type": 1
+        },
+        {
+          "Description": "As coordenadas WGS84 do local usadas nas solicitações ao provedor.",
+          "Name": "Localização",
+          "Type": 2
+        },
+        {
+          "Description": "Armazena o último histórico de condições meteorológicas físicas aceito com sucesso.",
+          "Name": "Histórico recente",
+          "Type": 3
+        },
+        {
+          "Description": "Períodos recentes de condições externas com carimbos de data e hora de recuperação e de atualização.",
+          "Name": "Histórico",
+          "Type": 4
+        },
+        {
+          "Description": "Armazena as últimas condições meteorológicas físicas atuais aceitas com sucesso.",
+          "Name": "Condições atuais",
+          "Type": 5
+        },
+        {
+          "Description": "Entradas externas atuais de HVAC com carimbos de data e hora de validade e de recuperação.",
+          "Name": "Condições atuais",
+          "Type": 6
+        },
+        {
+          "Description": "Armazena a última previsão de condições meteorológicas físicas aceita com sucesso.",
+          "Name": "Previsão",
+          "Type": 7
+        },
+        {
+          "Description": "Entradas externas futuras de HVAC com carimbos de data e hora de recuperação e de atualização.",
+          "Name": "Previsão",
+          "Type": 8
+        },
+        {
+          "Description": "Armazena separadamente das condições meteorológicas físicas os últimos dados modelados de poluentes aceitos com sucesso.",
+          "Name": "Qualidade do ar externo",
+          "Type": 9
+        },
+        {
+          "Description": "Períodos atuais e futuros de poluentes externos com carimbos de data e hora de recuperação e de atualização.",
+          "Name": "Qualidade do ar externo",
+          "Type": 10
+        }
+      ],
+      "Name": "BuildingHvacWeatherPersistentData"
+    },
+    {
+      "Description": "Define transações únicas e de assinatura para o clima de HVAC de residências ou edifícios inteiros. A operação do endpoint Libertas, e não um campo neste contrato de mensagem arbitrária, seleciona o comportamento de transação única ou de assinatura.",
+      "DisplayName": "Protocolo de clima para HVAC predial",
+      "List": [
+        {
+          "Description": "Define transações únicas e de assinatura para o clima de HVAC de residências ou edifícios inteiros. A operação do endpoint Libertas, e não um campo neste contrato de mensagem arbitrária, seleciona o comportamento de transação única ou de assinatura.",
+          "Name": "Protocolo de clima para HVAC predial",
+          "Type": 0
+        },
+        {
+          "Description": "Performs a one-shot incremental read or starts or resumes a subscription. The server replays retained changes after `after_cursor` when possible or returns independently cached sections constrained to the requested fallback ranges.",
+          "Name": "Get building HVAC weather",
+          "Type": 1
+        },
+        {
+          "Description": "The last cursor fully and atomically applied by the client. `None` requests an initial snapshot.",
+          "Name": "Resume cursor",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "The half-open historical range to include when replay is impossible. `None` excludes history from a reset snapshot.",
+          "Name": "Historical recovery range",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Whether a reset snapshot should include cached current outdoor conditions.",
+          "Name": "Include current conditions",
+          "Type": 4
+        },
+        {
+          "Description": "The half-open physical-weather forecast range to include when replay is impossible. `None` excludes forecast data.",
+          "Name": "Forecast recovery range",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "The half-open pollutant period range to include when replay is impossible. `None` excludes modeled outdoor air quality.",
+          "Name": "Outdoor-air-quality recovery range",
+          "NullText": "No outdoor air quality",
+          "SetText": "Include outdoor air quality for",
+          "Type": 6
+        },
+        {
+          "Description": "Responds to every valid get request with replay, a reset snapshot, or a typed error. Subscription clients restart their timeout after successful recovery, later data reports, and PeerAlive.",
+          "Name": "Building HVAC weather recovery",
+          "Type": 7
+        },
+        {
+          "Description": "Maximum seconds a subscription client waits before retrying with its last cursor. The server sends changed data or PeerAlive first. A one-shot client ignores this required, nonzero value.",
+          "Name": "Maximum wait interval",
+          "Type": 8
+        },
+        {
+          "Description": "The replay, reset snapshot, or typed error result.",
+          "Name": "Recovery",
+          "Type": 9
+        },
+        {
+          "Description": "Reports changes following successful subscription recovery. A client applies the complete contiguous range or applies none of it.",
+          "Name": "Building HVAC weather increment",
+          "Type": 10
+        },
+        {
+          "Description": "The ordered, atomic cursor range and its weather changes.",
+          "Name": "Incremental report",
+          "Type": 11
+        }
+      ],
+      "Name": "BuildingHvacWeatherProtocol"
+    },
+    {
+      "Description": "Identifica uma solicitação de recuperação que não pode ser atendida por reprodução ou por um instantâneo em cache limitado por intervalo.",
+      "DisplayName": "Erro de recuperação de clima para HVAC predial",
+      "List": [
+        {
+          "Description": "Identifica uma solicitação de recuperação que não pode ser atendida por reprodução ou por um instantâneo em cache limitado por intervalo.",
+          "Enum": [
+            {
+              "Description": "Pelo menos um dos intervalos semiabertos solicitados está vazio ou invertido.",
+              "Name": "Intervalo de tempo inválido",
+              "Type": 1
+            },
+            {
+              "Description": "O cursor fornecido não pode ser reconciliado com o estado atual do cursor nem com o diário retido.",
+              "Name": "Cursor adiantado",
+              "Type": 2
+            },
+            {
+              "Description": "Pelo menos um dos intervalos de recuperação solicitados excede a capacidade limitada de resposta.",
+              "Name": "Solicitação grande demais",
+              "Type": 3
+            },
+            {
+              "Description": "Um registro em cache ou recurso de recuperação necessário está temporariamente indisponível.",
+              "Name": "Temporariamente indisponível",
+              "Type": 4
+            }
+          ],
+          "Name": "Erro de recuperação de clima para HVAC predial",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "Reproduz alterações retidas, estabelece um novo cursor e instantâneo ou relata um erro recuperável de solicitação.",
+      "DisplayName": "Recuperação de clima para HVAC predial",
+      "List": [
+        {
+          "Description": "Reproduz alterações retidas, estabelece um novo cursor e instantâneo ou relata um erro recuperável de solicitação.",
+          "Name": "Recuperação de clima para HVAC predial",
+          "Type": 0
+        },
+        {
+          "Description": "Continues the stream with every retained change after the supplied cursor. An empty report means the client is caught up.",
+          "Name": "Replayed changes",
+          "Type": 1
+        },
+        {
+          "Description": "The contiguous retained change range beginning at the request cursor.",
+          "Name": "Incremental report",
+          "Type": 2
+        },
+        {
+          "Description": "Establishes state from independently cached sections when replay is impossible or no cursor was supplied.",
+          "Name": "Reset with snapshot",
+          "Type": 3
+        },
+        {
+          "Description": "The reason the response contains a snapshot rather than replay.",
+          "Name": "Reset reason",
+          "Type": 4
+        },
+        {
+          "Description": "The cursor representing the returned snapshot.",
+          "Name": "Current cursor",
+          "Type": 5
+        },
+        {
+          "Description": "The available cached sections constrained by requested ranges.",
+          "Name": "Weather snapshot",
+          "Type": 6
+        },
+        {
+          "Description": "Rejects the request without changing client cursor or cached weather.",
+          "Name": "Recovery error",
+          "Type": 7
+        },
+        {
+          "Description": "The reason recovery could not be completed.",
+          "Name": "Error",
+          "Type": 8
+        },
+        {
+          "Description": "Suggested seconds before retrying. `None` means the request must change before a retry can succeed.",
+          "Name": "Retry delay",
+          "Type": 9
+        }
+      ],
+      "Name": "BuildingHvacWeatherRecoveryV1"
+    },
+    {
+      "Description": "Explica por que a recuperação estabeleceu o estado a partir de um instantâneo limitado por intervalo, em vez de reproduzir alterações incrementais.",
+      "DisplayName": "Motivo da redefinição do clima para HVAC predial",
+      "List": [
+        {
+          "Description": "Explica por que a recuperação estabeleceu o estado a partir de um instantâneo limitado por intervalo, em vez de reproduzir alterações incrementais.",
+          "Enum": [
+            {
+              "Description": "Nenhum cursor anterior foi fornecido.",
+              "Name": "Assinatura inicial",
+              "Type": 1
+            },
+            {
+              "Description": "A sequência solicitada é mais antiga que o diário de reprodução retido.",
+              "Name": "Cursor expirado",
+              "Type": 2
+            },
+            {
+              "Description": "O servidor perdeu ou descartou deliberadamente apenas seu cursor transitório e diário de reprodução; as seções meteorológicas persistidas de forma independente permanecem utilizáveis.",
+              "Name": "Cursor do servidor redefinido",
+              "Type": 3
+            }
+          ],
+          "Name": "Motivo da redefinição do clima para HVAC predial",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherResetReasonV1"
+    },
+    {
+      "Description": "Identifica uma seção de clima para HVAC predial armazenada em cache de forma independente.",
+      "DisplayName": "Seção de clima para HVAC predial",
+      "List": [
+        {
+          "Description": "Identifica uma seção de clima para HVAC predial armazenada em cache de forma independente.",
+          "Enum": [
+            {
+              "Description": "Seleciona o histórico recente de condições físicas externas.",
+              "Name": "Histórico recente",
+              "Type": 1
+            },
+            {
+              "Description": "Seleciona as condições físicas externas atuais modeladas.",
+              "Name": "Condições atuais",
+              "Type": 2
+            },
+            {
+              "Description": "Seleciona a previsão futura das condições físicas externas.",
+              "Name": "Previsão do tempo",
+              "Type": 3
+            },
+            {
+              "Description": "Seleciona as concentrações modeladas atuais e previstas de poluentes externos.",
+              "Name": "Qualidade do ar externo",
+              "Type": 4
+            }
+          ],
+          "Name": "Seção de clima para HVAC predial",
+          "Type": 0
+        }
+      ],
+      "Name": "BuildingHvacWeatherSectionV1"
+    },
+    {
+      "Description": "Contém o último valor aceito com sucesso de cada seção solicitada. As seções ausentes não têm cache utilizável; as seções desatualizadas permanecem presentes com seus prazos de validade originais.",
+      "DisplayName": "Instantâneo meteorológico do HVAC do edifício",
+      "List": [
+        {
+          "Description": "Contém o último valor aceito com sucesso de cada seção solicitada. As seções ausentes não têm cache utilizável; as seções desatualizadas permanecem presentes com seus prazos de validade originais.",
+          "Name": "Instantâneo meteorológico do HVAC do edifício",
+          "Type": 0
+        },
+        {
+          "Description": "Os períodos recentes solicitados das condições externas quando há um histórico utilizável em cache.",
+          "Name": "Histórico recente",
+          "Type": 1
+        },
+        {
+          "Description": "As últimas condições externas atuais aceitas, quando solicitadas e disponíveis.",
+          "Name": "Condições atuais",
+          "Type": 2
+        },
+        {
+          "Description": "Os períodos futuros solicitados das condições externas quando há dados de previsão utilizáveis em cache.",
+          "Name": "Previsão do tempo",
+          "Type": 3
+        },
+        {
+          "Description": "Os períodos atuais e previstos de poluentes solicitados quando há dados modelados utilizáveis sobre a qualidade do ar.",
+          "Name": "Qualidade do ar externo",
+          "Type": 4
+        }
+      ],
+      "Name": "BuildingHvacWeatherSnapshotV1"
+    },
+    {
+      "Description": "Seleciona um intervalo semiaberto de períodos do histórico, da previsão ou da qualidade do ar externo pelos respectivos horários de início.",
+      "DisplayName": "Intervalo de tempo meteorológico do HVAC do edifício",
+      "List": [
+        {
+          "Description": "Seleciona um intervalo semiaberto de períodos do histórico, da previsão ou da qualidade do ar externo pelos respectivos horários de início.",
+          "Name": "Intervalo de tempo meteorológico do HVAC do edifício",
+          "Type": 0
+        },
+        {
+          "Description": "O limite inferior inclusivo para os horários de início dos períodos selecionados.",
+          "Name": "Horário de início",
+          "Type": 1
+        },
+        {
+          "Description": "O limite superior exclusivo para os horários de início dos períodos selecionados. Ele deve ser posterior a `starts_at`.",
+          "Name": "Horário de término",
+          "Type": 2
+        }
+      ],
+      "Name": "BuildingHvacWeatherTimeRangeV1"
+    },
+    {
+      "Description": "Contém dados imediatos de chuva, congelamento, umidade, vento e balanço hídrico usados para decidir se uma operação de irrigação já programada pode ser iniciada ou continuar com segurança.",
+      "DisplayName": "Condições meteorológicas atuais do aspersor",
+      "List": [
+        {
+          "Description": "Contém dados imediatos de chuva, congelamento, umidade, vento e balanço hídrico usados para decidir se uma operação de irrigação já programada pode ser iniciada ou continuar com segurança.",
+          "Name": "Condições meteorológicas atuais do aspersor",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora em que a seção completa das condições meteorológicas atuais foi recuperada, validada e aceita pela última vez.",
+          "Name": "Recuperado em",
+          "Type": 1
+        },
+        {
+          "Description": "O prazo de validade exclusivo. As condições meteorológicas atuais permanecem válidas enquanto o horário atual for anterior a esse valor. Nesse horário ou depois dele, a seção permanece em cache, mas não deve ser tratada como prova de que é seguro irrigar.",
+          "Name": "Válido até",
+          "Type": 2
+        },
+        {
+          "Description": "A data e a hora fornecidas pelo provedor que são representadas pelos valores das condições atuais. Elas podem ser diferentes de `retrieved_at`.",
+          "Name": "Válido em",
+          "Type": 3
+        },
+        {
+          "Description": "O intervalo retrospectivo, em segundos, representado pela precipitação e pela evapotranspiração acumuladas. As condições meteorológicas atuais do Open-Meteo normalmente usam um intervalo de 900 segundos.",
+          "Name": "Intervalo de observação",
+          "Type": 4
+        },
+        {
+          "Description": "Temperatura do ar a dois metros acima do solo, em graus Celsius. O aspersor a utiliza para impedir a irrigação em temperaturas próximas ou inferiores ao ponto de congelamento.",
+          "Name": "Temperatura",
+          "Type": 5
+        },
+        {
+          "Description": "Umidade relativa a dois metros acima do solo, expressa como uma porcentagem de 0 a 100. O aspersor a utiliza para evitar períodos desnecessariamente longos de umidade na folhagem quando a irrigação por aspersão é necessária.",
+          "Name": "Umidade relativa",
+          "Type": 6
+        },
+        {
+          "Description": "Total de chuva, pancadas de chuva e precipitação congelada equivalente em água acumulado durante `interval_seconds`, em milímetros. O aspersor usa um valor diferente de zero para impedir a irrigação enquanto houver precipitação.",
+          "Name": "Precipitação",
+          "Type": 7
+        },
+        {
+          "Description": "Evapotranspiração de referência FAO-56 acumulada durante `interval_seconds`, em milímetros. Ela pode estender o balanço hídrico até que o próximo período histórico concluído esteja disponível.",
+          "Name": "Evapotranspiração de referência",
+          "Type": 8
+        },
+        {
+          "Description": "Velocidade sustentada do vento a 10 metros acima do solo, em metros por segundo. O aspersor consumidor aplica o limite de vento configurado.",
+          "Name": "Velocidade do vento",
+          "Type": 9
+        },
+        {
+          "Description": "Velocidade máxima das rajadas de vento a 10 metros acima do solo, em metros por segundo. O aspersor consumidor a utiliza em conjunto com o vento sustentado para evitar a deriva da pulverização.",
+          "Name": "Rajada de vento",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerCurrentWeatherV1"
+    },
+    {
+      "Description": "Define uma mutação atômica no fluxo incremental de dados meteorológicos do aspersor. A ordem das variantes e a ordem dos campos fazem parte do formato de transmissão Avro somente para acréscimo.",
+      "DisplayName": "Alteração meteorológica do aspersor",
+      "List": [
+        {
+          "Description": "Define uma mutação atômica no fluxo incremental de dados meteorológicos do aspersor. A ordem das variantes e a ordem dos campos fazem parte do formato de transmissão Avro somente para acréscimo.",
+          "Name": "Alteração meteorológica do aspersor",
+          "Type": 0
+        },
+        {
+          "Description": "Remove os períodos históricos em cache cujos horários de início estejam dentro do intervalo semiaberto fornecido.",
+          "Name": "Remover períodos históricos",
+          "Type": 1
+        },
+        {
+          "Description": "O intervalo semiaberto dos horários de início dos períodos históricos a serem removidos.",
+          "Name": "Intervalo de tempo",
+          "Type": 2
+        },
+        {
+          "Description": "Substitui a seção completa das condições atuais após uma recuperação e validação bem-sucedidas.",
+          "Name": "Substituir condições atuais",
+          "Type": 3
+        },
+        {
+          "Description": "A seção das condições atuais recém-aceita.",
+          "Name": "Condições atuais",
+          "Type": 4
+        },
+        {
+          "Description": "Marca uma atualização bem-sucedida da previsão e insere ou substitui períodos por `starts_at`. Uma lista de períodos vazia atualiza apenas os metadados de recuperação e validade.",
+          "Name": "Inserir ou atualizar períodos da previsão",
+          "Type": 5
+        },
+        {
+          "Description": "A data e hora da recuperação e validação bem-sucedidas da seção de previsão.",
+          "Name": "Recuperado em",
+          "Type": 6
+        },
+        {
+          "Description": "O novo prazo exclusivo de validade da seção de previsão.",
+          "Name": "Válido até",
+          "Type": 7
+        },
+        {
+          "Description": "Períodos a serem inseridos ou substituídos, ordenados do mais antigo para o mais recente.",
+          "Name": "Períodos de previsão",
+          "Type": 8
+        },
+        {
+          "Description": "Um período de planejamento da irrigação identificado por `starts_at`.",
+          "Name": "Período de previsão",
+          "Type": 9
+        },
+        {
+          "Description": "Remove os períodos de previsão armazenados em cache cujos horários de início estejam dentro do intervalo semiaberto fornecido.",
+          "Name": "Remover períodos de previsão",
+          "Type": 10
+        },
+        {
+          "Description": "O intervalo semiaberto dos horários de início dos períodos de previsão a serem removidos.",
+          "Name": "Intervalo de tempo",
+          "Type": 11
+        },
+        {
+          "Description": "Limpa uma seção somente quando se sabe que seu valor armazenado em cache é inválido, como após uma falha de validação ou uma migração incompatível. Uma falha isolada na atualização do provedor não deve emitir esta alteração.",
+          "Name": "Limpar seção meteorológica",
+          "Type": 12
+        },
+        {
+          "Description": "A seção armazenada em cache de forma independente que deve ser limpa.",
+          "Name": "Seção meteorológica",
+          "Type": 13
+        },
+        {
+          "Description": "Substitui toda a seção de previsão após uma atualização bem-sucedida do provedor. Os períodos ausentes na substituição deixam de ser armazenados em cache.",
+          "Name": "Substituir previsão",
+          "Type": 14
+        },
+        {
+          "Description": "Toda a seção de previsão recém-aceita.",
+          "Name": "Previsão",
+          "Type": 15
+        },
+        {
+          "Description": "Identifica o local físico de todas as alterações meteorológicas subsequentes. Um cliente usa esse valor para manter o histórico retido de diferentes locais do Hub em gerações separadas, sem depender da ordem dos retornos de chamada.",
+          "Name": "Substituir local meteorológico",
+          "Type": 16
+        },
+        {
+          "Description": "Localização WGS84 usada para observações e previsões do provedor.",
+          "Name": "Localização do local",
+          "Type": 17
+        },
+        {
+          "Description": "Indica uma atualização bem-sucedida do histórico e insere ou substitui períodos meteorológicos completos por `starts_at`.",
+          "Name": "Inserir ou atualizar períodos históricos V2",
+          "Type": 18
+        },
+        {
+          "Description": "A data e hora da recuperação e validação bem-sucedidas da seção de histórico.",
+          "Name": "Recuperado em",
+          "Type": 19
+        },
+        {
+          "Description": "O novo prazo exclusivo de validade da seção de histórico.",
+          "Name": "Válido até",
+          "Type": 20
+        },
+        {
+          "Description": "Períodos meteorológicos completos a serem inseridos ou substituídos, ordenados do mais antigo para o mais recente.",
+          "Name": "Períodos históricos",
+          "Type": 21
+        },
+        {
+          "Description": "Uma observação V2 concluída, identificada por `starts_at`.",
+          "Name": "Período histórico",
+          "Type": 22
+        },
+        {
+          "Description": "Substitui toda a seção de histórico de observações completas após uma atualização bem-sucedida do provedor.",
+          "Name": "Substituir histórico V2",
+          "Type": 23
+        },
+        {
+          "Description": "Toda a seção de histórico V2 recém-aceita.",
+          "Name": "Histórico",
+          "Type": 24
+        }
+      ],
+      "Name": "SprinklerWeatherChangeV1"
+    },
+    {
+      "Description": "Identifica um estado aplicado em um fluxo incremental de dados meteorológicos do aspersor. Um cliente compara ambos os campos e não deve interpretar isoladamente uma sequência menor como uma redefinição do servidor.",
+      "DisplayName": "Cursor meteorológico do aspersor",
+      "List": [
+        {
+          "Description": "Identifica um estado aplicado em um fluxo incremental de dados meteorológicos do aspersor. Um cliente compara ambos os campos e não deve interpretar isoladamente uma sequência menor como uma redefinição do servidor.",
+          "Name": "Cursor meteorológico do aspersor",
+          "Type": 0
+        },
+        {
+          "Description": "A data e hora atribuídas pelo servidor que identificam a geração do cursor. Esse único campo representa tanto a época do fluxo quanto uma data e hora ordenada; não existe uma época opaca separada. Ele permanece inalterado durante o avanço normal da sequência. Quando o servidor perde seu cursor transitório ou diário de reprodução, ele atribui uma data e hora de época estritamente posterior à anterior e reinicia `sequence` em zero. Um cliente pode observar primeiro uma sequência posterior à redefinição em vez de zero. Essa data e hora descreve o estado do cursor, não o horário de observação dos valores meteorológicos.",
+          "Name": "Data e hora da época",
+          "Type": 1
+        },
+        {
+          "Description": "Identifica a alteração de estado aplicada mais recente. O servidor incrementa esse valor uma vez para cada alteração meteorológica aceita. Ele redefine esse valor como zero quando o cursor transitório do servidor é redefinido e depois o incrementa para alterações posteriores; uma redefinição não limpa os dados meteorológicos históricos, atuais nem previstos.",
+          "Name": "Sequência",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherCursorV1"
+    },
+    {
+      "Description": "Contém o aporte de água, a perda de água, a temperatura, a umidade e os riscos de vento previstos usados para decidir quando e quanto irrigar durante um período de planejamento.",
+      "DisplayName": "Período de previsão meteorológica do aspersor",
+      "List": [
+        {
+          "Description": "Contém o aporte de água, a perda de água, a temperatura, a umidade e os riscos de vento previstos usados para decidir quando e quanto irrigar durante um período de planejamento.",
+          "Name": "Período de previsão meteorológica do aspersor",
+          "Type": 0
+        },
+        {
+          "Description": "A data e hora inclusivas em que este período de previsão começa.",
+          "Name": "Horário de início",
+          "Type": 1
+        },
+        {
+          "Description": "A duração deste período de previsão em segundos. As previsões do Open-Meteo normalmente usam períodos de 3.600 segundos.",
+          "Name": "Duração",
+          "Type": 2
+        },
+        {
+          "Description": "Temperatura do ar prevista a dois metros acima do solo, em graus Celsius. O aspersor usa esse valor para evitar a irrigação quando há previsão de temperaturas congelantes.",
+          "Name": "Temperatura",
+          "Type": 3
+        },
+        {
+          "Description": "Umidade relativa prevista a dois metros acima do solo, expressa como uma porcentagem inteira de 0 a 100. Juntamente com a posição solar e o tipo de cabeça do aspersor, isso ajuda a evitar que a folhagem permaneça molhada por períodos prolongados.",
+          "Name": "Umidade relativa",
+          "Type": 4
+        },
+        {
+          "Description": "Probabilidade de precipitação mensurável durante este período, expressa como uma porcentagem inteira de 0 a 100. Isso expressa a incerteza da previsão separadamente da quantidade de precipitação esperada.",
+          "Name": "Probabilidade de precipitação",
+          "Type": 5
+        },
+        {
+          "Description": "Total previsto de chuva, pancadas de chuva e precipitação congelada equivalente em água acumulado durante este período, em milímetros.",
+          "Name": "Precipitação esperada",
+          "Type": 6
+        },
+        {
+          "Description": "Evapotranspiração de referência FAO-56 prevista e acumulada durante este período, em milímetros.",
+          "Name": "Evapotranspiração de referência",
+          "Type": 7
+        },
+        {
+          "Description": "Velocidade prevista do vento sustentado a 10 metros acima do solo, em metros por segundo.",
+          "Name": "Velocidade do vento",
+          "Type": 8
+        },
+        {
+          "Description": "Velocidade máxima prevista das rajadas de vento a 10 metros acima do solo, em metros por segundo. O aspersor usa esse valor com o vento sustentado para evitar programar a irrigação durante prováveis situações de deriva da pulverização.",
+          "Name": "Rajada de vento",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWeatherForecastPeriodV1"
+    },
+    {
+      "Description": "Contém dados meteorológicos horários futuros usados para planejar a irrigação por aspersão durante os próximos sete dias. O último valor obtido com sucesso é mantido quando uma atualização posterior da previsão falha.",
+      "DisplayName": "Previsão meteorológica do aspersor",
+      "List": [
+        {
+          "Description": "Contém dados meteorológicos horários futuros usados para planejar a irrigação por aspersão durante os próximos sete dias. O último valor obtido com sucesso é mantido quando uma atualização posterior da previsão falha.",
+          "Name": "Previsão meteorológica do aspersor",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora em que a seção completa da previsão foi recuperada, validada e aceita pela última vez.",
+          "Name": "Recuperada em",
+          "Type": 1
+        },
+        {
+          "Description": "O prazo exclusivo de validade. A previsão está atualizada enquanto a hora atual for anterior a esse valor e fica desatualizada a partir desse valor. Uma previsão desatualizada permanece disponível como dado em cache em modo degradado.",
+          "Name": "Válida até",
+          "Type": 2
+        },
+        {
+          "Description": "Períodos futuros ordenados do mais próximo ao mais distante. Uma resposta normal abrange os próximos sete dias com resolução de uma hora; uma lista mais curta é uma previsão parcial válida.",
+          "Name": "Períodos da previsão",
+          "Type": 3
+        },
+        {
+          "Description": "Precipitação, evapotranspiração de referência, temperatura, umidade e vento previstos para um período de planejamento.",
+          "Name": "Período da previsão",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherForecastV1"
+    },
+    {
+      "Description": "Armazena os registros de data e hora de validade dos períodos indexados do histórico reconstruídos dinamicamente.",
+      "DisplayName": "Metadados do histórico meteorológico do aspersor",
+      "List": [
+        {
+          "Description": "Armazena os registros de data e hora de validade dos períodos indexados do histórico reconstruídos dinamicamente.",
+          "Name": "Metadados do histórico meteorológico do aspersor",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora em que o conjunto completo do histórico indexado foi recuperado, validado e aceito pela última vez.",
+          "Name": "Recuperados em",
+          "Type": 1
+        },
+        {
+          "Description": "O prazo exclusivo de validade da seção do histórico reconstruído.",
+          "Name": "Válidos até",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryMetadataV1"
+    },
+    {
+      "Description": "Amplia o balanço hídrico do período concluído com as observações de temperatura, umidade, vento sustentado e rajadas necessárias para explicar as decisões de irrigação.",
+      "DisplayName": "Período do histórico meteorológico do aspersor V2",
+      "List": [
+        {
+          "Description": "Amplia o balanço hídrico do período concluído com as observações de temperatura, umidade, vento sustentado e rajadas necessárias para explicar as decisões de irrigação.",
+          "Name": "Período do histórico meteorológico do aspersor V2",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora inclusivas em que este período histórico começa.",
+          "Name": "Hora de início",
+          "Type": 1
+        },
+        {
+          "Description": "A duração deste período histórico em segundos. O histórico do Open-Meteo normalmente usa períodos de 3.600 segundos.",
+          "Name": "Duração",
+          "Type": 2
+        },
+        {
+          "Description": "Precipitação total, incluindo o equivalente em água da precipitação congelada, acumulada durante este período em milímetros.",
+          "Name": "Precipitação",
+          "Type": 3
+        },
+        {
+          "Description": "Evapotranspiração de referência FAO-56 acumulada durante este período em milímetros.",
+          "Name": "Evapotranspiração de referência",
+          "Type": 4
+        },
+        {
+          "Description": "Temperatura do ar a dois metros acima do solo, em graus Celsius, durante este período histórico.",
+          "Name": "Temperatura",
+          "Type": 5
+        },
+        {
+          "Description": "Umidade relativa a dois metros acima do solo, expressa como uma porcentagem inteira de 0 a 100 durante este período histórico.",
+          "Name": "Umidade relativa",
+          "Type": 6
+        },
+        {
+          "Description": "Velocidade do vento sustentado a 10 metros acima do solo, em metros por segundo, durante este período histórico.",
+          "Name": "Velocidade do vento",
+          "Type": 7
+        },
+        {
+          "Description": "Velocidade máxima das rajadas de vento a 10 metros acima do solo, em metros por segundo, durante este período histórico.",
+          "Name": "Rajada de vento",
+          "Type": 8
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryPeriodV2"
+    },
+    {
+      "Description": "Contém períodos concluídos recentes com todas as observações meteorológicas usadas tanto nos cálculos de irrigação quanto nos gráficos explicativos das decisões.",
+      "DisplayName": "Histórico meteorológico do aspersor V2",
+      "List": [
+        {
+          "Description": "Contém períodos concluídos recentes com todas as observações meteorológicas usadas tanto nos cálculos de irrigação quanto nos gráficos explicativos das decisões.",
+          "Name": "Histórico meteorológico do aspersor V2",
+          "Type": 0
+        },
+        {
+          "Description": "A data e a hora em que a seção completa do histórico foi recuperada, validada e aceita pela última vez.",
+          "Name": "Recuperado em",
+          "Type": 1
+        },
+        {
+          "Description": "O prazo exclusivo de validade. Um histórico desatualizado permanece disponível como dado em cache em modo degradado.",
+          "Name": "Válido até",
+          "Type": 2
+        },
+        {
+          "Description": "Períodos concluídos ordenados do mais antigo ao mais recente.",
+          "Name": "Períodos do histórico",
+          "Type": 3
+        },
+        {
+          "Description": "Temperatura, umidade, precipitação, evapotranspiração de referência e vento de um período concluído.",
+          "Name": "Período do histórico",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherHistoryV2"
+    },
+    {
+      "Description": "Transporta um intervalo ordenado e atômico de alterações meteorológicas. Um cliente aplica o relatório somente quando seu cursor armazenado é igual a `from_cursor` e, em seguida, armazena `through_cursor`. Um relatório vazio é o resultado de uma recuperação que alcançou o estado atual; a sinalização periódica de atividade sem alterações usa PeerAlive.",
+      "DisplayName": "Relatório meteorológico incremental do aspersor",
+      "List": [
+        {
+          "Description": "Transporta um intervalo ordenado e atômico de alterações meteorológicas. Um cliente aplica o relatório somente quando seu cursor armazenado é igual a `from_cursor` e, em seguida, armazena `through_cursor`. Um relatório vazio é o resultado de uma recuperação que alcançou o estado atual; a sinalização periódica de atividade sem alterações usa PeerAlive.",
+          "Name": "Relatório meteorológico incremental do aspersor",
+          "Type": 0
+        },
+        {
+          "Description": "O cursor inferior exclusivo deste relatório e o cursor exato que um cliente já deve ter antes de aplicá-lo.",
+          "Name": "Cursor inicial",
+          "Type": 1
+        },
+        {
+          "Description": "O cursor superior inclusivo alcançado após a aplicação de todas as alterações deste relatório. Ele deve manter o mesmo registro de data e hora da época que `from_cursor`. Uma redefinição do cursor do servidor nunca é transportada como um relatório incremental; ela exige uma redefinição completa.",
+          "Name": "Cursor final",
+          "Type": 2
+        },
+        {
+          "Description": "Alterações ordenadas a serem aplicadas atomicamente. Cada item avança a sequência em exatamente uma unidade; uma lista vazia indica uma recuperação já atualizada e não avança o cursor nem serve como sinal periódico de atividade.",
+          "Name": "Alterações meteorológicas",
+          "Type": 3
+        },
+        {
+          "Description": "Uma mutação atômica de estado na ordem do cursor.",
+          "Name": "Alteração meteorológica",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWeatherIncrementalReportV1"
+    },
+    {
+      "Description": "Records for one endpoint share a transaction and scan prefix.",
+      "DisplayName": "Saved weather keys",
+      "List": [
+        {
+          "Description": "Records for one endpoint share a transaction and scan prefix.",
+          "Name": "Saved weather keys",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Weather belonging to one service endpoint",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherKey"
+    },
+    {
+      "Description": "Armazena a localização do Libertas Hub usada para obter os dados meteorológicos de um local de irrigação. Ela é armazenada em cache independentemente dos dados do provedor para que o agente meteorológico possa continuar atualizando-os durante uma indisponibilidade temporária do Hub.",
+      "DisplayName": "Localização meteorológica do sistema de irrigação",
+      "List": [
+        {
+          "Description": "Armazena a localização do Libertas Hub usada para obter os dados meteorológicos de um local de irrigação. Ela é armazenada em cache independentemente dos dados do provedor para que o agente meteorológico possa continuar atualizando-os durante uma indisponibilidade temporária do Hub.",
+          "Name": "Localização meteorológica do sistema de irrigação",
+          "Type": 0
+        },
+        {
+          "Description": "Longitude WGS84 em graus decimais. Localizações a oeste de Greenwich usam valores negativos.",
+          "Name": "Longitude",
+          "Type": 1
+        },
+        {
+          "Description": "Latitude WGS84 em graus decimais.",
+          "Name": "Latitude",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherLocationV1"
+    },
+    {
+      "Description": "Define o conjunto completo de valores que o agente meteorológico do sistema de irrigação pode gravar no banco de dados Libertas. Os metadados históricos, as condições atuais, a previsão e a localização são registros únicos independentes. Cada período histórico concluído é um registro indexado cuja chave é o carimbo de data/hora de início. Os cursores de assinatura e os diários de reprodução estão intencionalmente ausentes: redefini-los não deve apagar esses registros.",
+      "DisplayName": "Dados persistentes meteorológicos do sistema de irrigação",
+      "List": [
+        {
+          "Description": "Define o conjunto completo de valores que o agente meteorológico do sistema de irrigação pode gravar no banco de dados Libertas. Os metadados históricos, as condições atuais, a previsão e a localização são registros únicos independentes. Cada período histórico concluído é um registro indexado cuja chave é o carimbo de data/hora de início. Os cursores de assinatura e os diários de reprodução estão intencionalmente ausentes: redefini-los não deve apagar esses registros.",
+          "Name": "Dados persistentes meteorológicos do sistema de irrigação",
+          "Type": 0
+        },
+        {
+          "Description": "Armazena a última localização válida informada pelo Libertas Hub. O valor em cache permite que as atualizações do provedor continuem enquanto o Hub estiver temporariamente indisponível.",
+          "Name": "Localização do local de irrigação",
+          "Type": 1
+        },
+        {
+          "Description": "As coordenadas WGS84 usadas nas solicitações ao provedor.",
+          "Name": "Localização",
+          "Type": 2
+        },
+        {
+          "Description": "Armazena os dados de atualização do histórico indexado reconstruído dinamicamente.",
+          "Name": "Metadados históricos",
+          "Type": 3
+        },
+        {
+          "Description": "Carimbos de data/hora de recuperação e atualização do conjunto indexado aceito.",
+          "Name": "Metadados históricos",
+          "Type": 4
+        },
+        {
+          "Description": "Armazena um período meteorológico completo e concluído nos dados indexados. Ele ocupa a posição na união do período V1 removido; o nome do recurso de histórico V2 mantém separados esses registros indexados incompatíveis.",
+          "Name": "Período histórico V2",
+          "Type": 5
+        },
+        {
+          "Description": "Temperatura, umidade, precipitação, evapotranspiração de referência, vento e rajadas.",
+          "Name": "Período histórico",
+          "Type": 6
+        },
+        {
+          "Description": "Armazena a última seção de condições atuais recuperada e validada com êxito. Uma falha na atualização deixa inalterado o registro existente no banco de dados.",
+          "Name": "Condições atuais",
+          "Type": 7
+        },
+        {
+          "Description": "Dados de entrada imediatos de chuva, congelamento, umidade, vento e balanço hídrico, incluindo seus carimbos de data/hora de recuperação e atualização.",
+          "Name": "Condições atuais",
+          "Type": 8
+        },
+        {
+          "Description": "Armazena a última seção de previsão recuperada e validada com êxito. Uma falha na atualização deixa inalterado o registro existente no banco de dados.",
+          "Name": "Previsão",
+          "Type": 9
+        },
+        {
+          "Description": "Dados de entrada futuros de precipitação, evapotranspiração de referência, temperatura, umidade e vento, incluindo seus carimbos de data/hora de recuperação e atualização.",
+          "Name": "Previsão",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherPersistentData"
+    },
+    {
+      "Description": "Define a transação tipada do endpoint Libertas para solicitar ou assinar dados meteorológicos do sistema de irrigação. As respostas expõem seções de histórico, condições atuais e previsão disponíveis independentemente, para que uma indisponibilidade não oculte dados utilizáveis armazenados em cache. O contrato de status do endpoint Libertas rejeita Avro malformado e valores usados na função de mensagem incorreta; esses erros de transporte não são variantes de recuperação.",
+      "DisplayName": "Protocolo meteorológico do sistema de irrigação",
+      "List": [
+        {
+          "Description": "Define a transação tipada do endpoint Libertas para solicitar ou assinar dados meteorológicos do sistema de irrigação. As respostas expõem seções de histórico, condições atuais e previsão disponíveis independentemente, para que uma indisponibilidade não oculte dados utilizáveis armazenados em cache. O contrato de status do endpoint Libertas rejeita Avro malformado e valores usados na função de mensagem incorreta; esses erros de transporte não são variantes de recuperação.",
+          "Name": "Protocolo meteorológico do sistema de irrigação",
+          "Type": 0
+        },
+        {
+          "Description": "Executa uma leitura incremental única ou inicia ou retoma uma assinatura incremental. A operação do endpoint Libertas seleciona o comportamento; ele não é codificado nesta mensagem. Quando possível, o servidor reproduz as alterações retidas após `after_cursor` ou retorna um instantâneo em cache limitado por intervalo.",
+          "Name": "Obter dados meteorológicos do sistema de irrigação",
+          "Type": 1
+        },
+        {
+          "Description": "O último cursor aplicado completa e atomicamente pelo cliente. `None` solicita um instantâneo inicial limitado por intervalo. O servidor compara ambos os campos; uma sequência menor indica uma redefinição somente quando o cursor da resposta também tem um carimbo de data/hora de época mais recente.",
+          "Name": "Cursor de retomada",
+          "NullText": "Start from a fresh snapshot",
+          "SetText": "Resume after",
+          "Type": 2
+        },
+        {
+          "Description": "O intervalo semiaberto dos horários de início dos períodos históricos a serem incluídos quando a reprodução for impossível. `None` exclui o histórico do instantâneo de redefinição.",
+          "Name": "Intervalo de recuperação histórica",
+          "NullText": "No history",
+          "SetText": "Include history for",
+          "Type": 3
+        },
+        {
+          "Description": "Indica se um instantâneo de redefinição deve incluir as condições atuais armazenadas em cache.",
+          "Name": "Incluir condições atuais",
+          "Type": 4
+        },
+        {
+          "Description": "O intervalo semiaberto dos horários de início dos períodos de previsão a serem incluídos quando a reprodução for impossível. `None` exclui os dados de previsão do instantâneo de redefinição.",
+          "Name": "Intervalo de recuperação da previsão",
+          "NullText": "No forecast",
+          "SetText": "Include forecast for",
+          "Type": 5
+        },
+        {
+          "Description": "Responde a uma solicitação meteorológica com alterações reproduzidas, um instantâneo de redefinição ou um erro recuperável. Cada resposta fornece um intervalo máximo de espera. Um cliente de assinatura o utiliza após uma reprodução ou redefinição bem-sucedida; um cliente de solicitação única o ignora. Após um erro, o erro de recuperação e o atraso para nova tentativa têm precedência.",
+          "Name": "Recuperação meteorológica do sistema de irrigação",
+          "Type": 6
+        },
+        {
+          "Description": "O número máximo de segundos que um cliente de assinatura espera após uma recuperação bem-sucedida, um relatório incremental ou um PeerAlive. O servidor envia primeiro os dados alterados ou o PeerAlive. Clientes de solicitação única ignoram esse valor obrigatório e diferente de zero.",
+          "Name": "Intervalo máximo de espera",
+          "Type": 7
+        },
+        {
+          "Description": "O resultado de reprodução, redefinição ou erro da solicitação de retomada.",
+          "Name": "Recuperação",
+          "Type": 8
+        },
+        {
+          "Description": "Informa somente as alterações de estado após uma solicitação meteorológica bem-sucedida. Uma incompatibilidade de cursor ou um intervalo não contíguo exige outra solicitação de assinatura; o cliente não deve aplicar o relatório parcialmente. Um relatório válido ou PeerAlive reinicia o temporizador de espera da resposta de recuperação; PeerAlive nunca entra neste esquema de dados nem altera o cursor.",
+          "Name": "Incremento meteorológico do sistema de irrigação",
+          "Type": 9
+        },
+        {
+          "Description": "O intervalo atômico e ordenado de cursores e suas alterações meteorológicas.",
+          "Name": "Relatório incremental",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherProtocol"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved weather record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved weather record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "HistoryMetadata",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "HistoryPeriod",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "starts_at",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "Current",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Forecast",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWeatherRecordKey"
+    },
+    {
+      "Description": "Identifica uma solicitação de recuperação que não pode ser atendida nem com alterações reproduzidas nem com um instantâneo em cache limitado por intervalo.",
+      "DisplayName": "Erro de recuperação meteorológica do sistema de irrigação",
+      "List": [
+        {
+          "Description": "Identifica uma solicitação de recuperação que não pode ser atendida nem com alterações reproduzidas nem com um instantâneo em cache limitado por intervalo.",
+          "Enum": [
+            {
+              "Description": "Pelo menos um dos intervalos de tempo semiabertos solicitados está vazio ou invertido.",
+              "Name": "Intervalo de tempo inválido",
+              "Type": 1
+            },
+            {
+              "Description": "O cursor de época, carimbo de data/hora e sequência fornecido não pode ser conciliado com o cursor atual do servidor nem com o diário de reprodução retido.",
+              "Name": "Cursor adiantado",
+              "Type": 2
+            },
+            {
+              "Description": "Os intervalos de recuperação solicitados excedem a capacidade limitada de resposta do servidor.",
+              "Name": "Solicitação muito grande",
+              "Type": 3
+            },
+            {
+              "Description": "Os dados em cache ou outro recurso de recuperação necessário estão temporariamente indisponíveis; o cliente pode tentar novamente após o atraso fornecido.",
+              "Name": "Temporariamente indisponível",
+              "Type": 4
+            }
+          ],
+          "Name": "Erro de recuperação meteorológica do sistema de irrigação",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryErrorV1"
+    },
+    {
+      "Description": "Retorna alterações reproduzidas, estabelece um novo cursor com um instantâneo limitado por intervalo ou informa um erro de solicitação recuperável.",
+      "DisplayName": "Recuperação de dados meteorológicos do aspersor",
+      "List": [
+        {
+          "Description": "Retorna alterações reproduzidas, estabelece um novo cursor com um instantâneo limitado por intervalo ou informa um erro de solicitação recuperável.",
+          "Name": "Recuperação de dados meteorológicos do aspersor",
+          "Type": 0
+        },
+        {
+          "Description": "Continua o fluxo solicitado reproduzindo todas as alterações retidas após o cursor fornecido. Um relatório vazio significa que o cliente já está atualizado.",
+          "Name": "Alterações reproduzidas",
+          "Type": 1
+        },
+        {
+          "Description": "O intervalo contíguo de alterações que começa no cursor solicitado.",
+          "Name": "Relatório incremental",
+          "Type": 2
+        },
+        {
+          "Description": "Rejeita a solicitação sem alterar o cursor do cliente nem o estado local dos dados meteorológicos.",
+          "Name": "Erro de recuperação",
+          "Type": 3
+        },
+        {
+          "Description": "O motivo pelo qual não foi possível concluir a recuperação.",
+          "Name": "Erro",
+          "Type": 4
+        },
+        {
+          "Description": "O atraso sugerido, em segundos, antes de tentar novamente. `None` significa que os parâmetros da solicitação precisam ser alterados para que uma nova tentativa possa ser bem-sucedida.",
+          "Name": "Atraso para nova tentativa",
+          "Type": 5
+        },
+        {
+          "Description": "Estabelece um novo cursor e vincula ao local do provedor um instantâneo do histórico completo de observações.",
+          "Name": "Redefinição com instantâneo do local V2",
+          "Type": 6
+        },
+        {
+          "Description": "O motivo pelo qual um instantâneo substituiu a reprodução incremental.",
+          "Name": "Motivo da redefinição",
+          "Type": 7
+        },
+        {
+          "Description": "O cursor que representa o instantâneo retornado.",
+          "Name": "Cursor atual",
+          "Type": 8
+        },
+        {
+          "Description": "Localização WGS84 usada para obter as seções meteorológicas retornadas.",
+          "Name": "Localização do local",
+          "Type": 9
+        },
+        {
+          "Description": "Seções V2 disponíveis em cache, limitadas pelos intervalos solicitados.",
+          "Name": "Instantâneo meteorológico",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWeatherRecoveryV1"
+    },
+    {
+      "Description": "Explica por que a recuperação retornou um instantâneo limitado por intervalo em vez de reproduzir alterações incrementais após o cursor solicitado.",
+      "DisplayName": "Motivo da redefinição dos dados meteorológicos do aspersor",
+      "List": [
+        {
+          "Description": "Explica por que a recuperação retornou um instantâneo limitado por intervalo em vez de reproduzir alterações incrementais após o cursor solicitado.",
+          "Enum": [
+            {
+              "Description": "Nenhum cursor anterior foi fornecido, portanto o instantâneo estabelece o estado inicial.",
+              "Name": "Assinatura inicial",
+              "Type": 1
+            },
+            {
+              "Description": "A sequência solicitada é mais antiga que o diário de reprodução retido.",
+              "Name": "Cursor expirado",
+              "Type": 2
+            },
+            {
+              "Description": "O servidor perdeu ou descartou deliberadamente apenas seu cursor transitório e diário de reprodução. As seções meteorológicas persistidas continuam utilizáveis, e os dados históricos ausentes podem ser obtidos novamente do Open-Meteo.",
+              "Name": "Redefinição do cursor do servidor",
+              "Type": 3
+            }
+          ],
+          "Name": "Motivo da redefinição dos dados meteorológicos do aspersor",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherResetReasonV1"
+    },
+    {
+      "Description": "Identifica uma seção meteorológica do aspersor armazenada em cache de forma independente.",
+      "DisplayName": "Seção meteorológica do aspersor",
+      "List": [
+        {
+          "Description": "Identifica uma seção meteorológica do aspersor armazenada em cache de forma independente.",
+          "Enum": [
+            {
+              "Description": "Seleciona a seção histórica do balanço hídrico.",
+              "Name": "Histórico recente",
+              "Type": 1
+            },
+            {
+              "Description": "Seleciona a seção imediata de segurança da irrigação.",
+              "Name": "Condições atuais",
+              "Type": 2
+            },
+            {
+              "Description": "Seleciona a seção de planejamento de irrigação futura.",
+              "Name": "Previsão",
+              "Type": 3
+            }
+          ],
+          "Name": "Seção meteorológica do aspersor",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherSectionV1"
+    },
+    {
+      "Description": "Contém seções de histórico completo de observações, condições atuais e previsão disponíveis de forma independente. As seções ausentes não têm nenhum valor utilizável em cache; as seções desatualizadas mantêm seus carimbos de data/hora de validade originais.",
+      "DisplayName": "Instantâneo meteorológico do aspersor V2",
+      "List": [
+        {
+          "Description": "Contém seções de histórico completo de observações, condições atuais e previsão disponíveis de forma independente. As seções ausentes não têm nenhum valor utilizável em cache; as seções desatualizadas mantêm seus carimbos de data/hora de validade originais.",
+          "Name": "Instantâneo meteorológico do aspersor V2",
+          "Type": 0
+        },
+        {
+          "Description": "Os períodos históricos V2 solicitados, quando houver um histórico utilizável em cache.",
+          "Name": "Histórico recente",
+          "Type": 1
+        },
+        {
+          "Description": "As últimas condições atuais aceitas, quando solicitadas e disponíveis.",
+          "Name": "Condições atuais",
+          "Type": 2
+        },
+        {
+          "Description": "Os períodos de previsão solicitados, quando houver dados utilizáveis em cache.",
+          "Name": "Previsão",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherSnapshotV2"
+    },
+    {
+      "Description": "Seleciona um intervalo semiaberto de períodos históricos ou de previsão para recuperação. Um período é selecionado quando seu horário de início é igual ou posterior a `starts_at` e anterior a `ends_before`.",
+      "DisplayName": "Intervalo de tempo dos dados meteorológicos do aspersor",
+      "List": [
+        {
+          "Description": "Seleciona um intervalo semiaberto de períodos históricos ou de previsão para recuperação. Um período é selecionado quando seu horário de início é igual ou posterior a `starts_at` e anterior a `ends_before`.",
+          "Name": "Intervalo de tempo meteorológico do aspersor",
+          "Type": 0
+        },
+        {
+          "Description": "O limite inferior inclusivo para os horários de início dos períodos selecionados.",
+          "Name": "Horário de início",
+          "Type": 1
+        },
+        {
+          "Description": "O limite superior exclusivo para os horários de início dos períodos selecionados. Esse valor deve ser posterior a `starts_at`.",
+          "Name": "Horário de término",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWeatherTimeRangeV1"
+    }
+  ]
+}

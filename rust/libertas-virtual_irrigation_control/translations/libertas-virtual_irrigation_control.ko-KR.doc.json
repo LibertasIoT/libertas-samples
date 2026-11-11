@@ -1,0 +1,75 @@
+{
+  "Description": "실제 관개 장비를 설치하지 않고도 스프링클러 앱을 사용해 볼 수 있습니다.",
+  "DisplayName": "스프링클러 제어 에뮬레이터",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Virtual sprinkler valves",
+      "Description": "실제 관개 장비를 설치하지 않고도 스프링클러 애플리케이션을 사용해 볼 수 있습니다. 사용자는 하나 이상의 가상 밸브를 선택하고 각 밸브의 기본 물주기 시간을 설정할 수 있습니다. 사용자나 스프링클러 애플리케이션은 밸브를 무기한 열거나, 선택한 시간 동안 열거나, 닫을 수 있습니다. 밸브 제어기는 설정된 물주기 시간이 끝나면 밸브를 자동으로 닫고, 새 밸브를 열기 전에 열려 있는 다른 밸브를 닫으므로 한 번에 하나의 밸브에서만 물이 나옵니다. 밸브 제어기는 각 밸브의 열림 또는 닫힘 상태, 선택한 시간, 기본 시간 및 남은 시간을 표시하며, 다시 시작한 후에도 기본 시간을 기억합니다.",
+      "DisplayName": "스프링클러 제어 에뮬레이터",
+      "List": [
+        {
+          "Description": "시험하려는 각 구역마다 가상 밸브 하나를 추가하세요.",
+          "Name": "스프링클러 밸브",
+          "Type": 0
+        },
+        {
+          "Description": "가상 급수 밸브 하나입니다.",
+          "Name": "스프링클러 밸브",
+          "Type": 1
+        }
+      ],
+      "Name": "virtual_irrigation_controller"
+    }
+  ],
+  "Locale": "ko-KR",
+  "StringResources": {
+    "DEFAULT_OPEN_DURATION": "{0}의 물주기 시간이 저장되었습니다."
+  },
+  "Types": [
+    {
+      "Description": "Libertas 데이터베이스에 기록되는 모든 데이터 구조는 이 유니언 안에 인라인으로 정의됩니다.",
+      "DisplayName": "영구 저장되는 밸브 데이터.",
+      "List": [
+        {
+          "Description": "Libertas 데이터베이스에 기록되는 모든 데이터 구조는 이 유니언 안에 인라인으로 정의됩니다.",
+          "Name": "영구 저장되는 밸브 데이터.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Matter DefaultOpenDuration 속성.",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "초 단위 DefaultOpenDuration.",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved valve settings",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved valve settings",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Default watering duration for one valve",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveKey"
+    }
+  ]
+}

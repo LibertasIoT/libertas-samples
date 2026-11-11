@@ -1,0 +1,3116 @@
+{
+  "Description": "探索 22 个使用模拟样本的交互式示例，涵盖商业、能源、温度和统计图表。此图表库在 Libertas Hub 上运行，并为支持 Libertas 图表的查看器提供示例。",
+  "DisplayName": "Libertas 图表库",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "Description": "图表库可帮助用户探索 22 个交互式示例，对商业、能源、温度和统计数据进行比较。用户在设置期间为图表库命名，之后可以从中打开各个示例或仪表板。图表库通过气泡图比较产品覆盖范围和增长情况，通过分组条形图比较季度销售额，通过折线图比较能源需求，通过堆叠条形图和面积图比较各类能源的贡献，并通过热力图比较工作日活动。图表库还展示能力雷达图、流量占比圆环图和饼图、径向绩效条形图、虚构地区地图、网络关系、桑基流图中的访客旅程，以及用于说明图表的注释。用户可以探索预测区间和中心估计值、测量误差线、响应时间直方图和箱线图、市场蜡烛图，以及结合观测值、趋势和目标的绩效图表。图表库提供销售与流量对比，以及一个整合能源历史数据、预测区间和活动情况的运营仪表板。每个示例均包含与其比较内容相关的标签、单位、图例和样本详情。所有示例均使用生成的演示数据。用户打开温度示例时，图表库会以五分钟为一个时段，生成截至最近一个已结束时段的 72 小时模拟最低、最高和最终温度。当 Hub 的时钟不可用时，图表库会使用固定的示例日期。图表库在 Libertas Hub 上运行，并且需要支持 Libertas 图表的查看器。由 Smartonlabs Inc. (libertas) 开发。",
+      "DisplayName": "图表库",
+      "List": [
+        {
+          "DefaultText": "图表库",
+          "Description": "用户为此任务创建的图表库命名。用户可以打开此图表库，通过模拟示例探索各个图表和仪表板。",
+          "Name": "图表库服务",
+          "Type": 0
+        }
+      ],
+      "Name": "chart_demo"
+    }
+  ],
+  "Locale": "zh-Hans",
+  "StringResources": {
+    "DIRECT_LABEL_ACT_NOW": "立即行动",
+    "DIRECT_LABEL_CLEAR": "清除",
+    "DIRECT_LABEL_FAST": "快速",
+    "TRAFFIC_SOURCE_LABEL": "{0,LibertasEnum,TrafficSourceV1}\n{1,number,integer}"
+  },
+  "Types": [
+    {
+      "Description": "一个示例工作日时段及其活动水平。",
+      "DisplayName": "活动时段",
+      "List": [
+        {
+          "Description": "一个示例工作日时段及其活动水平。",
+          "Name": "活动时段",
+          "Type": 0
+        },
+        {
+          "Description": "工作日内此活动时段的开始时间。",
+          "Name": "开始时间",
+          "Type": 1
+        },
+        {
+          "Description": "工作日内此活动时段的结束时间。",
+          "Name": "结束时间",
+          "Type": 2
+        },
+        {
+          "Description": "此活动时段所表示的工作日时间段。",
+          "Name": "时间段",
+          "Type": 3
+        },
+        {
+          "Description": "在活动比较中为该工作日分配的区域的起始位置。",
+          "Name": "当天起始位置",
+          "Type": 4
+        },
+        {
+          "Description": "在活动比较中为该工作日分配的区域的结束位置。",
+          "Name": "当天结束位置",
+          "Type": 5
+        },
+        {
+          "Description": "此活动时段所表示的星期几。",
+          "Name": "星期",
+          "Type": 6
+        },
+        {
+          "Description": "示例在这个工作日和时间段内的活动水平。",
+          "Name": "活动水平",
+          "Type": 7
+        },
+        {
+          "Description": "用于将这个工作日和时间段与其他活动时段区分开来。",
+          "Name": "活动标识",
+          "Type": 8
+        }
+      ],
+      "Name": "ActivityHeatmapCellV1"
+    },
+    {
+      "Description": "通过热力图比较一周各工作日和工作日内各时段的活动水平。",
+      "DisplayName": "活动时段",
+      "List": [
+        {
+          "Description": "通过热力图比较一周各工作日和工作日内各时段的活动水平。",
+          "Name": "活动时段",
+          "Type": 0
+        },
+        {
+          "Description": "一个示例工作日时段及其活动水平。",
+          "Name": "活动时段",
+          "Type": 1
+        }
+      ],
+      "Name": "ActivityHeatmapChartV1"
+    },
+    {
+      "Description": "指明示例消息表示积极结果、信息性结果，还是需要关注的结果。",
+      "DisplayName": "消息含义",
+      "List": [
+        {
+          "Description": "指明示例消息表示积极结果、信息性结果，还是需要关注的结果。",
+          "Enum": [
+            {
+              "Description": "积极的结果。",
+              "Name": "积极",
+              "Type": 1
+            },
+            {
+              "Description": "信息性结果。",
+              "Name": "中性",
+              "Type": 2
+            },
+            {
+              "Description": "需要关注的结果。",
+              "Name": "需要关注",
+              "Type": 3
+            }
+          ],
+          "Name": "消息含义",
+          "Type": 0
+        }
+      ],
+      "Name": "AnnotationMoodV1"
+    },
+    {
+      "Description": "通过饼图展示各流量来源的占比，并通过径向条形图展示各产品系列的得分。",
+      "DisplayName": "环形图表比较",
+      "List": [
+        {
+          "Description": "通过饼图展示各流量来源的占比，并通过径向条形图展示各产品系列的得分。",
+          "Name": "环形图表比较",
+          "Type": 0
+        },
+        {
+          "Description": "通过各引荐来源到访的访客占比。",
+          "Name": "流量饼图扇区",
+          "Type": 1
+        },
+        {
+          "Description": "各产品系列的示例绩效得分。",
+          "Name": "径向绩效结果",
+          "Type": 2
+        }
+      ],
+      "Name": "ArcFamilyChartV1"
+    },
+    {
+      "Description": "比较各示例样本组中居于中间一半的响应时间。",
+      "DisplayName": "响应时间中间区间",
+      "List": [
+        {
+          "Description": "比较各示例样本组中居于中间一半的响应时间。",
+          "Name": "响应时间中间区间",
+          "Type": 0
+        },
+        {
+          "Description": "一个样本组中示例响应时间居于中间一半的区间。",
+          "Name": "响应时间中间区间",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotBodiesV1"
+    },
+    {
+      "Description": "一个样本组中示例响应时间居于中间一半的区间。",
+      "DisplayName": "响应时间中间区间",
+      "List": [
+        {
+          "Description": "一个示例样本组中位于中间一半的响应时间。",
+          "Name": "响应时间的中间范围",
+          "Type": 0
+        },
+        {
+          "Description": "汇总其响应时间的示例组。",
+          "Name": "样本组",
+          "Type": 1
+        },
+        {
+          "Description": "该组四分之一的观测值小于或等于此响应时间。",
+          "Name": "第一四分位数",
+          "Type": 2
+        },
+        {
+          "Description": "该组四分之三的观测值小于或等于此响应时间。",
+          "Name": "第三四分位数",
+          "Type": 3
+        },
+        {
+          "Description": "此样本组所代表的示例产品系列。",
+          "Name": "产品系列",
+          "Type": 4
+        },
+        {
+          "Description": "用于将此样本组的中间范围与其他组区分开来。",
+          "Name": "组引用",
+          "Type": 5
+        }
+      ],
+      "Name": "BoxPlotBodyV1"
+    },
+    {
+      "Description": "比较各示例组响应时间的中间一半、中位数、常规范围和离群值。",
+      "DisplayName": "响应时间分布",
+      "List": [
+        {
+          "Description": "比较各示例组响应时间的中间一半、中位数、常规范围和离群值。",
+          "Name": "响应时间分布",
+          "Type": 0
+        },
+        {
+          "Description": "排除离群值后，各示例组的最低和最高响应时间。",
+          "Name": "常规范围",
+          "Type": 1
+        },
+        {
+          "Description": "各示例组中位于中间一半的响应时间。",
+          "Name": "中间范围",
+          "Type": 2
+        },
+        {
+          "Description": "各示例组中处于中间位置的响应时间。",
+          "Name": "响应时间中位数",
+          "Type": 3
+        },
+        {
+          "Description": "超出各自组常规范围的单个响应时间。",
+          "Name": "响应时间离群值",
+          "Type": 4
+        }
+      ],
+      "Name": "BoxPlotChartV1"
+    },
+    {
+      "Description": "比较各示例样本组中处于中间位置的响应时间。",
+      "DisplayName": "响应时间中位数",
+      "List": [
+        {
+          "Description": "比较各示例样本组中处于中间位置的响应时间。",
+          "Name": "响应时间中位数",
+          "Type": 0
+        },
+        {
+          "Description": "一个示例组中处于中间位置的响应时间：该组一半的观测值小于或等于此值。",
+          "Name": "响应时间中位数",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotMediansV1"
+    },
+    {
+      "Description": "一个示例组中处于中间位置的响应时间：该组一半的观测值小于或等于此值。",
+      "DisplayName": "响应时间中位数",
+      "List": [
+        {
+          "Description": "一个示例组中处于中间位置的响应时间：该组一半的观测值小于或等于此值。",
+          "Name": "响应时间中位数",
+          "Type": 0
+        },
+        {
+          "Description": "显示其中位响应时间的示例组。",
+          "Name": "样本组",
+          "Type": 1
+        },
+        {
+          "Description": "此示例样本组中处于中间位置的响应时间。",
+          "Name": "响应时间中位数",
+          "Type": 2
+        },
+        {
+          "Description": "与中位响应时间取相同的值，使中位数标记保持为单一数值。",
+          "Name": "相同的中位数",
+          "Type": 3
+        },
+        {
+          "Description": "用于突出显示响应时间中位数的颜色。",
+          "Name": "中位数区分色",
+          "Type": 4
+        },
+        {
+          "Description": "将此中位数与同一样本组的其他统计数据关联起来。",
+          "Name": "组引用",
+          "Type": 5
+        }
+      ],
+      "Name": "BoxPlotMedianV1"
+    },
+    {
+      "Description": "显示超出各自示例组常规范围的单个响应时间。",
+      "DisplayName": "响应时间离群值",
+      "List": [
+        {
+          "Description": "显示超出各自示例组常规范围的单个响应时间。",
+          "Name": "响应时间离群值",
+          "Type": 0
+        },
+        {
+          "Description": "一个超出其样本组常规范围的模拟响应时间。",
+          "Name": "响应时间离群值",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotOutliersV1"
+    },
+    {
+      "Description": "一个超出其样本组常规范围的模拟响应时间。",
+      "DisplayName": "响应时间离群值",
+      "List": [
+        {
+          "Description": "一个超出其样本组常规范围的模拟响应时间。",
+          "Name": "响应时间离群值",
+          "Type": 0
+        },
+        {
+          "Description": "此异常响应时间所属的示例组。",
+          "Name": "样本组",
+          "Type": 1
+        },
+        {
+          "Description": "超出该组常规范围的模拟响应时间。",
+          "Name": "响应时间",
+          "Type": 2
+        },
+        {
+          "Description": "用于突出显示此响应时间离群值的相对点大小。",
+          "Name": "离群值强调程度",
+          "Type": 3
+        },
+        {
+          "Description": "用于将此响应时间离群值与其他离群值区分开来。",
+          "Name": "离群值引用",
+          "Type": 4
+        }
+      ],
+      "Name": "BoxPlotOutlierV1"
+    },
+    {
+      "Description": "比较排除离群值后各示例组的最低和最高响应时间。",
+      "DisplayName": "响应时间常规范围",
+      "List": [
+        {
+          "Description": "比较各示例组排除异常值后的最低和最高响应时间。",
+          "Name": "典型响应时间范围",
+          "Type": 0
+        },
+        {
+          "Description": "示例组排除异常值后的最低和最高响应时间。",
+          "Name": "典型响应时间范围",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotWhiskersV1"
+    },
+    {
+      "Description": "示例组排除异常值后的最低和最高响应时间。",
+      "DisplayName": "典型响应时间范围",
+      "List": [
+        {
+          "Description": "示例组排除异常值后的最低和最高响应时间。",
+          "Name": "典型响应时间范围",
+          "Type": 0
+        },
+        {
+          "Description": "汇总其响应时间的示例组。",
+          "Name": "样本组",
+          "Type": 1
+        },
+        {
+          "Description": "排除异常值后的最低值。",
+          "Name": "下须",
+          "Type": 2
+        },
+        {
+          "Description": "排除异常值后的最高值。",
+          "Name": "上须",
+          "Type": 3
+        },
+        {
+          "Description": "用于区分典型响应时间范围的颜色。",
+          "Name": "范围区分标识",
+          "Type": 4
+        },
+        {
+          "Description": "将此典型范围与同一样本组的其他统计数据关联起来。",
+          "Name": "组引用",
+          "Type": 5
+        }
+      ],
+      "Name": "BoxPlotWhiskerV1"
+    },
+    {
+      "Description": "一个示例产品的客户覆盖范围、增长率、年度数据量、置信度和市场分类信息。",
+      "DisplayName": "产品组合中的产品",
+      "List": [
+        {
+          "Description": "一个示例产品的客户覆盖范围、增长率、年度数据量、置信度和市场分类信息。",
+          "Name": "产品组合中的产品",
+          "Type": 0
+        },
+        {
+          "Description": "要比较结果的示例产品。",
+          "Name": "产品",
+          "Type": 1
+        },
+        {
+          "Description": "使用该示例产品的客户数量。",
+          "Name": "活跃客户",
+          "Type": 2
+        },
+        {
+          "Description": "示例产品的年度增长率；负百分比表示下降。",
+          "Name": "年度增长率",
+          "Type": 3
+        },
+        {
+          "Description": "示例产品的年度数据量，数据量越大，气泡越大。",
+          "Name": "年度数据量",
+          "Type": 4
+        },
+        {
+          "Description": "此示例所代表的产品类型。",
+          "Name": "产品系列",
+          "Type": 5
+        },
+        {
+          "Description": "向该示例产品的客户提供的服务等级。",
+          "Name": "客户服务等级",
+          "Type": 6
+        },
+        {
+          "Description": "以视觉效果突出此产品的置信度；不透明度越高，表示置信度越高。",
+          "Name": "置信度强调效果",
+          "Type": 7
+        },
+        {
+          "Description": "此示例对该产品结果的置信度百分比。",
+          "Name": "置信度",
+          "Type": 8
+        },
+        {
+          "Description": "用于将此产品与同一市场中的其他产品进行比较的地理市场。",
+          "Name": "市场",
+          "Type": 9
+        },
+        {
+          "Description": "产品的成熟程度，用于分别比较成熟产品和新兴产品。",
+          "Name": "发布阶段",
+          "Type": 10
+        }
+      ],
+      "Name": "BubblePointV1"
+    },
+    {
+      "Description": "比较各示例产品的客户覆盖范围和增长率，并按市场和成熟程度分组，同时展示年度数据量和置信度。",
+      "DisplayName": "产品组合中的产品",
+      "List": [
+        {
+          "Description": "比较各示例产品的客户覆盖范围和增长率，并按市场和成熟程度分组，同时展示年度数据量和置信度。",
+          "Name": "产品组合中的产品",
+          "Type": 0
+        },
+        {
+          "Description": "一个示例产品的客户覆盖范围、增长率、年度数据量、置信度和市场分类信息。",
+          "Name": "产品组合中的产品",
+          "Type": 1
+        }
+      ],
+      "Name": "BubblePortfolioChartV1"
+    },
+    {
+      "Description": "指示示例的收盘价是等于或高于开盘价，还是低于开盘价。",
+      "DisplayName": "价格走势",
+      "List": [
+        {
+          "Description": "指示示例的收盘价是等于或高于开盘价，还是低于开盘价。",
+          "Enum": [
+            {
+              "Description": "收盘价等于或高于开盘价。",
+              "Name": "上涨或持平",
+              "Type": 1
+            },
+            {
+              "Description": "收盘价低于开盘价。",
+              "Name": "下跌",
+              "Type": 2
+            }
+          ],
+          "Name": "价格走势",
+          "Type": 0
+        }
+      ],
+      "Name": "CandleDirectionV1"
+    },
+    {
+      "Description": "比较各市场时段的模拟开盘价和收盘价。",
+      "DisplayName": "市场开盘价和收盘价",
+      "List": [
+        {
+          "Description": "比较各市场时段的模拟开盘价和收盘价。",
+          "Name": "市场开盘价和收盘价",
+          "Type": 0
+        },
+        {
+          "Description": "一个模拟市场时段的开盘价和收盘价，以及该时段的最低价、最高价和成交量。",
+          "Name": "开盘价和收盘价",
+          "Type": 1
+        }
+      ],
+      "Name": "CandlestickBodiesV1"
+    },
+    {
+      "Description": "一个模拟市场时段的开盘价和收盘价，以及该时段的最低价、最高价和成交量。",
+      "DisplayName": "开盘价和收盘价",
+      "List": [
+        {
+          "Description": "一个模拟市场周期的开盘价和收盘价，以及该周期的最低价、最高价和交易量。",
+          "Name": "开盘价和收盘价",
+          "Type": 0
+        },
+        {
+          "Description": "K线时间区间的开始时间。",
+          "Name": "区间开始时间",
+          "Type": 1
+        },
+        {
+          "Description": "K线时间区间的结束时间。",
+          "Name": "区间结束时间",
+          "Type": 2
+        },
+        {
+          "Description": "市场周期开始时的模拟价格。",
+          "Name": "开盘价",
+          "Type": 3
+        },
+        {
+          "Description": "市场周期结束时的模拟价格。",
+          "Name": "收盘价",
+          "Type": 4
+        },
+        {
+          "Description": "此市场周期中点的日期和时间。",
+          "Name": "周期中点",
+          "Type": 5
+        },
+        {
+          "Description": "区间内的最低值。",
+          "Name": "最低价",
+          "Type": 6
+        },
+        {
+          "Description": "区间内的最高值。",
+          "Name": "最高价",
+          "Type": 7
+        },
+        {
+          "Description": "区间内的交易量。",
+          "Name": "交易量",
+          "Type": 8
+        },
+        {
+          "Description": "区间内价格是上涨还是下跌。",
+          "Name": "涨跌方向",
+          "Type": 9
+        },
+        {
+          "Description": "用于区分价格上涨或不变与价格下跌的颜色。",
+          "Name": "价格涨跌标识",
+          "Type": 10
+        },
+        {
+          "Description": "将这些开盘价和收盘价与同一周期的价格区间关联起来。",
+          "Name": "市场周期引用",
+          "Type": 11
+        }
+      ],
+      "Name": "CandlestickBodyV1"
+    },
+    {
+      "Description": "比较每个市场周期的模拟开盘价、收盘价、最低价和最高价及其交易量。",
+      "DisplayName": "K线图",
+      "List": [
+        {
+          "Description": "比较每个市场周期的模拟开盘价、收盘价、最低价和最高价及其交易量。",
+          "Name": "K线图",
+          "Type": 0
+        },
+        {
+          "Description": "每个市场周期的模拟最低价和最高价。",
+          "Name": "价格区间",
+          "Type": 1
+        },
+        {
+          "Description": "每个市场周期开始和结束时的模拟价格。",
+          "Name": "开盘价和收盘价",
+          "Type": 2
+        }
+      ],
+      "Name": "CandlestickChartV1"
+    },
+    {
+      "Description": "显示每个市场周期的模拟最低价和最高价。",
+      "DisplayName": "市场价格区间",
+      "List": [
+        {
+          "Description": "显示每个市场周期的模拟最低价和最高价。",
+          "Name": "市场价格区间",
+          "Type": 0
+        },
+        {
+          "Description": "一个市场周期的模拟最低价、最高价、开盘价和收盘价，以及该周期的交易量。",
+          "Name": "市场价格区间",
+          "Type": 1
+        }
+      ],
+      "Name": "CandlestickWicksV1"
+    },
+    {
+      "Description": "一个市场周期的模拟最低价、最高价、开盘价和收盘价，以及该周期的交易量。",
+      "DisplayName": "市场价格区间",
+      "List": [
+        {
+          "Description": "一个市场周期的模拟最低价、最高价、开盘价和收盘价，以及该周期的交易量。",
+          "Name": "市场价格区间",
+          "Type": 0
+        },
+        {
+          "Description": "K线时间区间的中点。",
+          "Name": "区间中点",
+          "Type": 1
+        },
+        {
+          "Description": "区间内的最低值。",
+          "Name": "最低价",
+          "Type": 2
+        },
+        {
+          "Description": "区间内的最高值。",
+          "Name": "最高价",
+          "Type": 3
+        },
+        {
+          "Description": "区间内的开盘值。",
+          "Name": "开盘价",
+          "Type": 4
+        },
+        {
+          "Description": "区间内的收盘值。",
+          "Name": "收盘价",
+          "Type": 5
+        },
+        {
+          "Description": "区间内的交易量。",
+          "Name": "交易量",
+          "Type": 6
+        },
+        {
+          "Description": "区间内价格是上涨还是下跌。",
+          "Name": "涨跌方向",
+          "Type": 7
+        },
+        {
+          "Description": "用于区分示例价格区间涨跌方向的颜色。",
+          "Name": "区间涨跌标识",
+          "Type": 8
+        },
+        {
+          "Description": "将此价格区间与同一周期的开盘价和收盘价关联起来。",
+          "Name": "市场周期引用",
+          "Type": 9
+        }
+      ],
+      "Name": "CandlestickWickV1"
+    },
+    {
+      "Description": "从速度、可靠性、效率、易用性和覆盖范围等方面比较各产品系列。",
+      "DisplayName": "能力评分",
+      "List": [
+        {
+          "Description": "从速度、可靠性、效率、易用性和覆盖范围等方面比较各产品系列。",
+          "Name": "能力评分",
+          "Type": 0
+        },
+        {
+          "Description": "对比概况中某个示例产品系列在一项能力上的评分。",
+          "Name": "能力评分",
+          "Type": 1
+        }
+      ],
+      "Name": "CapabilityRadarChartV1"
+    },
+    {
+      "Description": "对比概况中某个示例产品系列在一项能力上的评分。",
+      "DisplayName": "能力评分",
+      "List": [
+        {
+          "Description": "对比概况中某个示例产品系列在一项能力上的评分。",
+          "Name": "能力评分",
+          "Type": 0
+        },
+        {
+          "Description": "此能力在概况图周围的指定位置。",
+          "Name": "能力角度",
+          "Type": 1
+        },
+        {
+          "Description": "此评分所代表的性能特征。",
+          "Name": "能力",
+          "Type": 2
+        },
+        {
+          "Description": "示例产品系列在此能力上的评分。",
+          "Name": "评分",
+          "Type": 3
+        },
+        {
+          "Description": "显示其能力评分的产品系列。",
+          "Name": "产品系列",
+          "Type": 4
+        },
+        {
+          "Description": "此对比概况图的轮廓所代表的产品系列。",
+          "Name": "概况图轮廓",
+          "Type": 5
+        },
+        {
+          "Description": "用于确保重叠的能力概况图仍易于区分的不透明度。",
+          "Name": "概况图阴影",
+          "Type": 6
+        },
+        {
+          "Description": "此能力在其产品系列概况图环形序列中的位置。",
+          "Name": "能力顺序",
+          "Type": 7
+        },
+        {
+          "Description": "用于将此产品系列和能力与其他评分区分开来。",
+          "Name": "评分标识",
+          "Type": 8
+        }
+      ],
+      "Name": "CapabilityRadarPointV1"
+    },
+    {
+      "Description": "标识用于比较产品系列的一项性能特征。",
+      "DisplayName": "能力",
+      "List": [
+        {
+          "Description": "标识用于比较产品系列的一项性能特征。",
+          "Enum": [
+            {
+              "Description": "响应速度和吞吐量。",
+              "Name": "速度",
+              "Type": 1
+            },
+            {
+              "Description": "正常运行时的稳定性。",
+              "Name": "可靠性",
+              "Type": 2
+            },
+            {
+              "Description": "资源利用效率。",
+              "Name": "效率",
+              "Type": 3
+            },
+            {
+              "Description": "易用程度。",
+              "Name": "简易性",
+              "Type": 4
+            },
+            {
+              "Description": "所支持用例的广泛程度。",
+              "Name": "适用范围",
+              "Type": 5
+            }
+          ],
+          "Name": "能力",
+          "Type": 0
+        }
+      ],
+      "Name": "CapabilityV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved stored values for the function's required data schema.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved stored values for the function's required data schema.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "value",
+          "Type": 2
+        }
+      ],
+      "Name": "ChartData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved storage keys; this demonstration currently writes no records.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved storage keys; this demonstration currently writes no records.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        }
+      ],
+      "Name": "ChartDataKey"
+    },
+    {
+      "Description": "用户可以选择示例，探索模拟的业务、能源、温度或统计数据对比。",
+      "DisplayName": "图表库",
+      "List": [
+        {
+          "Description": "用户可以选择示例，探索模拟的业务、能源、温度或统计数据对比。",
+          "Name": "图表库",
+          "Type": 0
+        },
+        {
+          "Description": "用户可以比较不同市场和产品成熟度下的产品覆盖范围、增长率、年度数据量和置信度。",
+          "Name": "查看产品组合气泡图",
+          "Type": 1
+        },
+        {
+          "Description": "图表库按客户覆盖范围、增长率、年度数据量、置信度、系列、服务等级、市场和成熟度比较示例产品。",
+          "Name": "产品组合气泡图",
+          "Type": 2
+        },
+        {
+          "Description": "用户可以比较随时间变化的模拟实际记录、预期和挑战目标用电需求。",
+          "Name": "查看能源历史",
+          "Type": 3
+        },
+        {
+          "Description": "图表库在同一时间线上显示实际记录、预期和挑战目标用电需求情景。",
+          "Name": "能源历史",
+          "Type": 4
+        },
+        {
+          "Description": "用户可以比较两个示例预测模型的温度不确定性区间。",
+          "Name": "查看预测区间",
+          "Type": 5
+        },
+        {
+          "Description": "图表库显示两个示例模型随时间变化的最低和最高温度估计值。",
+          "Name": "预测区间",
+          "Type": 6
+        },
+        {
+          "Description": "用户可以比较每个季度内各示例产品系列的收入。",
+          "Name": "查看分组销售额",
+          "Type": 7
+        },
+        {
+          "Description": "图表库使用分组条形图按产品系列显示季度收入。",
+          "Name": "分组销售额",
+          "Type": 8
+        },
+        {
+          "Description": "用户可以比较模拟响应时间落入各个区间的频率。",
+          "Name": "查看响应时间直方图",
+          "Type": 9
+        },
+        {
+          "Description": "图表库显示每个响应时间区间内的模拟交互次数。",
+          "Name": "响应时间直方图",
+          "Type": 10
+        },
+        {
+          "Description": "用户可以比较太阳能、电池和电网对能源总量及能源使用变化的贡献。",
+          "Name": "查看能源构成",
+          "Type": 11
+        },
+        {
+          "Description": "图表库使用堆叠条形图和面积图显示各能源来源的贡献。",
+          "Name": "能源构成",
+          "Type": 12
+        },
+        {
+          "Description": "用户可以按星期几和一天中的时段比较模拟活动情况。",
+          "Name": "查看活动热力图",
+          "Type": 13
+        },
+        {
+          "Description": "图库展示各工作日和工作时段的活动水平示例。",
+          "Name": "活动热力图",
+          "Type": 14
+        },
+        {
+          "Description": "用户可以比较电气测量示例的估计下限和上限。",
+          "Name": "查看测量不确定性",
+          "Type": 15
+        },
+        {
+          "Description": "图库使用误差线展示每个电气测量样本的不确定范围。",
+          "Name": "测量不确定性",
+          "Type": 16
+        },
+        {
+          "Description": "用户可以探索具有不同重要程度、强调方式和方向的图表示例消息。",
+          "Name": "查看图表注释",
+          "Type": 17
+        },
+        {
+          "Description": "图库展示用于突出图表中结果的示例消息。",
+          "Name": "图表注释",
+          "Type": 18
+        },
+        {
+          "Description": "用户可以比较各产品系列在速度、可靠性、效率、易用性和覆盖范围方面的评分。",
+          "Name": "查看能力雷达图",
+          "Type": 19
+        },
+        {
+          "Description": "图库以相互重叠的轮廓比较各示例产品系列的五项能力。",
+          "Name": "能力雷达图",
+          "Type": 20
+        },
+        {
+          "Description": "用户可以比较各引荐来源在示例访客流量中所占的份额。",
+          "Name": "查看流量来源",
+          "Type": 21
+        },
+        {
+          "Description": "图库展示一个标有来源名称及其流量百分比的环形图。",
+          "Name": "流量来源",
+          "Type": 22
+        },
+        {
+          "Description": "用户可以比较流量份额饼图和产品表现径向图。",
+          "Name": "查看圆形图表",
+          "Type": 23
+        },
+        {
+          "Description": "图库使用两个圆形图表展示流量份额和产品系列评分。",
+          "Name": "圆形图表对比",
+          "Type": 24
+        },
+        {
+          "Description": "用户可以比较虚构区域及其利用率示例。",
+          "Name": "查看区域地图",
+          "Type": 25
+        },
+        {
+          "Description": "图库在地图上展示区域轮廓和利用率示例。",
+          "Name": "区域地图",
+          "Type": 26
+        },
+        {
+          "Description": "用户可以比较温度的中心估计值与各示例模型的不确定范围。",
+          "Name": "查看预测置信度",
+          "Type": 27
+        },
+        {
+          "Description": "图库同时展示中心估计值及其预测下限和上限范围。",
+          "Name": "预测置信度",
+          "Type": 28
+        },
+        {
+          "Description": "用户可以比较模拟的市场开盘价、收盘价、最低价、最高价和成交量。",
+          "Name": "查看蜡烛图",
+          "Type": 29
+        },
+        {
+          "Description": "图库展示示例市场时段内价格上涨或持平以及下跌的情况。",
+          "Name": "蜡烛图",
+          "Type": 30
+        },
+        {
+          "Description": "用户可以探索72小时的模拟温度数据，其中每个五分钟时段均汇总最低值、最高值和最终值。",
+          "Name": "查看温度历史",
+          "Type": 31
+        },
+        {
+          "Description": "图库展示模拟的五分钟温度范围和最终值；如果可以获取中枢的时钟，则数据截至最近完成的时段。",
+          "Name": "过去72小时的温度历史",
+          "Type": 32
+        },
+        {
+          "Description": "用户可以比较各示例组响应时间的中间区间、中位数、典型范围和离群值。",
+          "Name": "查看响应时间分布",
+          "Type": 33
+        },
+        {
+          "Description": "图库使用箱线图汇总各组的模拟响应时间。",
+          "Name": "响应时间分布",
+          "Type": 34
+        },
+        {
+          "Description": "用户可以探索示例网关、处理服务与存储之间的连接。",
+          "Name": "查看网络关系",
+          "Type": 35
+        },
+        {
+          "Description": "图库展示示例网络的组件及其连接关系。",
+          "Name": "网络关系",
+          "Type": 36
+        },
+        {
+          "Description": "用户可以比较直接激活、在协助下激活或提前离开的访客。",
+          "Name": "查看访客旅程",
+          "Type": 37
+        },
+        {
+          "Description": "图库展示访客人数，以及他们经历到达、评估、激活和离开的旅程。",
+          "Name": "访客旅程",
+          "Type": 38
+        },
+        {
+          "Description": "用户可以将模拟响应时间与平滑趋势和目标值进行比较。",
+          "Name": "查看性能对比",
+          "Type": 39
+        },
+        {
+          "Description": "图库同时展示各次响应时间、其趋势以及期望的最大响应时间。",
+          "Name": "性能对比",
+          "Type": 40
+        },
+        {
+          "Description": "用户可以使用两种条形图布局比较各产品系列的季度收入，并查看各来源的流量份额。",
+          "Name": "查看销售额和流量",
+          "Type": 41
+        },
+        {
+          "Description": "图库使用独立图表分别展示分组销售额、横向销售额对比和流量来源份额。",
+          "Name": "销售额与流量对比",
+          "Type": 42
+        },
+        {
+          "Description": "用户可以同时探索电力需求、预测不确定性和工作日活动情况。",
+          "Name": "查看运营仪表板",
+          "Type": 43
+        },
+        {
+          "Description": "图库使用独立图表分别展示能源历史、温度预测范围和活动模式。",
+          "Name": "运营仪表板",
+          "Type": 44
+        }
+      ],
+      "Name": "ChartDemoProtocol"
+    },
+    {
+      "Description": "标识向示例产品的客户提供的服务等级。",
+      "DisplayName": "客户等级",
+      "List": [
+        {
+          "Description": "标识向示例产品的客户提供的服务等级。",
+          "Enum": [
+            {
+              "Description": "标准服务等级。",
+              "Name": "标准",
+              "Type": 1
+            },
+            {
+              "Description": "高级服务等级。",
+              "Name": "高级",
+              "Type": 2
+            }
+          ],
+          "Name": "客户等级",
+          "Type": 0
+        }
+      ],
+      "Name": "CustomerTierV1"
+    },
+    {
+      "Description": "用于说明或突出显示图表中某项结果的示例消息。",
+      "DisplayName": "图表注释",
+      "List": [
+        {
+          "Description": "用于说明或突出显示图表中某项结果的示例消息。",
+          "Name": "图表注释",
+          "Type": 0
+        },
+        {
+          "Description": "注释在示例图表中的水平位置。",
+          "Name": "水平位置",
+          "Type": 1
+        },
+        {
+          "Description": "注释在示例图表中的垂直位置。",
+          "Name": "垂直位置",
+          "Type": 2
+        },
+        {
+          "Description": "在图表中此位置显示的示例消息；如果有相应译文，则使用查看者的语言。",
+          "Name": "消息",
+          "Type": 3
+        },
+        {
+          "Description": "指示消息是正面消息、信息性消息，还是需要关注的消息。",
+          "Name": "消息性质",
+          "Type": 4
+        },
+        {
+          "Description": "用于突出此注释的相对大小。",
+          "Name": "文本大小",
+          "Type": 5
+        },
+        {
+          "Description": "注释文本的旋转角度。",
+          "Name": "文本角度",
+          "Type": 6
+        },
+        {
+          "Description": "用于突出注释，同时让重叠内容仍然可见的不透明度。",
+          "Name": "文本不透明度",
+          "Type": 7
+        },
+        {
+          "Description": "用于将此消息与示例中的其他注释区分开来。",
+          "Name": "注释标识",
+          "Type": 8
+        }
+      ],
+      "Name": "DirectAnnotationV1"
+    },
+    {
+      "Description": "展示消息如何以不同的突出程度和方向来说明结果。",
+      "DisplayName": "图表注释",
+      "List": [
+        {
+          "Description": "展示消息如何以不同的突出程度和方向来说明结果。",
+          "Name": "图表注释",
+          "Type": 0
+        },
+        {
+          "Description": "用于说明或突出显示图表中某项结果的示例消息。",
+          "Name": "图表注释",
+          "Type": 1
+        }
+      ],
+      "Name": "DirectLabelsChartV1"
+    },
+    {
+      "Description": "使用模拟读数比较一段时间内记录的、预期的和挑战目标下的电力需求。",
+      "DisplayName": "电力需求历史",
+      "List": [
+        {
+          "Description": "使用模拟读数比较一段时间内记录的、预期的和挑战目标下的电力需求。",
+          "Name": "电力需求历史",
+          "Type": 0
+        },
+        {
+          "Description": "实际、预期或挑战目标情景在某一时刻的一条示例电力需求读数。",
+          "Name": "电力需求样本",
+          "Type": 1
+        }
+      ],
+      "Name": "EnergyHistoryChartV1"
+    },
+    {
+      "Description": "实际、预期或挑战目标情景在某一时刻的一条示例电力需求读数。",
+      "DisplayName": "电力需求样本",
+      "List": [
+        {
+          "Description": "实际、预期或挑战目标情景在某一时刻的一条示例电力需求读数。",
+          "Name": "电力需求样本",
+          "Type": 0
+        },
+        {
+          "Description": "此示例电力需求读数所表示的日期和时间。",
+          "Name": "时间",
+          "Type": 1
+        },
+        {
+          "Description": "此时的电力需求。",
+          "Name": "功率",
+          "Type": 2
+        },
+        {
+          "Description": "指示此示例需求是记录值、预期值还是挑战目标。",
+          "Name": "情景",
+          "Type": 3
+        },
+        {
+          "Description": "标识相应情景；该情景的线型用于区分这段需求历史。",
+          "Name": "情景线型",
+          "Type": 4
+        },
+        {
+          "Description": "用于突出此需求情景的相对线条粗细。",
+          "Name": "线条强调程度",
+          "Type": 5
+        },
+        {
+          "Description": "此读数在其情景时间序列中的位置。",
+          "Name": "时间顺序",
+          "Type": 6
+        }
+      ],
+      "Name": "EnergyHistoryPointV1"
+    },
+    {
+      "Description": "标识太阳能、电池或电网对示例总能源的贡献。",
+      "DisplayName": "能源来源",
+      "List": [
+        {
+          "Description": "标识太阳能、电池或电网对示例总能源的贡献。",
+          "Enum": [
+            {
+              "Description": "本地生成的太阳能。",
+              "Name": "太阳能",
+              "Type": 1
+            },
+            {
+              "Description": "储能系统释放的能源。",
+              "Name": "电池",
+              "Type": 2
+            },
+            {
+              "Description": "从电网输入的能源。",
+              "Name": "电网",
+              "Type": 3
+            }
+          ],
+          "Name": "能源来源",
+          "Type": 0
+        }
+      ],
+      "Name": "EnergySourceV1"
+    },
+    {
+      "Description": "标识访客从到达开始，经过产品评估、激活或离开的各个步骤。",
+      "DisplayName": "访客阶段",
+      "List": [
+        {
+          "Description": "标识访客从到达开始，经过产品评估、激活或离开的各个步骤。",
+          "Enum": [
+            {
+              "Description": "新进入的访问。",
+              "Name": "访问",
+              "Type": 1
+            },
+            {
+              "Description": "正在评估产品的访问。",
+              "Name": "评估",
+              "Type": 2
+            },
+            {
+              "Description": "已完成激活的访问。",
+              "Name": "已激活",
+              "Type": 3
+            },
+            {
+              "Description": "在激活前离开的访问。",
+              "Name": "已离开",
+              "Type": 4
+            }
+          ],
+          "Name": "访客阶段",
+          "Type": 0
+        }
+      ],
+      "Name": "FlowStageV1"
+    },
+    {
+      "Description": "区分直接激活、在获得协助后激活或提前离开的访客。",
+      "DisplayName": "访客旅程",
+      "List": [
+        {
+          "Description": "区分直接激活、在获得协助后激活或提前离开的访客。",
+          "Enum": [
+            {
+              "Description": "直接完成激活的访问。",
+              "Name": "直接激活",
+              "Type": 1
+            },
+            {
+              "Description": "在获得协助后完成激活的访问。",
+              "Name": "协助激活",
+              "Type": 2
+            },
+            {
+              "Description": "在激活前离开的访问。",
+              "Name": "提前离开",
+              "Type": 3
+            }
+          ],
+          "Name": "访客旅程",
+          "Type": 0
+        }
+      ],
+      "Name": "FlowStreamV1"
+    },
+    {
+      "Description": "将温度中心估算值与两个示例预测模型给出的上下限区间进行比较。",
+      "DisplayName": "预测置信度",
+      "List": [
+        {
+          "Description": "将温度中心估算值与两个示例预测模型给出的上下限区间进行比较。",
+          "Name": "预测置信度",
+          "Type": 0
+        },
+        {
+          "Description": "各模型在每个预测时间的温度下限和上限估算值。",
+          "Name": "预测区间",
+          "Type": 1
+        },
+        {
+          "Description": "与各模型区间进行比较的温度中心估算值。",
+          "Name": "中心估算值",
+          "Type": 2
+        }
+      ],
+      "Name": "ForecastConfidenceChartV1"
+    },
+    {
+      "Description": "显示温度中心估算值，以便与各模型的不确定性区间进行比较。",
+      "DisplayName": "预测估算值",
+      "List": [
+        {
+          "Description": "显示温度中心估算值，以便与各模型的不确定性区间进行比较。",
+          "Name": "预测估算值",
+          "Type": 0
+        },
+        {
+          "Description": "一个示例模型在某个预测时间的温度中心估算值。",
+          "Name": "预测估算值",
+          "Type": 1
+        }
+      ],
+      "Name": "ForecastEstimateChartV1"
+    },
+    {
+      "Description": "一个示例模型在某个预测时间的温度中心估算值。",
+      "DisplayName": "预测估算值",
+      "List": [
+        {
+          "Description": "一个示例模型在某个预测时间的温度中心估算值。",
+          "Name": "预测估算值",
+          "Type": 0
+        },
+        {
+          "Description": "此温度估算值所代表的日期和时间。",
+          "Name": "预测时间",
+          "Type": 1
+        },
+        {
+          "Description": "示例模型对此时间的温度中心估算值。",
+          "Name": "温度估算值",
+          "Type": 2
+        },
+        {
+          "Description": "提供此温度估算值的示例模型。",
+          "Name": "预测模型",
+          "Type": 3
+        },
+        {
+          "Description": "此估算值在相应模型时间序列中的位置。",
+          "Name": "时间顺序",
+          "Type": 4
+        },
+        {
+          "Description": "用于将此模型和预测时间与其他估算值区分开来。",
+          "Name": "估算标识",
+          "Type": 5
+        }
+      ],
+      "Name": "ForecastEstimatePointV1"
+    },
+    {
+      "Description": "比较两个示例预测模型随时间变化的温度下限和上限估算值。",
+      "DisplayName": "预测区间",
+      "List": [
+        {
+          "Description": "比较两个示例预测模型随时间变化的温度下限和上限估算值。",
+          "Name": "预测区间",
+          "Type": 0
+        },
+        {
+          "Description": "某个预测时间的一个示例温度区间，用于表示不确定性。",
+          "Name": "预测区间",
+          "Type": 1
+        }
+      ],
+      "Name": "ForecastRangeChartV1"
+    },
+    {
+      "Description": "某个预测时间的一个示例温度区间，用于表示不确定性。",
+      "DisplayName": "预测区间",
+      "List": [
+        {
+          "Description": "某个预测时间的一个示例温度区间，用于表示不确定性。",
+          "Name": "预测区间",
+          "Type": 0
+        },
+        {
+          "Description": "此预测区间所代表的日期和时间。",
+          "Name": "预测时间",
+          "Type": 1
+        },
+        {
+          "Description": "预测区间的下限。",
+          "Name": "最低估计值",
+          "Type": 2
+        },
+        {
+          "Description": "预测区间的上限。",
+          "Name": "最高估计值",
+          "Type": 3
+        },
+        {
+          "Description": "提供此温度范围的示例预测模型。",
+          "Name": "预测模型",
+          "Type": 4
+        },
+        {
+          "Description": "标识用轮廓区分此预测范围的模型。",
+          "Name": "模型轮廓",
+          "Type": 5
+        },
+        {
+          "Description": "用于区分重叠预测范围并使两者均保持可见的不透明度。",
+          "Name": "范围阴影",
+          "Type": 6
+        }
+      ],
+      "Name": "ForecastRangePointV1"
+    },
+    {
+      "Description": "某个示例产品系列在一个季度内的收入。",
+      "DisplayName": "季度销售业绩",
+      "List": [
+        {
+          "Description": "某个示例产品系列在一个季度内的收入。",
+          "Name": "季度销售业绩",
+          "Type": 0
+        },
+        {
+          "Description": "此销售业绩所代表的三个月期间。",
+          "Name": "季度",
+          "Type": 1
+        },
+        {
+          "Description": "收入与同一季度其他产品系列进行比较的产品系列。",
+          "Name": "产品系列",
+          "Type": 2
+        },
+        {
+          "Description": "标识此销售业绩所代表的产品系列。",
+          "Name": "产品系列标识",
+          "Type": 3
+        },
+        {
+          "Description": "季度收入。",
+          "Name": "收入",
+          "Type": 4
+        },
+        {
+          "Description": "以季度和产品系列区分此销售业绩与其他销售业绩。",
+          "Name": "销售业绩标识",
+          "Type": 5
+        }
+      ],
+      "Name": "GroupedSalesBarV1"
+    },
+    {
+      "Description": "使用分组条形图比较各季度内不同产品系列的收入。",
+      "DisplayName": "季度销售业绩",
+      "List": [
+        {
+          "Description": "使用分组条形图比较各季度内不同产品系列的收入。",
+          "Name": "季度销售业绩",
+          "Type": 0
+        },
+        {
+          "Description": "某个示例产品系列在一个季度内的收入。",
+          "Name": "季度销售业绩",
+          "Type": 1
+        }
+      ],
+      "Name": "GroupedSalesChartV1"
+    },
+    {
+      "Description": "横向销售对比中某个示例产品系列的季度收入。",
+      "DisplayName": "季度销售对比",
+      "List": [
+        {
+          "Description": "横向销售对比中某个示例产品系列的季度收入。",
+          "Name": "季度销售对比",
+          "Type": 0
+        },
+        {
+          "Description": "此示例产品系列在本季度的收入。",
+          "Name": "收入",
+          "Type": 1
+        },
+        {
+          "Description": "此对比所代表的三个月期间。",
+          "Name": "季度",
+          "Type": 2
+        },
+        {
+          "Description": "收入与同一季度其他产品系列进行比较的产品系列。",
+          "Name": "产品系列",
+          "Type": 3
+        },
+        {
+          "Description": "标识此销售对比所代表的产品系列。",
+          "Name": "产品系列标识",
+          "Type": 4
+        },
+        {
+          "Description": "以季度和产品系列区分此销售对比与其他销售对比。",
+          "Name": "销售对比标识",
+          "Type": 5
+        }
+      ],
+      "Name": "HorizontalGroupedBarV1"
+    },
+    {
+      "Description": "使用横向分组条形图比较各产品系列的季度收入。",
+      "DisplayName": "横向销售对比",
+      "List": [
+        {
+          "Description": "使用横向分组条形图比较各产品系列的季度收入。",
+          "Name": "横向销售对比",
+          "Type": 0
+        },
+        {
+          "Description": "横向销售对比中某个示例产品系列的季度收入。",
+          "Name": "季度销售对比",
+          "Type": 1
+        }
+      ],
+      "Name": "HorizontalGroupedSalesChartV1"
+    },
+    {
+      "Description": "一个响应时间范围，以及落入该范围的模拟交互次数。",
+      "DisplayName": "响应时间区间",
+      "List": [
+        {
+          "Description": "一个响应时间范围，以及落入该范围的模拟交互次数。",
+          "Name": "响应时间区间",
+          "Type": 0
+        },
+        {
+          "Description": "此区间包含的响应时间下限。",
+          "Name": "最短响应时间",
+          "Type": 1
+        },
+        {
+          "Description": "响应时间上限，该上限值归入下一个区间。",
+          "Name": "最长响应时间",
+          "Type": 2
+        },
+        {
+          "Description": "响应时间落入此区间的模拟交互次数。",
+          "Name": "观测次数",
+          "Type": 3
+        },
+        {
+          "Description": "用于区分此响应时间区间与其他区间。",
+          "Name": "区间标识",
+          "Type": 4
+        }
+      ],
+      "Name": "LatencyHistogramBinV1"
+    },
+    {
+      "Description": "显示模拟响应时间落入各个范围的频率。",
+      "DisplayName": "响应时间区间",
+      "List": [
+        {
+          "Description": "显示模拟响应时间落入各个区间的频率。",
+          "Name": "响应时间区间",
+          "Type": 0
+        },
+        {
+          "Description": "一个响应时间范围，以及落入该范围的模拟交互次数。",
+          "Name": "响应时间区间",
+          "Type": 1
+        }
+      ],
+      "Name": "LatencyHistogramChartV1"
+    },
+    {
+      "Description": "标识地图对比中的一个虚构地区。",
+      "DisplayName": "地图区域",
+      "List": [
+        {
+          "Description": "标识地图对比中的一个虚构地区。",
+          "Enum": [
+            {
+              "Description": "示例地图中的北部地区。",
+              "Name": "北部地区",
+              "Type": 1
+            },
+            {
+              "Description": "示例地图中的中部地区。",
+              "Name": "中部地区",
+              "Type": 2
+            },
+            {
+              "Description": "示例地图中的南部地区。",
+              "Name": "南部地区",
+              "Type": 3
+            }
+          ],
+          "Name": "地图区域",
+          "Type": 0
+        }
+      ],
+      "Name": "MapRegionV1"
+    },
+    {
+      "Description": "标识用于比较示例产品的地理市场。",
+      "DisplayName": "市场",
+      "List": [
+        {
+          "Description": "标识用于比较示例产品的地理市场。",
+          "Enum": [
+            {
+              "Description": "北美洲和南美洲。",
+              "Name": "美洲",
+              "Type": 1
+            },
+            {
+              "Description": "覆盖欧洲、中东和非洲的示例市场。",
+              "Name": "欧洲、中东和非洲",
+              "Type": 2
+            }
+          ],
+          "Name": "市场",
+          "Type": 0
+        }
+      ],
+      "Name": "MarketV1"
+    },
+    {
+      "Description": "使用误差线比较电气测量值的下限和上限估计。",
+      "DisplayName": "测量区间",
+      "List": [
+        {
+          "Description": "使用误差线比较电气测量值的下限和上限估计。",
+          "Name": "测量区间",
+          "Type": 0
+        },
+        {
+          "Description": "一个示例电气测量值的下限和上限估计，用于比较不确定性。",
+          "Name": "测量区间",
+          "Type": 1
+        }
+      ],
+      "Name": "MeasurementUncertaintyChartV1"
+    },
+    {
+      "Description": "标识示例网络中相互连接的组件。",
+      "DisplayName": "网络连接",
+      "List": [
+        {
+          "Description": "标识示例网络中相互连接的组件。",
+          "Enum": [
+            {
+              "Description": "将网关连接到规则处理服务。",
+              "Name": "网关到规则处理",
+              "Type": 1
+            },
+            {
+              "Description": "将网关连接到分析处理服务。",
+              "Name": "网关到分析处理",
+              "Type": 2
+            },
+            {
+              "Description": "将规则处理服务连接到事件存储。",
+              "Name": "规则处理到事件存储",
+              "Type": 3
+            },
+            {
+              "Description": "将分析处理服务连接到历史数据存储。",
+              "Name": "分析处理到历史数据存储",
+              "Type": 4
+            },
+            {
+              "Description": "将规则处理服务连接到历史数据存储。",
+              "Name": "规则处理到历史数据存储",
+              "Type": 5
+            }
+          ],
+          "Name": "网络连接",
+          "Type": 0
+        }
+      ],
+      "Name": "NetworkConnectionV1"
+    },
+    {
+      "Description": "显示网关、处理服务和存储之间的连接。",
+      "DisplayName": "网络链路",
+      "List": [
+        {
+          "Description": "显示网关、处理服务和存储之间的连接。",
+          "Name": "网络链路",
+          "Type": 0
+        },
+        {
+          "Description": "示例网络中两个组件之间的一条连接。",
+          "Name": "网络链路",
+          "Type": 1
+        }
+      ],
+      "Name": "NetworkEdgesV1"
+    },
+    {
+      "Description": "示例网络中两个组件之间的一条连接。",
+      "DisplayName": "网络链路",
+      "List": [
+        {
+          "Description": "示例网络中两个组件之间的一条连接。",
+          "Name": "网络链路",
+          "Type": 0
+        },
+        {
+          "Description": "源点的水平坐标。",
+          "Name": "源点 x 坐标",
+          "Type": 1
+        },
+        {
+          "Description": "目标点的水平坐标。",
+          "Name": "目标点 x 坐标",
+          "Type": 2
+        },
+        {
+          "Description": "源点的垂直坐标。",
+          "Name": "源点 y 坐标",
+          "Type": 3
+        },
+        {
+          "Description": "目标点的垂直坐标。",
+          "Name": "目标点 y 坐标",
+          "Type": 4
+        },
+        {
+          "Description": "由此链路连接的两个网络组件。",
+          "Name": "连接关系",
+          "Type": 5
+        },
+        {
+          "Description": "用于区分此网络连接的颜色。",
+          "Name": "链路颜色",
+          "Type": 6
+        },
+        {
+          "Description": "用于突出显示此网络连接的相对线条粗细。",
+          "Name": "连接强调程度",
+          "Type": 7
+        },
+        {
+          "Description": "用于将此连接与示例网络中的其他连接区分开来。",
+          "Name": "连接标识",
+          "Type": 8
+        }
+      ],
+      "Name": "NetworkEdgeV1"
+    },
+    {
+      "Description": "标识示例网络中的网关、处理服务和存储组件。",
+      "DisplayName": "网络组件",
+      "List": [
+        {
+          "Description": "标识示例网络中的网关、处理服务和存储组件。",
+          "Enum": [
+            {
+              "Description": "示例网络的入口。",
+              "Name": "网关",
+              "Type": 1
+            },
+            {
+              "Description": "规则处理服务。",
+              "Name": "规则",
+              "Type": 2
+            },
+            {
+              "Description": "分析处理服务。",
+              "Name": "分析",
+              "Type": 3
+            },
+            {
+              "Description": "事件存储组件。",
+              "Name": "事件",
+              "Type": 4
+            },
+            {
+              "Description": "历史记录存储组件。",
+              "Name": "历史记录",
+              "Type": 5
+            }
+          ],
+          "Name": "网络组件",
+          "Type": 0
+        }
+      ],
+      "Name": "NetworkNodeNameV1"
+    },
+    {
+      "Description": "显示示例网络中的网关、处理服务和存储组件。",
+      "DisplayName": "网络组件",
+      "List": [
+        {
+          "Description": "显示示例网络中的网关、处理服务和存储组件。",
+          "Name": "网络组件",
+          "Type": 0
+        },
+        {
+          "Description": "示例中的一个网关、处理服务或存储组件，以及它在网络图中的位置。",
+          "Name": "网络组件",
+          "Type": 1
+        }
+      ],
+      "Name": "NetworkNodesV1"
+    },
+    {
+      "Description": "示例中的一个网关、处理服务或存储组件，以及它在网络图中的位置。",
+      "DisplayName": "网络组件",
+      "List": [
+        {
+          "Description": "示例中的一个网关、处理服务或存储组件，以及它在网络图中的位置。",
+          "Name": "网络组件",
+          "Type": 0
+        },
+        {
+          "Description": "节点的水平坐标。",
+          "Name": "节点 x",
+          "Type": 1
+        },
+        {
+          "Description": "节点的垂直坐标。",
+          "Name": "节点 y",
+          "Type": 2
+        },
+        {
+          "Description": "此位置所代表的网络组件。",
+          "Name": "组件",
+          "Type": 3
+        },
+        {
+          "Description": "此组件在示例网络中的作用。",
+          "Name": "网络角色",
+          "Type": 4
+        },
+        {
+          "Description": "组件的角色，在网络图中还通过符号加以区分。",
+          "Name": "角色符号",
+          "Type": 5
+        },
+        {
+          "Description": "用于使此网络组件易于区分的相对大小。",
+          "Name": "组件强调程度",
+          "Type": 6
+        }
+      ],
+      "Name": "NetworkNodeV1"
+    },
+    {
+      "Description": "标识组件在示例网络中的作用。",
+      "DisplayName": "网络角色",
+      "List": [
+        {
+          "Description": "标识组件在示例网络中的作用。",
+          "Enum": [
+            {
+              "Description": "网络的入口。",
+              "Name": "网关",
+              "Type": 1
+            },
+            {
+              "Description": "网络中的处理服务。",
+              "Name": "服务",
+              "Type": 2
+            },
+            {
+              "Description": "用于保存示例网络记录的组件。",
+              "Name": "存储",
+              "Type": 3
+            }
+          ],
+          "Name": "网络角色",
+          "Type": 0
+        }
+      ],
+      "Name": "NetworkRoleV1"
+    },
+    {
+      "Description": "显示示例中的网关、处理服务和存储组件如何相互连接。",
+      "DisplayName": "网络关系",
+      "List": [
+        {
+          "Description": "显示示例中的网关、处理服务和存储组件如何相互连接。",
+          "Name": "网络关系",
+          "Type": 0
+        },
+        {
+          "Description": "示例网络中各组件之间的连接。",
+          "Name": "网络连接",
+          "Type": 1
+        },
+        {
+          "Description": "通过这些连接相连的网关、处理服务和存储组件。",
+          "Name": "网络组件",
+          "Type": 2
+        }
+      ],
+      "Name": "NetworkTopologyChartV1"
+    },
+    {
+      "Description": "集中显示模拟的电力需求历史、预测的不确定性和活动模式。",
+      "DisplayName": "运营仪表板",
+      "List": [
+        {
+          "Description": "集中显示模拟的电力需求历史、预测的不确定性和活动模式。",
+          "Name": "运营仪表板",
+          "Type": 0
+        },
+        {
+          "Description": "比较一段时间内已记录、预期和挑战性目标下的电力需求。",
+          "Name": "能源需求历史",
+          "Type": 1
+        },
+        {
+          "Description": "比较两个示例预测模型给出的最低和最高温度估计值。",
+          "Name": "预测范围",
+          "Type": 2
+        },
+        {
+          "Description": "比较工作日内不同工作时段的活动水平。",
+          "Name": "活动时段",
+          "Type": 3
+        }
+      ],
+      "Name": "OperationsDashboardChartV1"
+    },
+    {
+      "Description": "显示各个模拟响应时间，以便与趋势和目标进行比较。",
+      "DisplayName": "性能结果",
+      "List": [
+        {
+          "Description": "显示各个模拟响应时间，以便与趋势和目标进行比较。",
+          "Name": "性能结果",
+          "Type": 0
+        },
+        {
+          "Description": "某个产品系列的一项模拟响应时间结果。",
+          "Name": "性能结果",
+          "Type": 1
+        }
+      ],
+      "Name": "PerformancePointsV1"
+    },
+    {
+      "Description": "某个产品系列的一项模拟响应时间结果。",
+      "DisplayName": "性能结果",
+      "List": [
+        {
+          "Description": "某个产品系列的一项模拟响应时间结果。",
+          "Name": "性能结果",
+          "Type": 0
+        },
+        {
+          "Description": "此示例响应时间结果所表示的日期和时间。",
+          "Name": "时间",
+          "Type": 1
+        },
+        {
+          "Description": "此示例中获得响应所需的模拟时间。",
+          "Name": "响应时间",
+          "Type": 2
+        },
+        {
+          "Description": "此性能结果所表示的产品系列。",
+          "Name": "产品系列",
+          "Type": 3
+        },
+        {
+          "Description": "用于突出显示此性能结果的相对数据点大小。",
+          "Name": "结果突出程度",
+          "Type": 4
+        }
+      ],
+      "Name": "PerformancePointV1"
+    },
+    {
+      "Description": "比较各个响应时间、其平滑趋势以及期望的最大响应时间。",
+      "DisplayName": "性能比较",
+      "List": [
+        {
+          "Description": "比较各个响应时间、其平滑趋势以及期望的最大响应时间。",
+          "Name": "性能比较",
+          "Type": 0
+        },
+        {
+          "Description": "此比较中使用的各个模拟响应时间。",
+          "Name": "性能结果",
+          "Type": 1
+        },
+        {
+          "Description": "用于显示整个比较期内变化情况的平滑响应时间。",
+          "Name": "趋势样本",
+          "Type": 2
+        },
+        {
+          "Description": "整个比较期内期望的最大响应时间。",
+          "Name": "响应时间目标",
+          "Type": 3
+        }
+      ],
+      "Name": "PerformanceStoryChartV1"
+    },
+    {
+      "Description": "此示例的整个比较期内期望的最大响应时间。",
+      "DisplayName": "响应时间目标",
+      "List": [
+        {
+          "Description": "此示例的整个比较期内期望的最大响应时间。",
+          "Name": "响应时间目标",
+          "Type": 0
+        },
+        {
+          "Description": "此响应时间目标所涵盖时段的开始时间。",
+          "Name": "开始时间",
+          "Type": 1
+        },
+        {
+          "Description": "此响应时间目标所涵盖时段的结束时间。",
+          "Name": "结束时间",
+          "Type": 2
+        },
+        {
+          "Description": "期望的最大响应时间。",
+          "Name": "目标响应时间",
+          "Type": 3
+        },
+        {
+          "Description": "此响应时间目标所表示的场景。",
+          "Name": "场景",
+          "Type": 4
+        },
+        {
+          "Description": "标识相应场景，其线条图案用于区分此目标。",
+          "Name": "目标线样式",
+          "Type": 5
+        },
+        {
+          "Description": "用于使响应时间目标易于区分的相对线条粗细。",
+          "Name": "目标突出程度",
+          "Type": 6
+        }
+      ],
+      "Name": "PerformanceTargetRuleV1"
+    },
+    {
+      "Description": "显示期望的最大响应时间，以便与模拟结果及其趋势进行比较。",
+      "DisplayName": "响应时间目标",
+      "List": [
+        {
+          "Description": "显示期望的最大响应时间，以便与模拟结果及其趋势进行比较。",
+          "Name": "响应时间目标",
+          "Type": 0
+        },
+        {
+          "Description": "此示例的整个比较期内期望的最大响应时间。",
+          "Name": "响应时间目标",
+          "Type": 1
+        }
+      ],
+      "Name": "PerformanceTargetV1"
+    },
+    {
+      "Description": "时间趋势中的一个示例平滑响应时间。",
+      "DisplayName": "性能趋势样本",
+      "List": [
+        {
+          "Description": "时间趋势中的一个示例平滑响应时间。",
+          "Name": "性能趋势样本",
+          "Type": 0
+        },
+        {
+          "Description": "此趋势样本所表示的日期和时间。",
+          "Name": "时间",
+          "Type": 1
+        },
+        {
+          "Description": "平滑响应时间。",
+          "Name": "响应时间",
+          "Type": 2
+        },
+        {
+          "Description": "此响应时间趋势所表示的场景。",
+          "Name": "场景",
+          "Type": 3
+        },
+        {
+          "Description": "样本在趋势时间序列中的位置。",
+          "Name": "时间顺序",
+          "Type": 4
+        }
+      ],
+      "Name": "PerformanceTrendPointV1"
+    },
+    {
+      "Description": "同时显示示例的平滑响应时间和各项结果。",
+      "DisplayName": "性能趋势样本",
+      "List": [
+        {
+          "Description": "同时显示示例的平滑响应时间和各项结果。",
+          "Name": "性能趋势样本",
+          "Type": 0
+        },
+        {
+          "Description": "示例在一段时间趋势中的一项平滑响应时间。",
+          "Name": "性能趋势样本",
+          "Type": 1
+        }
+      ],
+      "Name": "PerformanceTrendV1"
+    },
+    {
+      "Description": "饼图中一个引荐来源占示例总流量的份额。",
+      "DisplayName": "流量饼图扇区",
+      "List": [
+        {
+          "Description": "饼图中一个引荐来源占示例总流量的份额。",
+          "Name": "流量饼图扇区",
+          "Type": 0
+        },
+        {
+          "Description": "此来源所占份额在饼图圆周上的起始位置。",
+          "Name": "份额起始角度",
+          "Type": 1
+        },
+        {
+          "Description": "此来源所占份额在饼图圆周上的结束位置。",
+          "Name": "份额结束角度",
+          "Type": 2
+        },
+        {
+          "Description": "距中心的内侧距离；设为零时，该份额会延伸至饼图中心。",
+          "Name": "内半径",
+          "Type": 3
+        },
+        {
+          "Description": "流量饼图中距中心的外侧距离。",
+          "Name": "外半径",
+          "Type": 4
+        },
+        {
+          "Description": "此访客份额所代表的引荐来源。",
+          "Name": "流量来源",
+          "Type": 5
+        },
+        {
+          "Description": "通过此来源到达的示例访客百分比。",
+          "Name": "份额",
+          "Type": 6
+        },
+        {
+          "Description": "用于区分此引荐来源与其他流量来源。",
+          "Name": "来源引用",
+          "Type": 7
+        }
+      ],
+      "Name": "PieSliceV1"
+    },
+    {
+      "Description": "标识比较图表中的产品系列。",
+      "DisplayName": "业务产品组合",
+      "List": [
+        {
+          "Description": "标识比较图表中的产品系列。",
+          "Enum": [
+            {
+              "Description": "消费类产品。",
+              "Name": "家庭",
+              "Type": 1
+            },
+            {
+              "Description": "面向专业团队的产品。",
+              "Name": "企业",
+              "Type": 2
+            },
+            {
+              "Description": "共享平台服务。",
+              "Name": "平台",
+              "Type": 3
+            }
+          ],
+          "Name": "业务产品组合",
+          "Type": 0
+        }
+      ],
+      "Name": "PortfolioV1"
+    },
+    {
+      "Description": "在地图上显示虚构区域的轮廓及其示例利用率。",
+      "DisplayName": "区域边界",
+      "List": [
+        {
+          "Description": "在地图上显示虚构区域的轮廓及其示例利用率。",
+          "Name": "区域边界",
+          "Type": 0
+        },
+        {
+          "Description": "虚构地图区域轮廓上的一个位置。",
+          "Name": "区域边界点",
+          "Type": 1
+        }
+      ],
+      "Name": "ProjectedMapChartV1"
+    },
+    {
+      "Description": "虚构地图区域轮廓上的一个位置。",
+      "DisplayName": "区域边界点",
+      "List": [
+        {
+          "Description": "虚构地图区域轮廓上的一个位置。",
+          "Name": "区域边界点",
+          "Type": 0
+        },
+        {
+          "Description": "边界点在地图 x 轴方向上的位置。",
+          "Name": "地图 x 坐标",
+          "Type": 1
+        },
+        {
+          "Description": "边界点在地图 y 轴方向上的位置。",
+          "Name": "地图 y 坐标",
+          "Type": 2
+        },
+        {
+          "Description": "此边界点所属的虚构区域。",
+          "Name": "区域",
+          "Type": 3
+        },
+        {
+          "Description": "此区域的示例利用率。",
+          "Name": "利用率",
+          "Type": 4
+        },
+        {
+          "Description": "此点在围绕区域轮廓的点序列中的位置。",
+          "Name": "边界顺序",
+          "Type": 5
+        },
+        {
+          "Description": "用于区分此区域边界点与其他边界点。",
+          "Name": "边界引用",
+          "Type": 6
+        }
+      ],
+      "Name": "ProjectedMapVertexV1"
+    },
+    {
+      "Description": "标识用于比较示例结果的三个月期间。",
+      "DisplayName": "季度",
+      "List": [
+        {
+          "Description": "标识用于比较示例结果的三个月期间。",
+          "Enum": [
+            {
+              "Description": "一月至三月。",
+              "Name": "第一季度",
+              "Type": 1
+            },
+            {
+              "Description": "四月至六月。",
+              "Name": "第二季度",
+              "Type": 2
+            },
+            {
+              "Description": "七月至九月。",
+              "Name": "第三季度",
+              "Type": 3
+            },
+            {
+              "Description": "十月至十二月。",
+              "Name": "第四季度",
+              "Type": 4
+            }
+          ],
+          "Name": "季度",
+          "Type": 0
+        }
+      ],
+      "Name": "QuarterV1"
+    },
+    {
+      "Description": "某个示例产品系列的得分，在环形图中从零点向外度量，以便进行比较。",
+      "DisplayName": "径向绩效结果",
+      "List": [
+        {
+          "Description": "某个示例产品系列的得分，在环形图中从零点向外度量，以便进行比较。",
+          "Name": "径向绩效结果",
+          "Type": 0
+        },
+        {
+          "Description": "环形图中分配给此产品系列的区域所对应的起始位置。",
+          "Name": "得分起始角度",
+          "Type": 1
+        },
+        {
+          "Description": "环形图中分配给此产品系列的区域所对应的结束位置。",
+          "Name": "得分结束角度",
+          "Type": 2
+        },
+        {
+          "Description": "比较此产品系列得分时所用的零百分比起点。",
+          "Name": "得分基线",
+          "Type": 3
+        },
+        {
+          "Description": "示例产品系列的绩效得分。",
+          "Name": "得分",
+          "Type": 4
+        },
+        {
+          "Description": "此绩效得分所代表的产品系列。",
+          "Name": "产品系列",
+          "Type": 5
+        },
+        {
+          "Description": "用于区分此产品系列的得分与其他得分。",
+          "Name": "得分标识",
+          "Type": 6
+        }
+      ],
+      "Name": "RadialPerformanceBarV1"
+    },
+    {
+      "Description": "在环形图中比较各产品系列从零点向外度量的得分。",
+      "DisplayName": "径向绩效结果",
+      "List": [
+        {
+          "Description": "在环形图中比较各产品系列从零点向外度量的得分。",
+          "Name": "径向绩效结果",
+          "Type": 0
+        },
+        {
+          "Description": "某个示例产品系列的得分，在环形图中从零点向外度量，以便进行比较。",
+          "Name": "径向绩效结果",
+          "Type": 1
+        }
+      ],
+      "Name": "RadialPerformanceChartV1"
+    },
+    {
+      "Description": "以两种条形图布局展示各产品系列的季度收入，并同时显示不同来源的流量占比。",
+      "DisplayName": "销售额与流量比较",
+      "List": [
+        {
+          "Description": "以两种条形图布局展示各产品系列的季度收入，并同时显示不同来源的流量占比。",
+          "Name": "销售额与流量比较",
+          "Type": 0
+        },
+        {
+          "Description": "使用分组条形图比较每个季度内各产品系列的收入。",
+          "Name": "季度销售结果",
+          "Type": 1
+        },
+        {
+          "Description": "使用横向条形图展示相同的季度收入比较。",
+          "Name": "横向销售额比较",
+          "Type": 2
+        },
+        {
+          "Description": "比较各引荐来源对访客总流量的贡献。",
+          "Name": "流量占比",
+          "Type": 3
+        }
+      ],
+      "Name": "RegionalComparisonChartV1"
+    },
+    {
+      "Description": "在比较产品表现时，区分已成熟的产品与较新的产品。",
+      "DisplayName": "发布阶段",
+      "List": [
+        {
+          "Description": "在比较产品表现时，区分已成熟的产品与较新的产品。",
+          "Enum": [
+            {
+              "Description": "已面向广泛用户推出的产品。",
+              "Name": "成熟",
+              "Type": 1
+            },
+            {
+              "Description": "仍在扩大用户群的较新产品。",
+              "Name": "新兴",
+              "Type": 2
+            }
+          ],
+          "Name": "发布阶段",
+          "Type": 0
+        }
+      ],
+      "Name": "ReleaseStageV1"
+    },
+    {
+      "Description": "使用桑基图展示示例访客从到达开始，经过评估后进入激活或离开的流向。",
+      "DisplayName": "访客旅程流向",
+      "List": [
+        {
+          "Description": "使用桑基图展示示例访客从到达开始，经过评估后进入激活或离开的流向。",
+          "Name": "访客旅程流向",
+          "Type": 0
+        },
+        {
+          "Description": "访客在各阶段之间所经历的路径。",
+          "Name": "访客流向",
+          "Type": 1
+        },
+        {
+          "Description": "这些流向所连接的各阶段中的访客数量。",
+          "Name": "访客阶段",
+          "Type": 2
+        }
+      ],
+      "Name": "SankeyFlowChartV1"
+    },
+    {
+      "Description": "展示到达、评估、激活和离开阶段的访客数量。",
+      "DisplayName": "访客阶段",
+      "List": [
+        {
+          "Description": "展示到达、评估、激活和离开阶段的访客数量。",
+          "Name": "访客阶段",
+          "Type": 0
+        },
+        {
+          "Description": "示例访客旅程中的一个阶段，以及该阶段所代表的访客数量。",
+          "Name": "访客阶段",
+          "Type": 1
+        }
+      ],
+      "Name": "SankeyNodesV1"
+    },
+    {
+      "Description": "示例访客旅程中的一个阶段，以及该阶段所代表的访客数量。",
+      "DisplayName": "访客阶段",
+      "List": [
+        {
+          "Description": "示例访客旅程中的一个阶段，以及该阶段所代表的访客数量。",
+          "Name": "访客阶段",
+          "Type": 0
+        },
+        {
+          "Description": "节点左边界。",
+          "Name": "节点起始 x 坐标",
+          "Type": 1
+        },
+        {
+          "Description": "节点右边界。",
+          "Name": "节点结束 x 坐标",
+          "Type": 2
+        },
+        {
+          "Description": "节点下边界。",
+          "Name": "节点起始 y 坐标",
+          "Type": 3
+        },
+        {
+          "Description": "节点上边界。",
+          "Name": "节点结束 y 坐标",
+          "Type": 4
+        },
+        {
+          "Description": "此处所表示的到达、评估、激活或离开阶段。",
+          "Name": "阶段",
+          "Type": 5
+        },
+        {
+          "Description": "此阶段所表示的示例访客数量。",
+          "Name": "访客数",
+          "Type": 6
+        },
+        {
+          "Description": "用于区分此访客阶段的颜色。",
+          "Name": "阶段颜色",
+          "Type": 7
+        },
+        {
+          "Description": "用于将此阶段与示例旅程中的其他阶段区分开来。",
+          "Name": "阶段引用",
+          "Type": 8
+        }
+      ],
+      "Name": "SankeyNodeV1"
+    },
+    {
+      "Description": "访客旅程中的一个位置，其边界表示该位置在流量中所占的份额。",
+      "DisplayName": "访客流样本",
+      "List": [
+        {
+          "Description": "访客旅程中的一个位置，其边界表示该位置在流量中所占的份额。",
+          "Name": "访客流样本",
+          "Type": 0
+        },
+        {
+          "Description": "示例旅程中从到达向激活或离开推进的位置。",
+          "Name": "旅程进度",
+          "Type": 1
+        },
+        {
+          "Description": "在采样位置，此旅程的访客流下边界。",
+          "Name": "流量下边界",
+          "Type": 2
+        },
+        {
+          "Description": "在采样位置，此旅程的访客流上边界。",
+          "Name": "流量上边界",
+          "Type": 3
+        },
+        {
+          "Description": "此部分访客流所表示的激活或离开旅程。",
+          "Name": "访客旅程",
+          "Type": 4
+        },
+        {
+          "Description": "沿此旅程行进的示例访客数量。",
+          "Name": "访客数",
+          "Type": 5
+        },
+        {
+          "Description": "用于在访客旅程重叠时保持其可区分性的透明度。",
+          "Name": "流量阴影",
+          "Type": 6
+        },
+        {
+          "Description": "此样本在访客旅程序列中的位置。",
+          "Name": "旅程顺序",
+          "Type": 7
+        },
+        {
+          "Description": "用于将此旅程位置与其他访客流样本区分开来。",
+          "Name": "旅程引用",
+          "Type": 8
+        }
+      ],
+      "Name": "SankeyRibbonPointV1"
+    },
+    {
+      "Description": "显示直接激活、在协助下激活或提前离开的访客所经过的路径。",
+      "DisplayName": "访客流",
+      "List": [
+        {
+          "Description": "显示直接激活、在协助下激活或提前离开的访客所经过的路径。",
+          "Name": "访客流",
+          "Type": 0
+        },
+        {
+          "Description": "访客旅程中的一个位置，其边界表示该位置在流量中所占的份额。",
+          "Name": "访客流样本",
+          "Type": 1
+        }
+      ],
+      "Name": "SankeyRibbonsV1"
+    },
+    {
+      "Description": "区分已记录值、预期值和挑战目标值。",
+      "DisplayName": "情景",
+      "List": [
+        {
+          "Description": "区分已记录值、预期值和挑战目标值。",
+          "Enum": [
+            {
+              "Description": "已完成的测量结果。",
+              "Name": "已记录",
+              "Type": 1
+            },
+            {
+              "Description": "当前预测或计划。",
+              "Name": "预期",
+              "Type": 2
+            },
+            {
+              "Description": "一个具有挑战性的目标。",
+              "Name": "挑战目标",
+              "Type": 3
+            }
+          ],
+          "Name": "情景",
+          "Type": 0
+        }
+      ],
+      "Name": "ScenarioV1"
+    },
+    {
+      "Description": "在示例时间点，一种能源在累计能源总量中所占的份额。",
+      "DisplayName": "能源随时间的贡献量",
+      "List": [
+        {
+          "Description": "在示例时间点，一种能源在累计能源总量中所占的份额。",
+          "Name": "能源随时间的贡献量",
+          "Type": 0
+        },
+        {
+          "Description": "此能源贡献量所对应的日期和时间。",
+          "Name": "时间",
+          "Type": 1
+        },
+        {
+          "Description": "加入此能源的贡献量之前的能源总用量。",
+          "Name": "累计起始值",
+          "Type": 2
+        },
+        {
+          "Description": "加入此能源的贡献量之后的能源总用量。",
+          "Name": "累计结束值",
+          "Type": 3
+        },
+        {
+          "Description": "为这部分需求供能的太阳能、电池或电网来源。",
+          "Name": "能源来源",
+          "Type": 4
+        },
+        {
+          "Description": "此贡献在其来源的时间序列中的位置。",
+          "Name": "时间顺序",
+          "Type": 5
+        },
+        {
+          "Description": "用于将此能源来源及时间与其他贡献区分开来。",
+          "Name": "贡献标识",
+          "Type": 6
+        }
+      ],
+      "Name": "StackedEnergyAreaPointV1"
+    },
+    {
+      "Description": "比较太阳能、电池和电网对能源使用的贡献如何随时间变化。",
+      "DisplayName": "能源贡献随时间的变化",
+      "List": [
+        {
+          "Description": "比较太阳能、电池和电网对能源使用的贡献如何随时间变化。",
+          "Name": "能源贡献随时间的变化",
+          "Type": 0
+        },
+        {
+          "Description": "在一个示例时间点，某一能源来源在累计能源总量中所占的份额。",
+          "Name": "随时间变化的能源贡献",
+          "Type": 1
+        }
+      ],
+      "Name": "StackedEnergyAreasV1"
+    },
+    {
+      "Description": "某一能源来源对示例中季度累计总量的贡献。",
+      "DisplayName": "季度能源贡献",
+      "List": [
+        {
+          "Description": "某一能源来源对示例中季度累计总量的贡献。",
+          "Name": "季度能源贡献",
+          "Type": 0
+        },
+        {
+          "Description": "此能源贡献所代表的三个月时段。",
+          "Name": "季度",
+          "Type": 1
+        },
+        {
+          "Description": "加入此来源的能源贡献前的总量。",
+          "Name": "累计起始值",
+          "Type": 2
+        },
+        {
+          "Description": "加入此来源的能源贡献后的总量。",
+          "Name": "累计结束值",
+          "Type": 3
+        },
+        {
+          "Description": "构成总量这一部分的太阳能、电池或电网来源。",
+          "Name": "能源来源",
+          "Type": 4
+        },
+        {
+          "Description": "用于将此来源及季度与其他能源贡献区分开来。",
+          "Name": "贡献标识",
+          "Type": 5
+        }
+      ],
+      "Name": "StackedEnergyBarSegmentV1"
+    },
+    {
+      "Description": "使用堆叠条形图比较太阳能、电池和电网对各季度能源总量的贡献。",
+      "DisplayName": "季度能源贡献",
+      "List": [
+        {
+          "Description": "使用堆叠条形图比较太阳能、电池和电网对各季度能源总量的贡献。",
+          "Name": "季度能源贡献",
+          "Type": 0
+        },
+        {
+          "Description": "某一能源来源对示例中季度累计总量的贡献。",
+          "Name": "季度能源贡献",
+          "Type": 1
+        }
+      ],
+      "Name": "StackedEnergyBarsV1"
+    },
+    {
+      "Description": "使用堆叠条形图和面积图，比较季度能源总量以及各来源的能源使用变化。",
+      "DisplayName": "各能源来源的贡献",
+      "List": [
+        {
+          "Description": "使用堆叠条形图和面积图，比较季度能源总量以及各来源的能源使用变化。",
+          "Name": "各能源来源的贡献",
+          "Type": 0
+        },
+        {
+          "Description": "每个季度中太阳能、电池和电网来源的能源贡献。",
+          "Name": "季度贡献",
+          "Type": 1
+        },
+        {
+          "Description": "每个时间点太阳能、电池和电网来源对能源使用的贡献。",
+          "Name": "贡献随时间的变化",
+          "Type": 2
+        }
+      ],
+      "Name": "StackedEnergyChartV1"
+    },
+    {
+      "Description": "显示72小时内每个已完成五分钟时段结束时的模拟温度。",
+      "DisplayName": "每五分钟结束温度",
+      "List": [
+        {
+          "Description": "显示72小时内每个已完成五分钟时段结束时的模拟温度。",
+          "Name": "每五分钟结束温度",
+          "Type": 0
+        },
+        {
+          "Description": "一个已完成五分钟时段结束时的模拟温度，以及该时段的最低和最高温度。",
+          "Name": "五分钟时段结束温度",
+          "Type": 1
+        }
+      ],
+      "Name": "TemperatureCloseTicksV1"
+    },
+    {
+      "Description": "一个已完成五分钟时段结束时的模拟温度，以及该时段的最低和最高温度。",
+      "DisplayName": "五分钟时段结束温度",
+      "List": [
+        {
+          "Description": "一个已完成五分钟时段结束时的模拟温度，以及该时段的最低和最高温度。",
+          "Name": "五分钟时段结束温度",
+          "Type": 0
+        },
+        {
+          "Description": "此结束温度所代表的五分钟时段的中间时刻。",
+          "Name": "时段中点",
+          "Type": 1
+        },
+        {
+          "Description": "已完成五分钟时段的结束时间；下一时段从此时开始。",
+          "Name": "时段结束时间",
+          "Type": 2
+        },
+        {
+          "Description": "此五分钟时段内最后一个模拟温度。",
+          "Name": "结束温度",
+          "Type": 3
+        },
+        {
+          "Description": "同一五分钟时段内的最低模拟温度。",
+          "Name": "最低温度",
+          "Type": 4
+        },
+        {
+          "Description": "同一五分钟时段内的最高模拟温度。",
+          "Name": "最高温度",
+          "Type": 5
+        }
+      ],
+      "Name": "TemperatureCloseTickV1"
+    },
+    {
+      "Description": "显示72小时内每个已完成五分钟时段的最低和最高模拟温度。",
+      "DisplayName": "每五分钟温度范围",
+      "List": [
+        {
+          "Description": "显示72小时内每个已完成五分钟时段的最低和最高模拟温度。",
+          "Name": "每五分钟温度范围",
+          "Type": 0
+        },
+        {
+          "Description": "一个已完成五分钟时段的最低、最高和结束模拟温度。",
+          "Name": "五分钟时段温度范围",
+          "Type": 1
+        }
+      ],
+      "Name": "TemperatureHighLowRangesV1"
+    },
+    {
+      "Description": "一个已结束的五分钟时段内模拟的最低、最高和最终温度。",
+      "DisplayName": "五分钟温度范围",
+      "List": [
+        {
+          "Description": "一个已结束的五分钟时段内模拟的最低、最高和最终温度。",
+          "Name": "五分钟温度范围",
+          "Type": 0
+        },
+        {
+          "Description": "该五分钟时段中点的日期和时间。",
+          "Name": "时段中点",
+          "Type": 1
+        },
+        {
+          "Description": "该五分钟时段内的最低模拟温度。",
+          "Name": "最低温度",
+          "Type": 2
+        },
+        {
+          "Description": "该五分钟时段内的最高模拟温度。",
+          "Name": "最高温度",
+          "Type": 3
+        },
+        {
+          "Description": "该五分钟时段内最后记录的模拟温度。",
+          "Name": "最终温度",
+          "Type": 4
+        }
+      ],
+      "Name": "TemperatureHighLowRuleV1"
+    },
+    {
+      "Description": "比较每个已结束的五分钟时段内模拟的最低、最高和最终温度。",
+      "DisplayName": "过去 72 小时的温度历史",
+      "List": [
+        {
+          "Description": "比较每个已结束的五分钟时段内模拟的最低、最高和最终温度。",
+          "Name": "过去 72 小时的温度历史",
+          "Type": 0
+        },
+        {
+          "Description": "每个已结束的五分钟时段内模拟的最低和最高温度。",
+          "Name": "温度范围",
+          "Type": 1
+        },
+        {
+          "Description": "每个已结束的五分钟时段内最后记录的模拟温度。",
+          "Name": "最终温度",
+          "Type": 2
+        }
+      ],
+      "Name": "TemperatureHlcChartV1"
+    },
+    {
+      "Description": "标识某个活动时段对应工作日的哪个时间段。",
+      "DisplayName": "时间段",
+      "List": [
+        {
+          "Description": "标识某个活动时段对应工作日的哪个时间段。",
+          "Enum": [
+            {
+              "Description": "工作日早段的活动。",
+              "Name": "上午",
+              "Type": 1
+            },
+            {
+              "Description": "中午时段的活动。",
+              "Name": "中午",
+              "Type": 2
+            },
+            {
+              "Description": "下午时段的活动。",
+              "Name": "下午",
+              "Type": 3
+            },
+            {
+              "Description": "工作日晚段的活动。",
+              "Name": "傍晚",
+              "Type": 4
+            }
+          ],
+          "Name": "时间段",
+          "Type": 0
+        }
+      ],
+      "Name": "TimeBlockV1"
+    },
+    {
+      "Description": "使用圆环图比较各个引荐来源，并用标签标明每个来源及其百分比。",
+      "DisplayName": "流量占比",
+      "List": [
+        {
+          "Description": "使用圆环图比较各个引荐来源，并用标签标明每个来源及其百分比。",
+          "Name": "流量占比",
+          "Type": 0
+        },
+        {
+          "Description": "一个引荐来源在示例访客流量中所占的比例。",
+          "Name": "流量占比",
+          "Type": 1
+        }
+      ],
+      "Name": "TrafficDonutChartV1"
+    },
+    {
+      "Description": "一个引荐来源在示例访客流量中所占的比例。",
+      "DisplayName": "流量占比",
+      "List": [
+        {
+          "Description": "一个引荐来源在示例访客流量中所占的比例。",
+          "Name": "流量占比",
+          "Type": 0
+        },
+        {
+          "Description": "该来源所占部分在圆环上的起始位置。",
+          "Name": "占比起始角度",
+          "Type": 1
+        },
+        {
+          "Description": "该来源所占部分在圆环上的结束位置。",
+          "Name": "占比结束角度",
+          "Type": 2
+        },
+        {
+          "Description": "从圆心到流量圆环内侧的距离。",
+          "Name": "内半径",
+          "Type": 3
+        },
+        {
+          "Description": "从圆心到流量圆环外侧的距离。",
+          "Name": "外半径",
+          "Type": 4
+        },
+        {
+          "Description": "该流量占比所代表的引荐来源。",
+          "Name": "流量来源",
+          "Type": 5
+        },
+        {
+          "Description": "将来源名称及其占比一并显示，用于标明该来源贡献的流量。",
+          "Name": "来源和占比标签",
+          "Type": 6
+        },
+        {
+          "Description": "示例访客中通过该来源到访的百分比。",
+          "Name": "占比",
+          "Type": 7
+        },
+        {
+          "Description": "用于突出该流量占比边界的不透明度。",
+          "Name": "边界强调度",
+          "Type": 8
+        },
+        {
+          "Description": "该来源在流量圆环环绕顺序中的位置。",
+          "Name": "来源顺序",
+          "Type": 9
+        },
+        {
+          "Description": "用于将该引荐来源与其他流量来源区分开来。",
+          "Name": "来源标识",
+          "Type": 10
+        }
+      ],
+      "Name": "TrafficDonutSegmentV1"
+    },
+    {
+      "Description": "使用饼图比较每个引荐来源在示例总流量中所占的比例。",
+      "DisplayName": "流量饼图扇区",
+      "List": [
+        {
+          "Description": "通过饼图比较各引荐来源在示例总流量中的占比。",
+          "Name": "流量饼图扇区",
+          "Type": 0
+        },
+        {
+          "Description": "饼图中某个引荐来源在示例总流量中的占比。",
+          "Name": "流量饼图扇区",
+          "Type": 1
+        }
+      ],
+      "Name": "TrafficPieChartV1"
+    },
+    {
+      "Description": "标识访问者的到访方式，以便比较各来源的流量占比。",
+      "DisplayName": "流量来源",
+      "List": [
+        {
+          "Description": "标识访问者的到访方式，以便比较各来源的流量占比。",
+          "Enum": [
+            {
+              "Description": "直接访问产品的用户。",
+              "Name": "直接访问",
+              "Type": 1
+            },
+            {
+              "Description": "来自搜索引擎的引荐流量。",
+              "Name": "搜索",
+              "Type": 2
+            },
+            {
+              "Description": "来自合作伙伴的引荐流量。",
+              "Name": "合作伙伴",
+              "Type": 3
+            },
+            {
+              "Description": "来自推广活动的引荐流量。",
+              "Name": "推广活动",
+              "Type": 4
+            },
+            {
+              "Description": "来自社交媒体的引荐流量。",
+              "Name": "社交媒体",
+              "Type": 5
+            },
+            {
+              "Description": "流量较小且未分类的引荐来源。",
+              "Name": "其他",
+              "Type": 6
+            }
+          ],
+          "Name": "流量来源",
+          "Type": 0
+        }
+      ],
+      "Name": "TrafficSourceV1"
+    },
+    {
+      "Description": "一项示例电气测量的估计下限和上限，用于比较不确定性。",
+      "DisplayName": "测量区间",
+      "List": [
+        {
+          "Description": "一项示例电气测量的估计下限和上限，用于比较不确定性。",
+          "Name": "测量区间",
+          "Type": 0
+        },
+        {
+          "Description": "此区间所表示的示例电气样本。",
+          "Name": "样本",
+          "Type": 1
+        },
+        {
+          "Description": "误差区间的下限。",
+          "Name": "估计下限",
+          "Type": 2
+        },
+        {
+          "Description": "误差区间的上限。",
+          "Name": "估计上限",
+          "Type": 3
+        },
+        {
+          "Description": "此测量区间所表示的情景。",
+          "Name": "情景",
+          "Type": 4
+        },
+        {
+          "Description": "标识通过线条样式区分此区间的情景。",
+          "Name": "情景线型",
+          "Type": 5
+        },
+        {
+          "Description": "用于强调此测量区间的相对线条粗细。",
+          "Name": "区间强调程度",
+          "Type": 6
+        },
+        {
+          "Description": "用于将此样本区间与其他测量区间区分开来。",
+          "Name": "测量参考标识",
+          "Type": 7
+        }
+      ],
+      "Name": "UncertaintyRuleV1"
+    },
+    {
+      "Description": "标识活动时段所对应的工作日。",
+      "DisplayName": "工作日",
+      "List": [
+        {
+          "Description": "标识活动时段所对应的工作日。",
+          "Enum": [
+            {
+              "Description": "星期一的活动。",
+              "Name": "星期一",
+              "Type": 1
+            },
+            {
+              "Description": "星期二的活动。",
+              "Name": "星期二",
+              "Type": 2
+            },
+            {
+              "Description": "星期三的活动。",
+              "Name": "星期三",
+              "Type": 3
+            },
+            {
+              "Description": "星期四的活动。",
+              "Name": "星期四",
+              "Type": 4
+            },
+            {
+              "Description": "星期五的活动。",
+              "Name": "星期五",
+              "Type": 5
+            }
+          ],
+          "Name": "工作日",
+          "Type": 0
+        }
+      ],
+      "Name": "WeekdayV1"
+    }
+  ]
+}

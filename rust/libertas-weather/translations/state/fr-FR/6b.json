@@ -1,0 +1,54 @@
+{
+  "Entries": {
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"changes\"/\"\"/property/\"Description\"": {
+      "Current": "sha256:3bf87cdc32cea8aae063413617c10d82e149da92546f19908c7eed81aab95819",
+      "Target": "Une mutation d’état atomique dans l’ordre du curseur."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"changes\"/\"\"/property/\"Name\"": {
+      "Current": "sha256:7951a6b4792657ef47bf14da81843e7886e8dab5ad352da09443ece698ff5d37",
+      "Target": "Modification météorologique"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"changes\"/property/\"Description\"": {
+      "Current": "sha256:133e063f94455dd3cdeeeb6f94dd080da38dadc0c17c256c287bf55dce27346f",
+      "Target": "Modifications ordonnées à appliquer atomiquement. Chaque élément fait avancer la séquence d’exactement une unité ; une liste vide indique que la récupération est à jour et ne fait pas avancer le curseur ni ne sert de signal périodique d’activité."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"changes\"/property/\"Name\"": {
+      "Current": "sha256:a382b21d3ca5b8cc55f5c5a33c54216443779a1661cdb53865c5950bf7030d08",
+      "Target": "Modifications météorologiques"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"from_cursor\"/property/\"Description\"": {
+      "Current": "sha256:049d60825b96b1b702a1a070b893dcfbbfee2c75b6ab22a331c09b59f765cdb9",
+      "Target": "Curseur inférieur exclusif de ce rapport et curseur exact qu’un client doit déjà détenir avant de l’appliquer."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"from_cursor\"/property/\"Name\"": {
+      "Current": "sha256:9fe8aa30a9d5bbe6a969c22d9c45fc557a3cc9ae497e34f170d64987f1d1fdf9",
+      "Target": "Curseur de départ"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"through_cursor\"/property/\"Description\"": {
+      "Current": "sha256:e26ff064d3c5527c165d1d9280fd2d76d7e14816dc4a3d0bdd8f8d52f30c11e3",
+      "Target": "Curseur supérieur inclusif atteint après l’application de chaque changement de ce rapport. Il doit conserver le même horodatage d’époque que `from_cursor`. Une réinitialisation du curseur du serveur n’est jamais transportée sous forme de rapport incrémentiel ; elle nécessite une réinitialisation complète."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/\"through_cursor\"/property/\"Name\"": {
+      "Current": "sha256:fa31d28190e8094a601df46c0fb87c6b9df596697c18f08f1f9c5535d78b9771",
+      "Target": "Curseur d’arrivée"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"Description\"": {
+      "Current": "sha256:2a4211c52e68fe3aa0e3464575a169c1856b4a605d27507de2790c6c91dd7ba8",
+      "Target": "Transporte une plage ordonnée et atomique de changements météorologiques. Un client applique le rapport uniquement lorsque son curseur enregistré est égal à `from_cursor`, puis enregistre `through_cursor`. Un rapport vide est le résultat d’une récupération ayant rattrapé tous les changements ; les signaux périodiques d’activité sans changement utilisent PeerAlive."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"Name\"": {
+      "Current": "sha256:f16b8d43c899f26cdb5f25fe5abd6aad63f7af6f5ca6340edefa04c0911f60e5",
+      "Target": "Rapport météorologique incrémentiel de l’arroseur"
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"Description\"": {
+      "Current": "sha256:494b439b2e9bd61abf5334f301bf7185ccca43edaad540f5efb3fcefef542b1f",
+      "Target": "Transporte une plage ordonnée et atomique de changements météorologiques. Un client applique le rapport uniquement lorsque son curseur enregistré est égal à `from_cursor`, puis enregistre `through_cursor`. Un rapport vide est le résultat d’une récupération ayant rattrapé tous les changements ; les signaux périodiques d’activité sans changement utilisent PeerAlive."
+    },
+    "type/\"\"/\"SprinklerWeatherIncrementalReportV1\"/property/\"DisplayName\"": {
+      "Current": "sha256:44a02286a64de65f69fbf227fc6cde3ba5a603049ed2552757b99b092a2c3ab7",
+      "Target": "Rapport météorologique incrémentiel de l’arroseur"
+    }
+  },
+  "Reviewed": {},
+  "Translated": {}
+}

@@ -1,0 +1,143 @@
+{
+  "FormatVersion": 2,
+  "PackageName": "libertas-weather_agent",
+  "SourceDocument": {
+    "Description": "Keeps recent conditions and forecasts available to apps such as Smart Sprinkler.\nLocal Weather uses the Hub's location to request the right forecast. It remembers the latest good weather during short internet or location-service interruptions and updates automatically when the Hub moves.",
+    "DisplayName": "Local Weather",
+    "DocumentVersion": "0.0.2",
+    "List": [
+      {
+        "DefaultText": "Local weather",
+        "Description": "Provides current local weather, recent hourly conditions, and forecasts for sprinkler planning. The user chooses where sprinkler applications receive this information. The weather service uses the Libertas installation's location to retrieve temperature, relative humidity, precipitation, estimated water loss from soil and plants, wind speed, and wind gusts from Open-Meteo. The weather service automatically refreshes current conditions, recent history, and a seven-day forecast and reports changes to sprinkler applications. The weather service preserves the latest valid information across restarts and short internet or location-service outages and refreshes for a new location when the installation moves. Location access and an internet connection are required for fresh information. Only one Local Weather service can run at a time.",
+        "DisplayName": "Local Weather",
+        "List": [
+          {
+            "Description": "",
+            "Name": "sprinkler_weather",
+            "Type": 0
+          }
+        ],
+        "Name": "libertas_weather_server"
+      }
+    ],
+    "Locale": "en",
+    "StringResources": {
+      "SPRINKLER_CURRENT_WEATHER_V1": "Saved current sprinkler weather for {0}.",
+      "SPRINKLER_WEATHER_FORECAST_V1": "Saved sprinkler weather forecast for {0}.",
+      "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "Saved sprinkler weather update time for {0}.",
+      "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "Saved recent sprinkler weather for {0}.",
+      "SPRINKLER_WEATHER_LOCATION_V1": "Saved location used for sprinkler weather at {0}.",
+      "api.open-meteo.com": "Connect to Open-Meteo to retrieve current conditions, recent history, and forecasts for sprinkler planning.",
+      "libertas.permission.ACCESS_FINE_LOCATION": "Use the Hub's location to request the correct local weather forecast."
+    },
+    "Types": [
+      {
+        "Description": "Makes local weather available to Smart Sprinkler.",
+        "DisplayName": "Sprinkler weather service",
+        "List": [
+          {
+            "Description": "Makes local weather available to Smart Sprinkler.",
+            "Name": "Sprinkler weather service",
+            "Type": 0
+          },
+          {
+            "DefaultText": "Sprinkler weather service",
+            "Description": "Choose where sprinkler apps can get weather updates.",
+            "Name": "Weather service",
+            "Type": 1
+          }
+        ],
+        "Name": "SprinklerWeatherEndpointServerV1"
+      }
+    ]
+  },
+  "SourceLocale": "en",
+  "SourceSchema": {
+    "AppDependencies": [],
+    "Attributes": [
+      {
+        "Name": "DefaultLocale",
+        "Value": "en"
+      },
+      {
+        "Name": "StringResources",
+        "Value": "SPRINKLER_CURRENT_WEATHER_V1,SPRINKLER_WEATHER_FORECAST_V1,SPRINKLER_WEATHER_HISTORY_METADATA_V1,SPRINKLER_WEATHER_HISTORY_PERIODS_V2,SPRINKLER_WEATHER_LOCATION_V1,api.open-meteo.com,libertas.permission.ACCESS_FINE_LOCATION"
+      }
+    ],
+    "Functions": [
+      {
+        "Attributes": [
+          {
+            "Name": "AccessHost",
+            "Value": "api.open-meteo.com"
+          },
+          {
+            "Name": "FunctionDataSchema",
+            "Value": "key=libertas-weather::SprinklerWeatherKey,value=libertas-weather::SprinklerWeatherPersistentData"
+          },
+          {
+            "Name": "Permissions",
+            "Value": "libertas.permission.ACCESS_FINE_LOCATION"
+          },
+          {
+            "Name": "Singleton",
+            "Value": "true"
+          }
+        ],
+        "NativeName": "libertas_weather_server",
+        "Parameters": [
+          {
+            "Attributes": [],
+            "BuiltinType": false,
+            "Children": [],
+            "ID": 0,
+            "Namespace": "",
+            "NativeName": "sprinkler_weather",
+            "NativeType": "",
+            "Type": "SprinklerWeatherEndpointServerV1"
+          }
+        ]
+      }
+    ],
+    "Types": [
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "EndpointServer",
+                "Value": "true"
+              },
+              {
+                "Name": "ExcludeUI",
+                "Value": "true"
+              },
+              {
+                "Name": "Permissions",
+                "Value": "libertas.permission.ACCESS_FINE_LOCATION"
+              },
+              {
+                "Name": "ProtocolSchema",
+                "Value": "libertas-weather::SprinklerWeatherProtocol"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [],
+            "ID": 1,
+            "Namespace": "",
+            "NativeName": "endpoint",
+            "NativeType": "LibertasEndpoint",
+            "Type": "Endpoint"
+          }
+        ],
+        "ID": 0,
+        "Namespace": "",
+        "NativeName": "SprinklerWeatherEndpointServerV1",
+        "NativeType": "",
+        "Type": "Table"
+      }
+    ]
+  }
+}

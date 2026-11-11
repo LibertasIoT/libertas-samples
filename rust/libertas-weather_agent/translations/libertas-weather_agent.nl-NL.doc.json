@@ -1,0 +1,50 @@
+{
+  "Description": "Levert lokaal weer aan beregeningsapps zoals Smart Sprinkler, zodat ze de beregening kunnen afstemmen op regen, temperatuur, luchtvochtigheid en wind. Lokaal weer gebruikt de locatie van de Hub om via Open-Meteo de huidige omstandigheden, zeven dagen aan recente weergegevens per uur en een zevendaagse verwachting op te halen. De service vernieuwt de weergegevens automatisch en bewaart de laatst geldige weergegevens bij herstarts en tijdelijke internetonderbrekingen. Voor actuele weergegevens zijn locatietoegang en een internetverbinding vereist. Op elke Hub kan één service voor Lokaal weer worden uitgevoerd voor meerdere beregeningsapps.",
+  "DisplayName": "Lokaal weer",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Local weather",
+      "Description": "Lokaal weer levert huidige omstandigheden, recente weergegevens en verwachtingen om beregeningsapps te helpen bepalen wanneer en hoeveel ze moeten beregenen. De service creëert een gedeelde weerbron voor apps zoals Smart Sprinkler en gebruikt de locatie van de Hub om weergegevens van Open-Meteo op te halen. Lokaal weer levert temperatuur, relatieve luchtvochtigheid, neerslag, voorspelde regenkans, geschat waterverlies uit de bodem en planten, windsnelheid en windstoten. Lokaal weer vernieuwt de huidige omstandigheden automatisch elke 15 minuten en de historische gegevens per uur en verwachtingen elk uur. De service bewaart zeven dagen aan recente weergegevens per uur en een zevendaagse verwachting, en stuurt weersveranderingen naar verbonden beregeningsapps. Verbonden apps kunnen de laatst opgeslagen weergegevens ophalen of gemiste updates na een onderbreking herstellen. Lokaal weer slaat de laatst geldige locatie, huidige omstandigheden, recente historische gegevens en verwachting afzonderlijk op, zodat beschikbare weergegevens behouden blijven bij herstarts en tijdelijke onderbrekingen van internet of locatieservices. De service levert de tijd en uiterste versheidsdatum van elke update, zodat beregeningsapps oudere weergegevens kunnen herkennen. Lokaal weer wist de weergegevens van de vorige locatie en haalt vervangende weergegevens op wanneer de Hub een gewijzigde locatie meldt. Voor actuele weergegevens zijn locatietoegang en een internetverbinding vereist. Weergegevens blijven niet beschikbaar totdat de service de locatie van de Hub kent. Er kan slechts één service voor Lokaal weer op een Hub worden uitgevoerd en meerdere beregeningsapps kunnen die service delen. Ontwikkeld door Smartonlabs Inc. (libertas).",
+      "DisplayName": "Lokaal weer",
+      "List": [
+        {
+          "Description": "De gedeelde lokale weerbron die deze service creëert voor beregeningsapps op de Hub. Verbonden apps gebruiken de huidige omstandigheden, recente weergegevens en verwachtingen van deze service om de beregening te plannen.",
+          "Name": "Beregeningsweerservice",
+          "Type": 0
+        }
+      ],
+      "Name": "libertas_weather_server"
+    }
+  ],
+  "Locale": "nl-NL",
+  "StringResources": {
+    "SPRINKLER_CURRENT_WEATHER_V1": "Huidige beregeningsweergegevens voor {0} opgeslagen.",
+    "SPRINKLER_WEATHER_FORECAST_V1": "Beregeningsweersverwachting voor {0} opgeslagen.",
+    "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "Bijwerktijd van beregeningsweergegevens voor {0} opgeslagen.",
+    "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "Recente beregeningsweergegevens voor {0} opgeslagen.",
+    "SPRINKLER_WEATHER_LOCATION_V1": "Locatie die voor beregeningsweer op {0} is gebruikt, opgeslagen.",
+    "api.open-meteo.com": "Maak verbinding met Open-Meteo om de huidige omstandigheden, recente historische gegevens en verwachtingen voor de beregeningsplanning op te halen.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Gebruik de locatie van de Hub om de juiste lokale weersverwachting op te vragen."
+  },
+  "Types": [
+    {
+      "Description": "Levert huidige omstandigheden, recente weergegevens per uur en verwachtingen voor beregeningsapps met behulp van de locatie van de Hub.",
+      "DisplayName": "Beregeningsweerservice",
+      "List": [
+        {
+          "Description": "Levert huidige omstandigheden, recente weergegevens per uur en verwachtingen voor beregeningsapps met behulp van de locatie van de Hub.",
+          "Name": "Beregeningsweerservice",
+          "Type": 0
+        },
+        {
+          "DefaultText": "Beregeningsweerservice",
+          "Description": "Lokaal weer creëert deze service, zodat beregeningsapps lokale weergegevens kunnen ophalen en automatische updates voor beregeningsbeslissingen kunnen ontvangen.",
+          "Name": "Beregeningsweerservice",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWeatherEndpointServerV1"
+    }
+  ]
+}

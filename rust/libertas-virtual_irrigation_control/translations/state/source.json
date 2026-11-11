@@ -1,0 +1,243 @@
+{
+  "FormatVersion": 2,
+  "PackageName": "libertas-virtual_irrigation_control",
+  "SourceDocument": {
+    "Description": "Lets you try sprinkler apps without installing physical irrigation hardware.",
+    "DisplayName": "Virtual Sprinkler Valves",
+    "DocumentVersion": "0.0.2",
+    "List": [
+      {
+        "DefaultText": "Virtual sprinkler valves",
+        "Description": "Lets people try sprinkler applications without installing physical irrigation hardware. The user chooses one or more virtual valves and can set the default watering duration for each valve. The user or a sprinkler application can open a valve indefinitely, open it for a chosen duration, or close it. The valve controller automatically closes timed watering and closes any other valve before opening a new one, so only one valve waters at a time. The valve controller shows each valve's open or closed state, selected duration, default duration, and remaining time, and remembers the default duration across restarts.",
+        "DisplayName": "Virtual Sprinkler Valves",
+        "List": [
+          {
+            "Description": "Add one virtual valve for each area you want to try.",
+            "Name": "Sprinkler valves",
+            "Type": 0
+          },
+          {
+            "Description": "One virtual water valve.",
+            "Name": "Sprinkler valve",
+            "Type": 1
+          }
+        ],
+        "Name": "virtual_irrigation_controller"
+      }
+    ],
+    "Locale": "en",
+    "StringResources": {
+      "DEFAULT_OPEN_DURATION": "Saved watering duration for {0}."
+    },
+    "Types": [
+      {
+        "Description": "Every data shape written to the Libertas database is defined inline in this union.",
+        "DisplayName": "Persistent valve data.",
+        "List": [
+          {
+            "Description": "Every data shape written to the Libertas database is defined inline in this union.",
+            "Name": "Persistent valve data.",
+            "Type": 0
+          },
+          {
+            "Description": "",
+            "Name": "Matter DefaultOpenDuration attribute.",
+            "Type": 1
+          },
+          {
+            "Description": "",
+            "Name": "DefaultOpenDuration, in seconds.",
+            "Type": 2
+          }
+        ],
+        "Name": "ValveData"
+      },
+      {
+        "Description": "",
+        "DisplayName": "Saved valve settings",
+        "List": [
+          {
+            "Description": "",
+            "Name": "Saved valve settings",
+            "Type": 0
+          },
+          {
+            "Description": "",
+            "Name": "Default watering duration for one valve",
+            "Type": 1
+          },
+          {
+            "Description": "",
+            "Name": "valve",
+            "Type": 2
+          }
+        ],
+        "Name": "ValveKey"
+      }
+    ]
+  },
+  "SourceLocale": "en",
+  "SourceSchema": {
+    "AppDependencies": [],
+    "Attributes": [
+      {
+        "Name": "DefaultLocale",
+        "Value": "en"
+      },
+      {
+        "Name": "StringResources",
+        "Value": "DEFAULT_OPEN_DURATION"
+      },
+      {
+        "Name": "no_std",
+        "Value": "true"
+      }
+    ],
+    "Functions": [
+      {
+        "Attributes": [
+          {
+            "Name": "FunctionDataSchema",
+            "Value": "key=ValveKey,value=ValveData"
+          }
+        ],
+        "NativeName": "virtual_irrigation_controller",
+        "Parameters": [
+          {
+            "Attributes": [
+              {
+                "Name": "SizeMin",
+                "Value": "1"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [
+                  {
+                    "Name": "VirtualDevice",
+                    "Value": "BQEBQAEBgQEBAQAABQABAwQFAAIAAQA="
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 1,
+                "Namespace": "",
+                "NativeName": "",
+                "NativeType": "LibertasVirtualDevice",
+                "Type": "VirtualDevice"
+              }
+            ],
+            "ID": 0,
+            "Namespace": "",
+            "NativeName": "valves",
+            "NativeType": "Vec < LibertasVirtualDevice >",
+            "Type": "List"
+          }
+        ]
+      }
+    ],
+    "Types": [
+      {
+        "Attributes": [
+          {
+            "Name": "LibertasData",
+            "Value": "true"
+          }
+        ],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [
+                  {
+                    "Name": "NumberMax",
+                    "Value": "4294967295"
+                  },
+                  {
+                    "Name": "NumberMin",
+                    "Value": "0"
+                  },
+                  {
+                    "Name": "NumberStep",
+                    "Value": "1"
+                  },
+                  {
+                    "Name": "NumberType",
+                    "Value": "u32"
+                  },
+                  {
+                    "Name": "TimeInterval",
+                    "Value": "true"
+                  }
+                ],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 2,
+                "Namespace": "",
+                "NativeName": "value",
+                "NativeType": "u32",
+                "Type": "Number"
+              }
+            ],
+            "ID": 1,
+            "Namespace": "",
+            "NativeName": "DefaultOpenDuration",
+            "NativeType": "",
+            "Type": "Table"
+          }
+        ],
+        "ID": 0,
+        "Namespace": "",
+        "NativeName": "ValveData",
+        "NativeType": "",
+        "Type": "Union"
+      },
+      {
+        "Attributes": [],
+        "BuiltinType": true,
+        "Children": [
+          {
+            "Attributes": [
+              {
+                "Name": "Discriminator",
+                "Value": "0"
+              }
+            ],
+            "BuiltinType": true,
+            "Children": [
+              {
+                "Attributes": [],
+                "BuiltinType": true,
+                "Children": [],
+                "ID": 2,
+                "Namespace": "",
+                "NativeName": "valve",
+                "NativeType": "LibertasVirtualDevice",
+                "Type": "VirtualDevice"
+              }
+            ],
+            "ID": 1,
+            "Namespace": "",
+            "NativeName": "DefaultOpenDuration",
+            "NativeType": "",
+            "Type": "Table"
+          }
+        ],
+        "ID": 0,
+        "Namespace": "",
+        "NativeName": "ValveKey",
+        "NativeType": "",
+        "Type": "Union"
+      }
+    ]
+  }
+}

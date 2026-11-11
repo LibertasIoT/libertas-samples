@@ -1,0 +1,50 @@
+{
+  "Description": "Membekalkan cuaca setempat kepada aplikasi pemercik seperti Smart Sprinkler supaya aplikasi tersebut dapat merancang penyiraman berdasarkan hujan, suhu, kelembapan dan angin. Cuaca Setempat menggunakan lokasi Hab untuk mendapatkan keadaan semasa, data cuaca setiap jam bagi tujuh hari kebelakangan dan ramalan tujuh hari daripada Open-Meteo. Perkhidmatan ini menyegarkan data cuaca secara automatik dan mengekalkan data cuaca sah yang terakhir semasa mula semula dan gangguan internet sementara. Data cuaca terkini memerlukan akses lokasi dan sambungan internet. Setiap Hab boleh menjalankan satu perkhidmatan Cuaca Setempat untuk berbilang aplikasi pemercik.",
+  "DisplayName": "Cuaca Setempat",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Local weather",
+      "Description": "Cuaca Setempat membekalkan keadaan semasa, cuaca terkini dan ramalan untuk membantu aplikasi pemercik merancang masa dan jumlah penyiraman. Perkhidmatan ini mewujudkan sumber cuaca yang dikongsi untuk aplikasi seperti Smart Sprinkler dan menggunakan lokasi Hab untuk mendapatkan data cuaca daripada Open-Meteo. Cuaca Setempat membekalkan suhu, kelembapan relatif, kerpasan, kebarangkalian hujan dalam ramalan, anggaran kehilangan air daripada tanah dan tumbuhan, kelajuan angin serta tiupan angin. Cuaca Setempat menyegarkan keadaan semasa secara automatik setiap 15 minit serta sejarah setiap jam dan ramalan setiap jam. Perkhidmatan ini menyimpan data cuaca setiap jam bagi tujuh hari kebelakangan dan ramalan tujuh hari serta menghantar perubahan cuaca kepada aplikasi pemercik yang disambungkan. Aplikasi yang disambungkan boleh mendapatkan data cuaca tersimpan yang terkini atau memulihkan kemas kini yang terlepas selepas gangguan. Cuaca Setempat menyimpan secara berasingan lokasi sah yang terakhir, keadaan semasa, sejarah terkini dan ramalan, sekali gus mengekalkan ketersediaan data cuaca semasa mula semula serta gangguan sementara pada internet atau perkhidmatan lokasi. Perkhidmatan ini membekalkan masa dan tarikh akhir kesegaran bagi setiap kemas kini supaya aplikasi pemercik dapat mengenal pasti data cuaca yang lebih lama. Cuaca Setempat mengosongkan data cuaca bagi lokasi sebelumnya dan mendapatkan data cuaca gantian apabila Hab melaporkan perubahan lokasi. Data cuaca terkini memerlukan akses lokasi dan sambungan internet. Data cuaca tidak akan tersedia sehingga perkhidmatan mengetahui lokasi Hab. Hanya satu perkhidmatan Cuaca Setempat boleh dijalankan pada sesebuah Hab dan berbilang aplikasi pemercik boleh berkongsi perkhidmatan tersebut. Dibangunkan oleh Smartonlabs Inc. (libertas).",
+      "DisplayName": "Cuaca Setempat",
+      "List": [
+        {
+          "Description": "Sumber cuaca setempat yang dikongsi dan diwujudkan oleh perkhidmatan ini untuk aplikasi pemercik pada Hab. Aplikasi yang disambungkan menggunakan keadaan semasa, cuaca terkini dan ramalan daripada perkhidmatan ini untuk merancang penyiraman.",
+          "Name": "Perkhidmatan cuaca pemercik",
+          "Type": 0
+        }
+      ],
+      "Name": "libertas_weather_server"
+    }
+  ],
+  "Locale": "ms-MY",
+  "StringResources": {
+    "SPRINKLER_CURRENT_WEATHER_V1": "Cuaca semasa pemercik untuk {0} telah disimpan.",
+    "SPRINKLER_WEATHER_FORECAST_V1": "Ramalan cuaca pemercik untuk {0} telah disimpan.",
+    "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "Masa kemas kini cuaca pemercik untuk {0} telah disimpan.",
+    "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "Cuaca pemercik terkini untuk {0} telah disimpan.",
+    "SPRINKLER_WEATHER_LOCATION_V1": "Lokasi yang digunakan untuk cuaca pemercik di {0} telah disimpan.",
+    "api.open-meteo.com": "Sambung kepada Open-Meteo untuk mendapatkan keadaan semasa, sejarah terkini dan ramalan bagi perancangan pemercik.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Gunakan lokasi Hab untuk meminta ramalan cuaca setempat yang betul."
+  },
+  "Types": [
+    {
+      "Description": "Membekalkan keadaan semasa, data cuaca setiap jam bagi tempoh terkini dan ramalan untuk aplikasi pemercik menggunakan lokasi Hab.",
+      "DisplayName": "Perkhidmatan cuaca pemercik",
+      "List": [
+        {
+          "Description": "Membekalkan keadaan semasa, data cuaca setiap jam bagi tempoh terkini dan ramalan untuk aplikasi pemercik menggunakan lokasi Hab.",
+          "Name": "Perkhidmatan cuaca pemercik",
+          "Type": 0
+        },
+        {
+          "DefaultText": "Perkhidmatan cuaca pemercik",
+          "Description": "Cuaca Setempat mewujudkan perkhidmatan ini supaya aplikasi pemercik boleh mendapatkan data cuaca setempat dan menerima kemas kini automatik bagi membuat keputusan penyiraman.",
+          "Name": "Perkhidmatan cuaca pemercik",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWeatherEndpointServerV1"
+    }
+  ]
+}

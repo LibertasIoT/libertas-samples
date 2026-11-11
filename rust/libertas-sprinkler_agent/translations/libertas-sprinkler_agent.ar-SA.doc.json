@@ -1,0 +1,2555 @@
+{
+  "Description": "يروي كل جزء من الحديقة فقط عندما يحتاج إلى الماء. اختر ما ينمو في كل منطقة، وكيفية ريها، وأي أوقات يجب فيها إيقاف الري مؤقتًا. يستخدم المرش الذكي الأمطار الحديثة والطقس الحالي والتوقعات لاختيار وقت وكمية آمنين للري. كما يأخذ الري اليدوي في الحسبان، ويستمر في العمل أثناء انقطاعات الإنترنت القصيرة، ويذكرك بتجهيز النظام للطقس المتجمد.",
+  "DisplayName": "المرش الذكي",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Smart sprinkler",
+      "Description": "يروي كل عشب أو حديقة أو منطقة مزروعة وفقًا لنباتاتها وطريقة الري والأمطار الحديثة وتوقعات الطقس والتعديلات التي يختارها المستخدم. يختار المستخدم مصدر الطقس، والمكان الذي ستتوفر فيه عناصر التحكم والتقارير الخاصة بالمناطق، ومستلمي التذكيرات، وصمام كل منطقة ونوع نباتاتها وطريقة ريها. ويمكن للمستخدم تغيير نسبة الري وفترات منع الري لكل منطقة يدويًا في أي وقت، أو تجهيز النظام بالكامل للشتاء وإعادة تنشيطه. يقوم المرش تلقائيًا بجدولة كل صمام وتشغيله مع مراعاة المطر والهطول المتوقع والرياح ودرجات الحرارة المتجمدة واحتياجات النباتات وفترات منع الري، ويستخدم التقديرات المحفوظة أثناء انقطاعات خدمة الطقس القصيرة. يعرض المرش الحالة الحالية لكل منطقة وتقدير المياه وحالة الصمام وخطة الري القادمة. ويوفر مخططات لميزان المياه والاستخدام اليومي للمياه والطقس المسجل والمتوقع، ويرسل إلى الأشخاص المحددين تذكيرات قبل الطقس المتجمد.\nسجل التغييرات: تم تحديث متغيرات البروتوكول.",
+      "DisplayName": "المرش الذكي",
+      "List": [
+        {
+          "Description": "اختر خدمة الطقس المحلية المستخدمة للمطر ودرجة الحرارة والرياح والتوقعات. يمكن للمرش الذكي استخدام تقديرات محفوظة أثناء الانقطاعات القصيرة.",
+          "Name": "خدمة الطقس",
+          "Type": 0
+        },
+        {
+          "Description": "اختر المكان الذي ستتوفر فيه مخططات ميزان المياه واستخدام المياه والطقس.",
+          "Name": "تقارير المرش",
+          "Type": 1
+        },
+        {
+          "Description": "اختر الأشخاص الذين يجب أن يتلقوا تذكيرات لتجهيز نظام المرش للطقس المتجمد.",
+          "Name": "مستلمو التذكيرات",
+          "Type": 2
+        },
+        {
+          "Description": "شخص واحد يجب أن يتلقى تذكيرات المرش.",
+          "Name": "الشخص المطلوب إخطاره",
+          "Type": 3
+        },
+        {
+          "Description": "أضف كل عشب أو حديقة أو منطقة مزروعة يجب ريها بصورة مستقلة.",
+          "Name": "المناطق المروية",
+          "Type": 4
+        },
+        {
+          "Description": "منطقة واحدة لها صمامها ونباتاتها وطريقة ريها الخاصة.",
+          "Name": "منطقة مروية",
+          "Type": 5
+        }
+      ],
+      "Name": "libertas_sprinkler"
+    }
+  ],
+  "Locale": "ar-SA",
+  "StringResources": {
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "تم حفظ ميزان المياه اليومي لـ {0}.",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "استخدم ما لا يزيد على 64 فترة منع ري، على أن تكون لكل منها بداية صالحة ومدة أكبر من صفر.",
+    "SPRINKLER_INVALID_WATERING_PERCENT": "يجب أن تكون كمية المياه من 20% إلى 200% بخطوات مقدارها 10%.",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "تم حفظ تقديرات الطقس المستخدمة أثناء انقطاعات الخدمة عند {0}.",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "لا يمكن أن يكون التاريخ الأول بعد التاريخ الأخير.",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "تم حفظ الموقع المستخدم في تقارير طقس المرش عند {0}.",
+    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "تم حفظ سجل الطقس التفصيلي لتقارير المرش عند {0}.",
+    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "تم حفظ ملاحظات الطقس الحالي لتقارير المرش عند {0}.",
+    "SPRINKLER_SITE_LOCATION_V1": "تم حفظ الموقع المستخدم لطقس المرش عند {0}.",
+    "SPRINKLER_UI_CHANGE_DATES": "Change dates",
+    "SPRINKLER_UI_SYSTEM_ACTIVE": "System active",
+    "SPRINKLER_UI_VALVE": "Valve",
+    "SPRINKLER_UI_WATERING_PLAN": "Watering plan",
+    "SPRINKLER_UI_WATER_BALANCE": "Water balance",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "تم حفظ سجل الري لـ {0}.",
+    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "نشاط الري الحالي لـ {0}.",
+    "SPRINKLER_WATERING_MODE_V1": "تم حفظ وضع الري لـ {0}.",
+    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
+    "SPRINKLER_WATER_EVENTS_V1": "تم حفظ الأمطار والري الحديثين لـ {0}.",
+    "SPRINKLER_WATER_USAGE_RAIN_LANE": "المطر",
+    "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
+    "SPRINKLER_WINTERIZATION_REMINDER_V1": "تم حفظ سجل تذكيرات التجهيز للشتاء لـ {0}.",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "يقترب موسم البرد في هذا الموقع. جهّز نظام المرش للشتاء، ثم أوقف تشغيل «نشط».",
+    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "قد يتسبب الطقس المتجمد ({0}) في تلف نظام المرش. جهّزه للشتاء، ثم أوقف تشغيل «نشط».",
+    "SPRINKLER_ZONE_MEMORY_V1": "تم حفظ ميزان المياه والإعدادات لـ {0}.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "استخدم موقع هذا المحور للحصول على الطقس المحلي للري التلقائي."
+  },
+  "Types": [
+    {
+      "Description": "نقطة تحقق وتجميع لمحاسبة المياه ليوم UTC يتم الاحتفاظ بها إلى أجل غير مسمى. وتتيح الاستعلام عن نافذة قديمة لميزان المياه دون إعادة تشغيل كل حدث منذ التثبيت.",
+      "DisplayName": "تقرير المرش اليومي",
+      "List": [
+        {
+          "Description": "نقطة تحقق وتجميع لمحاسبة المياه ليوم UTC يتم الاحتفاظ بها إلى أجل غير مسمى. وتتيح الاستعلام عن نافذة قديمة لميزان المياه دون إعادة تشغيل كل حدث منذ التثبيت.",
+          "Name": "تقرير المرش اليومي",
+          "Type": 0
+        },
+        {
+          "Description": "حد يوم تقويمي UTC شامل يُستخدم كمفتاح للسجل المفهرس.",
+          "Name": "بداية اليوم",
+          "Type": 1
+        },
+        {
+          "Description": "حد يوم تقويمي UTC غير شامل.",
+          "Name": "نهاية اليوم",
+          "Type": 2
+        },
+        {
+          "Description": "أول لحظة تمثلها نقطة التحقق هذه. وقد تكون بعد حد يوم UTC في يوم التثبيت أو انتقال الموقع.",
+          "Name": "بداية التغطية",
+          "Type": 3
+        },
+        {
+          "Description": "آخر لحظة غير شاملة تمثلها نقطة التحقق هذه. وقد تكون قبل حد اليوم بالنسبة إلى اليوم الجزئي الحالي.",
+          "Name": "نهاية التغطية",
+          "Type": 4
+        },
+        {
+          "Description": "السعة المحاكاة لملف النبات بالملليمترات.",
+          "Name": "سعة منطقة الجذور",
+          "Type": 5
+        },
+        {
+          "Description": "عجز منطقة الجذور المحسوب في بداية اليوم الممثل.",
+          "Name": "العجز الافتتاحي",
+          "Type": 6
+        },
+        {
+          "Description": "عجز منطقة الجذور المحسوب عند النهاية الممثلة أو أحدث وقت معروف.",
+          "Name": "العجز الختامي",
+          "Type": 7
+        },
+        {
+          "Description": "الهطول الذي سجله المزوّد والمخصص ليوم UTC هذا.",
+          "Name": "المطر",
+          "Type": 8
+        },
+        {
+          "Description": "التبخر-النتح المرجعي الذي سجله المزوّد والمخصص ليوم UTC هذا قبل تطبيق معامل المحصول الخاص بالنبات.",
+          "Name": "التبخر-النتح المرجعي",
+          "Type": 9
+        },
+        {
+          "Description": "التبخر-النتح المرجعي المستخدم لملء الفترات التي لا يغطيها سجل المزوّد.",
+          "Name": "التبخر-النتح المرجعي المحاكى",
+          "Type": 10
+        },
+        {
+          "Description": "مصدر كمية التبخر-النتح المحاكاة، ويُحذف عندما يغطي سجل المزوّد الفترة الممثلة بالكامل.",
+          "Name": "مصدر الطلب المحاكى",
+          "Type": 11
+        },
+        {
+          "Description": "عدد الثواني في الفترة الممثلة التي تغطيها فترات الطقس المقبولة من المزوّد.",
+          "Name": "تغطية طقس المزوّد",
+          "Type": 12
+        },
+        {
+          "Description": "عمق المياه المقدر من فترات فتح الصمام المرصودة والمخصصة ليوم UTC هذا.",
+          "Name": "الري",
+          "Type": 13
+        },
+        {
+          "Description": "ما إذا كانت نقطة التحقق تمثل يوم UTC كاملًا بدلًا من اليوم الجزئي الحالي.",
+          "Name": "يوم كامل",
+          "Type": 14
+        },
+        {
+          "Description": "وقت UTC الذي أُعيد فيه إنشاء نقطة التحقق هذه آخر مرة.",
+          "Name": "تم الحساب في",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerDailyReportV1"
+    },
+    {
+      "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+      "DisplayName": "Daily water use",
+      "List": [
+        {
+          "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+          "Name": "Daily water use",
+          "Type": 0
+        },
+        {
+          "Description": "Recorded and planned water amounts.",
+          "Name": "Rain and watering",
+          "Type": 1
+        },
+        {
+          "Description": "Areas with no rain or watering during the selected dates.",
+          "Name": "Areas with no recorded water",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerDailyWaterUsageChartV1"
+    },
+    {
+      "Description": "يحدد كل قيمة يكتبها تطبيق المرش. تُخزن بيانات المنطقة تحت كل صمام Matter، بينما تستخدم بيانات النظام المشتركة نقطة نهاية الطقس.",
+      "DisplayName": "بيانات المرش الدائمة",
+      "List": [
+        {
+          "Description": "يحدد كل قيمة يكتبها تطبيق المرش. تُخزن بيانات المنطقة تحت كل صمام Matter، بينما تستخدم بيانات النظام المشتركة نقطة نهاية الطقس.",
+          "Name": "بيانات المرش الدائمة",
+          "Type": 0
+        },
+        {
+          "Description": "تخزن أداة ضبط وقت التشغيل والقيود وخط الأساس المطوي لمنطقة واحدة.",
+          "Name": "ذاكرة المنطقة",
+          "Type": 1
+        },
+        {
+          "Description": "الحالة الكاملة الآمنة لإعادة التشغيل للصمام المهيأ.",
+          "Name": "ذاكرة المنطقة",
+          "Type": 2
+        },
+        {
+          "Description": "يخزن حدث طقس أو ري واحدًا مفهرسًا بصورة مستقلة.",
+          "Name": "حدث مياه",
+          "Type": 3
+        },
+        {
+          "Description": "فترة طقس مكتملة واحدة أو فترة فتح صمام تم احتسابها.",
+          "Name": "حدث مياه",
+          "Type": 4
+        },
+        {
+          "Description": "يخزن آخر موقع صالح للمحور لاستخدامه في التقدير الموسمي دون اتصال.",
+          "Name": "موقع الموقع",
+          "Type": 5
+        },
+        {
+          "Description": "إحداثيات WGS84 المخزنة مؤقتًا لموقع المرش.",
+          "Name": "موقع الموقع",
+          "Type": 6
+        },
+        {
+          "Description": "يخزن وضع «نشط» أو «التجهيز للشتاء» المشترك لنظام المرش.",
+          "Name": "وضع الري",
+          "Type": 7
+        },
+        {
+          "Description": "وضع التشغيل الآمن لإعادة التشغيل والمشترك بين جميع المناطق.",
+          "Name": "وضع الري",
+          "Type": 8
+        },
+        {
+          "Description": "يخزن أحدث وقت وسبب للتذكير على مستوى النظام.",
+          "Name": "تذكير التجهيز للشتاء",
+          "Type": 9
+        },
+        {
+          "Description": "حالة تقييد إشعارات التجهيز للشتاء الآمنة لإعادة التشغيل.",
+          "Name": "ذاكرة التذكير",
+          "Type": 10
+        },
+        {
+          "Description": "يؤرشف إلى أجل غير مسمى فترة بديلة دقيقة واحدة للتبخر-النتح.",
+          "Name": "فجوة طقس محاكاة",
+          "Type": 11
+        },
+        {
+          "Description": "فترة دقيقة ذات مصدر ومعدل ثابتَي المنشأ.",
+          "Name": "فجوة محاكاة",
+          "Type": 12
+        },
+        {
+          "Description": "يؤرشف إلى أجل غير مسمى نشاط ري واحدًا مجدولًا أو قيد التشغيل أو مكتملًا أو متخطى أو فاشلًا أو مستبدلًا أو يدويًا أو قديمًا.",
+          "Name": "نشاط الري",
+          "Type": 13
+        },
+        {
+          "Description": "بيانات دورة الحياة الدائمة الكاملة للمجدول مقارنة بالفعلية.",
+          "Name": "النشاط",
+          "Type": 14
+        },
+        {
+          "Description": "يؤرشف إلى أجل غير مسمى نقطة تحقق لمحاسبة المياه وميزانها ليوم UTC واحد بحيث تظل النطاقات القديمة قابلة للاستعلام.",
+          "Name": "تقرير يومي",
+          "Type": 15
+        },
+        {
+          "Description": "المطر والتبخر-النتح والري المقدر والعجز المحاكى الافتتاحي والختامي.",
+          "Name": "تقرير يومي",
+          "Type": 16
+        },
+        {
+          "Description": "Its generation is bound only by explicit provider site messages.",
+          "Name": "Report weather archive state V2",
+          "Type": 17
+        },
+        {
+          "Description": "Active indefinitely retained provider-site generation.",
+          "Name": "Archive state",
+          "Type": 18
+        },
+        {
+          "Description": "يؤرشف إلى أجل غير مسمى عينة واحدة مقبولة من الظروف الحالية. ويحافظ على أدلة القرار كل 15 دقيقة دون احتساب المطر أو التبخر-النتح مرتين إذا كانا ممثلين بالفعل في السجل الساعي المكتمل.",
+          "Name": "ملاحظة طقس التقرير",
+          "Type": 19
+        },
+        {
+          "Description": "درجة الحرارة والرطوبة والرياح والهبات ومدخلات المياه الفورية في الوقت الذي يمثله المزوّد.",
+          "Name": "ملاحظة الطقس",
+          "Type": 20
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 21
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 22
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 23
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 24
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 25
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 26
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 27
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 28
+        }
+      ],
+      "Name": "SprinklerData"
+    },
+    {
+      "Description": "فقد المياه المسجل والمتوقع عبر التبخر واستخدام النباتات.",
+      "DisplayName": "الفقد المقدر للمياه",
+      "List": [
+        {
+          "Description": "فقد المياه المسجل والمتوقع عبر التبخر واستخدام النباتات.",
+          "Name": "الفقد المقدر للمياه",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerEtChartV1"
+    },
+    {
+      "Description": "كمية واحدة مسجلة أو متوقعة من المياه المفقودة عبر التبخر والنباتات.",
+      "DisplayName": "الفقد اليومي للمياه",
+      "List": [
+        {
+          "Description": "كمية واحدة مسجلة أو متوقعة من المياه المفقودة عبر التبخر والنباتات.",
+          "Name": "الفقد اليومي للمياه",
+          "Type": 0
+        },
+        {
+          "Description": "وقت بدء فترة الطقس هذه.",
+          "Name": "يبدأ عند",
+          "Type": 1
+        },
+        {
+          "Description": "وقت انتهاء فترة الطقس هذه.",
+          "Name": "ينتهي عند",
+          "Type": 2
+        },
+        {
+          "Description": "المياه المفقودة عبر التبخر واستخدام النباتات.",
+          "Name": "الفقد المقدر للمياه",
+          "Type": 3
+        },
+        {
+          "Description": "ما إذا كانت هذه القيمة مسجلة أم متوقعة.",
+          "Name": "المصدر",
+          "Type": 4
+        },
+        {
+          "Description": "هوية ينشئها الخادم لهذه الفترة والمصدر.",
+          "Name": "مفتاح ثابت",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerEtRowV1"
+    },
+    {
+      "Description": "اختر نوع المرش أو نظام التنقيط المثبت في هذه المنطقة.",
+      "DisplayName": "طريقة الري",
+      "List": [
+        {
+          "Description": "اختر نوع المرش أو نظام التنقيط المثبت في هذه المنطقة.",
+          "Enum": [
+            {
+              "Description": "توصيل بطيء وموجه من نقاطات التنقيط السطحية.",
+              "Name": "تنقيط سطحي",
+              "Type": 1
+            },
+            {
+              "Description": "توصيل مركز حول الأشجار أو الشجيرات أو أحواض الزراعة.",
+              "Name": "نافورات صغيرة",
+              "Type": 2
+            },
+            {
+              "Description": "توصيل واسع وسريع نسبيًا من رؤوس رش ثابتة منبثقة.",
+              "Name": "رشاش منبثق",
+              "Type": 3
+            },
+            {
+              "Description": "توصيل بطيء لمساحة واسعة من دوارات عالية الكفاءة أو متعددة التيارات.",
+              "Name": "دوارات منخفضة المعدل",
+              "Type": 4
+            },
+            {
+              "Description": "توصيل أسرع لمساحة واسعة من رؤوس دوارة تقليدية.",
+              "Name": "دوارات عالية المعدل",
+              "Type": 5
+            }
+          ],
+          "Name": "طريقة الري",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerHeadTypeV1"
+    },
+    {
+      "Description": "الرطوبة المرصودة والمتوقعة على مقياس مستقل من صفر إلى 100 بالمئة.",
+      "DisplayName": "الرطوبة النسبية",
+      "List": [
+        {
+          "Description": "الرطوبة المرصودة والمتوقعة على مقياس مستقل من صفر إلى 100 بالمئة.",
+          "Name": "الرطوبة النسبية",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerHumidityChartV1"
+    },
+    {
+      "Description": "عينة واحدة مرصودة أو متوقعة للرطوبة النسبية.",
+      "DisplayName": "صف الرطوبة",
+      "List": [
+        {
+          "Description": "عينة واحدة مرصودة أو متوقعة للرطوبة النسبية.",
+          "Name": "صف الرطوبة",
+          "Type": 0
+        },
+        {
+          "Description": "بداية فترة المزوّد.",
+          "Name": "الوقت",
+          "Type": 1
+        },
+        {
+          "Description": "نسبة الرطوبة النسبية.",
+          "Name": "الرطوبة النسبية",
+          "Type": 2
+        },
+        {
+          "Description": "يحدد هذا الخط باعتباره الرطوبة النسبية في اللوحة المدمجة.",
+          "Name": "القياس",
+          "Type": 3
+        },
+        {
+          "Description": "مرصود أو متوقع.",
+          "Name": "المصدر",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerHumidityRowV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved sprinkler identities",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved sprinkler identities",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "System settings and weather archives",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "One valve's settings, accounting and reports",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerKey"
+    },
+    {
+      "Description": "فترة دقيقة واحدة لا يغطيها المزوّد، يتم تثبيت مصدر ومعدل التبخر-النتح المرجعي البديلين فيها عند تسجيل الفترة لأول مرة. وقد تقوم فترة مزوّد مقبولة لاحقًا بقص هذه الفترة أو استبدالها؛ ولا تعيد تغييرات التقدير البديل اللاحقة كتابة منشئها.",
+      "DisplayName": "فجوة طقس محاكاة",
+      "List": [
+        {
+          "Description": "فترة دقيقة واحدة لا يغطيها المزوّد، يتم تثبيت مصدر ومعدل التبخر-النتح المرجعي البديلين فيها عند تسجيل الفترة لأول مرة. وقد تقوم فترة مزوّد مقبولة لاحقًا بقص هذه الفترة أو استبدالها؛ ولا تعيد تغييرات التقدير البديل اللاحقة كتابة منشئها.",
+          "Name": "فجوة طقس محاكاة",
+          "Type": 0
+        },
+        {
+          "Description": "البداية الشاملة للفترة التي لا يغطيها المزوّد.",
+          "Name": "وقت البدء",
+          "Type": 1
+        },
+        {
+          "Description": "النهاية غير الشاملة للفترة التي لا يغطيها المزوّد.",
+          "Name": "وقت الانتهاء",
+          "Type": 2
+        },
+        {
+          "Description": "معدل التبخر-النتح المرجعي البديل المثبت بالملليمترات لكل يوم UTC.",
+          "Name": "معدل التبخر-النتح المرجعي",
+          "Type": 3
+        },
+        {
+          "Description": "مصدر ثابت من الطقس الحديث أو الموقع/الموسم أو التقدير المحافظ.",
+          "Name": "مصدر الطلب",
+          "Type": 4
+        },
+        {
+          "Description": "وقت UTC الذي اكتسبت فيه هذه الفترة منشأها المثبت لأول مرة.",
+          "Name": "تم التسجيل في",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerModeledWeatherGapV1"
+    },
+    {
+      "Description": "اختر ما ينمو في هذه المنطقة حتى يتوافق الري مع احتياجاته.",
+      "DisplayName": "نوع النبات",
+      "List": [
+        {
+          "Description": "اختر ما ينمو في هذه المنطقة حتى يتوافق الري مع احتياجاته.",
+          "Enum": [
+            {
+              "Description": "عشب كثيف الزراعة ذو جذور ضحلة وطلب منتظم على المياه.",
+              "Name": "عشب",
+              "Type": 1
+            },
+            {
+              "Description": "نباتات زينة مزهرة ذات جذور وطلب على المياه بدرجة متوسطة.",
+              "Name": "زهور",
+              "Type": 2
+            },
+            {
+              "Description": "محاصيل غذائية موسمية ذات جذور متوسطة وطلب مرتفع نسبيًا.",
+              "Name": "خضراوات",
+              "Type": 3
+            },
+            {
+              "Description": "أشجار فاكهة راسخة ذات جذور أعمق وطلب متوسط.",
+              "Name": "أشجار فاكهة",
+              "Type": 4
+            },
+            {
+              "Description": "أشجار حمضيات ذات جذور عميقة وطلب متوسط إلى مرتفع.",
+              "Name": "حمضيات",
+              "Type": 5
+            },
+            {
+              "Description": "نباتات طبيعية خشبية راسخة ذات جذور عميقة.",
+              "Name": "أشجار وشجيرات",
+              "Type": 6
+            },
+            {
+              "Description": "زراعة متكيفة مع الجفاف ذات طلب منخفض على المياه مدفوع بالطقس.",
+              "Name": "تنسيق نباتي مقتصد بالمياه",
+              "Type": 7
+            }
+          ],
+          "Name": "نوع النبات",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerPlantTypeV1"
+    },
+    {
+      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+      "DisplayName": "Available report range",
+      "List": [
+        {
+          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+          "Name": "Available report range",
+          "Type": 0
+        },
+        {
+          "Description": "Earliest currently selectable date after applying this chart's maximum range length.",
+          "Name": "Earliest date",
+          "Type": 1
+        },
+        {
+          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts.",
+          "Name": "Latest date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportAvailableRangeV1"
+    },
+    {
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "DisplayName": "Effective report range",
+      "List": [
+        {
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+          "Name": "Effective report range",
+          "Type": 0
+        },
+        {
+          "Description": "First calendar date included in the generated report.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Last calendar date included in the generated report.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportEffectiveRangeV1"
+    },
+    {
+      "Description": "يوضح سبب عدم وجود شيء لعرضه لمنطقة مهيأة خلال التواريخ المحددة.",
+      "DisplayName": "لا توجد بيانات للتقرير",
+      "List": [
+        {
+          "Description": "يوضح سبب عدم وجود شيء لعرضه لمنطقة مهيأة خلال التواريخ المحددة.",
+          "Enum": [
+            {
+              "Description": "لم يُسجل أي مطر أو ري لهذه المنطقة خلال التواريخ المحددة.",
+              "Name": "لا توجد مدخلات مياه مسجلة",
+              "Type": 1
+            }
+          ],
+          "Name": "لا توجد بيانات للتقرير",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerReportEmptyStateV1"
+    },
+    {
+      "Description": "اعرض ميزان المياه أو استخدام المياه أو الطقس لكل منطقة. اترك التواريخ فارغة لعرض الفترة الحديثة. تُضبط التواريخ الواقعة خارج السجل المتاح تلقائيًا إلى أقدم أو أحدث تاريخ متاح.",
+      "DisplayName": "تقارير المرش",
+      "List": [
+        {
+          "Description": "اعرض ميزان المياه أو استخدام المياه أو الطقس لكل منطقة. اترك التواريخ فارغة لعرض الفترة الحديثة. تُضبط التواريخ الواقعة خارج السجل المتاح تلقائيًا إلى أقدم أو أحدث تاريخ متاح.",
+          "Name": "تقارير المرش",
+          "Type": 0
+        },
+        {
+          "Description": "يعرض المياه المقدرة المتاحة للنباتات وأحداث الري لكل منطقة. يمكن أن تغطي الفترة المحددة حتى 365 يومًا؛ ويحتفظ التحديد الأطول بأحدث 365 يومًا منه.",
+          "Name": "عرض ميزان المياه",
+          "Type": 1
+        },
+        {
+          "Description": "التواريخ الشاملة المستخدمة فعليًا لإنشاء هذه الاستجابة.",
+          "Name": "النطاق الفعلي",
+          "Type": 2
+        },
+        {
+          "Description": "Water-balance chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 3
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 4
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 5
+        },
+        {
+          "Description": "حدود منتقي التاريخ الحالية والقيم الافتراضية للطلب التالي.",
+          "Name": "النطاق المتاح",
+          "Type": 6
+        },
+        {
+          "Description": "مخطط استخدام المياه لنطاق التقرير الفعلي.",
+          "Name": "المخطط",
+          "Type": 7
+        },
+        {
+          "Description": "Water-use chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 8
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 9
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 10
+        },
+        {
+          "Description": "التواريخ الشاملة المستخدمة فعليًا لإنشاء هذه الاستجابة.",
+          "Name": "النطاق الفعلي",
+          "Type": 11
+        },
+        {
+          "Description": "درجة الحرارة والرطوبة والرياح وفقد المياه المقدر المسجل والمتوقع.",
+          "Name": "الطقس",
+          "Type": 12
+        },
+        {
+          "Description": "Weather chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 13
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 14
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerReportProtocol"
+    },
+    {
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "DisplayName": "Report date range",
+      "List": [
+        {
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+          "Name": "Report date range",
+          "Type": 0
+        },
+        {
+          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportRequestRangeV1"
+    },
+    {
+      "Description": "يحدد جيل الموقع الفعلي النشط بينما تظل الأجيال الأقدم محفوظة دون دمجها في تقرير المرش الحالي. يؤدي استبدال صريح لموقع دفق الطقس أو إعادة تعيين مرتبطة بالموقع إلى ربط جيل؛ أما مسح الأقسام فلا يُعد أبدًا إقرارًا بحدود الموقع.",
+      "DisplayName": "حالة أرشيف طقس التقرير",
+      "List": [
+        {
+          "Description": "يحدد جيل الموقع الفعلي النشط بينما تظل الأجيال الأقدم محفوظة دون دمجها في تقرير المرش الحالي. يؤدي استبدال صريح لموقع دفق الطقس أو إعادة تعيين مرتبطة بالموقع إلى ربط جيل؛ أما مسح الأقسام فلا يُعد أبدًا إقرارًا بحدود الموقع.",
+          "Name": "حالة أرشيف طقس التقرير",
+          "Type": 0
+        },
+        {
+          "Description": "يزداد بصورة أحادية لكل انتقال مقبول بين مواقع مزوّد مختلفة.",
+          "Name": "الجيل",
+          "Type": 1
+        },
+        {
+          "Description": "موقع المزوّد المرتبط صراحةً بهذا الجيل، عندما يكون معروفًا.",
+          "Name": "موقع الموقع",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportWeatherArchiveStateV2"
+    },
+    {
+      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+      "DisplayName": "Restart accounting checkpoint",
+      "List": [
+        {
+          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+          "Name": "Restart accounting checkpoint",
+          "Type": 0
+        },
+        {
+          "Description": "Authoritative lifecycle snapshot at the checkpoint.",
+          "Name": "Activity",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusive end of the already accounted valve-open interval.",
+          "Name": "Accounted through",
+          "Type": 2
+        },
+        {
+          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted.",
+          "Name": "Ledger segment",
+          "Type": 3
+        },
+        {
+          "Description": "Expected end of an automatic timed run; manual runs have no known end.",
+          "Name": "Expected finish",
+          "Type": 4
+        },
+        {
+          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour.",
+          "Name": "Delivery rate",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerRestartAccountingV1"
+    },
+    {
+      "Description": "يوضح ما يفعله المرش أو سبب تأخر الري.",
+      "DisplayName": "حالة الري",
+      "List": [
+        {
+          "Description": "يوضح ما يفعله المرش أو سبب تأخر الري.",
+          "Enum": [
+            {
+              "Description": "جارٍ تجهيز أحدث المعلومات.",
+              "Name": "جارٍ التهيئة",
+              "Type": 1
+            },
+            {
+              "Description": "لدى النباتات ما يكفي من المياه الآن.",
+              "Name": "لا حاجة إلى المياه",
+              "Type": 2
+            },
+            {
+              "Description": "يُتوقع أن يوفر المطر ما يكفي من المياه في الوقت الحالي.",
+              "Name": "مطر متوقع",
+              "Type": 3
+            },
+            {
+              "Description": "تم تأخير الري بسبب هطول المطر أو اقتراب التجمد أو شدة الرياح.",
+              "Name": "انتظار طقس آمن",
+              "Type": 4
+            },
+            {
+              "Description": "قد تصبح النباتات شديدة الجفاف أثناء فترة منع الري، لذلك يُخطط لتشغيل آمن قبل بدايتها.",
+              "Name": "الري قبل التوقف",
+              "Type": 5
+            },
+            {
+              "Description": "تم نقل الري إلى ما بعد فترة منع الري.",
+              "Name": "مؤجل",
+              "Type": 6
+            },
+            {
+              "Description": "تم اختيار وقت الري التالي باستخدام احتياجات النباتات ومعلومات الطقس المتاحة.",
+              "Name": "مجدول",
+              "Type": 7
+            },
+            {
+              "Description": "ينتظر المرش من الصمام تأكيد التغيير.",
+              "Name": "بدء أو إيقاف",
+              "Type": 8
+            },
+            {
+              "Description": "حالة الصمام غير متاحة، لذلك لن يبدأ الري التلقائي.",
+              "Name": "حالة الصمام غير متاحة",
+              "Type": 9
+            },
+            {
+              "Description": "تجري الآن عملية ري هذه المنطقة.",
+              "Name": "الصمام مفتوح",
+              "Type": 10
+            },
+            {
+              "Description": "أبلغ الصمام عن مشكلة، لذلك تم إيقاف الري التلقائي مؤقتًا.",
+              "Name": "عطل في الصمام",
+              "Type": 11
+            },
+            {
+              "Description": "الطقس المباشر غير متاح، لذلك يستخدم الجدول أفضل تقدير محفوظ أو موسمي.",
+              "Name": "تقدير طقس دون اتصال",
+              "Type": 12
+            }
+          ],
+          "Name": "حالة الري",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerScheduleConditionV1"
+    },
+    {
+      "Description": "درجة الحرارة المرصودة والمتوقعة دون خلط مقياسها مع التبخر-النتح أو الرياح.",
+      "DisplayName": "درجة الحرارة",
+      "List": [
+        {
+          "Description": "درجة الحرارة المرصودة والمتوقعة دون خلط مقياسها مع التبخر-النتح أو الرياح.",
+          "Name": "درجة الحرارة",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerTemperatureChartV1"
+    },
+    {
+      "Description": "يعرض درجة الحرارة والرطوبة فوق بعضهما بمرور الوقت مع الاحتفاظ بمحوري y مستقلين على اليسار واليمين بسبب اختلاف وحداتهما.",
+      "DisplayName": "درجة الحرارة والرطوبة النسبية",
+      "List": [
+        {
+          "Description": "يعرض درجة الحرارة والرطوبة فوق بعضهما بمرور الوقت مع الاحتفاظ بمحوري y مستقلين على اليسار واليمين بسبب اختلاف وحداتهما.",
+          "Name": "درجة الحرارة والرطوبة النسبية",
+          "Type": 0
+        },
+        {
+          "Description": "تستخدم درجة الحرارة دليل y التلقائي الأول.",
+          "Name": "درجة الحرارة",
+          "Type": 1
+        },
+        {
+          "Description": "تستخدم الرطوبة النسبية دليل y الثاني المستقل.",
+          "Name": "الرطوبة النسبية",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityChartV1"
+    },
+    {
+      "Description": "يميز بين الخطين ذوي المقياسين المستقلين في لوحة الطقس المدمجة.",
+      "DisplayName": "قياس درجة الحرارة والرطوبة",
+      "List": [
+        {
+          "Description": "يميز بين الخطين ذوي المقياسين المستقلين في لوحة الطقس المدمجة.",
+          "Enum": [
+            {
+              "Description": "درجة حرارة الهواء بالدرجات المئوية.",
+              "Name": "درجة الحرارة",
+              "Type": 1
+            },
+            {
+              "Description": "نسبة الرطوبة النسبية.",
+              "Name": "الرطوبة النسبية",
+              "Type": 2
+            }
+          ],
+          "Name": "قياس درجة الحرارة والرطوبة",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityMeasurementV1"
+    },
+    {
+      "Description": "عينة واحدة مرصودة أو متوقعة لدرجة حرارة الهواء.",
+      "DisplayName": "صف درجة الحرارة",
+      "List": [
+        {
+          "Description": "عينة واحدة مرصودة أو متوقعة لدرجة حرارة الهواء.",
+          "Name": "صف درجة الحرارة",
+          "Type": 0
+        },
+        {
+          "Description": "بداية فترة المزوّد.",
+          "Name": "الوقت",
+          "Type": 1
+        },
+        {
+          "Description": "درجة حرارة الهواء بالدرجات المئوية.",
+          "Name": "درجة الحرارة",
+          "Type": 2
+        },
+        {
+          "Description": "يحدد هذا الخط باعتباره درجة الحرارة في اللوحة المدمجة.",
+          "Name": "القياس",
+          "Type": 3
+        },
+        {
+          "Description": "مرصود أو متوقع.",
+          "Name": "المصدر",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerTemperatureRowV1"
+    },
+    {
+      "Description": "وقت بدء ومدة زمنية للري أو لإيقاف الري مؤقتًا.",
+      "DisplayName": "فترة زمنية",
+      "List": [
+        {
+          "Description": "وقت بدء ومدة زمنية للري أو لإيقاف الري مؤقتًا.",
+          "Name": "فترة زمنية",
+          "Type": 0
+        },
+        {
+          "Description": "وقت بدء هذه الفترة.",
+          "Name": "يبدأ عند",
+          "Type": 1
+        },
+        {
+          "Description": "مدة استمرار هذه الفترة.",
+          "Name": "المدة",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTimeSlotV1"
+    },
+    {
+      "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+      "DisplayName": "Valve problems",
+      "List": [
+        {
+          "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+          "Enum": [
+            {
+              "Description": "The valve reported a problem without a more specific classification.",
+              "Name": "General problem",
+              "Type": 1
+            },
+            {
+              "Description": "The valve cannot move because it is blocked.",
+              "Name": "Blocked",
+              "Type": 2
+            },
+            {
+              "Description": "The valve detected an unexpected water leak.",
+              "Name": "Leak detected",
+              "Type": 3
+            },
+            {
+              "Description": "The controller cannot detect a connected valve.",
+              "Name": "Not connected",
+              "Type": 4
+            },
+            {
+              "Description": "The valve or its wiring has a short circuit.",
+              "Name": "Short circuit",
+              "Type": 5
+            },
+            {
+              "Description": "The valve exceeded the available electrical current.",
+              "Name": "Too much current",
+              "Type": 6
+            }
+          ],
+          "Name": "Valve problems",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerValveFaultFlagsV1"
+    },
+    {
+      "Description": "يجمع مستويات المياه المقدرة مع أحداث الري لكل منطقة.",
+      "DisplayName": "ميزان المياه",
+      "List": [
+        {
+          "Description": "يجمع مستويات المياه المقدرة مع أحداث الري لكل منطقة.",
+          "Name": "ميزان المياه",
+          "Type": 0
+        },
+        {
+          "Description": "المياه المقدرة ومستويات الري المهمة لكل منطقة.",
+          "Name": "المياه المتاحة والمستويات",
+          "Type": 1
+        },
+        {
+          "Description": "عمليات الري المخططة والمتخطاة وغير الناجحة واليدوية والمكتملة.",
+          "Name": "أحداث الري",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterBalanceChartV1"
+    },
+    {
+      "Description": "المياه المتاحة المقدرة ومستويات الري المهمة لكل منطقة.",
+      "DisplayName": "خطوط ميزان المياه",
+      "List": [
+        {
+          "Description": "المياه المتاحة المقدرة ومستويات الري المهمة لكل منطقة.",
+          "Name": "خطوط ميزان المياه",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterBalanceLinesV1"
+    },
+    {
+      "Description": "نقطة واحدة تعرض المياه المقدرة المتاحة للنباتات أو مستوى ري مهمًا. المياه المتاحة تقدير وليست قراءة من حساس رطوبة التربة.",
+      "DisplayName": "نقطة ميزان المياه",
+      "List": [
+        {
+          "Description": "نقطة واحدة تعرض المياه المقدرة المتاحة للنباتات أو مستوى ري مهمًا. المياه المتاحة تقدير وليست قراءة من حساس رطوبة التربة.",
+          "Name": "نقطة ميزان المياه",
+          "Type": 0
+        },
+        {
+          "Description": "وقت انطباق مستوى المياه هذا.",
+          "Name": "الوقت",
+          "Type": 1
+        },
+        {
+          "Description": "المياه المقدرة المتاحة للنباتات، من 0 إلى 100 بالمئة.",
+          "Name": "المياه المتاحة",
+          "Type": 2
+        },
+        {
+          "Description": "المياه المتاحة أو أحد مستويات الري المهمة.",
+          "Name": "الخط",
+          "Type": 3
+        },
+        {
+          "Description": "المنطقة المروية التي يمثلها هذا الجزء من المخطط.",
+          "Name": "المنطقة",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWaterBalancePointV1"
+    },
+    {
+      "Description": "يحدد المياه المتاحة ومستويات الري المهمة.",
+      "DisplayName": "خط ميزان المياه",
+      "List": [
+        {
+          "Description": "يحدد المياه المتاحة ومستويات الري المهمة.",
+          "Enum": [
+            {
+              "Description": "المياه المقدرة المتاحة للنباتات.",
+              "Name": "المياه المتاحة",
+              "Type": 1
+            },
+            {
+              "Description": "يُقدر أن التربة تحتفظ بكل المياه التي يمكنها استخدامها.",
+              "Name": "السعة الحقلية",
+              "Type": 2
+            },
+            {
+              "Description": "المستوى الذي يصبح عنده الري مستحقًا عادةً.",
+              "Name": "عتبة الري",
+              "Type": 3
+            },
+            {
+              "Description": "المستوى الذي يصبح عنده الري عاجلًا.",
+              "Name": "العتبة الحرجة",
+              "Type": 4
+            }
+          ],
+          "Name": "خط ميزان المياه",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterBalanceSeriesV1"
+    },
+    {
+      "Description": "يعرض المعلومات التي استُخدمت لتقدير سرعة فقد النباتات للمياه.",
+      "DisplayName": "تقدير استخدام المياه",
+      "List": [
+        {
+          "Description": "يعرض المعلومات التي استُخدمت لتقدير سرعة فقد النباتات للمياه.",
+          "Enum": [
+            {
+              "Description": "استنادًا إلى الطقس الحديث في هذا الموقع.",
+              "Name": "الطقس الحديث",
+              "Type": 1
+            },
+            {
+              "Description": "استنادًا إلى الموقع ووقت السنة.",
+              "Name": "الموقع والموسم",
+              "Type": 2
+            },
+            {
+              "Description": "يُستخدم عندما لا تتوفر معلومات الطقس الحديث والموقع.",
+              "Name": "تقدير مضمّن",
+              "Type": 3
+            }
+          ],
+          "Name": "تقدير استخدام المياه",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterDemandSourceV1"
+    },
+    {
+      "Description": "يخزن فترة طقس واحدة مفهرسة بصورة مستقلة أو فترة ري مرصودة في سجل المياه لسبعة أيام.",
+      "DisplayName": "حدث مياه المرش",
+      "List": [
+        {
+          "Description": "يخزن فترة طقس واحدة مفهرسة بصورة مستقلة أو فترة ري مرصودة في سجل المياه لسبعة أيام.",
+          "Name": "حدث مياه المرش",
+          "Type": 0
+        },
+        {
+          "Description": "تسجل هطول المزوّد والتبخر-النتح المرجعي لفترة تاريخية مكتملة واحدة.",
+          "Name": "فترة الطقس",
+          "Type": 1
+        },
+        {
+          "Description": "البداية الشاملة لفترة الطقس المكتملة.",
+          "Name": "وقت البدء",
+          "Type": 2
+        },
+        {
+          "Description": "طول فترة الطقس المكتملة بالثواني.",
+          "Name": "المدة",
+          "Type": 3
+        },
+        {
+          "Description": "هطول المزوّد المتراكم خلال الفترة، بالملليمترات.",
+          "Name": "الهطول",
+          "Type": 4
+        },
+        {
+          "Description": "التبخر-النتح المرجعي FAO-56 للمزوّد والمتراكم خلال الفترة، بالملليمترات.",
+          "Name": "التبخر-النتح المرجعي",
+          "Type": 5
+        },
+        {
+          "Description": "تسجل المياه المستنتجة من وقت الفتح الفعلي لصمام Matter، بما في ذلك الفتح اليدوي، مع أداة ضبط كمية المياه للمنطقة خلال تلك الفترة المرصودة.",
+          "Name": "فترة الري",
+          "Type": 6
+        },
+        {
+          "Description": "البداية الشاملة لفترة فتح الصمام المحتسبة.",
+          "Name": "وقت البدء",
+          "Type": 7
+        },
+        {
+          "Description": "طول فترة فتح الصمام المرصودة بالثواني.",
+          "Name": "المدة",
+          "Type": 8
+        },
+        {
+          "Description": "نسبة الري المهيأة للمنطقة أثناء رصد فترة فتح الصمام هذه. إذا تغير الإعداد بينما الصمام مفتوح، يستخدم السجل فترات متجاورة منفصلة.",
+          "Name": "أداة ضبط كمية المياه",
+          "Type": 9
+        },
+        {
+          "Description": "عمق المياه المقدر المحسوب من وقت الفتح المرصود وملف رأس المرش المهيأ، بالملليمترات.",
+          "Name": "المياه المطبقة",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWaterEventV1"
+    },
+    {
+      "Description": "تخزن أحدث لقطة كاملة لدورة الحياة قبل كتابة صف التدقيق المطابق لها. وتفرق العلامة الحالية الصريحة بين نشاط غير نهائي يمكن التوفيق معه بعد إعادة التشغيل ولقطة نهائية لا تحتاج إلا إلى إصلاح التدقيق.",
+      "DisplayName": "الحالة المرجعية لنشاط الري",
+      "List": [
+        {
+          "Description": "تخزن أحدث لقطة كاملة لدورة الحياة قبل كتابة صف التدقيق المطابق لها. وتفرق العلامة الحالية الصريحة بين نشاط غير نهائي يمكن التوفيق معه بعد إعادة التشغيل ولقطة نهائية لا تحتاج إلا إلى إصلاح التدقيق.",
+          "Name": "الحالة المرجعية لنشاط الري",
+          "Type": 0
+        },
+        {
+          "Description": "أحدث لقطة كاملة لدورة الحياة، أو لا قيمة قبل أول نشاط. تبقى اللقطات النهائية هنا إلى أن يبدأ نشاط أحدث.",
+          "Name": "أحدث نشاط",
+          "Type": 1
+        },
+        {
+          "Description": "تكون صحيحة فقط عندما يكون أحدث نشاط مجدولًا أو في انتظار أمر أو قيد التشغيل ويجب التوفيق معه عند بدء التشغيل.",
+          "Name": "النشاط حالي",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWateringActivityStateV2"
+    },
+    {
+      "Description": "يحافظ على الفصل بين التوقيت المجدول والفعلي بحيث يستطيع التقرير توضيح ما كان مخططًا وما حدث وسبب تخطي عملية الري أو فشلها.",
+      "DisplayName": "نشاط ري محفوظ",
+      "List": [
+        {
+          "Description": "يحافظ على الفصل بين التوقيت المجدول والفعلي بحيث يستطيع التقرير توضيح ما كان مخططًا وما حدث وسبب تخطي عملية الري أو فشلها.",
+          "Name": "نشاط ري محفوظ",
+          "Type": 0
+        },
+        {
+          "Description": "فهرس قاعدة بيانات موقّع وثابت يُعاد استخدامه لكل تحديث في دورة الحياة.",
+          "Name": "فهرس النشاط",
+          "Type": 1
+        },
+        {
+          "Description": "تسلسل آمن من التصادم داخل ثانية الارتكاز والمصدر نفسيهما.",
+          "Name": "ترتيب النشاط",
+          "Type": 2
+        },
+        {
+          "Description": "نشاط تلقائي أو يدوي أو قديم غير قابل للتصنيف.",
+          "Name": "المصدر",
+          "Type": 3
+        },
+        {
+          "Description": "حالة دورة الحياة الدائمة الحالية أو النهائية.",
+          "Name": "النتيجة",
+          "Type": 4
+        },
+        {
+          "Description": "تفسير دائم للنتيجة الحالية أو النهائية.",
+          "Name": "السبب",
+          "Type": 5
+        },
+        {
+          "Description": "بدء تلقائي مخطط. الأنشطة اليدوية والقديمة تحذفه.",
+          "Name": "البدء المجدول",
+          "Type": 6
+        },
+        {
+          "Description": "مدة فتح الصمام التلقائية المخططة بالثواني. ولا تُستبدل أبدًا بالمدة الفعلية المرصودة.",
+          "Name": "المدة المجدولة",
+          "Type": 7
+        },
+        {
+          "Description": "عمق المياه التلقائي المخطط بالملليمترات.",
+          "Name": "المياه المخططة",
+          "Type": 8
+        },
+        {
+          "Description": "أول وقت مرصود لفتح الصمام، ويكون غائبًا حتى يتم رصد فتح.",
+          "Name": "البدء الفعلي",
+          "Type": 9
+        },
+        {
+          "Description": "مدة فتح الصمام المرصودة والمحتسبة بالثواني.",
+          "Name": "المدة الفعلية",
+          "Type": 10
+        },
+        {
+          "Description": "عمق المياه المقدر من وقت الفتح الفعلي وملف رأس المرش، وليس من مقياس تدفق.",
+          "Name": "المياه المطبقة",
+          "Type": 11
+        },
+        {
+          "Description": "أداة ضبط المنطقة السارية عند إنشاء هذا النشاط.",
+          "Name": "أداة ضبط كمية المياه",
+          "Type": 12
+        },
+        {
+          "Description": "وقت UTC الذي يمثله أحدث تحديث محفوظ لدورة الحياة.",
+          "Name": "تم التحديث في",
+          "Type": 13
+        }
+      ],
+      "Name": "SprinklerWateringActivityV1"
+    },
+    {
+      "Description": "عملية ري مخططة أو متخطاة أو غير ناجحة أو يدوية أو مكتملة.",
+      "DisplayName": "حدث ري",
+      "List": [
+        {
+          "Description": "عملية ري مخططة أو متخطاة أو غير ناجحة أو يدوية أو مكتملة.",
+          "Name": "حدث ري",
+          "Type": 0
+        },
+        {
+          "Description": "وقت بدء الري، أو الوقت الذي كان مخططًا أن يبدأ فيه.",
+          "Name": "الوقت",
+          "Type": 1
+        },
+        {
+          "Description": "المياه المقدرة المتاحة للنباتات في ذلك الوقت.",
+          "Name": "المياه المتاحة",
+          "Type": 2
+        },
+        {
+          "Description": "المنطقة المروية لهذا الحدث.",
+          "Name": "المنطقة",
+          "Type": 3
+        },
+        {
+          "Description": "ما حدث لخطة الري أو عملية الري هذه.",
+          "Name": "النتيجة",
+          "Type": 4
+        },
+        {
+          "Description": "ما إذا كان الري تلقائيًا أو يدويًا أو غير معروف.",
+          "Name": "بدأ بواسطة",
+          "Type": 5
+        },
+        {
+          "Description": "سبب التخطيط للعملية أو تغييرها أو إيقافها أو عدم نجاحها.",
+          "Name": "السبب",
+          "Type": 6
+        },
+        {
+          "Description": "المدة التي كان مخططًا أن يستمر فيها الري التلقائي.",
+          "Name": "المدة المخططة",
+          "Type": 7
+        },
+        {
+          "Description": "المدة التي رُصد فيها الصمام مفتوحًا.",
+          "Name": "المدة الفعلية",
+          "Type": 8
+        },
+        {
+          "Description": "مفتاح تركيز ثابت وفريد عبر كل منطقة مهيأة.",
+          "Name": "مفتاح القرار",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWateringDecisionRowV1"
+    },
+    {
+      "Description": "يعرض الري التلقائي واليدوي على مخطط ميزان المياه.",
+      "DisplayName": "أحداث الري",
+      "List": [
+        {
+          "Description": "يعرض الري التلقائي واليدوي على مخطط ميزان المياه.",
+          "Name": "أحداث الري",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWateringDecisionsV1"
+    },
+    {
+      "Description": "يحدد ما إذا كان نظام المرش في وضع الري النشط أو مجهزًا للشتاء.",
+      "DisplayName": "وضع الري",
+      "List": [
+        {
+          "Description": "يحدد ما إذا كان نظام المرش في وضع الري النشط أو مجهزًا للشتاء.",
+          "Enum": [
+            {
+              "Description": "الري التلقائي مُمكّن.",
+              "Name": "نشط",
+              "Type": 1
+            },
+            {
+              "Description": "تم إيقاف الري التلقائي لموسم البرد.",
+              "Name": "مجهز للشتاء",
+              "Type": 2
+            }
+          ],
+          "Name": "وضع الري",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringModeV1"
+    },
+    {
+      "Description": "يعرض ما إذا كان الري تلقائيًا أو بدأ بطريقة أخرى.",
+      "DisplayName": "كيفية بدء الري",
+      "List": [
+        {
+          "Description": "يعرض ما إذا كان الري تلقائيًا أو بدأ بطريقة أخرى.",
+          "Enum": [
+            {
+              "Description": "بدأ المرش الذكي عملية الري هذه.",
+              "Name": "تلقائي",
+              "Type": 1
+            },
+            {
+              "Description": "تم فتح الصمام خارج المرش الذكي.",
+              "Name": "يدوي",
+              "Type": 2
+            },
+            {
+              "Description": "لا توضح البيانات القديمة المحفوظة كيفية بدء عملية الري هذه.",
+              "Name": "غير معروف",
+              "Type": 3
+            }
+          ],
+          "Name": "كيفية بدء الري",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOriginV1"
+    },
+    {
+      "Description": "يعرض ما حدث لخطة الري أو عملية الري.",
+      "DisplayName": "نتيجة الري",
+      "List": [
+        {
+          "Description": "يعرض ما حدث لخطة الري أو عملية الري.",
+          "Enum": [
+            {
+              "Description": "لا تزال عملية تلقائية مستقبلية محسوبة مخططة.",
+              "Name": "مجدول",
+              "Type": 1
+            },
+            {
+              "Description": "طلب المرش من الصمام الفتح وينتظر التأكيد.",
+              "Name": "الأمر قيد الانتظار",
+              "Type": 2
+            },
+            {
+              "Description": "الصمام مفتوح ويتم احتساب الري.",
+              "Name": "قيد التشغيل",
+              "Type": 3
+            },
+            {
+              "Description": "انتهى الري بعد إغلاق الصمام.",
+              "Name": "مكتمل",
+              "Type": 4
+            },
+            {
+              "Description": "لم تبدأ عملية مخططة لأن الطقس أو الإعدادات أو السلامة منعتها.",
+              "Name": "تم التخطي",
+              "Type": 5
+            },
+            {
+              "Description": "منعت مشكلة في الصمام اكتمال عملية الري.",
+              "Name": "فشل",
+              "Type": 6
+            },
+            {
+              "Description": "استبدلت خطة ري أحدث هذه الخطة قبل أن تبدأ.",
+              "Name": "تم الاستبدال",
+              "Type": 7
+            }
+          ],
+          "Name": "نتيجة الري",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOutcomeV1"
+    },
+    {
+      "Description": "يوضح سبب التخطيط لعملية الري أو تغييرها أو إيقافها أو عدم نجاحها.",
+      "DisplayName": "سبب الري",
+      "List": [
+        {
+          "Description": "يوضح سبب التخطيط لعملية الري أو تغييرها أو إيقافها أو عدم نجاحها.",
+          "Enum": [
+            {
+              "Description": "اختار المرش الذكي هذه العملية استنادًا إلى احتياجات النباتات والطقس.",
+              "Name": "الجدول الذكي",
+              "Type": 1
+            },
+            {
+              "Description": "تم فتح الصمام خارج المرش الذكي.",
+              "Name": "تشغيل يدوي",
+              "Type": 2
+            },
+            {
+              "Description": "أدى المطر المتوقع إلى تأخير الري المخطط أو استبداله.",
+              "Name": "مطر متوقع",
+              "Type": 3
+            },
+            {
+              "Description": "أوقف المطر المسجل الري أو منعه.",
+              "Name": "مطر مرصود",
+              "Type": 4
+            },
+            {
+              "Description": "كانت درجة الحرارة منخفضة أكثر من اللازم للري الآمن.",
+              "Name": "طقس متجمد",
+              "Type": 5
+            },
+            {
+              "Description": "كانت الرياح قوية أكثر من اللازم لطريقة الري هذه.",
+              "Name": "رياح شديدة",
+              "Type": 6
+            },
+            {
+              "Description": "لم يكن الطقس آمنًا للري.",
+              "Name": "طقس آخر غير آمن",
+              "Type": 7
+            },
+            {
+              "Description": "منعت فترة منع الري العملية المخططة.",
+              "Name": "منع الري",
+              "Type": 8
+            },
+            {
+              "Description": "كان النظام مجهزًا للشتاء، لذلك كان الري التلقائي متوقفًا.",
+              "Name": "التجهيز للشتاء",
+              "Type": 9
+            },
+            {
+              "Description": "لم تكن حالة الصمام متاحة.",
+              "Name": "الصمام غير متاح",
+              "Type": 10
+            },
+            {
+              "Description": "أبلغ الصمام عن مشكلة.",
+              "Name": "عطل في الصمام",
+              "Type": 11
+            },
+            {
+              "Description": "لم يقبل الصمام الطلب.",
+              "Name": "فشل الأمر",
+              "Type": 12
+            },
+            {
+              "Description": "لم يؤكد الصمام الطلب في الوقت المحدد.",
+              "Name": "انتهاء مهلة الأمر",
+              "Type": 13
+            },
+            {
+              "Description": "طُلب من الصمام الفتح، ولكن لم يُكتشف أي ري.",
+              "Name": "لم يُرصد فتح",
+              "Type": 14
+            },
+            {
+              "Description": "استبدل حساب أحدث عملية الري المخططة.",
+              "Name": "تمت إعادة الحساب",
+              "Type": 15
+            },
+            {
+              "Description": "لا تحتوي البيانات القديمة المحفوظة على سبب أكثر تحديدًا.",
+              "Name": "غير معروف",
+              "Type": 16
+            },
+            {
+              "Description": "The valve was observed closed before its timed run was due to finish.",
+              "Name": "Stopped early",
+              "Type": 17
+            }
+          ],
+          "Name": "سبب الري",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringReasonV1"
+    },
+    {
+      "Description": "يعرض مصدر المياه أو ما إذا كانت متوقعة لاحقًا.",
+      "DisplayName": "مصدر المياه",
+      "List": [
+        {
+          "Description": "يعرض مصدر المياه أو ما إذا كانت متوقعة لاحقًا.",
+          "Enum": [
+            {
+              "Description": "مطر سبق أن سجلته خدمة الطقس.",
+              "Name": "المطر",
+              "Type": 1
+            },
+            {
+              "Description": "مياه مقدرة من مدة بقاء الصمام مفتوحًا.",
+              "Name": "الري",
+              "Type": 2
+            },
+            {
+              "Description": "مطر متوقع في التوقعات.",
+              "Name": "مطر متوقع",
+              "Type": 3
+            },
+            {
+              "Description": "ري تلقائي مخطط ولكنه لم يبدأ بعد.",
+              "Name": "مياه مجدولة",
+              "Type": 4
+            }
+          ],
+          "Name": "مصدر المياه",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterInputTypeV1"
+    },
+    {
+      "Description": "يجمع ملخصًا مدمجًا للمطر مقابل الري مع التفاصيل اليومية.",
+      "DisplayName": "استخدام المياه",
+      "List": [
+        {
+          "Description": "يجمع ملخصًا مدمجًا للمطر مقابل الري مع التفاصيل اليومية.",
+          "Name": "استخدام المياه",
+          "Type": 0
+        },
+        {
+          "Description": "Shared rain and per-area irrigation during the selected dates.",
+          "Name": "Summary",
+          "Type": 1
+        },
+        {
+          "Description": "Rain and watering amounts by local calendar date.",
+          "Name": "Daily details",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterUsageChartV1"
+    },
+    {
+      "Description": "يبقي المنطقة ظاهرة عندما لا يكون فيها مطر أو ري خلال التواريخ المحددة.",
+      "DisplayName": "منطقة بلا مياه مسجلة",
+      "List": [
+        {
+          "Description": "يبقي المنطقة ظاهرة عندما لا يكون فيها مطر أو ري خلال التواريخ المحددة.",
+          "Name": "منطقة بلا مياه مسجلة",
+          "Type": 0
+        },
+        {
+          "Description": "يوسّط الرسالة في المخطط.",
+          "Name": "موضع التسمية",
+          "Type": 1
+        },
+        {
+          "Description": "المنطقة المروية التي لا توجد بها مياه مسجلة.",
+          "Name": "المنطقة",
+          "Type": 2
+        },
+        {
+          "Description": "توضح سبب عدم وجود أعمدة لهذه المنطقة في المخطط.",
+          "Name": "الرسالة",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZoneRowV1"
+    },
+    {
+      "Description": "رسائل للمناطق التي لا يوجد بها مطر أو ري خلال التواريخ المحددة.",
+      "DisplayName": "مناطق بلا مياه مسجلة",
+      "List": [
+        {
+          "Description": "رسائل للمناطق التي لا يوجد بها مطر أو ري خلال التواريخ المحددة.",
+          "Name": "مناطق بلا مياه مسجلة",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZonesV1"
+    },
+    {
+      "Description": "يعرض كميات المطر والري حسب التاريخ لكل منطقة.",
+      "DisplayName": "استخدام المياه",
+      "List": [
+        {
+          "Description": "يعرض كميات المطر والري حسب التاريخ لكل منطقة.",
+          "Name": "استخدام المياه",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageMarksV1"
+    },
+    {
+      "Description": "كمية واحدة من المطر أو الري معروضة لمنطقة في تاريخ معين.",
+      "DisplayName": "عنصر استخدام المياه",
+      "List": [
+        {
+          "Description": "كمية واحدة من المطر أو الري معروضة لمنطقة في تاريخ معين.",
+          "Name": "عنصر استخدام المياه",
+          "Type": 0
+        },
+        {
+          "Description": "التاريخ التقويمي المحلي لكمية المطر أو الري هذه.",
+          "Name": "التاريخ",
+          "Type": 1
+        },
+        {
+          "Description": "موضع بدء هذه الكمية في المخطط.",
+          "Name": "بداية العمود",
+          "Type": 2
+        },
+        {
+          "Description": "موضع انتهاء هذه الكمية في المخطط.",
+          "Name": "نهاية العمود",
+          "Type": 3
+        },
+        {
+          "Description": "المطر أو الري الذي يمثله هذا الجزء من العمود.",
+          "Name": "كمية المياه",
+          "Type": 4
+        },
+        {
+          "Description": "مطر مسجل أو ري أو مطر متوقع أو ري مخطط.",
+          "Name": "مصدر المياه",
+          "Type": 5
+        },
+        {
+          "Description": "المنطقة المروية التي يمثلها هذا الصف.",
+          "Name": "المنطقة",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageRowV1"
+    },
+    {
+      "Description": "Shows shared rain and irrigation for every area together on one chart.",
+      "DisplayName": "Water-use summary",
+      "List": [
+        {
+          "Description": "Shows shared rain and irrigation for every area together on one chart.",
+          "Name": "Water-use summary",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryChartV1"
+    },
+    {
+      "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+      "DisplayName": "Water-use summary item",
+      "List": [
+        {
+          "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+          "Name": "Water-use summary item",
+          "Type": 0
+        },
+        {
+          "Description": "Millimeter scale for comparing rain and irrigation.",
+          "Name": "Water amount",
+          "Type": 1
+        },
+        {
+          "Description": "Where this contribution ends in its stacked total.",
+          "Name": "Amount end",
+          "Type": 2
+        },
+        {
+          "Description": "Total rain or irrigation represented by this part of the bar.",
+          "Name": "Amount",
+          "Type": 3
+        },
+        {
+          "Description": "Recorded rain, forecast rain, actual watering, or scheduled watering.",
+          "Name": "Water source",
+          "Type": 4
+        },
+        {
+          "Description": "Keeps shared rain first, followed by every configured area.",
+          "Name": "Lane",
+          "Type": 5
+        },
+        {
+          "Description": "Shows Rain or the configured area's name on the summary axis.",
+          "Name": "Rain or area",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryRowV1"
+    },
+    {
+      "Description": "يعرض ما إذا كانت القيمة مسجلة أم متوقعة.",
+      "DisplayName": "مصدر الطقس",
+      "List": [
+        {
+          "Description": "يعرض ما إذا كانت القيمة مسجلة أم متوقعة.",
+          "Enum": [
+            {
+              "Description": "ملاحظة طقس مكتملة.",
+              "Name": "السجل المسجل",
+              "Type": 1
+            },
+            {
+              "Description": "ملاحظة حديثة للطقس الحالي.",
+              "Name": "الظروف الحالية",
+              "Type": 2
+            },
+            {
+              "Description": "قيمة مستقبلية من أحدث توقع.",
+              "Name": "التوقع",
+              "Type": 3
+            }
+          ],
+          "Name": "مصدر الطقس",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherChartSourceV1"
+    },
+    {
+      "Description": "يعرض معًا الفقد المقدر للمياه ودرجة الحرارة والرطوبة والرياح.",
+      "DisplayName": "الطقس",
+      "List": [
+        {
+          "Description": "يعرض معًا الفقد المقدر للمياه ودرجة الحرارة والرطوبة والرياح.",
+          "Name": "الطقس",
+          "Type": 0
+        },
+        {
+          "Description": "فقد المياه المسجل والمتوقع عبر التبخر واستخدام النباتات.",
+          "Name": "الفقد المقدر للمياه",
+          "Type": 1
+        },
+        {
+          "Description": "قيم مرصودة ومتوقعة بمحوري y مستقلين.",
+          "Name": "درجة الحرارة والرطوبة النسبية",
+          "Type": 2
+        },
+        {
+          "Description": "الرياح المستمرة والهبات المرصودة والمتوقعة.",
+          "Name": "الرياح",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherEtChartV1"
+    },
+    {
+      "Description": "الرياح المستمرة والهبات المرصودة والمتوقعة على مقياس واحد قابل للمقارنة.",
+      "DisplayName": "الرياح والهبات",
+      "List": [
+        {
+          "Description": "الرياح المستمرة والهبات المرصودة والمتوقعة على مقياس واحد قابل للمقارنة.",
+          "Name": "الرياح والهبات",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWindChartV1"
+    },
+    {
+      "Description": "عينة واحدة لرياح مستمرة أو هبة.",
+      "DisplayName": "صف الرياح",
+      "List": [
+        {
+          "Description": "عينة واحدة لرياح مستمرة أو هبة.",
+          "Name": "صف الرياح",
+          "Type": 0
+        },
+        {
+          "Description": "بداية فترة المزوّد.",
+          "Name": "الوقت",
+          "Type": 1
+        },
+        {
+          "Description": "سرعة الرياح المستمرة أو الهبة بالأمتار في الثانية.",
+          "Name": "سرعة الرياح",
+          "Type": 2
+        },
+        {
+          "Description": "رياح مستمرة أو هبة، مرصودة أو متوقعة.",
+          "Name": "السلسلة",
+          "Type": 3
+        },
+        {
+          "Description": "هوية ينشئها الخادم لهذا الوقت ولسلسلة الرياح.",
+          "Name": "مفتاح ثابت",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWindRowV1"
+    },
+    {
+      "Description": "تفصل بين الرياح المستمرة والهبات للفترات المرصودة والمتوقعة.",
+      "DisplayName": "سلسلة الرياح",
+      "List": [
+        {
+          "Description": "تفصل بين الرياح المستمرة والهبات للفترات المرصودة والمتوقعة.",
+          "Enum": [
+            {
+              "Description": "رياح مستمرة من فترة تاريخية مكتملة.",
+              "Name": "الرياح المستمرة التاريخية",
+              "Type": 1
+            },
+            {
+              "Description": "أقصى هبة من فترة تاريخية مكتملة.",
+              "Name": "الهبة التاريخية",
+              "Type": 2
+            },
+            {
+              "Description": "رياح مستمرة من ملاحظة حالية محفوظة.",
+              "Name": "الرياح المستمرة الحالية",
+              "Type": 3
+            },
+            {
+              "Description": "أقصى هبة من ملاحظة حالية محفوظة.",
+              "Name": "الهبة الحالية",
+              "Type": 4
+            },
+            {
+              "Description": "الرياح المستمرة المتنبأ بها.",
+              "Name": "الرياح المستمرة المتوقعة",
+              "Type": 5
+            },
+            {
+              "Description": "أقصى هبة متنبأ بها.",
+              "Name": "الهبة المتوقعة",
+              "Type": 6
+            }
+          ],
+          "Name": "سلسلة الرياح",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWindSeriesV1"
+    },
+    {
+      "Description": "يتذكر أحدث تذكير حتى لا يُرسل مرة أخرى بعد وقت قصير جدًا.",
+      "DisplayName": "أحدث تذكير بالتجهيز للشتاء",
+      "List": [
+        {
+          "Description": "يتذكر أحدث تذكير حتى لا يُرسل مرة أخرى بعد وقت قصير جدًا.",
+          "Name": "أحدث تذكير بالتجهيز للشتاء",
+          "Type": 0
+        },
+        {
+          "Description": "وقت إرسال أحدث تذكير.",
+          "Name": "تم الإرسال في",
+          "Type": 1
+        },
+        {
+          "Description": "سبب إرسال أحدث تذكير.",
+          "Name": "السبب",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderMemoryV1"
+    },
+    {
+      "Description": "يوضح سبب إرسال أحدث تذكير بالطقس البارد.",
+      "DisplayName": "سبب تذكير التجهيز للشتاء",
+      "List": [
+        {
+          "Description": "يوضح سبب إرسال أحدث تذكير بالطقس البارد.",
+          "Enum": [
+            {
+              "Description": "يشير خط عرض الموقع والموسم الحالي إلى اقتراب الطقس البارد.",
+              "Name": "الموقع والموسم",
+              "Type": 1
+            },
+            {
+              "Description": "تُظهر الظروف الحالية الحديثة أو بيانات التوقع درجة حرارة عند عتبة أمان الطقس البارد للمرش أو أقل منها.",
+              "Name": "طقس متجمد",
+              "Type": 2
+            }
+          ],
+          "Name": "سبب تذكير التجهيز للشتاء",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderReasonV1"
+    },
+    {
+      "Description": "يعرض المعلومات التي تقف خلف خطة الري الحالية.",
+      "DisplayName": "تفاصيل المنطقة",
+      "List": [
+        {
+          "Description": "يعرض المعلومات التي تقف خلف خطة الري الحالية.",
+          "Name": "تفاصيل المنطقة",
+          "Type": 0
+        },
+        {
+          "Description": "المعلومات المستخدمة لتقدير موعد احتياج النباتات إلى المياه مرة أخرى.",
+          "Name": "تقدير استخدام المياه",
+          "Type": 1
+        },
+        {
+          "Description": "المياه المقدرة المفقودة كل يوم عبر التبخر واستخدام النباتات.",
+          "Name": "الفقد اليومي المقدر للمياه",
+          "Type": 2
+        },
+        {
+          "Description": "وقت حساب خطة الري هذه.",
+          "Name": "آخر تحديث",
+          "Type": 3
+        },
+        {
+          "Description": "قرار الري الحالي أو سبب التأخير.",
+          "Name": "الحالة",
+          "Type": 4
+        },
+        {
+          "Description": "وقت البدء والمدة المخططان. وقد يظل الطقس أو توفر الصمام قادرًا على تغيير الخطة.",
+          "Name": "الري التالي",
+          "Type": 5
+        },
+        {
+          "Description": "كمية المياه المخططة للعملية التلقائية التالية.",
+          "Name": "المياه المخططة",
+          "Type": 6
+        },
+        {
+          "Description": "كمية المياه التي يُقدر أن النباتات تحتاج إليها.",
+          "Name": "النقص المقدر في المياه",
+          "Type": 7
+        },
+        {
+          "Description": "المطر المحتسب خلال الأيام السبعة الماضية.",
+          "Name": "المطر الحديث",
+          "Type": 8
+        },
+        {
+          "Description": "الري المحتسب خلال الأيام السبعة الماضية.",
+          "Name": "الري الحديث",
+          "Type": 9
+        },
+        {
+          "Description": "ما إذا كان الصمام مفتوحًا حاليًا.",
+          "Name": "الري جارٍ الآن",
+          "Type": 10
+        },
+        {
+          "Description": "ينتظر الري التلقائي حتى تتوفر حالة الصمام.",
+          "Name": "حالة الصمام متاحة",
+          "Type": 11
+        },
+        {
+          "Description": "المشكلات التي أبلغ عنها الصمام. يمكن أن توجد أكثر من مشكلة في الوقت نفسه.",
+          "Name": "مشكلات الصمام",
+          "Type": 12
+        }
+      ],
+      "Name": "SprinklerZoneActiveStateV1"
+    },
+    {
+      "Description": "يعرض خطة الري الكاملة أو أن النظام مجهز للشتاء.",
+      "DisplayName": "حالة المرش التفصيلية",
+      "List": [
+        {
+          "Description": "يعرض خطة الري الكاملة أو أن النظام مجهز للشتاء.",
+          "Name": "حالة المرش التفصيلية",
+          "Type": 0
+        },
+        {
+          "Description": "الري التلقائي مُمكّن وكل بيانات المنطقة الحالية متاحة.",
+          "Name": "نشط",
+          "Type": 1
+        },
+        {
+          "Description": "خطة الري الحالية وتقدير المياه وحالة الصمام.",
+          "Name": "تفاصيل المنطقة",
+          "Type": 2
+        },
+        {
+          "Description": "الري التلقائي معطل لنظام المرش بالكامل ولا توجد فترة ري مجدولة.",
+          "Name": "مجهز للشتاء",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerZoneAdvancedStateV1"
+    },
+    {
+      "Description": "Explains why a requested sprinkler setting was not changed.",
+      "DisplayName": "Configuration error",
+      "List": [
+        {
+          "Description": "Explains why a requested sprinkler setting was not changed.",
+          "Enum": [
+            {
+              "Description": "The percentage was outside the supported range or step.",
+              "Name": "Invalid water amount",
+              "Type": 1
+            },
+            {
+              "Description": "The replacement contained too many periods or an invalid interval.",
+              "Name": "Invalid no-watering periods",
+              "Type": 2
+            }
+          ],
+          "Name": "Configuration error",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationErrorV1"
+    },
+    {
+      "Description": "اضبط كمية المياه أو فترات منع الري أو ما إذا كان الري التلقائي نشطًا.",
+      "DisplayName": "إعدادات المنطقة",
+      "List": [
+        {
+          "Description": "اضبط كمية المياه أو فترات منع الري أو ما إذا كان الري التلقائي نشطًا.",
+          "Name": "إعدادات المنطقة",
+          "Type": 0
+        },
+        {
+          "Description": "استخدم 100% للكمية الموصى بها، أو قيمة أقل لمياه أقل، أو قيمة أعلى لمياه أكثر.",
+          "Name": "كمية المياه",
+          "Type": 1
+        },
+        {
+          "Description": "Times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 2
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 3
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationV1"
+    },
+    {
+      "Description": "تحتفظ بأداة ضبط كمية المياه المدمجة والآمنة لإعادة التشغيل والقيود وخط أساس ميزان المياه المطوي لصمام مهيأ واحد. تُخزن أحداث المياه بصورة منفصلة كسجلات مفهرسة تزايدية.",
+      "DisplayName": "ذاكرة منطقة المرش",
+      "List": [
+        {
+          "Description": "تحتفظ بأداة ضبط كمية المياه المدمجة والآمنة لإعادة التشغيل والقيود وخط أساس ميزان المياه المطوي لصمام مهيأ واحد. تُخزن أحداث المياه بصورة منفصلة كسجلات مفهرسة تزايدية.",
+          "Name": "ذاكرة منطقة المرش",
+          "Type": 0
+        },
+        {
+          "Description": "النسبة المئوية من كمية الري التكيفية التي سيتم تطبيقها. القيمة الافتراضية هي 100%.",
+          "Name": "أداة ضبط كمية المياه",
+          "Type": 1
+        },
+        {
+          "Description": "قيود جدولة وقت التشغيل بعد تطبيعها.",
+          "Name": "فترات منع الري",
+          "Type": 2
+        },
+        {
+          "Description": "فترة نصف مفتوحة لا يمكن للمنطقة الري خلالها.",
+          "Name": "فترة منع الري",
+          "Type": 3
+        },
+        {
+          "Description": "التاريخ والوقت اللذان جرى حتى نهايتهما طي مدخلات المياه الأقدم في `baseline_deficit_millimeters`.",
+          "Name": "وقت خط أساس الميزان",
+          "Type": 4
+        },
+        {
+          "Description": "عجز مياه منطقة الجذور عند `balance_baseline_at`، بالملليمترات.",
+          "Name": "العجز الأساسي",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerZoneMemoryV1"
+    },
+    {
+      "Description": "اعرض حالة هذه المنطقة وتفاصيلها أو غيّر إعدادات الري الخاصة بها.",
+      "DisplayName": "عناصر التحكم في المرش",
+      "List": [
+        {
+          "Description": "اعرض حالة هذه المنطقة وتفاصيلها أو غيّر إعدادات الري الخاصة بها.",
+          "Name": "عناصر التحكم في المرش",
+          "Type": 0
+        },
+        {
+          "Description": "يعرض ما تفعله هذه المنطقة وموعد ريها التالي.",
+          "Name": "عرض الحالة",
+          "Type": 1
+        },
+        {
+          "Description": "حالة الري الحالية وخطة الري التالية.",
+          "Name": "الحالة الحالية",
+          "Type": 2
+        },
+        {
+          "Description": "الحالة الحالية لهذه المنطقة أو للنظام المجهز للشتاء.",
+          "Name": "حالة المرش",
+          "Type": 3
+        },
+        {
+          "Description": "يعرض تقدير المياه وخطة الري وحالة الصمام.",
+          "Name": "عرض التفاصيل",
+          "Type": 4
+        },
+        {
+          "Description": "تقدير المياه وخطة الري وحالة الصمام.",
+          "Name": "تفاصيل المنطقة",
+          "Type": 5
+        },
+        {
+          "Description": "يعرض كمية المياه وفترات منع الري والحالة النشطة.",
+          "Name": "عرض الإعدادات",
+          "Type": 6
+        },
+        {
+          "Description": "كمية المياه الحالية وفترات منع الري والحالة النشطة. تُسلّم التغييرات المقبولة اللاحقة كبيانات اشتراك قبل إقرارها النهائي.",
+          "Name": "إعدادات المنطقة",
+          "Type": 7
+        },
+        {
+          "Description": "الإعدادات الحالية لهذه المنطقة.",
+          "Name": "الإعدادات",
+          "Type": 8
+        },
+        {
+          "Description": "استخدم مياهًا أكثر أو أقل من الكمية الموصى بها.",
+          "Name": "تغيير كمية المياه",
+          "Type": 9
+        },
+        {
+          "Description": "Use more or less water than the recommended amount.",
+          "Name": "Change water amount",
+          "Type": 10
+        },
+        {
+          "Description": "Use 100% for the recommended amount, a lower value for less water, or a higher value for more water.",
+          "Name": "Water amount",
+          "Type": 11
+        },
+        {
+          "Description": "Replace the times when this area must not be watered.",
+          "Name": "Change no-watering periods",
+          "Type": 12
+        },
+        {
+          "Description": "The complete list of times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 13
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 14
+        },
+        {
+          "Description": "Turn automatic watering on or off.",
+          "Name": "Change active state",
+          "Type": 15
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 16
+        },
+        {
+          "Description": "Confirms that a requested setting was persisted and applied. The current subscribed configuration remains installed.",
+          "Name": "Change accepted",
+          "Type": 17
+        },
+        {
+          "Description": "Explains why a requested setting was not changed while preserving the current subscribed configuration for correction and retry.",
+          "Name": "Change rejected",
+          "Type": 18
+        },
+        {
+          "Description": "A localized explanation of the invalid setting.",
+          "Name": "Error message",
+          "Type": 19
+        },
+        {
+          "Description": "The reason the setting was rejected.",
+          "Name": "Error",
+          "Type": 20
+        }
+      ],
+      "Name": "SprinklerZoneProtocol"
+    },
+    {
+      "Description": "يعرض الحالة الحالية وخطة الري التالية.",
+      "DisplayName": "حالة المرش",
+      "List": [
+        {
+          "Description": "يعرض الحالة الحالية وخطة الري التالية.",
+          "Name": "حالة المرش",
+          "Type": 0
+        },
+        {
+          "Description": "الري التلقائي مُمكّن.",
+          "Name": "نشط",
+          "Type": 1
+        },
+        {
+          "Description": "قرار الري الحالي أو سبب التأخير.",
+          "Name": "الحالة",
+          "Type": 2
+        },
+        {
+          "Description": "وقت البدء والمدة المخططان.",
+          "Name": "الري التالي",
+          "Type": 3
+        },
+        {
+          "Description": "الري التلقائي معطل لنظام المرش بالكامل ولا توجد فترة ري مجدولة.",
+          "Name": "مجهز للشتاء",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneStateV1"
+    },
+    {
+      "Description": "هيئ عشبًا أو حديقة أو منطقة مزروعة واحدة تُروى بصورة مستقلة.",
+      "DisplayName": "منطقة مروية",
+      "List": [
+        {
+          "Description": "هيئ عشبًا أو حديقة أو منطقة مزروعة واحدة تُروى بصورة مستقلة.",
+          "Name": "منطقة مروية",
+          "Type": 0
+        },
+        {
+          "Description": "اختر الصمام الذي يتحكم في هذه المنطقة.",
+          "Name": "صمام المياه",
+          "Type": 1
+        },
+        {
+          "Description": "اختر ما ينمو في هذه المنطقة.",
+          "Name": "نوع النبات",
+          "Type": 2
+        },
+        {
+          "Description": "اختر كيفية توصيل المياه في هذه المنطقة.",
+          "Name": "طريقة الري",
+          "Type": 3
+        },
+        {
+          "Description": "اختر المكان الذي ستتوفر فيه حالة هذه المنطقة وإعداداتها وعناصر التحكم الخاصة بها.",
+          "Name": "عناصر التحكم في المنطقة",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "System record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "System record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "ArchiveState",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "WateringMode",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WinterizationReminder",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "WeatherHistory",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "WeatherObservation",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 10
+        }
+      ],
+      "Name": "SystemRecord"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Valve record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Valve record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Memory",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "ActivityState",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "Restart",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WaterEvent",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Activity",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "DailyReport",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "ModeledWeatherGap",
+          "Type": 10
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 11
+        }
+      ],
+      "Name": "ZoneRecord"
+    }
+  ]
+}

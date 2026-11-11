@@ -1,0 +1,50 @@
+{
+  "Description": "为智能喷灌等应用提供近期天气状况和预报。 本地天气使用 Hub 的位置请求正确的天气预报。它会在短暂的互联网或定位服务中断期间保留最近一次有效的天气信息，并在 Hub 移动时自动更新。",
+  "DisplayName": "本地天气",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Local weather",
+      "Description": "提供当前本地天气、近期逐小时天气状况以及用于喷灌规划的天气预报。用户可选择喷灌应用从何处接收这些信息。天气服务使用 Libertas 安装位置来从 Open-Meteo 获取温度、相对湿度、降水量、土壤和植物的估算水分损失、风速和阵风。天气服务会自动刷新当前天气状况、近期历史记录和七天天气预报，并向喷灌应用报告变化。天气服务会在重启以及短暂的互联网或定位服务中断期间保留最近一次有效信息，并在安装位置发生移动时针对新位置刷新数据。获取最新信息需要位置访问权限和互联网连接。同一时间只能运行一个本地天气服务。",
+      "DisplayName": "本地天气",
+      "List": [
+        {
+          "Description": "",
+          "Name": "sprinkler_weather",
+          "Type": 0
+        }
+      ],
+      "Name": "libertas_weather_server"
+    }
+  ],
+  "Locale": "zh-Hans",
+  "StringResources": {
+    "SPRINKLER_CURRENT_WEATHER_V1": "已保存 {0} 的当前喷灌天气。",
+    "SPRINKLER_WEATHER_FORECAST_V1": "已保存 {0} 的喷灌天气预报。",
+    "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "已保存 {0} 的喷灌天气更新时间。",
+    "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "已保存 {0} 的近期喷灌天气。",
+    "SPRINKLER_WEATHER_LOCATION_V1": "已保存 {0} 的喷灌天气位置。",
+    "api.open-meteo.com": "连接到 Open-Meteo，以获取当前天气状况、近期历史记录和预报，用于喷灌规划。",
+    "libertas.permission.ACCESS_FINE_LOCATION": "使用 Hub 的位置请求正确的本地天气预报。"
+  },
+  "Types": [
+    {
+      "Description": "向智能喷灌提供本地天气信息。",
+      "DisplayName": "喷灌天气服务",
+      "List": [
+        {
+          "Description": "向智能喷灌提供本地天气信息。",
+          "Name": "喷灌天气服务",
+          "Type": 0
+        },
+        {
+          "DefaultText": "喷灌天气服务",
+          "Description": "选择喷灌应用可从何处获取天气更新。",
+          "Name": "天气服务",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWeatherEndpointServerV1"
+    }
+  ]
+}

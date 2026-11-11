@@ -1,0 +1,38 @@
+{
+  "Entries": {
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"epoch_timestamp\"/property/\"Description\"": {
+      "Current": "sha256:d0da87fb61fd945d84c56e12bc739d60674fe1f6e68f79171ab5aba93f8367e2",
+      "Target": "La fecha y hora asignadas por el servidor que identifican la generación del cursor. Este único campo es tanto la época del flujo como una marca de tiempo ordenada; no existe ninguna época opaca independiente. Permanece sin cambios durante el avance normal de la secuencia. Cuando el servidor pierde su cursor transitorio o su diario de reproducción, asigna una marca de tiempo de época estrictamente posterior a la anterior y vuelve a iniciar `sequence` en cero. Un cliente puede observar primero una secuencia posterior al reinicio en lugar de cero. Esta marca de tiempo describe el estado del cursor, no la hora de observación de los valores meteorológicos."
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"epoch_timestamp\"/property/\"Name\"": {
+      "Current": "sha256:23a07e91898c9c53943aafdcc33890c33f8f47053f946661af1950dd5590aaa6",
+      "Target": "Marca de tiempo de época"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"sequence\"/property/\"Description\"": {
+      "Current": "sha256:8664bd7b804e94b7cbc03e5265cdf85595616da05c9e407651b8dec18baf113a",
+      "Target": "Identifica el último cambio de estado aplicado. El servidor incrementa este valor una vez por cada cambio meteorológico aceptado. Restablece este valor a cero cuando se reinicia el cursor transitorio del servidor y después lo incrementa con los cambios posteriores; un reinicio no borra los datos meteorológicos históricos, actuales ni previstos."
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"sequence\"/property/\"Name\"": {
+      "Current": "sha256:737bf7b9b2dca57c45f39132d1314d5f6a77f1b54b602a112834845e17437b7f",
+      "Target": "Secuencia"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/property/\"Description\"": {
+      "Current": "sha256:189b010e2388fe2c438d0f85e704a910d1a919391a1ed92cb9f557d0dbddd944",
+      "Target": "Identifica un estado aplicado en un flujo meteorológico incremental del aspersor. Un cliente compara ambos campos y no debe interpretar una secuencia menor por sí sola como un reinicio del servidor."
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/property/\"Name\"": {
+      "Current": "sha256:7067c81bf824a0c9efd02d96977500d979e44504b3b6bc87df04fc62882caa4b",
+      "Target": "Cursor meteorológico del aspersor"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/property/\"Description\"": {
+      "Current": "sha256:8c6c0553131c6a3b78d7033f15442d6d3bdde8eba8034f9d97835460d26af5a3",
+      "Target": "Identifica un estado aplicado en un flujo meteorológico incremental del aspersor. Un cliente compara ambos campos y no debe interpretar una secuencia menor por sí sola como un reinicio del servidor."
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/property/\"DisplayName\"": {
+      "Current": "sha256:0ebe0cfe28ddecdc8864965b4d27ff87894937241101b41012e5db17e1a84fb4",
+      "Target": "Cursor meteorológico del aspersor"
+    }
+  },
+  "Reviewed": {},
+  "Translated": {}
+}

@@ -1,0 +1,38 @@
+{
+  "Entries": {
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"epoch_timestamp\"/property/\"Description\"": {
+      "Current": "sha256:c9b72888c8c61cf629286d9d60f83d6232080258edad6f8266c8c313db816459",
+      "Target": "由伺服器指派、用於識別游標世代的日期與時間。此單一欄位既是串流紀元，也是有序時間戳記；不存在另一個不透明的紀元值。在序號正常遞增期間，此值維持不變。當伺服器遺失暫存游標或重播日誌時，會指派一個嚴格晚於先前值的紀元時間戳記，並將 `sequence` 重新從零開始。用戶端最初觀察到的可能是重設後較晚的序號，而非零。此時間戳記描述的是游標狀態，而非氣象值的觀測時間。"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"epoch_timestamp\"/property/\"Name\"": {
+      "Current": "sha256:308883732506f7bc7355449c369adf8045db3cb0820ca48a9302dd5821a73005",
+      "Target": "紀元時間戳記"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"sequence\"/property/\"Description\"": {
+      "Current": "sha256:86edad5fd5cfe3cfaf74647be122b1b2174d0b4647d344b29cc447c85cd4848c",
+      "Target": "識別最新套用的狀態變更。伺服器會針對每項接受的氣象變更將此值遞增一次。暫存伺服器游標重設時，伺服器會將此值重設為零，然後針對後續變更遞增；重設不會清除歷史、目前或預報氣象資料。"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/\"sequence\"/property/\"Name\"": {
+      "Current": "sha256:eb881c25f19d2597a86495435c8830f47e9b857c2eadb13a2238337f2bdfc7dd",
+      "Target": "序號"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/property/\"Description\"": {
+      "Current": "sha256:51ac782a9b28af7de0ccbf5aadf292b4ae551f8ec1edb040a3ff0291c177c4af",
+      "Target": "識別增量式灑水器氣象串流中一個已套用的狀態。用戶端會比較這兩個欄位，且不得僅將較小的序號解讀為伺服器重設。"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/\"SprinklerWeatherCursorV1\"/property/\"Name\"": {
+      "Current": "sha256:f14f3c57b6bbf7570be1dcc903938d54b85c202921966364723d5a07990c5d92",
+      "Target": "灑水器氣象游標"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/property/\"Description\"": {
+      "Current": "sha256:b26d78968aef47ccf05ef1c831f8eb7c7c260ea45479332194e91897559ee6cf",
+      "Target": "識別增量式灑水器氣象串流中一個已套用的狀態。用戶端會比較這兩個欄位，且不得僅將較小的序號解讀為伺服器重設。"
+    },
+    "type/\"\"/\"SprinklerWeatherCursorV1\"/property/\"DisplayName\"": {
+      "Current": "sha256:3c410343f613086bd1cc06e2619c4e769bf0fb41fde3274fa8ced4f8ef8ce9cb",
+      "Target": "灑水器氣象游標"
+    }
+  },
+  "Reviewed": {},
+  "Translated": {}
+}

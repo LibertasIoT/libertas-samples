@@ -1,0 +1,75 @@
+{
+  "Description": "Permet d’essayer des applications d’arrosage sans installer de matériel d’irrigation physique.",
+  "DisplayName": "Émulateur de commande d’arrosage",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Virtual sprinkler valves",
+      "Description": "Permet d’essayer des applications d’arrosage sans installer de matériel d’irrigation physique. L’utilisateur choisit une ou plusieurs électrovannes virtuelles et peut définir la durée d’arrosage par défaut de chacune. L’utilisateur ou une application d’arrosage peut ouvrir une électrovanne pour une durée indéterminée, l’ouvrir pendant une durée choisie ou la fermer. Le dispositif de commande ferme automatiquement l’électrovanne à la fin d’un arrosage programmé et ferme toute autre électrovanne avant d’en ouvrir une nouvelle, afin qu’une seule zone soit arrosée à la fois. Il affiche l’état ouvert ou fermé de chaque électrovanne, la durée sélectionnée, la durée par défaut et le temps restant, et conserve la durée par défaut après les redémarrages.",
+      "DisplayName": "Émulateur de commande d’arrosage",
+      "List": [
+        {
+          "Description": "Ajoutez une électrovanne virtuelle pour chaque zone que vous souhaitez essayer.",
+          "Name": "Électrovannes d’arrosage",
+          "Type": 0
+        },
+        {
+          "Description": "Une électrovanne d’eau virtuelle.",
+          "Name": "Électrovanne d’arrosage",
+          "Type": 1
+        }
+      ],
+      "Name": "virtual_irrigation_controller"
+    }
+  ],
+  "Locale": "fr-FR",
+  "StringResources": {
+    "DEFAULT_OPEN_DURATION": "Durée d’arrosage enregistrée pour {0}."
+  },
+  "Types": [
+    {
+      "Description": "Chaque structure de données écrite dans la base de données Libertas est définie directement dans ce type union.",
+      "DisplayName": "Données persistantes des électrovannes.",
+      "List": [
+        {
+          "Description": "Chaque structure de données écrite dans la base de données Libertas est définie directement dans ce type union.",
+          "Name": "Données persistantes des électrovannes.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Attribut Matter DefaultOpenDuration.",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "DefaultOpenDuration, en secondes.",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved valve settings",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved valve settings",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Default watering duration for one valve",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 2
+        }
+      ],
+      "Name": "ValveKey"
+    }
+  ]
+}

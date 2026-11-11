@@ -1,0 +1,50 @@
+{
+  "Description": "Supplies local weather to sprinkler apps such as Smart Sprinkler so they can plan watering around rain, temperature, humidity, and wind. Local Weather uses the Hub's location to retrieve current conditions, seven days of recent hourly weather, and a seven-day forecast from Open-Meteo. The service refreshes weather automatically and keeps the last valid weather through restarts and temporary internet interruptions. Fresh weather requires location access and an internet connection. Each Hub can run one Local Weather service for multiple sprinkler apps.",
+  "DisplayName": "Local Weather",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Local weather",
+      "Description": "Local Weather supplies current conditions, recent weather, and forecasts to help sprinkler apps plan when and how much to water. The service creates a shared weather source for apps such as Smart Sprinkler and uses the Hub's location to retrieve weather from Open-Meteo. Local Weather supplies temperature, relative humidity, precipitation, forecast rain probability, estimated water loss from soil and plants, wind speed, and wind gusts. Local Weather automatically refreshes current conditions every 15 minutes and hourly history and forecasts every hour. The service keeps seven days of recent hourly weather and a seven-day forecast, and sends weather changes to connected sprinkler apps. Connected apps can obtain the latest saved weather or recover missed updates after an interruption. Local Weather saves the last valid location, current conditions, recent history, and forecast separately, keeping available weather through restarts and temporary internet or location-service interruptions. The service supplies the time and freshness deadline of each update so sprinkler apps can recognize older weather. Local Weather clears weather for the previous site and retrieves replacement weather when the Hub reports a changed location. Fresh weather requires location access and an internet connection. Weather remains unavailable until the service knows the Hub's location. Only one Local Weather service can run on a Hub, and multiple sprinkler apps can share that service. Developed by Smartonlabs Inc. (libertas).",
+      "DisplayName": "Local Weather",
+      "List": [
+        {
+          "Description": "The shared local weather source this service creates for sprinkler apps on the Hub. Connected apps use current conditions, recent weather, and forecasts from this service to plan watering.",
+          "Name": "Sprinkler weather service",
+          "Type": 0
+        }
+      ],
+      "Name": "libertas_weather_server"
+    }
+  ],
+  "Locale": "en-US",
+  "StringResources": {
+    "SPRINKLER_CURRENT_WEATHER_V1": "Saved current sprinkler weather for {0}.",
+    "SPRINKLER_WEATHER_FORECAST_V1": "Saved sprinkler weather forecast for {0}.",
+    "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "Saved sprinkler weather update time for {0}.",
+    "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "Saved recent sprinkler weather for {0}.",
+    "SPRINKLER_WEATHER_LOCATION_V1": "Saved location used for sprinkler weather at {0}.",
+    "api.open-meteo.com": "Connect to Open-Meteo to retrieve current conditions, recent history, and forecasts for sprinkler planning.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Use the Hub's location to request the correct local weather forecast."
+  },
+  "Types": [
+    {
+      "Description": "Supplies current conditions, recent hourly weather, and forecasts for sprinkler apps using the Hub's location.",
+      "DisplayName": "Sprinkler weather service",
+      "List": [
+        {
+          "Description": "Supplies current conditions, recent hourly weather, and forecasts for sprinkler apps using the Hub's location.",
+          "Name": "Sprinkler weather service",
+          "Type": 0
+        },
+        {
+          "DefaultText": "Sprinkler weather service",
+          "Description": "Local Weather creates this service so sprinkler apps can obtain local weather and receive automatic updates for watering decisions.",
+          "Name": "Sprinkler weather service",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWeatherEndpointServerV1"
+    }
+  ]
+}

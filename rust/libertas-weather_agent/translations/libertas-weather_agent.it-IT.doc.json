@@ -1,0 +1,50 @@
+{
+  "Description": "Fornisce dati meteorologici locali alle app per irrigatori, come Irrigatore intelligente, affinché possano pianificare l'irrigazione in base a pioggia, temperatura, umidità e vento. Meteo locale utilizza la posizione dell'Hub per recuperare le condizioni attuali, i dati meteorologici orari degli ultimi sette giorni e le previsioni per i sette giorni successivi da Open-Meteo. Il servizio aggiorna automaticamente i dati meteorologici e conserva gli ultimi dati validi dopo i riavvii e durante le interruzioni temporanee di Internet. Per ottenere dati meteorologici aggiornati sono necessari l'accesso alla posizione e una connessione Internet. Ogni Hub può eseguire un solo servizio Meteo locale per più app per irrigatori.",
+  "DisplayName": "Meteo locale",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Local weather",
+      "Description": "Meteo locale fornisce le condizioni attuali, i dati meteorologici recenti e le previsioni per aiutare le app per irrigatori a pianificare quando e quanto irrigare. Il servizio crea una fonte condivisa di dati meteorologici per app come Irrigatore intelligente e utilizza la posizione dell'Hub per recuperare i dati meteorologici da Open-Meteo. Meteo locale fornisce temperatura, umidità relativa, precipitazioni, probabilità di pioggia prevista, perdita d'acqua stimata dal suolo e dalle piante, velocità del vento e raffiche di vento. Meteo locale aggiorna automaticamente le condizioni attuali ogni 15 minuti e i dati storici orari e le previsioni ogni ora. Il servizio conserva i dati meteorologici orari degli ultimi sette giorni e le previsioni per i sette giorni successivi, e invia le variazioni meteorologiche alle app per irrigatori connesse. Le app connesse possono ottenere gli ultimi dati meteorologici salvati o recuperare gli aggiornamenti persi dopo un'interruzione. Meteo locale salva separatamente l'ultima posizione valida, le condizioni attuali, i dati storici recenti e le previsioni, mantenendo disponibili i dati meteorologici dopo i riavvii e durante le interruzioni temporanee di Internet o dei servizi di localizzazione. Il servizio fornisce l'ora e la scadenza di validità di ogni aggiornamento, affinché le app per irrigatori possano riconoscere i dati meteorologici meno recenti. Quando l'Hub segnala un cambio di posizione, Meteo locale cancella i dati meteorologici della località precedente e recupera quelli sostitutivi. Per ottenere dati meteorologici aggiornati sono necessari l'accesso alla posizione e una connessione Internet. I dati meteorologici rimangono indisponibili finché il servizio non conosce la posizione dell'Hub. Su un Hub può essere eseguito un solo servizio Meteo locale, che può essere condiviso da più app per irrigatori. Sviluppato da Smartonlabs Inc. (libertas).",
+      "DisplayName": "Meteo locale",
+      "List": [
+        {
+          "Description": "La fonte condivisa di dati meteorologici locali creata da questo servizio per le app per irrigatori sull'Hub. Le app connesse utilizzano le condizioni attuali, i dati meteorologici recenti e le previsioni di questo servizio per pianificare l'irrigazione.",
+          "Name": "Servizio meteo per irrigatori",
+          "Type": 0
+        }
+      ],
+      "Name": "libertas_weather_server"
+    }
+  ],
+  "Locale": "it-IT",
+  "StringResources": {
+    "SPRINKLER_CURRENT_WEATHER_V1": "Condizioni meteorologiche attuali per irrigatori salvate per {0}.",
+    "SPRINKLER_WEATHER_FORECAST_V1": "Previsioni meteorologiche per irrigatori salvate per {0}.",
+    "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "Ora di aggiornamento dei dati meteorologici per irrigatori salvata per {0}.",
+    "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "Dati meteorologici recenti per irrigatori salvati per {0}.",
+    "SPRINKLER_WEATHER_LOCATION_V1": "Posizione utilizzata per i dati meteorologici per irrigatori salvata in {0}.",
+    "api.open-meteo.com": "Connettiti a Open-Meteo per recuperare le condizioni attuali, i dati storici recenti e le previsioni per la pianificazione dell'irrigazione.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Utilizza la posizione dell'Hub per richiedere le previsioni meteorologiche locali corrette."
+  },
+  "Types": [
+    {
+      "Description": "Fornisce le condizioni attuali, i dati meteorologici orari recenti e le previsioni alle app per irrigatori utilizzando la posizione dell'Hub.",
+      "DisplayName": "Servizio meteo per irrigatori",
+      "List": [
+        {
+          "Description": "Fornisce le condizioni attuali, i dati meteorologici orari recenti e le previsioni alle app per irrigatori utilizzando la posizione dell'Hub.",
+          "Name": "Servizio meteo per irrigatori",
+          "Type": 0
+        },
+        {
+          "DefaultText": "Servizio meteo per irrigatori",
+          "Description": "Meteo locale crea questo servizio affinché le app per irrigatori possano ottenere i dati meteorologici locali e ricevere aggiornamenti automatici per le decisioni relative all'irrigazione.",
+          "Name": "Servizio meteo per irrigatori",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWeatherEndpointServerV1"
+    }
+  ]
+}

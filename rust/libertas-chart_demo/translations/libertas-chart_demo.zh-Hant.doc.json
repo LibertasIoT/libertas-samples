@@ -1,0 +1,3116 @@
+{
+  "Description": "透過模擬範例探索 22 個互動式圖表，涵蓋商業、能源、溫度與統計資料。此範例庫在 Libertas Hub 上執行，並為支援 Libertas 圖表的檢視器提供範例。",
+  "DisplayName": "Libertas 圖表範例庫",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "Description": "圖表範例庫可協助使用者探索 22 個互動式範例，涵蓋商業、能源、溫度與統計比較。使用者在設定期間選擇範例庫名稱，之後便可從中開啟個別範例或儀表板。範例庫包含以氣泡圖比較產品觸及率與成長、以群組長條圖比較季度銷售額、以折線圖呈現能源需求、以堆疊長條圖和堆疊面積圖呈現各能源來源的貢獻，以及以熱圖呈現工作日活動。範例庫也提供能力雷達圖、流量占比的環圈圖與圓餅圖、徑向績效長條圖、虛構行政區地圖、網路關係圖、以桑基流程圖呈現的訪客歷程，以及圖表說明註釋。使用者可以探索預測範圍與中央估計值、測量誤差線、回應時間直方圖與盒鬚圖、市場 K 線圖，以及結合觀測值、趨勢和目標的績效圖。範例庫另提供銷售與流量比較，以及結合能源歷史資料、預測範圍和活動情形的營運儀表板。每個範例都包含與該項比較相關的標籤、單位、圖例和範例詳細資料。所有範例均使用產生的示範數值。使用者開啟溫度範例時，範例庫會產生 72 小時的模擬最低、最高及最終溫度資料，以五分鐘為一個時段，截止於最近完成的時段。Hub 的時鐘無法使用時，範例庫會使用固定的範例日期。此範例庫在 Libertas Hub 上執行，並需要支援 Libertas 圖表的檢視器。由 Smartonlabs Inc. (libertas) 開發。",
+      "DisplayName": "圖表範例庫",
+      "List": [
+        {
+          "DefaultText": "圖表範例庫",
+          "Description": "使用者為此工作建立的範例庫命名。使用者可以開啟此範例庫，探索包含模擬範例的個別圖表和儀表板。",
+          "Name": "範例庫服務",
+          "Type": 0
+        }
+      ],
+      "Name": "chart_demo"
+    }
+  ],
+  "Locale": "zh-Hant",
+  "StringResources": {
+    "DIRECT_LABEL_ACT_NOW": "立即行動",
+    "DIRECT_LABEL_CLEAR": "清除",
+    "DIRECT_LABEL_FAST": "快速",
+    "TRAFFIC_SOURCE_LABEL": "{0,LibertasEnum,TrafficSourceV1}\n{1,number,integer}"
+  },
+  "Types": [
+    {
+      "Description": "一個工作日時段範例及其活動程度。",
+      "DisplayName": "活動時段",
+      "List": [
+        {
+          "Description": "一個工作日時段範例及其活動程度。",
+          "Name": "活動時段",
+          "Type": 0
+        },
+        {
+          "Description": "活動時段在工作日內的開始時間。",
+          "Name": "開始時間",
+          "Type": 1
+        },
+        {
+          "Description": "活動時段在工作日內的結束時間。",
+          "Name": "結束時間",
+          "Type": 2
+        },
+        {
+          "Description": "此活動時段所代表的工作日時段。",
+          "Name": "時間區段",
+          "Type": 3
+        },
+        {
+          "Description": "活動比較中分配給此星期日期的空間起始位置。",
+          "Name": "當日起始位置",
+          "Type": 4
+        },
+        {
+          "Description": "活動比較中分配給此星期日期的空間結束位置。",
+          "Name": "當日結束位置",
+          "Type": 5
+        },
+        {
+          "Description": "此活動時段所代表的星期日期。",
+          "Name": "星期日期",
+          "Type": 6
+        },
+        {
+          "Description": "範例在此星期日期與時間區段內的活動程度。",
+          "Name": "活動程度",
+          "Type": 7
+        },
+        {
+          "Description": "用來區分此星期日期和時間區段與其他活動時段。",
+          "Name": "活動識別碼",
+          "Type": 8
+        }
+      ],
+      "Name": "ActivityHeatmapCellV1"
+    },
+    {
+      "Description": "以熱圖比較各星期日期和工作日時段的活動程度。",
+      "DisplayName": "活動時段",
+      "List": [
+        {
+          "Description": "以熱圖比較各星期日期和工作日時段的活動程度。",
+          "Name": "活動時段",
+          "Type": 0
+        },
+        {
+          "Description": "一個工作日時段範例及其活動程度。",
+          "Name": "活動時段",
+          "Type": 1
+        }
+      ],
+      "Name": "ActivityHeatmapChartV1"
+    },
+    {
+      "Description": "指出範例訊息代表正面結果、資訊，或需要注意。",
+      "DisplayName": "訊息意涵",
+      "List": [
+        {
+          "Description": "指出範例訊息代表正面結果、資訊，或需要注意。",
+          "Enum": [
+            {
+              "Description": "正面的結果。",
+              "Name": "正面",
+              "Type": 1
+            },
+            {
+              "Description": "提供資訊的結果。",
+              "Name": "中性",
+              "Type": 2
+            },
+            {
+              "Description": "需要注意的結果。",
+              "Name": "注意",
+              "Type": 3
+            }
+          ],
+          "Name": "訊息意涵",
+          "Type": 0
+        }
+      ],
+      "Name": "AnnotationMoodV1"
+    },
+    {
+      "Description": "以圓餅圖呈現流量占比，並以徑向長條圖呈現各產品系列的分數。",
+      "DisplayName": "圓形圖表比較",
+      "List": [
+        {
+          "Description": "以圓餅圖呈現流量占比，並以徑向長條圖呈現各產品系列的分數。",
+          "Name": "圓形圖表比較",
+          "Type": 0
+        },
+        {
+          "Description": "透過各個引薦來源到訪的訪客占比。",
+          "Name": "流量圓餅圖切片",
+          "Type": 1
+        },
+        {
+          "Description": "範例中各產品系列的績效分數。",
+          "Name": "徑向績效結果",
+          "Type": 2
+        }
+      ],
+      "Name": "ArcFamilyChartV1"
+    },
+    {
+      "Description": "比較各範例樣本群組中位於中間一半的回應時間。",
+      "DisplayName": "回應時間中段範圍",
+      "List": [
+        {
+          "Description": "比較各範例樣本群組中位於中間一半的回應時間。",
+          "Name": "回應時間中段範圍",
+          "Type": 0
+        },
+        {
+          "Description": "一個樣本群組中，範例回應時間位於中間一半的範圍。",
+          "Name": "回應時間中段範圍",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotBodiesV1"
+    },
+    {
+      "Description": "一個樣本群組中，範例回應時間位於中間一半的範圍。",
+      "DisplayName": "回應時間中段範圍",
+      "List": [
+        {
+          "Description": "某個樣本群組中，範例回應時間位於中間的半數資料。",
+          "Name": "回應時間的中間範圍",
+          "Type": 0
+        },
+        {
+          "Description": "彙整其回應時間的範例群組。",
+          "Name": "樣本群組",
+          "Type": 1
+        },
+        {
+          "Description": "群組中四分之一的觀測值小於或等於此回應時間。",
+          "Name": "第一四分位數",
+          "Type": 2
+        },
+        {
+          "Description": "群組中四分之三的觀測值小於或等於此回應時間。",
+          "Name": "第三四分位數",
+          "Type": 3
+        },
+        {
+          "Description": "此樣本群組所代表的範例產品系列。",
+          "Name": "產品系列",
+          "Type": 4
+        },
+        {
+          "Description": "用來區分此樣本群組的中間範圍與其他群組。",
+          "Name": "群組參照",
+          "Type": 5
+        }
+      ],
+      "Name": "BoxPlotBodyV1"
+    },
+    {
+      "Description": "比較各範例群組回應時間的中間半數、中位數、一般範圍及離群值。",
+      "DisplayName": "回應時間分布",
+      "List": [
+        {
+          "Description": "比較各範例群組回應時間的中間半數、中位數、一般範圍及離群值。",
+          "Name": "回應時間分布",
+          "Type": 0
+        },
+        {
+          "Description": "排除各範例群組的離群值後，最低與最高的回應時間。",
+          "Name": "一般範圍",
+          "Type": 1
+        },
+        {
+          "Description": "各範例群組中位於中間半數的回應時間。",
+          "Name": "中間範圍",
+          "Type": 2
+        },
+        {
+          "Description": "各範例群組中位於中間的回應時間。",
+          "Name": "回應時間中位數",
+          "Type": 3
+        },
+        {
+          "Description": "各群組一般範圍之外的個別回應時間。",
+          "Name": "回應時間離群值",
+          "Type": 4
+        }
+      ],
+      "Name": "BoxPlotChartV1"
+    },
+    {
+      "Description": "比較各範例樣本群組中位於中間的回應時間。",
+      "DisplayName": "回應時間中位數",
+      "List": [
+        {
+          "Description": "比較各範例樣本群組中位於中間的回應時間。",
+          "Name": "回應時間中位數",
+          "Type": 0
+        },
+        {
+          "Description": "某個範例群組中位於中間的回應時間：群組中有一半的觀測值小於或等於此值。",
+          "Name": "回應時間中位數",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotMediansV1"
+    },
+    {
+      "Description": "某個範例群組中位於中間的回應時間：群組中有一半的觀測值小於或等於此值。",
+      "DisplayName": "回應時間中位數",
+      "List": [
+        {
+          "Description": "某個範例群組中位於中間的回應時間：群組中有一半的觀測值小於或等於此值。",
+          "Name": "回應時間中位數",
+          "Type": 0
+        },
+        {
+          "Description": "顯示其回應時間中位數的範例群組。",
+          "Name": "樣本群組",
+          "Type": 1
+        },
+        {
+          "Description": "此範例樣本群組中位於中間的回應時間。",
+          "Name": "回應時間中位數",
+          "Type": 2
+        },
+        {
+          "Description": "相同的回應時間中位數，讓中位數標示維持在單一數值。",
+          "Name": "相同的中位數",
+          "Type": 3
+        },
+        {
+          "Description": "用來清楚識別回應時間中位數的顏色。",
+          "Name": "中位數識別色",
+          "Type": 4
+        },
+        {
+          "Description": "將此中位數與同一樣本群組的其他統計資料建立關聯。",
+          "Name": "群組參照",
+          "Type": 5
+        }
+      ],
+      "Name": "BoxPlotMedianV1"
+    },
+    {
+      "Description": "顯示各範例群組一般範圍之外的個別回應時間。",
+      "DisplayName": "回應時間離群值",
+      "List": [
+        {
+          "Description": "顯示各範例群組一般範圍之外的個別回應時間。",
+          "Name": "回應時間離群值",
+          "Type": 0
+        },
+        {
+          "Description": "某個樣本群組一般範圍之外的一筆模擬回應時間。",
+          "Name": "回應時間離群值",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotOutliersV1"
+    },
+    {
+      "Description": "某個樣本群組一般範圍之外的一筆模擬回應時間。",
+      "DisplayName": "回應時間離群值",
+      "List": [
+        {
+          "Description": "某個樣本群組一般範圍之外的一筆模擬回應時間。",
+          "Name": "回應時間離群值",
+          "Type": 0
+        },
+        {
+          "Description": "此異常回應時間所屬的範例群組。",
+          "Name": "樣本群組",
+          "Type": 1
+        },
+        {
+          "Description": "群組一般範圍之外的模擬回應時間。",
+          "Name": "回應時間",
+          "Type": 2
+        },
+        {
+          "Description": "用來清楚識別此回應時間離群值的相對資料點大小。",
+          "Name": "離群值醒目程度",
+          "Type": 3
+        },
+        {
+          "Description": "用來區分此回應時間離群值與其他離群值。",
+          "Name": "離群值參照",
+          "Type": 4
+        }
+      ],
+      "Name": "BoxPlotOutlierV1"
+    },
+    {
+      "Description": "排除離群值後，比較各範例群組最低與最高的回應時間。",
+      "DisplayName": "回應時間的一般範圍",
+      "List": [
+        {
+          "Description": "比較各範例群組排除離群值後的最低與最高回應時間。",
+          "Name": "一般回應時間範圍",
+          "Type": 0
+        },
+        {
+          "Description": "範例群組排除離群值後的最低與最高回應時間。",
+          "Name": "一般回應時間範圍",
+          "Type": 1
+        }
+      ],
+      "Name": "BoxPlotWhiskersV1"
+    },
+    {
+      "Description": "範例群組排除離群值後的最低與最高回應時間。",
+      "DisplayName": "一般回應時間範圍",
+      "List": [
+        {
+          "Description": "範例群組排除離群值後的最低與最高回應時間。",
+          "Name": "一般回應時間範圍",
+          "Type": 0
+        },
+        {
+          "Description": "回應時間彙總所依據的範例群組。",
+          "Name": "樣本群組",
+          "Type": 1
+        },
+        {
+          "Description": "非離群值中的最低值。",
+          "Name": "下鬚線",
+          "Type": 2
+        },
+        {
+          "Description": "非離群值中的最高值。",
+          "Name": "上鬚線",
+          "Type": 3
+        },
+        {
+          "Description": "用於區分一般回應時間範圍的顏色。",
+          "Name": "範圍識別",
+          "Type": 4
+        },
+        {
+          "Description": "將此一般範圍與同一樣本群組的其他統計資料建立關聯。",
+          "Name": "群組參照",
+          "Type": 5
+        }
+      ],
+      "Name": "BoxPlotWhiskerV1"
+    },
+    {
+      "Description": "一項範例產品的客戶觸及範圍、成長率、年度資料量、可信度及市場分類。",
+      "DisplayName": "產品組合中的產品",
+      "List": [
+        {
+          "Description": "一項範例產品的客戶觸及範圍、成長率、年度資料量、可信度及市場分類。",
+          "Name": "產品組合中的產品",
+          "Type": 0
+        },
+        {
+          "Description": "正在比較結果的範例產品。",
+          "Name": "產品",
+          "Type": 1
+        },
+        {
+          "Description": "使用此範例產品的客戶數量。",
+          "Name": "活躍客戶",
+          "Type": 2
+        },
+        {
+          "Description": "此範例產品的年度成長率；負百分比表示衰退。",
+          "Name": "年度成長率",
+          "Type": 3
+        },
+        {
+          "Description": "此範例產品的年度資料量；資料量越大，顯示的泡泡越大。",
+          "Name": "年度資料量",
+          "Type": 4
+        },
+        {
+          "Description": "此範例所代表的產品類型。",
+          "Name": "產品系列",
+          "Type": 5
+        },
+        {
+          "Description": "向此範例產品的客戶提供的服務等級。",
+          "Name": "客戶服務等級",
+          "Type": 6
+        },
+        {
+          "Description": "此產品可信度的視覺強調程度；不透明度越高，表示可信度越高。",
+          "Name": "可信度強調效果",
+          "Type": 7
+        },
+        {
+          "Description": "此範例對該產品結果的可信度百分比。",
+          "Name": "可信度",
+          "Type": 8
+        },
+        {
+          "Description": "用於將此產品與同一市場中其他產品進行比較的地理市場。",
+          "Name": "市場",
+          "Type": 9
+        },
+        {
+          "Description": "產品的成熟度，用於分別比較成熟產品與新興產品。",
+          "Name": "發展階段",
+          "Type": 10
+        }
+      ],
+      "Name": "BubblePointV1"
+    },
+    {
+      "Description": "比較範例產品的客戶觸及範圍與成長率，並依市場和成熟度分組，同時呈現年度資料量與可信度。",
+      "DisplayName": "產品組合",
+      "List": [
+        {
+          "Description": "比較範例產品的客戶觸及範圍與成長率，並依市場和成熟度分組，同時呈現年度資料量與可信度。",
+          "Name": "產品組合",
+          "Type": 0
+        },
+        {
+          "Description": "一項範例產品的客戶觸及範圍、成長率、年度資料量、可信度及市場分類。",
+          "Name": "產品組合中的產品",
+          "Type": 1
+        }
+      ],
+      "Name": "BubblePortfolioChartV1"
+    },
+    {
+      "Description": "指出範例的收盤價是等於或高於開盤價，還是低於開盤價。",
+      "DisplayName": "價格走勢",
+      "List": [
+        {
+          "Description": "指出範例的收盤價是等於或高於開盤價，還是低於開盤價。",
+          "Enum": [
+            {
+              "Description": "收盤價等於或高於開盤價。",
+              "Name": "上漲或持平",
+              "Type": 1
+            },
+            {
+              "Description": "收盤價低於開盤價。",
+              "Name": "下跌",
+              "Type": 2
+            }
+          ],
+          "Name": "價格走勢",
+          "Type": 0
+        }
+      ],
+      "Name": "CandleDirectionV1"
+    },
+    {
+      "Description": "比較各市場交易期間的模擬開盤價與收盤價。",
+      "DisplayName": "市場開盤價與收盤價",
+      "List": [
+        {
+          "Description": "比較各市場交易期間的模擬開盤價與收盤價。",
+          "Name": "市場開盤價與收盤價",
+          "Type": 0
+        },
+        {
+          "Description": "一個模擬市場交易期間的開盤價與收盤價，以及該期間的最低價、最高價和交易量。",
+          "Name": "開盤價與收盤價",
+          "Type": 1
+        }
+      ],
+      "Name": "CandlestickBodiesV1"
+    },
+    {
+      "Description": "一個模擬市場交易期間的開盤價與收盤價，以及該期間的最低價、最高價和交易量。",
+      "DisplayName": "開盤價與收盤價",
+      "List": [
+        {
+          "Description": "一個模擬市場時段的開盤價與收盤價，以及該時段的最低價、最高價和交易量。",
+          "Name": "開盤價與收盤價",
+          "Type": 0
+        },
+        {
+          "Description": "K 線時間區間的開始時間。",
+          "Name": "區間開始時間",
+          "Type": 1
+        },
+        {
+          "Description": "K 線時間區間的結束時間。",
+          "Name": "區間結束時間",
+          "Type": 2
+        },
+        {
+          "Description": "市場時段開始時的模擬價格。",
+          "Name": "開盤價",
+          "Type": 3
+        },
+        {
+          "Description": "市場時段結束時的模擬價格。",
+          "Name": "收盤價",
+          "Type": 4
+        },
+        {
+          "Description": "此市場時段中點的日期與時間。",
+          "Name": "時段中點",
+          "Type": 5
+        },
+        {
+          "Description": "區間內的最低值。",
+          "Name": "最低價",
+          "Type": 6
+        },
+        {
+          "Description": "區間內的最高值。",
+          "Name": "最高價",
+          "Type": 7
+        },
+        {
+          "Description": "區間內的交易量。",
+          "Name": "交易量",
+          "Type": 8
+        },
+        {
+          "Description": "區間內的價格是上漲還是下跌。",
+          "Name": "漲跌方向",
+          "Type": 9
+        },
+        {
+          "Description": "用來區分價格上漲或持平與價格下跌的顏色。",
+          "Name": "價格漲跌區分",
+          "Type": 10
+        },
+        {
+          "Description": "將這些開盤價與收盤價連結至同一時段的價格區間。",
+          "Name": "市場時段參照",
+          "Type": 11
+        }
+      ],
+      "Name": "CandlestickBodyV1"
+    },
+    {
+      "Description": "比較各市場時段的模擬開盤價、收盤價、最低價、最高價與交易量。",
+      "DisplayName": "K 線圖",
+      "List": [
+        {
+          "Description": "比較各市場時段的模擬開盤價、收盤價、最低價、最高價與交易量。",
+          "Name": "K 線圖",
+          "Type": 0
+        },
+        {
+          "Description": "各市場時段的模擬最低價與最高價。",
+          "Name": "價格區間",
+          "Type": 1
+        },
+        {
+          "Description": "各市場時段開始與結束時的模擬價格。",
+          "Name": "開盤價與收盤價",
+          "Type": 2
+        }
+      ],
+      "Name": "CandlestickChartV1"
+    },
+    {
+      "Description": "顯示各市場時段的模擬最低價與最高價。",
+      "DisplayName": "市場價格區間",
+      "List": [
+        {
+          "Description": "顯示各市場時段的模擬最低價與最高價。",
+          "Name": "市場價格區間",
+          "Type": 0
+        },
+        {
+          "Description": "一個市場時段的模擬最低價、最高價、開盤價、收盤價與交易量。",
+          "Name": "市場價格區間",
+          "Type": 1
+        }
+      ],
+      "Name": "CandlestickWicksV1"
+    },
+    {
+      "Description": "一個市場時段的模擬最低價、最高價、開盤價、收盤價與交易量。",
+      "DisplayName": "市場價格區間",
+      "List": [
+        {
+          "Description": "一個市場時段的模擬最低價、最高價、開盤價、收盤價與交易量。",
+          "Name": "市場價格區間",
+          "Type": 0
+        },
+        {
+          "Description": "K 線時間區間的中點。",
+          "Name": "區間中點",
+          "Type": 1
+        },
+        {
+          "Description": "區間內的最低值。",
+          "Name": "最低價",
+          "Type": 2
+        },
+        {
+          "Description": "區間內的最高值。",
+          "Name": "最高價",
+          "Type": 3
+        },
+        {
+          "Description": "區間開始時的價格。",
+          "Name": "開盤價",
+          "Type": 4
+        },
+        {
+          "Description": "區間結束時的價格。",
+          "Name": "收盤價",
+          "Type": 5
+        },
+        {
+          "Description": "區間內的交易量。",
+          "Name": "交易量",
+          "Type": 6
+        },
+        {
+          "Description": "區間內的價格是上漲還是下跌。",
+          "Name": "漲跌方向",
+          "Type": 7
+        },
+        {
+          "Description": "用來區分範例價格區間漲跌方向的顏色。",
+          "Name": "區間漲跌區分",
+          "Type": 8
+        },
+        {
+          "Description": "將此價格區間連結至同一時段的開盤價與收盤價。",
+          "Name": "市場時段參照",
+          "Type": 9
+        }
+      ],
+      "Name": "CandlestickWickV1"
+    },
+    {
+      "Description": "比較各產品系列在速度、可靠性、效率、簡易性和涵蓋範圍方面的表現。",
+      "DisplayName": "能力評分",
+      "List": [
+        {
+          "Description": "比較各產品系列在速度、可靠性、效率、簡易性和涵蓋範圍方面的表現。",
+          "Name": "能力評分",
+          "Type": 0
+        },
+        {
+          "Description": "比較圖形中某個範例產品系列的一項能力分數。",
+          "Name": "能力分數",
+          "Type": 1
+        }
+      ],
+      "Name": "CapabilityRadarChartV1"
+    },
+    {
+      "Description": "比較圖形中某個範例產品系列的一項能力分數。",
+      "DisplayName": "能力分數",
+      "List": [
+        {
+          "Description": "比較圖形中某個範例產品系列的一項能力分數。",
+          "Name": "能力分數",
+          "Type": 0
+        },
+        {
+          "Description": "這項能力在比較圖形周圍的指定位置。",
+          "Name": "能力角度",
+          "Type": 1
+        },
+        {
+          "Description": "這個分數所代表的效能特性。",
+          "Name": "能力",
+          "Type": 2
+        },
+        {
+          "Description": "範例產品系列在這項能力上的分數。",
+          "Name": "分數",
+          "Type": 3
+        },
+        {
+          "Description": "顯示此能力分數的產品系列。",
+          "Name": "產品系列",
+          "Type": 4
+        },
+        {
+          "Description": "此比較圖形的輪廓所代表的產品系列。",
+          "Name": "圖形輪廓",
+          "Type": 5
+        },
+        {
+          "Description": "用來讓重疊的能力比較圖形仍可清楚區分的透明度。",
+          "Name": "圖形填色",
+          "Type": 6
+        },
+        {
+          "Description": "這項能力在其產品系列圖形周圍排列順序中的位置。",
+          "Name": "能力順序",
+          "Type": 7
+        },
+        {
+          "Description": "用來將此產品系列與能力的組合和其他分數區分開來。",
+          "Name": "分數識別資訊",
+          "Type": 8
+        }
+      ],
+      "Name": "CapabilityRadarPointV1"
+    },
+    {
+      "Description": "識別用來比較產品系列的效能特性。",
+      "DisplayName": "能力",
+      "List": [
+        {
+          "Description": "識別用來比較產品系列的效能特性。",
+          "Enum": [
+            {
+              "Description": "回應速度與處理量。",
+              "Name": "速度",
+              "Type": 1
+            },
+            {
+              "Description": "正常運作時的穩定性。",
+              "Name": "可靠性",
+              "Type": 2
+            },
+            {
+              "Description": "資源使用效率。",
+              "Name": "效率",
+              "Type": 3
+            },
+            {
+              "Description": "使用的容易程度。",
+              "Name": "簡易性",
+              "Type": 4
+            },
+            {
+              "Description": "支援的使用情境廣度。",
+              "Name": "涵蓋範圍",
+              "Type": 5
+            }
+          ],
+          "Name": "能力",
+          "Type": 0
+        }
+      ],
+      "Name": "CapabilityV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved stored values for the function's required data schema.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved stored values for the function's required data schema.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "value",
+          "Type": 2
+        }
+      ],
+      "Name": "ChartData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved storage keys; this demonstration currently writes no records.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved storage keys; this demonstration currently writes no records.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        }
+      ],
+      "Name": "ChartDataKey"
+    },
+    {
+      "Description": "使用者可以選擇範例，探索模擬的商業、能源、溫度或統計比較。",
+      "DisplayName": "圖表範例庫",
+      "List": [
+        {
+          "Description": "使用者可以選擇範例，探索模擬的商業、能源、溫度或統計比較。",
+          "Name": "圖表範例庫",
+          "Type": 0
+        },
+        {
+          "Description": "使用者可以跨市場和產品成熟度，比較產品的涵蓋範圍、成長幅度、年度資料量及可信度。",
+          "Name": "檢視氣泡圖產品組合",
+          "Type": 1
+        },
+        {
+          "Description": "範例庫會依客戶涵蓋範圍、成長幅度、年度資料量、可信度、系列、服務等級、市場及成熟度，比較各個範例產品。",
+          "Name": "氣泡圖產品組合",
+          "Type": 2
+        },
+        {
+          "Description": "使用者可以比較一段時間內模擬的實際記錄、預期及挑戰目標用電需求。",
+          "Name": "檢視能源歷史趨勢",
+          "Type": 3
+        },
+        {
+          "Description": "範例庫會在同一條時間軸上顯示實際記錄、預期及挑戰目標用電需求情境。",
+          "Name": "能源歷史趨勢",
+          "Type": 4
+        },
+        {
+          "Description": "使用者可以比較兩個範例預測模型的溫度不確定範圍。",
+          "Name": "檢視預測範圍",
+          "Type": 5
+        },
+        {
+          "Description": "範例庫會顯示兩個範例模型在不同時間的高低溫估計值。",
+          "Name": "預測範圍",
+          "Type": 6
+        },
+        {
+          "Description": "使用者可以比較每季各範例產品系列的營收。",
+          "Name": "檢視分組銷售額",
+          "Type": 7
+        },
+        {
+          "Description": "範例庫會使用分組長條圖，依產品系列顯示每季營收。",
+          "Name": "分組銷售額",
+          "Type": 8
+        },
+        {
+          "Description": "使用者可以比較模擬回應時間落在各個範圍內的頻率。",
+          "Name": "檢視回應時間直方圖",
+          "Type": 9
+        },
+        {
+          "Description": "範例庫會顯示各回應時間範圍內的模擬互動次數。",
+          "Name": "回應時間直方圖",
+          "Type": 10
+        },
+        {
+          "Description": "使用者可以比較太陽能、電池及電網對能源總量與能源使用量變化的貢獻。",
+          "Name": "檢視能源來源貢獻",
+          "Type": 11
+        },
+        {
+          "Description": "範例庫會使用堆疊長條圖與區域圖，顯示各能源來源的貢獻。",
+          "Name": "能源來源貢獻",
+          "Type": 12
+        },
+        {
+          "Description": "使用者可以依星期幾和一天中的時段，比較模擬的活動情況。",
+          "Name": "檢視活動熱圖",
+          "Type": 13
+        },
+        {
+          "Description": "展示區呈現各工作日及工作日內不同時段的活動程度範例。",
+          "Name": "活動熱圖",
+          "Type": 14
+        },
+        {
+          "Description": "使用者可以比較電氣測量範例的最低與最高估計值。",
+          "Name": "檢視測量不確定性",
+          "Type": 15
+        },
+        {
+          "Description": "展示區使用誤差線呈現每個電氣樣本的不確定性範圍。",
+          "Name": "測量不確定性",
+          "Type": 16
+        },
+        {
+          "Description": "使用者可以探索具有不同重要程度、強調方式及方向的圖表訊息範例。",
+          "Name": "檢視圖表註解",
+          "Type": 17
+        },
+        {
+          "Description": "展示區呈現用來突顯圖表中結果的訊息範例。",
+          "Name": "圖表註解",
+          "Type": 18
+        },
+        {
+          "Description": "使用者可以比較各產品系列在速度、可靠性、效率、簡易性及涵蓋範圍方面的分數。",
+          "Name": "檢視能力雷達圖",
+          "Type": 19
+        },
+        {
+          "Description": "展示區以重疊的輪廓圖，比較各產品系列範例的五項能力。",
+          "Name": "能力雷達圖",
+          "Type": 20
+        },
+        {
+          "Description": "使用者可以比較各引薦來源在訪客流量範例中所占的比例。",
+          "Name": "檢視流量來源",
+          "Type": 21
+        },
+        {
+          "Description": "展示區呈現一張標示來源名稱及其流量百分比的環圈圖。",
+          "Name": "流量來源",
+          "Type": 22
+        },
+        {
+          "Description": "使用者可以比較流量占比圓餅圖與產品效能放射狀圖。",
+          "Name": "檢視圓形圖表",
+          "Type": 23
+        },
+        {
+          "Description": "展示區以兩張圓形圖表呈現流量占比和產品系列分數。",
+          "Name": "圓形圖表比較",
+          "Type": 24
+        },
+        {
+          "Description": "使用者可以比較虛構區域及其使用率百分比範例。",
+          "Name": "檢視區域地圖",
+          "Type": 25
+        },
+        {
+          "Description": "展示區在地圖上呈現各區域的輪廓及使用率範例。",
+          "Name": "區域地圖",
+          "Type": 26
+        },
+        {
+          "Description": "使用者可以比較溫度的中央估計值與各模型範例的不確定性範圍。",
+          "Name": "檢視預測信賴度",
+          "Type": 27
+        },
+        {
+          "Description": "展示區同時呈現中央估計值及其預測的最低與最高範圍。",
+          "Name": "預測信賴度",
+          "Type": 28
+        },
+        {
+          "Description": "使用者可以比較模擬的開盤價、收盤價、最低價、最高價及成交量。",
+          "Name": "檢視 K 線圖",
+          "Type": 29
+        },
+        {
+          "Description": "展示區呈現市場期間範例中的上漲、持平及下跌價格。",
+          "Name": "K 線圖",
+          "Type": 30
+        },
+        {
+          "Description": "使用者可以探索 72 小時的模擬溫度，並查看每五分鐘期間的最低、最高及最終值摘要。",
+          "Name": "檢視溫度歷史記錄",
+          "Type": 31
+        },
+        {
+          "Description": "展示區呈現模擬的每五分鐘溫度範圍及最終值；若可取得 Hub 的時鐘，資料會截至最近一個已完成的期間。",
+          "Name": "過去 72 小時的溫度歷史記錄",
+          "Type": 32
+        },
+        {
+          "Description": "使用者可以比較各範例群組的中間範圍、中位數、典型範圍及離群回應時間。",
+          "Name": "檢視回應時間分布",
+          "Type": 33
+        },
+        {
+          "Description": "展示區以盒鬚圖彙整各群組的模擬回應時間。",
+          "Name": "回應時間分布",
+          "Type": 34
+        },
+        {
+          "Description": "使用者可以探索閘道、處理服務及儲存空間範例之間的連線。",
+          "Name": "檢視網路關係",
+          "Type": 35
+        },
+        {
+          "Description": "展示區呈現網路範例的元件及其連線。",
+          "Name": "網路關係",
+          "Type": 36
+        },
+        {
+          "Description": "使用者可以比較直接啟用、在協助下啟用或提早離開的訪客。",
+          "Name": "檢視訪客歷程",
+          "Type": 37
+        },
+        {
+          "Description": "展示區呈現訪客人數，以及訪客從抵達、評估、啟用到離開的歷程。",
+          "Name": "訪客歷程",
+          "Type": 38
+        },
+        {
+          "Description": "使用者可以比較模擬回應時間、平滑化趨勢及目標值。",
+          "Name": "檢視效能比較",
+          "Type": 39
+        },
+        {
+          "Description": "展示區同時呈現個別回應時間、其趨勢及期望的回應時間上限。",
+          "Name": "效能比較",
+          "Type": 40
+        },
+        {
+          "Description": "使用者可以用兩種長條圖排列方式比較各產品系列的季度營收，並查看各來源的流量占比。",
+          "Name": "檢視銷售與流量",
+          "Type": 41
+        },
+        {
+          "Description": "展示區以個別圖表呈現分組銷售額、橫向銷售比較及流量來源占比。",
+          "Name": "銷售與流量比較",
+          "Type": 42
+        },
+        {
+          "Description": "使用者可以一併探索電力需求、預測不確定性及工作日活動。",
+          "Name": "檢視營運儀表板",
+          "Type": 43
+        },
+        {
+          "Description": "展示區以個別圖表呈現能源歷史記錄、溫度預測範圍及活動模式。",
+          "Name": "營運儀表板",
+          "Type": 44
+        }
+      ],
+      "Name": "ChartDemoProtocol"
+    },
+    {
+      "Description": "識別範例產品向客戶提供的服務等級。",
+      "DisplayName": "客戶服務等級",
+      "List": [
+        {
+          "Description": "識別範例產品向客戶提供的服務等級。",
+          "Enum": [
+            {
+              "Description": "標準服務等級。",
+              "Name": "標準",
+              "Type": 1
+            },
+            {
+              "Description": "進階服務等級。",
+              "Name": "進階",
+              "Type": 2
+            }
+          ],
+          "Name": "客戶服務等級",
+          "Type": 0
+        }
+      ],
+      "Name": "CustomerTierV1"
+    },
+    {
+      "Description": "在圖表中說明或突顯結果的一則範例訊息。",
+      "DisplayName": "圖表註解",
+      "List": [
+        {
+          "Description": "在圖表中說明或突顯結果的一則範例訊息。",
+          "Name": "圖表註解",
+          "Type": 0
+        },
+        {
+          "Description": "註解在範例圖表中的水平位置。",
+          "Name": "水平位置",
+          "Type": 1
+        },
+        {
+          "Description": "註解在範例圖表中的垂直位置。",
+          "Name": "垂直位置",
+          "Type": 2
+        },
+        {
+          "Description": "顯示在圖表此位置的範例訊息；如有提供檢視者所用語言的版本，便會以該語言顯示。",
+          "Name": "訊息",
+          "Type": 3
+        },
+        {
+          "Description": "指出訊息屬於正面、資訊提供或需要注意。",
+          "Name": "訊息性質",
+          "Type": 4
+        },
+        {
+          "Description": "用來突顯此註解的相對文字大小。",
+          "Name": "文字大小",
+          "Type": 5
+        },
+        {
+          "Description": "註解文字的旋轉角度。",
+          "Name": "文字角度",
+          "Type": 6
+        },
+        {
+          "Description": "用來突顯註解的不透明度，同時讓重疊的內容保持可見。",
+          "Name": "文字不透明度",
+          "Type": 7
+        },
+        {
+          "Description": "用來區分此訊息與範例中的其他註解。",
+          "Name": "註解參照",
+          "Type": 8
+        }
+      ],
+      "Name": "DirectAnnotationV1"
+    },
+    {
+      "Description": "展示如何使用不同的強調程度和方向，以訊息說明結果。",
+      "DisplayName": "圖表註解",
+      "List": [
+        {
+          "Description": "展示如何使用不同的強調程度和方向，以訊息說明結果。",
+          "Name": "圖表註解",
+          "Type": 0
+        },
+        {
+          "Description": "在圖表中說明或突顯結果的一則範例訊息。",
+          "Name": "圖表註解",
+          "Type": 1
+        }
+      ],
+      "Name": "DirectLabelsChartV1"
+    },
+    {
+      "Description": "使用模擬讀數，比較一段時間內的已記錄、預期及挑戰目標電力需求。",
+      "DisplayName": "能源需求歷程",
+      "List": [
+        {
+          "Description": "使用模擬讀數，比較一段時間內的已記錄、預期及挑戰目標電力需求。",
+          "Name": "能源需求歷程",
+          "Type": 0
+        },
+        {
+          "Description": "實際、預期或挑戰目標情境在某個時間點的一筆範例電力需求讀數。",
+          "Name": "能源需求樣本",
+          "Type": 1
+        }
+      ],
+      "Name": "EnergyHistoryChartV1"
+    },
+    {
+      "Description": "實際、預期或挑戰目標情境在某個時間點的一筆範例電力需求讀數。",
+      "DisplayName": "能源需求樣本",
+      "List": [
+        {
+          "Description": "實際、預期或挑戰目標情境在某個時間點的一筆範例電力需求讀數。",
+          "Name": "能源需求樣本",
+          "Type": 0
+        },
+        {
+          "Description": "此範例電力需求讀數所代表的日期和時間。",
+          "Name": "時間",
+          "Type": 1
+        },
+        {
+          "Description": "此時間點的電力需求。",
+          "Name": "電力",
+          "Type": 2
+        },
+        {
+          "Description": "指出此範例需求是已記錄值、預期值或挑戰目標。",
+          "Name": "情境",
+          "Type": 3
+        },
+        {
+          "Description": "識別以線條圖樣區分此需求歷程的情境。",
+          "Name": "情境線條樣式",
+          "Type": 4
+        },
+        {
+          "Description": "用來突顯此需求情境的相對線條粗細。",
+          "Name": "線條強調程度",
+          "Type": 5
+        },
+        {
+          "Description": "此讀數在所屬情境時間序列中的位置。",
+          "Name": "時間順序",
+          "Type": 6
+        }
+      ],
+      "Name": "EnergyHistoryPointV1"
+    },
+    {
+      "Description": "識別太陽能、電池或電網對範例總能源的貢獻。",
+      "DisplayName": "能源來源",
+      "List": [
+        {
+          "Description": "識別太陽能、電池或電網對範例總能源的貢獻。",
+          "Enum": [
+            {
+              "Description": "在本地產生的太陽能。",
+              "Name": "太陽能",
+              "Type": 1
+            },
+            {
+              "Description": "從儲能系統釋放的能源。",
+              "Name": "電池",
+              "Type": 2
+            },
+            {
+              "Description": "從電網輸入的能源。",
+              "Name": "電網",
+              "Type": 3
+            }
+          ],
+          "Name": "能源來源",
+          "Type": 0
+        }
+      ],
+      "Name": "EnergySourceV1"
+    },
+    {
+      "Description": "識別訪客從抵達、評估產品、啟用到離開的各個階段。",
+      "DisplayName": "訪客階段",
+      "List": [
+        {
+          "Description": "識別訪客從抵達、評估產品、啟用到離開的各個階段。",
+          "Enum": [
+            {
+              "Description": "新進造訪。",
+              "Name": "造訪",
+              "Type": 1
+            },
+            {
+              "Description": "正在評估產品的造訪。",
+              "Name": "評估",
+              "Type": 2
+            },
+            {
+              "Description": "已完成啟用的造訪。",
+              "Name": "已啟用",
+              "Type": 3
+            },
+            {
+              "Description": "在啟用前已離開的造訪。",
+              "Name": "已離開",
+              "Type": 4
+            }
+          ],
+          "Name": "訪客階段",
+          "Type": 0
+        }
+      ],
+      "Name": "FlowStageV1"
+    },
+    {
+      "Description": "區分直接啟用、在協助下啟用或提早離開的訪客。",
+      "DisplayName": "訪客歷程",
+      "List": [
+        {
+          "Description": "區分直接啟用、在協助下啟用或提早離開的訪客。",
+          "Enum": [
+            {
+              "Description": "直接啟用的造訪。",
+              "Name": "直接啟用",
+              "Type": 1
+            },
+            {
+              "Description": "在獲得協助後啟用的造訪。",
+              "Name": "協助啟用",
+              "Type": 2
+            },
+            {
+              "Description": "在啟用前離開的造訪。",
+              "Name": "提早離開",
+              "Type": 3
+            }
+          ],
+          "Name": "訪客歷程",
+          "Type": 0
+        }
+      ],
+      "Name": "FlowStreamV1"
+    },
+    {
+      "Description": "比較兩個範例預報模型的中央溫度估計值與高低範圍。",
+      "DisplayName": "預報信賴度",
+      "List": [
+        {
+          "Description": "比較兩個範例預報模型的中央溫度估計值與高低範圍。",
+          "Name": "預報信賴度",
+          "Type": 0
+        },
+        {
+          "Description": "各模型在每個預報時間的最低與最高溫度估計值。",
+          "Name": "預報範圍",
+          "Type": 1
+        },
+        {
+          "Description": "與各模型範圍比較的中央溫度估計值。",
+          "Name": "中央估計值",
+          "Type": 2
+        }
+      ],
+      "Name": "ForecastConfidenceChartV1"
+    },
+    {
+      "Description": "顯示中央溫度估計值，以便與各模型的不確定性範圍比較。",
+      "DisplayName": "預報估計值",
+      "List": [
+        {
+          "Description": "顯示中央溫度估計值，以便與各模型的不確定性範圍比較。",
+          "Name": "預報估計值",
+          "Type": 0
+        },
+        {
+          "Description": "某個範例模型在一個預報時間的中央溫度估計值。",
+          "Name": "預報估計值",
+          "Type": 1
+        }
+      ],
+      "Name": "ForecastEstimateChartV1"
+    },
+    {
+      "Description": "某個範例模型在一個預報時間的中央溫度估計值。",
+      "DisplayName": "預報估計值",
+      "List": [
+        {
+          "Description": "某個範例模型在一個預報時間的中央溫度估計值。",
+          "Name": "預報估計值",
+          "Type": 0
+        },
+        {
+          "Description": "此溫度估計值所代表的日期與時間。",
+          "Name": "預報時間",
+          "Type": 1
+        },
+        {
+          "Description": "範例模型在此時間的中央溫度估計值。",
+          "Name": "溫度估計值",
+          "Type": 2
+        },
+        {
+          "Description": "提供此溫度估計值的範例模型。",
+          "Name": "預報模型",
+          "Type": 3
+        },
+        {
+          "Description": "此估計值在其模型時間序列中的位置。",
+          "Name": "時間順序",
+          "Type": 4
+        },
+        {
+          "Description": "用於區分此模型及預報時間與其他估計值。",
+          "Name": "估計值參照",
+          "Type": 5
+        }
+      ],
+      "Name": "ForecastEstimatePointV1"
+    },
+    {
+      "Description": "比較兩個範例預報模型的最低與最高溫度估計值隨時間的變化。",
+      "DisplayName": "預報範圍",
+      "List": [
+        {
+          "Description": "比較兩個範例預報模型的最低與最高溫度估計值隨時間的變化。",
+          "Name": "預報範圍",
+          "Type": 0
+        },
+        {
+          "Description": "某個預報時間的範例溫度範圍，用於呈現不確定性。",
+          "Name": "預報區間",
+          "Type": 1
+        }
+      ],
+      "Name": "ForecastRangeChartV1"
+    },
+    {
+      "Description": "某個預報時間的範例溫度範圍，用於呈現不確定性。",
+      "DisplayName": "預報區間",
+      "List": [
+        {
+          "Description": "某個預報時間的範例溫度範圍，用於呈現不確定性。",
+          "Name": "預報區間",
+          "Type": 0
+        },
+        {
+          "Description": "此預報範圍所代表的日期與時間。",
+          "Name": "預報時間",
+          "Type": 1
+        },
+        {
+          "Description": "預測區間的下限。",
+          "Name": "估計下限",
+          "Type": 2
+        },
+        {
+          "Description": "預測區間的上限。",
+          "Name": "估計上限",
+          "Type": 3
+        },
+        {
+          "Description": "提供此溫度範圍的範例預測模型。",
+          "Name": "預測模型",
+          "Type": 4
+        },
+        {
+          "Description": "識別以外框區分此預測範圍的模型。",
+          "Name": "模型外框",
+          "Type": 5
+        },
+        {
+          "Description": "用來區分重疊預測範圍的不透明度，同時讓兩者都保持可見。",
+          "Name": "範圍陰影",
+          "Type": 6
+        }
+      ],
+      "Name": "ForecastRangePointV1"
+    },
+    {
+      "Description": "某個範例產品系列在一季內的營收。",
+      "DisplayName": "季度銷售結果",
+      "List": [
+        {
+          "Description": "某個範例產品系列在一季內的營收。",
+          "Name": "季度銷售結果",
+          "Type": 0
+        },
+        {
+          "Description": "此銷售結果所代表的三個月期間。",
+          "Name": "季度",
+          "Type": 1
+        },
+        {
+          "Description": "其營收會與同一季度其他系列比較的產品系列。",
+          "Name": "產品系列",
+          "Type": 2
+        },
+        {
+          "Description": "識別此銷售結果所代表的產品系列。",
+          "Name": "系列識別",
+          "Type": 3
+        },
+        {
+          "Description": "季度營收。",
+          "Name": "營收",
+          "Type": 4
+        },
+        {
+          "Description": "用來區分此季度及產品系列與其他銷售結果。",
+          "Name": "銷售識別碼",
+          "Type": 5
+        }
+      ],
+      "Name": "GroupedSalesBarV1"
+    },
+    {
+      "Description": "使用群組長條圖比較每一季度內各產品系列的營收。",
+      "DisplayName": "季度銷售結果",
+      "List": [
+        {
+          "Description": "使用群組長條圖比較每一季度內各產品系列的營收。",
+          "Name": "季度銷售結果",
+          "Type": 0
+        },
+        {
+          "Description": "某個範例產品系列在一季內的營收。",
+          "Name": "季度銷售結果",
+          "Type": 1
+        }
+      ],
+      "Name": "GroupedSalesChartV1"
+    },
+    {
+      "Description": "某個範例產品系列在橫向銷售比較中的季度營收。",
+      "DisplayName": "季度銷售比較",
+      "List": [
+        {
+          "Description": "某個範例產品系列在橫向銷售比較中的季度營收。",
+          "Name": "季度銷售比較",
+          "Type": 0
+        },
+        {
+          "Description": "此範例產品系列在本季度的營收。",
+          "Name": "營收",
+          "Type": 1
+        },
+        {
+          "Description": "此比較所代表的三個月期間。",
+          "Name": "季度",
+          "Type": 2
+        },
+        {
+          "Description": "其營收會與同一季度其他系列比較的產品系列。",
+          "Name": "產品系列",
+          "Type": 3
+        },
+        {
+          "Description": "識別此銷售比較所代表的產品系列。",
+          "Name": "系列識別",
+          "Type": 4
+        },
+        {
+          "Description": "用來區分此季度及產品系列與其他銷售比較。",
+          "Name": "銷售識別碼",
+          "Type": 5
+        }
+      ],
+      "Name": "HorizontalGroupedBarV1"
+    },
+    {
+      "Description": "使用橫向群組長條圖比較各產品系列的季度營收。",
+      "DisplayName": "橫向銷售比較",
+      "List": [
+        {
+          "Description": "使用橫向群組長條圖比較各產品系列的季度營收。",
+          "Name": "橫向銷售比較",
+          "Type": 0
+        },
+        {
+          "Description": "某個範例產品系列在橫向銷售比較中的季度營收。",
+          "Name": "季度銷售比較",
+          "Type": 1
+        }
+      ],
+      "Name": "HorizontalGroupedSalesChartV1"
+    },
+    {
+      "Description": "一個回應時間範圍，以及落在該範圍內的模擬互動次數。",
+      "DisplayName": "回應時間區間",
+      "List": [
+        {
+          "Description": "一個回應時間範圍，以及落在該範圍內的模擬互動次數。",
+          "Name": "回應時間區間",
+          "Type": 0
+        },
+        {
+          "Description": "此區間包含的回應時間下限。",
+          "Name": "最短回應時間",
+          "Type": 1
+        },
+        {
+          "Description": "回應時間的上限，此上限歸入下一個區間。",
+          "Name": "最長回應時間",
+          "Type": 2
+        },
+        {
+          "Description": "回應時間落在此區間內的模擬互動次數。",
+          "Name": "觀測次數",
+          "Type": 3
+        },
+        {
+          "Description": "用來區分此回應時間區間與其他區間。",
+          "Name": "區間識別碼",
+          "Type": 4
+        }
+      ],
+      "Name": "LatencyHistogramBinV1"
+    },
+    {
+      "Description": "顯示模擬回應時間落在各範圍內的頻率。",
+      "DisplayName": "回應時間區間",
+      "List": [
+        {
+          "Description": "顯示模擬回應時間落在各個範圍內的頻率。",
+          "Name": "回應時間區間",
+          "Type": 0
+        },
+        {
+          "Description": "一個回應時間範圍，以及落在該範圍內的模擬互動次數。",
+          "Name": "回應時間區間",
+          "Type": 1
+        }
+      ],
+      "Name": "LatencyHistogramChartV1"
+    },
+    {
+      "Description": "識別地圖比較中的一個虛構分區。",
+      "DisplayName": "地圖區域",
+      "List": [
+        {
+          "Description": "識別地圖比較中的一個虛構分區。",
+          "Enum": [
+            {
+              "Description": "範例地圖中的北部地區。",
+              "Name": "北區",
+              "Type": 1
+            },
+            {
+              "Description": "範例地圖中的中部地區。",
+              "Name": "中區",
+              "Type": 2
+            },
+            {
+              "Description": "範例地圖中的南部地區。",
+              "Name": "南區",
+              "Type": 3
+            }
+          ],
+          "Name": "地圖區域",
+          "Type": 0
+        }
+      ],
+      "Name": "MapRegionV1"
+    },
+    {
+      "Description": "識別用來比較範例產品的地理市場。",
+      "DisplayName": "市場",
+      "List": [
+        {
+          "Description": "識別用來比較範例產品的地理市場。",
+          "Enum": [
+            {
+              "Description": "北美洲與南美洲。",
+              "Name": "美洲",
+              "Type": 1
+            },
+            {
+              "Description": "涵蓋歐洲、中東及非洲的範例市場。",
+              "Name": "歐洲、中東及非洲",
+              "Type": 2
+            }
+          ],
+          "Name": "市場",
+          "Type": 0
+        }
+      ],
+      "Name": "MarketV1"
+    },
+    {
+      "Description": "使用誤差線比較電氣測量的最低與最高估計值。",
+      "DisplayName": "測量區間",
+      "List": [
+        {
+          "Description": "使用誤差線比較電氣測量的最低與最高估計值。",
+          "Name": "測量區間",
+          "Type": 0
+        },
+        {
+          "Description": "一項範例電氣測量的最低與最高估計值，用於比較不確定性。",
+          "Name": "測量區間",
+          "Type": 1
+        }
+      ],
+      "Name": "MeasurementUncertaintyChartV1"
+    },
+    {
+      "Description": "識別範例網路中相互連線的元件。",
+      "DisplayName": "網路連線",
+      "List": [
+        {
+          "Description": "識別範例網路中相互連線的元件。",
+          "Enum": [
+            {
+              "Description": "將閘道連線至規則處理服務。",
+              "Name": "閘道至規則處理",
+              "Type": 1
+            },
+            {
+              "Description": "將閘道連線至分析處理服務。",
+              "Name": "閘道至分析處理",
+              "Type": 2
+            },
+            {
+              "Description": "將規則處理服務連線至事件儲存區。",
+              "Name": "規則處理至事件儲存區",
+              "Type": 3
+            },
+            {
+              "Description": "將分析處理服務連線至歷史資料儲存區。",
+              "Name": "分析處理至歷史資料儲存區",
+              "Type": 4
+            },
+            {
+              "Description": "將規則處理服務連線至歷史資料儲存區。",
+              "Name": "規則處理至歷史資料儲存區",
+              "Type": 5
+            }
+          ],
+          "Name": "網路連線",
+          "Type": 0
+        }
+      ],
+      "Name": "NetworkConnectionV1"
+    },
+    {
+      "Description": "顯示閘道、處理服務與儲存區之間的連線。",
+      "DisplayName": "網路連結",
+      "List": [
+        {
+          "Description": "顯示閘道、處理服務與儲存區之間的連線。",
+          "Name": "網路連結",
+          "Type": 0
+        },
+        {
+          "Description": "範例網路中兩個元件之間的一條連線。",
+          "Name": "網路連結",
+          "Type": 1
+        }
+      ],
+      "Name": "NetworkEdgesV1"
+    },
+    {
+      "Description": "範例網路中兩個元件之間的一條連線。",
+      "DisplayName": "網路連結",
+      "List": [
+        {
+          "Description": "範例網路中兩個元件之間的一條連線。",
+          "Name": "網路連結",
+          "Type": 0
+        },
+        {
+          "Description": "起點的水平座標。",
+          "Name": "起點 x",
+          "Type": 1
+        },
+        {
+          "Description": "終點的水平座標。",
+          "Name": "終點 x",
+          "Type": 2
+        },
+        {
+          "Description": "起點的垂直座標。",
+          "Name": "起點 y",
+          "Type": 3
+        },
+        {
+          "Description": "終點的垂直座標。",
+          "Name": "終點 y",
+          "Type": 4
+        },
+        {
+          "Description": "由此連結相連的兩個網路元件。",
+          "Name": "連線",
+          "Type": 5
+        },
+        {
+          "Description": "用來區分此網路連線的顏色。",
+          "Name": "連結顏色",
+          "Type": 6
+        },
+        {
+          "Description": "用來強調此網路連線的相對線條粗細。",
+          "Name": "連線強調程度",
+          "Type": 7
+        },
+        {
+          "Description": "用來區分此連線與範例網路中的其他連線。",
+          "Name": "連線參照",
+          "Type": 8
+        }
+      ],
+      "Name": "NetworkEdgeV1"
+    },
+    {
+      "Description": "識別範例網路中的閘道、處理服務及儲存元件。",
+      "DisplayName": "網路元件",
+      "List": [
+        {
+          "Description": "識別範例網路中的閘道、處理服務及儲存元件。",
+          "Enum": [
+            {
+              "Description": "範例網路的進入點。",
+              "Name": "閘道",
+              "Type": 1
+            },
+            {
+              "Description": "規則處理服務。",
+              "Name": "規則",
+              "Type": 2
+            },
+            {
+              "Description": "分析處理服務。",
+              "Name": "分析",
+              "Type": 3
+            },
+            {
+              "Description": "事件資料儲存區。",
+              "Name": "事件",
+              "Type": 4
+            },
+            {
+              "Description": "歷史資料儲存區。",
+              "Name": "歷史記錄",
+              "Type": 5
+            }
+          ],
+          "Name": "網路元件",
+          "Type": 0
+        }
+      ],
+      "Name": "NetworkNodeNameV1"
+    },
+    {
+      "Description": "顯示範例網路中的閘道、處理服務及儲存元件。",
+      "DisplayName": "網路元件",
+      "List": [
+        {
+          "Description": "顯示範例網路中的閘道、處理服務及儲存元件。",
+          "Name": "網路元件",
+          "Type": 0
+        },
+        {
+          "Description": "範例中的一個閘道、處理服務或儲存元件，以及它在網路圖中的位置。",
+          "Name": "網路元件",
+          "Type": 1
+        }
+      ],
+      "Name": "NetworkNodesV1"
+    },
+    {
+      "Description": "範例中的一個閘道、處理服務或儲存元件，以及它在網路圖中的位置。",
+      "DisplayName": "網路元件",
+      "List": [
+        {
+          "Description": "範例中的一個閘道、處理服務或儲存元件，以及它在網路圖中的位置。",
+          "Name": "網路元件",
+          "Type": 0
+        },
+        {
+          "Description": "節點的水平座標。",
+          "Name": "節點 x",
+          "Type": 1
+        },
+        {
+          "Description": "節點的垂直座標。",
+          "Name": "節點 y",
+          "Type": 2
+        },
+        {
+          "Description": "此位置所代表的網路元件。",
+          "Name": "元件",
+          "Type": 3
+        },
+        {
+          "Description": "此元件在範例網路中的用途。",
+          "Name": "網路角色",
+          "Type": 4
+        },
+        {
+          "Description": "元件的角色；網路圖中也會以不同符號加以區分。",
+          "Name": "角色符號",
+          "Type": 5
+        },
+        {
+          "Description": "用來凸顯此網路元件的相對大小。",
+          "Name": "元件強調程度",
+          "Type": 6
+        }
+      ],
+      "Name": "NetworkNodeV1"
+    },
+    {
+      "Description": "識別元件在範例網路中的用途。",
+      "DisplayName": "網路角色",
+      "List": [
+        {
+          "Description": "識別元件在範例網路中的用途。",
+          "Enum": [
+            {
+              "Description": "網路的進入點。",
+              "Name": "閘道",
+              "Type": 1
+            },
+            {
+              "Description": "網路中的處理服務。",
+              "Name": "服務",
+              "Type": 2
+            },
+            {
+              "Description": "保存範例網路記錄的元件。",
+              "Name": "儲存元件",
+              "Type": 3
+            }
+          ],
+          "Name": "網路角色",
+          "Type": 0
+        }
+      ],
+      "Name": "NetworkRoleV1"
+    },
+    {
+      "Description": "顯示範例中的閘道、處理服務及儲存元件彼此如何連線。",
+      "DisplayName": "網路關係",
+      "List": [
+        {
+          "Description": "顯示範例中的閘道、處理服務及儲存元件彼此如何連線。",
+          "Name": "網路關係",
+          "Type": 0
+        },
+        {
+          "Description": "範例網路中各元件之間的連線。",
+          "Name": "網路連線",
+          "Type": 1
+        },
+        {
+          "Description": "透過這些連線相互連接的閘道、處理服務及儲存元件。",
+          "Name": "網路元件",
+          "Type": 2
+        }
+      ],
+      "Name": "NetworkTopologyChartV1"
+    },
+    {
+      "Description": "一併顯示模擬的電力需求歷史、預測的不確定性及活動模式。",
+      "DisplayName": "營運儀表板",
+      "List": [
+        {
+          "Description": "一併顯示模擬的電力需求歷史、預測的不確定性及活動模式。",
+          "Name": "營運儀表板",
+          "Type": 0
+        },
+        {
+          "Description": "比較一段時間內的實際記錄、預期及挑戰性電力需求。",
+          "Name": "能源需求歷史",
+          "Type": 1
+        },
+        {
+          "Description": "比較兩個範例預測模型所估算的最低與最高溫度。",
+          "Name": "預測範圍",
+          "Type": 2
+        },
+        {
+          "Description": "比較平日工作時段中不同時段的活動程度。",
+          "Name": "活動時段",
+          "Type": 3
+        }
+      ],
+      "Name": "OperationsDashboardChartV1"
+    },
+    {
+      "Description": "顯示個別模擬回應時間，以便與趨勢和目標比較。",
+      "DisplayName": "效能結果",
+      "List": [
+        {
+          "Description": "顯示個別模擬回應時間，以便與趨勢和目標比較。",
+          "Name": "效能結果",
+          "Type": 0
+        },
+        {
+          "Description": "某個產品系列的一筆模擬回應時間結果。",
+          "Name": "效能結果",
+          "Type": 1
+        }
+      ],
+      "Name": "PerformancePointsV1"
+    },
+    {
+      "Description": "某個產品系列的一筆模擬回應時間結果。",
+      "DisplayName": "效能結果",
+      "List": [
+        {
+          "Description": "某個產品系列的一筆模擬回應時間結果。",
+          "Name": "效能結果",
+          "Type": 0
+        },
+        {
+          "Description": "此範例回應時間結果所代表的日期和時間。",
+          "Name": "時間",
+          "Type": 1
+        },
+        {
+          "Description": "此範例中模擬得出的回應所需時間。",
+          "Name": "回應時間",
+          "Type": 2
+        },
+        {
+          "Description": "此效能結果所代表的產品系列。",
+          "Name": "產品系列",
+          "Type": 3
+        },
+        {
+          "Description": "用來強調此效能結果的相對資料點大小。",
+          "Name": "結果強調程度",
+          "Type": 4
+        }
+      ],
+      "Name": "PerformancePointV1"
+    },
+    {
+      "Description": "比較個別回應時間、其平滑趨勢，以及期望的回應時間上限。",
+      "DisplayName": "效能比較",
+      "List": [
+        {
+          "Description": "比較個別回應時間、其平滑趨勢，以及期望的回應時間上限。",
+          "Name": "效能比較",
+          "Type": 0
+        },
+        {
+          "Description": "此比較中使用的個別模擬回應時間。",
+          "Name": "效能結果",
+          "Type": 1
+        },
+        {
+          "Description": "用來呈現整個比較期間變化的平滑回應時間。",
+          "Name": "趨勢樣本",
+          "Type": 2
+        },
+        {
+          "Description": "整個比較期間內期望的回應時間上限。",
+          "Name": "回應時間目標",
+          "Type": 3
+        }
+      ],
+      "Name": "PerformanceStoryChartV1"
+    },
+    {
+      "Description": "此範例整個比較期間內期望的回應時間上限。",
+      "DisplayName": "回應時間目標",
+      "List": [
+        {
+          "Description": "此範例整個比較期間內期望的回應時間上限。",
+          "Name": "回應時間目標",
+          "Type": 0
+        },
+        {
+          "Description": "此回應時間目標涵蓋期間的起始時間。",
+          "Name": "開始時間",
+          "Type": 1
+        },
+        {
+          "Description": "此回應時間目標涵蓋期間的結束時間。",
+          "Name": "結束時間",
+          "Type": 2
+        },
+        {
+          "Description": "期望的回應時間上限。",
+          "Name": "目標回應時間",
+          "Type": 3
+        },
+        {
+          "Description": "此回應時間目標所代表的情境。",
+          "Name": "情境",
+          "Type": 4
+        },
+        {
+          "Description": "指明其線條圖樣可用來區分此目標的情境。",
+          "Name": "目標線條樣式",
+          "Type": 5
+        },
+        {
+          "Description": "用來清楚區分回應時間目標的相對線條粗細。",
+          "Name": "目標強調程度",
+          "Type": 6
+        }
+      ],
+      "Name": "PerformanceTargetRuleV1"
+    },
+    {
+      "Description": "顯示期望的回應時間上限，以便與模擬結果及其趨勢比較。",
+      "DisplayName": "回應時間目標",
+      "List": [
+        {
+          "Description": "顯示期望的回應時間上限，以便與模擬結果及其趨勢比較。",
+          "Name": "回應時間目標",
+          "Type": 0
+        },
+        {
+          "Description": "此範例整個比較期間內期望的回應時間上限。",
+          "Name": "回應時間目標",
+          "Type": 1
+        }
+      ],
+      "Name": "PerformanceTargetV1"
+    },
+    {
+      "Description": "時間趨勢中的一筆範例平滑回應時間。",
+      "DisplayName": "效能趨勢樣本",
+      "List": [
+        {
+          "Description": "時間趨勢中的一筆範例平滑回應時間。",
+          "Name": "效能趨勢樣本",
+          "Type": 0
+        },
+        {
+          "Description": "此趨勢樣本所代表的日期和時間。",
+          "Name": "時間",
+          "Type": 1
+        },
+        {
+          "Description": "平滑回應時間。",
+          "Name": "回應時間",
+          "Type": 2
+        },
+        {
+          "Description": "此回應時間趨勢所代表的情境。",
+          "Name": "情境",
+          "Type": 3
+        },
+        {
+          "Description": "此樣本在趨勢時間序列中的位置。",
+          "Name": "時間順序",
+          "Type": 4
+        }
+      ],
+      "Name": "PerformanceTrendPointV1"
+    },
+    {
+      "Description": "同時顯示範例的平滑化回應時間與個別結果。",
+      "DisplayName": "效能趨勢樣本",
+      "List": [
+        {
+          "Description": "同時顯示範例的平滑化回應時間與個別結果。",
+          "Name": "效能趨勢樣本",
+          "Type": 0
+        },
+        {
+          "Description": "範例在一段時間趨勢中的單筆平滑化回應時間。",
+          "Name": "效能趨勢樣本",
+          "Type": 1
+        }
+      ],
+      "Name": "PerformanceTrendV1"
+    },
+    {
+      "Description": "圓餅圖中單一引薦來源占範例總流量的比例。",
+      "DisplayName": "流量圓餅圖扇區",
+      "List": [
+        {
+          "Description": "圓餅圖中單一引薦來源占範例總流量的比例。",
+          "Name": "流量圓餅圖扇區",
+          "Type": 0
+        },
+        {
+          "Description": "此來源所占比例在圓餅圖圓周上的起始位置。",
+          "Name": "比例起始角度",
+          "Type": 1
+        },
+        {
+          "Description": "此來源所占比例在圓餅圖圓周上的結束位置。",
+          "Name": "比例結束角度",
+          "Type": 2
+        },
+        {
+          "Description": "距離圓心的內側距離；設為零時，此扇區會延伸至圓餅圖的圓心。",
+          "Name": "內半徑",
+          "Type": 3
+        },
+        {
+          "Description": "流量圓餅圖中距離圓心的外側距離。",
+          "Name": "外半徑",
+          "Type": 4
+        },
+        {
+          "Description": "此訪客比例所代表的引薦來源。",
+          "Name": "流量來源",
+          "Type": 5
+        },
+        {
+          "Description": "透過此來源抵達的範例訪客百分比。",
+          "Name": "比例",
+          "Type": 6
+        },
+        {
+          "Description": "用來區分此引薦來源與其他流量來源。",
+          "Name": "來源識別碼",
+          "Type": 7
+        }
+      ],
+      "Name": "PieSliceV1"
+    },
+    {
+      "Description": "用於在比較圖表中識別產品系列。",
+      "DisplayName": "業務產品組合",
+      "List": [
+        {
+          "Description": "用於在比較圖表中識別產品系列。",
+          "Enum": [
+            {
+              "Description": "消費性產品。",
+              "Name": "家用",
+              "Type": 1
+            },
+            {
+              "Description": "供專業團隊使用的產品。",
+              "Name": "商用",
+              "Type": 2
+            },
+            {
+              "Description": "共用平台服務。",
+              "Name": "平台",
+              "Type": 3
+            }
+          ],
+          "Name": "業務產品組合",
+          "Type": 0
+        }
+      ],
+      "Name": "PortfolioV1"
+    },
+    {
+      "Description": "在地圖上顯示虛構行政區的輪廓及其範例使用率百分比。",
+      "DisplayName": "行政區邊界",
+      "List": [
+        {
+          "Description": "在地圖上顯示虛構行政區的輪廓及其範例使用率百分比。",
+          "Name": "行政區邊界",
+          "Type": 0
+        },
+        {
+          "Description": "虛構地圖行政區輪廓上的一個位置。",
+          "Name": "行政區邊界點",
+          "Type": 1
+        }
+      ],
+      "Name": "ProjectedMapChartV1"
+    },
+    {
+      "Description": "虛構地圖行政區輪廓上的一個位置。",
+      "DisplayName": "行政區邊界點",
+      "List": [
+        {
+          "Description": "虛構地圖行政區輪廓上的一個位置。",
+          "Name": "行政區邊界點",
+          "Type": 0
+        },
+        {
+          "Description": "此邊界點在地圖 X 軸方向上的位置。",
+          "Name": "地圖 X 座標",
+          "Type": 1
+        },
+        {
+          "Description": "此邊界點在地圖 Y 軸方向上的位置。",
+          "Name": "地圖 Y 座標",
+          "Type": 2
+        },
+        {
+          "Description": "此邊界點所屬的虛構行政區。",
+          "Name": "行政區",
+          "Type": 3
+        },
+        {
+          "Description": "此行政區的範例使用率百分比。",
+          "Name": "使用率",
+          "Type": 4
+        },
+        {
+          "Description": "此點在行政區輪廓環繞順序中的位置。",
+          "Name": "邊界順序",
+          "Type": 5
+        },
+        {
+          "Description": "用來區分此行政區邊界點與其他邊界點。",
+          "Name": "邊界點識別碼",
+          "Type": 6
+        }
+      ],
+      "Name": "ProjectedMapVertexV1"
+    },
+    {
+      "Description": "識別用於比較範例結果的三個月期間。",
+      "DisplayName": "季度",
+      "List": [
+        {
+          "Description": "識別用於比較範例結果的三個月期間。",
+          "Enum": [
+            {
+              "Description": "一月至三月。",
+              "Name": "第一季",
+              "Type": 1
+            },
+            {
+              "Description": "四月至六月。",
+              "Name": "第二季",
+              "Type": 2
+            },
+            {
+              "Description": "七月至九月。",
+              "Name": "第三季",
+              "Type": 3
+            },
+            {
+              "Description": "十月至十二月。",
+              "Name": "第四季",
+              "Type": 4
+            }
+          ],
+          "Name": "季度",
+          "Type": 0
+        }
+      ],
+      "Name": "QuarterV1"
+    },
+    {
+      "Description": "在圓形比較圖中，以零為起點向外呈現一個範例產品系列的分數。",
+      "DisplayName": "徑向績效結果",
+      "List": [
+        {
+          "Description": "在圓形比較圖中，以零為起點向外呈現一個範例產品系列的分數。",
+          "Name": "徑向績效結果",
+          "Type": 0
+        },
+        {
+          "Description": "此產品系列在圓周上所分配區域的起點。",
+          "Name": "分數起始角度",
+          "Type": 1
+        },
+        {
+          "Description": "此產品系列在圓周上所分配區域的終點。",
+          "Name": "分數結束角度",
+          "Type": 2
+        },
+        {
+          "Description": "比較此產品系列分數時，以百分之零為起點的基準。",
+          "Name": "分數基準線",
+          "Type": 3
+        },
+        {
+          "Description": "範例產品系列的績效分數。",
+          "Name": "分數",
+          "Type": 4
+        },
+        {
+          "Description": "此績效分數所代表的產品系列。",
+          "Name": "產品系列",
+          "Type": 5
+        },
+        {
+          "Description": "用來區分此產品系列的分數與其他分數。",
+          "Name": "分數參照",
+          "Type": 6
+        }
+      ],
+      "Name": "RadialPerformanceBarV1"
+    },
+    {
+      "Description": "在圓形圖中，以零為起點向外比較各產品系列的分數。",
+      "DisplayName": "徑向績效結果",
+      "List": [
+        {
+          "Description": "在圓形圖中，以零為起點向外比較各產品系列的分數。",
+          "Name": "徑向績效結果",
+          "Type": 0
+        },
+        {
+          "Description": "在圓形比較圖中，以零為起點向外呈現一個範例產品系列的分數。",
+          "Name": "徑向績效結果",
+          "Type": 1
+        }
+      ],
+      "Name": "RadialPerformanceChartV1"
+    },
+    {
+      "Description": "以兩種長條圖排列方式呈現各產品系列的季度營收，並同時顯示各來源的流量占比。",
+      "DisplayName": "銷售額與流量比較",
+      "List": [
+        {
+          "Description": "以兩種長條圖排列方式呈現各產品系列的季度營收，並同時顯示各來源的流量占比。",
+          "Name": "銷售額與流量比較",
+          "Type": 0
+        },
+        {
+          "Description": "使用群組長條圖比較每一季度內各產品系列的營收。",
+          "Name": "季度銷售結果",
+          "Type": 1
+        },
+        {
+          "Description": "使用橫向長條圖呈現相同的季度營收比較。",
+          "Name": "橫向銷售比較",
+          "Type": 2
+        },
+        {
+          "Description": "比較各引薦來源對訪客總流量的貢獻。",
+          "Name": "流量占比",
+          "Type": 3
+        }
+      ],
+      "Name": "RegionalComparisonChartV1"
+    },
+    {
+      "Description": "比較產品成果時，用來區分成熟產品與較新的產品。",
+      "DisplayName": "發布階段",
+      "List": [
+        {
+          "Description": "比較產品成果時，用來區分成熟產品與較新的產品。",
+          "Enum": [
+            {
+              "Description": "已廣泛推出的產品。",
+              "Name": "成熟",
+              "Type": 1
+            },
+            {
+              "Description": "仍在拓展客群的較新產品。",
+              "Name": "新興",
+              "Type": 2
+            }
+          ],
+          "Name": "發布階段",
+          "Type": 0
+        }
+      ],
+      "Name": "ReleaseStageV1"
+    },
+    {
+      "Description": "使用桑基圖呈現範例訪客如何從抵達開始，接著進入評估、啟用或離開階段。",
+      "DisplayName": "訪客旅程流向",
+      "List": [
+        {
+          "Description": "使用桑基圖呈現範例訪客如何從抵達開始，接著進入評估、啟用或離開階段。",
+          "Name": "訪客旅程流向",
+          "Type": 0
+        },
+        {
+          "Description": "訪客在各階段之間行經的旅程。",
+          "Name": "訪客流向",
+          "Type": 1
+        },
+        {
+          "Description": "這些流向所連接之各階段的訪客人數。",
+          "Name": "訪客階段",
+          "Type": 2
+        }
+      ],
+      "Name": "SankeyFlowChartV1"
+    },
+    {
+      "Description": "顯示抵達、評估、啟用及離開階段的訪客人數。",
+      "DisplayName": "訪客階段",
+      "List": [
+        {
+          "Description": "顯示抵達、評估、啟用及離開階段的訪客人數。",
+          "Name": "訪客階段",
+          "Type": 0
+        },
+        {
+          "Description": "範例訪客旅程中的一個階段，以及該階段所代表的訪客人數。",
+          "Name": "訪客階段",
+          "Type": 1
+        }
+      ],
+      "Name": "SankeyNodesV1"
+    },
+    {
+      "Description": "範例訪客旅程中的一個階段，以及該階段所代表的訪客人數。",
+      "DisplayName": "訪客階段",
+      "List": [
+        {
+          "Description": "範例訪客旅程中的一個階段，以及該階段所代表的訪客人數。",
+          "Name": "訪客階段",
+          "Type": 0
+        },
+        {
+          "Description": "節點的左側邊界。",
+          "Name": "節點起始 x 座標",
+          "Type": 1
+        },
+        {
+          "Description": "節點的右側邊界。",
+          "Name": "節點結束 x 座標",
+          "Type": 2
+        },
+        {
+          "Description": "節點的下側邊界。",
+          "Name": "節點起始 y 座標",
+          "Type": 3
+        },
+        {
+          "Description": "節點的上側邊界。",
+          "Name": "節點結束 y 座標",
+          "Type": 4
+        },
+        {
+          "Description": "此處所代表的到達、評估、啟用或離開階段。",
+          "Name": "階段",
+          "Type": 5
+        },
+        {
+          "Description": "此階段所代表的範例訪客人數。",
+          "Name": "訪客人數",
+          "Type": 6
+        },
+        {
+          "Description": "用來區分此訪客階段的色彩。",
+          "Name": "階段色彩",
+          "Type": 7
+        },
+        {
+          "Description": "用來區分此階段與範例旅程中的其他階段。",
+          "Name": "階段參照",
+          "Type": 8
+        }
+      ],
+      "Name": "SankeyNodeV1"
+    },
+    {
+      "Description": "訪客旅程中的一個位置，其邊界顯示該位置所占的流量比例。",
+      "DisplayName": "訪客流量取樣點",
+      "List": [
+        {
+          "Description": "訪客旅程中的一個位置，其邊界顯示該位置所占的流量比例。",
+          "Name": "訪客流量取樣點",
+          "Type": 0
+        },
+        {
+          "Description": "範例旅程中從到達到啟用或離開之間的位置。",
+          "Name": "旅程進度",
+          "Type": 1
+        },
+        {
+          "Description": "此旅程的訪客流量在取樣位置的下邊界。",
+          "Name": "流量下邊界",
+          "Type": 2
+        },
+        {
+          "Description": "此旅程的訪客流量在取樣位置的上邊界。",
+          "Name": "流量上邊界",
+          "Type": 3
+        },
+        {
+          "Description": "這部分流量所代表的啟用或離開旅程。",
+          "Name": "訪客旅程",
+          "Type": 4
+        },
+        {
+          "Description": "沿此旅程前進的範例訪客人數。",
+          "Name": "訪客人數",
+          "Type": 5
+        },
+        {
+          "Description": "用來讓彼此重疊的訪客旅程仍可區分的不透明度。",
+          "Name": "流量陰影",
+          "Type": 6
+        },
+        {
+          "Description": "此取樣點在其訪客旅程序列中的位置。",
+          "Name": "旅程順序",
+          "Type": 7
+        },
+        {
+          "Description": "用來區分此旅程位置與其他訪客流量取樣點。",
+          "Name": "旅程參照",
+          "Type": 8
+        }
+      ],
+      "Name": "SankeyRibbonPointV1"
+    },
+    {
+      "Description": "顯示直接啟用、在協助下啟用或提早離開的訪客所採取的路徑。",
+      "DisplayName": "訪客流向",
+      "List": [
+        {
+          "Description": "顯示直接啟用、在協助下啟用或提早離開的訪客所採取的路徑。",
+          "Name": "訪客流向",
+          "Type": 0
+        },
+        {
+          "Description": "訪客旅程中的一個位置，其邊界顯示該位置所占的流量比例。",
+          "Name": "訪客流量取樣點",
+          "Type": 1
+        }
+      ],
+      "Name": "SankeyRibbonsV1"
+    },
+    {
+      "Description": "用來區分已記錄值、預期值與挑戰值。",
+      "DisplayName": "情境",
+      "List": [
+        {
+          "Description": "用來區分已記錄值、預期值與挑戰值。",
+          "Enum": [
+            {
+              "Description": "已完成的測量結果。",
+              "Name": "已記錄",
+              "Type": 1
+            },
+            {
+              "Description": "目前的預測或計畫。",
+              "Name": "預期",
+              "Type": 2
+            },
+            {
+              "Description": "一項具挑戰性的目標。",
+              "Name": "挑戰目標",
+              "Type": 3
+            }
+          ],
+          "Name": "情境",
+          "Type": 0
+        }
+      ],
+      "Name": "ScenarioV1"
+    },
+    {
+      "Description": "在範例時間點，單一能源來源占累計能源總量的比例。",
+      "DisplayName": "能源貢獻隨時間變化",
+      "List": [
+        {
+          "Description": "在範例時間點，單一能源來源占累計能源總量的比例。",
+          "Name": "能源貢獻隨時間變化",
+          "Type": 0
+        },
+        {
+          "Description": "此能源來源貢獻所代表的日期與時間。",
+          "Name": "時間",
+          "Type": 1
+        },
+        {
+          "Description": "加入此來源的貢獻之前的能源使用總量。",
+          "Name": "累計起始值",
+          "Type": 2
+        },
+        {
+          "Description": "加入此來源的貢獻之後的能源使用總量。",
+          "Name": "累計結束值",
+          "Type": 3
+        },
+        {
+          "Description": "供應這部分需求的太陽能、電池或電網來源。",
+          "Name": "能源來源",
+          "Type": 4
+        },
+        {
+          "Description": "此貢獻在其來源時間序列中的位置。",
+          "Name": "時間順序",
+          "Type": 5
+        },
+        {
+          "Description": "用於區分此能源來源及時間與其他貢獻。",
+          "Name": "貢獻參照",
+          "Type": 6
+        }
+      ],
+      "Name": "StackedEnergyAreaPointV1"
+    },
+    {
+      "Description": "比較太陽能、電池和電網對能源用量的貢獻如何隨時間變化。",
+      "DisplayName": "能源貢獻隨時間的變化",
+      "List": [
+        {
+          "Description": "比較太陽能、電池和電網對能源用量的貢獻如何隨時間變化。",
+          "Name": "能源貢獻隨時間的變化",
+          "Type": 0
+        },
+        {
+          "Description": "在範例時間點，單一能源來源在累計能源總量中所占的份額。",
+          "Name": "特定時間的能源貢獻",
+          "Type": 1
+        }
+      ],
+      "Name": "StackedEnergyAreasV1"
+    },
+    {
+      "Description": "單一能源來源對範例中季度累計總量的貢獻。",
+      "DisplayName": "季度能源貢獻",
+      "List": [
+        {
+          "Description": "單一能源來源對範例中季度累計總量的貢獻。",
+          "Name": "季度能源貢獻",
+          "Type": 0
+        },
+        {
+          "Description": "此能源貢獻所代表的三個月期間。",
+          "Name": "季度",
+          "Type": 1
+        },
+        {
+          "Description": "加入此來源的能源貢獻前的總量。",
+          "Name": "累計起始值",
+          "Type": 2
+        },
+        {
+          "Description": "加入此來源的能源貢獻後的總量。",
+          "Name": "累計結束值",
+          "Type": 3
+        },
+        {
+          "Description": "對此部分總量有所貢獻的太陽能、電池或電網來源。",
+          "Name": "能源來源",
+          "Type": 4
+        },
+        {
+          "Description": "用於區分此來源及季度與其他能源貢獻。",
+          "Name": "貢獻參照",
+          "Type": 5
+        }
+      ],
+      "Name": "StackedEnergyBarSegmentV1"
+    },
+    {
+      "Description": "使用堆疊長條圖比較太陽能、電池和電網對季度能源總量的貢獻。",
+      "DisplayName": "季度能源貢獻",
+      "List": [
+        {
+          "Description": "使用堆疊長條圖比較太陽能、電池和電網對季度能源總量的貢獻。",
+          "Name": "季度能源貢獻",
+          "Type": 0
+        },
+        {
+          "Description": "單一能源來源對範例中季度累計總量的貢獻。",
+          "Name": "季度能源貢獻",
+          "Type": 1
+        }
+      ],
+      "Name": "StackedEnergyBarsV1"
+    },
+    {
+      "Description": "使用堆疊長條圖和面積圖，比較季度能源總量及各來源能源用量的變化。",
+      "DisplayName": "各能源來源的貢獻",
+      "List": [
+        {
+          "Description": "使用堆疊長條圖和面積圖，比較季度能源總量及各來源能源用量的變化。",
+          "Name": "各能源來源的貢獻",
+          "Type": 0
+        },
+        {
+          "Description": "太陽能、電池和電網來源在各季度的能源貢獻。",
+          "Name": "季度貢獻",
+          "Type": 1
+        },
+        {
+          "Description": "太陽能、電池和電網來源在各時間點對能源用量的貢獻。",
+          "Name": "貢獻隨時間的變化",
+          "Type": 2
+        }
+      ],
+      "Name": "StackedEnergyChartV1"
+    },
+    {
+      "Description": "顯示72小時內每個已結束五分鐘時段的最終模擬溫度。",
+      "DisplayName": "每五分鐘期末溫度",
+      "List": [
+        {
+          "Description": "顯示72小時內每個已結束五分鐘時段的最終模擬溫度。",
+          "Name": "每五分鐘期末溫度",
+          "Type": 0
+        },
+        {
+          "Description": "已結束五分鐘時段結束時的模擬溫度，以及該時段的最低和最高溫度。",
+          "Name": "五分鐘期末溫度",
+          "Type": 1
+        }
+      ],
+      "Name": "TemperatureCloseTicksV1"
+    },
+    {
+      "Description": "已結束五分鐘時段結束時的模擬溫度，以及該時段的最低和最高溫度。",
+      "DisplayName": "五分鐘期末溫度",
+      "List": [
+        {
+          "Description": "已結束五分鐘時段結束時的模擬溫度，以及該時段的最低和最高溫度。",
+          "Name": "五分鐘期末溫度",
+          "Type": 0
+        },
+        {
+          "Description": "此期末溫度所代表五分鐘時段的中間時間點。",
+          "Name": "時段中點",
+          "Type": 1
+        },
+        {
+          "Description": "已結束五分鐘時段的結束時間；下一個時段會在此時開始。",
+          "Name": "時段結束時間",
+          "Type": 2
+        },
+        {
+          "Description": "此五分鐘時段內最後的模擬溫度。",
+          "Name": "期末溫度",
+          "Type": 3
+        },
+        {
+          "Description": "同一五分鐘時段內的最低模擬溫度。",
+          "Name": "最低溫度",
+          "Type": 4
+        },
+        {
+          "Description": "同一五分鐘時段內的最高模擬溫度。",
+          "Name": "最高溫度",
+          "Type": 5
+        }
+      ],
+      "Name": "TemperatureCloseTickV1"
+    },
+    {
+      "Description": "顯示72小時內每個已結束五分鐘時段的最低和最高模擬溫度。",
+      "DisplayName": "每五分鐘溫度範圍",
+      "List": [
+        {
+          "Description": "顯示72小時內每個已結束五分鐘時段的最低和最高模擬溫度。",
+          "Name": "每五分鐘溫度範圍",
+          "Type": 0
+        },
+        {
+          "Description": "一個已結束五分鐘時段的最低、最高及最終模擬溫度。",
+          "Name": "五分鐘溫度範圍",
+          "Type": 1
+        }
+      ],
+      "Name": "TemperatureHighLowRangesV1"
+    },
+    {
+      "Description": "一個已結束的五分鐘時段內，模擬的最低、最高及最終溫度。",
+      "DisplayName": "五分鐘溫度範圍",
+      "List": [
+        {
+          "Description": "一個已結束的五分鐘時段內，模擬的最低、最高及最終溫度。",
+          "Name": "五分鐘溫度範圍",
+          "Type": 0
+        },
+        {
+          "Description": "這個五分鐘時段中點的日期和時間。",
+          "Name": "時段中點",
+          "Type": 1
+        },
+        {
+          "Description": "這個五分鐘時段內的最低模擬溫度。",
+          "Name": "最低溫度",
+          "Type": 2
+        },
+        {
+          "Description": "這個五分鐘時段內的最高模擬溫度。",
+          "Name": "最高溫度",
+          "Type": 3
+        },
+        {
+          "Description": "這個五分鐘時段內最後的模擬溫度。",
+          "Name": "最終溫度",
+          "Type": 4
+        }
+      ],
+      "Name": "TemperatureHighLowRuleV1"
+    },
+    {
+      "Description": "比較每個已結束的五分鐘時段內，模擬的最低、最高及最終溫度。",
+      "DisplayName": "過去 72 小時的溫度記錄",
+      "List": [
+        {
+          "Description": "比較每個已結束的五分鐘時段內，模擬的最低、最高及最終溫度。",
+          "Name": "過去 72 小時的溫度記錄",
+          "Type": 0
+        },
+        {
+          "Description": "每個已結束的五分鐘時段內，模擬的最低和最高溫度。",
+          "Name": "溫度範圍",
+          "Type": 1
+        },
+        {
+          "Description": "每個已結束的五分鐘時段內最後的模擬溫度。",
+          "Name": "最終溫度",
+          "Type": 2
+        }
+      ],
+      "Name": "TemperatureHlcChartV1"
+    },
+    {
+      "Description": "標示一段活動期間所屬的工作日時段。",
+      "DisplayName": "時段",
+      "List": [
+        {
+          "Description": "標示一段活動期間所屬的工作日時段。",
+          "Enum": [
+            {
+              "Description": "工作日較早時段的活動。",
+              "Name": "上午",
+              "Type": 1
+            },
+            {
+              "Description": "中午時段的活動。",
+              "Name": "中午",
+              "Type": 2
+            },
+            {
+              "Description": "下午時段的活動。",
+              "Name": "下午",
+              "Type": 3
+            },
+            {
+              "Description": "工作日較晚時段的活動。",
+              "Name": "傍晚",
+              "Type": 4
+            }
+          ],
+          "Name": "時段",
+          "Type": 0
+        }
+      ],
+      "Name": "TimeBlockV1"
+    },
+    {
+      "Description": "使用圓環圖比較各引薦來源，並以標籤標示每個來源及其百分比。",
+      "DisplayName": "流量占比",
+      "List": [
+        {
+          "Description": "使用圓環圖比較各引薦來源，並以標籤標示每個來源及其百分比。",
+          "Name": "流量占比",
+          "Type": 0
+        },
+        {
+          "Description": "單一引薦來源在此範例訪客流量中所占的比例。",
+          "Name": "流量占比",
+          "Type": 1
+        }
+      ],
+      "Name": "TrafficDonutChartV1"
+    },
+    {
+      "Description": "單一引薦來源在此範例訪客流量中所占的比例。",
+      "DisplayName": "流量占比",
+      "List": [
+        {
+          "Description": "單一引薦來源在此範例訪客流量中所占的比例。",
+          "Name": "流量占比",
+          "Type": 0
+        },
+        {
+          "Description": "此來源的占比在圓環上開始的位置。",
+          "Name": "占比起始角度",
+          "Type": 1
+        },
+        {
+          "Description": "此來源的占比在圓環上結束的位置。",
+          "Name": "占比結束角度",
+          "Type": 2
+        },
+        {
+          "Description": "從中心到流量圓環內側的距離。",
+          "Name": "內半徑",
+          "Type": 3
+        },
+        {
+          "Description": "從中心到流量圓環外側的距離。",
+          "Name": "外半徑",
+          "Type": 4
+        },
+        {
+          "Description": "此流量占比所代表的引薦來源。",
+          "Name": "流量來源",
+          "Type": 5
+        },
+        {
+          "Description": "將來源名稱與其占比一併顯示，用來標示該來源貢獻的流量。",
+          "Name": "來源與占比標籤",
+          "Type": 6
+        },
+        {
+          "Description": "此範例中透過此來源抵達的訪客百分比。",
+          "Name": "占比",
+          "Type": 7
+        },
+        {
+          "Description": "用來凸顯此流量占比邊界的不透明度。",
+          "Name": "邊界強調程度",
+          "Type": 8
+        },
+        {
+          "Description": "此來源在流量圓環排列順序中的位置。",
+          "Name": "來源順序",
+          "Type": 9
+        },
+        {
+          "Description": "用來區分此引薦來源與其他流量來源。",
+          "Name": "來源參照",
+          "Type": 10
+        }
+      ],
+      "Name": "TrafficDonutSegmentV1"
+    },
+    {
+      "Description": "使用圓餅圖比較各引薦來源占此範例總流量的比例。",
+      "DisplayName": "流量圓餅圖切片",
+      "List": [
+        {
+          "Description": "以圓餅圖比較各引薦來源占範例總流量的比例。",
+          "Name": "流量圓餅圖扇區",
+          "Type": 0
+        },
+        {
+          "Description": "圓餅圖中一個引薦來源占範例總流量的比例。",
+          "Name": "流量圓餅圖扇區",
+          "Type": 1
+        }
+      ],
+      "Name": "TrafficPieChartV1"
+    },
+    {
+      "Description": "識別訪客的到訪方式，以比較各來源所占的流量比例。",
+      "DisplayName": "流量來源",
+      "List": [
+        {
+          "Description": "識別訪客的到訪方式，以比較各來源所占的流量比例。",
+          "Enum": [
+            {
+              "Description": "直接前往產品的訪客。",
+              "Name": "直接造訪",
+              "Type": 1
+            },
+            {
+              "Description": "由搜尋引擎引薦的流量。",
+              "Name": "搜尋",
+              "Type": 2
+            },
+            {
+              "Description": "由合作夥伴引薦的流量。",
+              "Name": "合作夥伴",
+              "Type": 3
+            },
+            {
+              "Description": "由行銷活動引薦的流量。",
+              "Name": "行銷活動",
+              "Type": 4
+            },
+            {
+              "Description": "由社群媒體引薦的流量。",
+              "Name": "社群媒體",
+              "Type": 5
+            },
+            {
+              "Description": "未分類且流量較少的引薦來源。",
+              "Name": "其他",
+              "Type": 6
+            }
+          ],
+          "Name": "流量來源",
+          "Type": 0
+        }
+      ],
+      "Name": "TrafficSourceV1"
+    },
+    {
+      "Description": "一筆範例電氣測量的低估計值與高估計值，用於比較不確定性。",
+      "DisplayName": "測量區間",
+      "List": [
+        {
+          "Description": "一筆範例電氣測量的低估計值與高估計值，用於比較不確定性。",
+          "Name": "測量區間",
+          "Type": 0
+        },
+        {
+          "Description": "此區間所代表的範例電氣樣本。",
+          "Name": "樣本",
+          "Type": 1
+        },
+        {
+          "Description": "誤差區間的下限。",
+          "Name": "低估計值",
+          "Type": 2
+        },
+        {
+          "Description": "誤差區間的上限。",
+          "Name": "高估計值",
+          "Type": 3
+        },
+        {
+          "Description": "此測量區間所代表的情境。",
+          "Name": "情境",
+          "Type": 4
+        },
+        {
+          "Description": "識別以線條圖樣區分此區間的情境。",
+          "Name": "情境線條樣式",
+          "Type": 5
+        },
+        {
+          "Description": "用來強調此測量區間的相對線條粗細。",
+          "Name": "區間強調程度",
+          "Type": 6
+        },
+        {
+          "Description": "用來區分此樣本區間與其他測量區間。",
+          "Name": "測量參照",
+          "Type": 7
+        }
+      ],
+      "Name": "UncertaintyRuleV1"
+    },
+    {
+      "Description": "識別活動時段所代表的工作日。",
+      "DisplayName": "工作日",
+      "List": [
+        {
+          "Description": "識別活動時段所代表的工作日。",
+          "Enum": [
+            {
+              "Description": "星期一的活動。",
+              "Name": "星期一",
+              "Type": 1
+            },
+            {
+              "Description": "星期二的活動。",
+              "Name": "星期二",
+              "Type": 2
+            },
+            {
+              "Description": "星期三的活動。",
+              "Name": "星期三",
+              "Type": 3
+            },
+            {
+              "Description": "星期四的活動。",
+              "Name": "星期四",
+              "Type": 4
+            },
+            {
+              "Description": "星期五的活動。",
+              "Name": "星期五",
+              "Type": 5
+            }
+          ],
+          "Name": "工作日",
+          "Type": 0
+        }
+      ],
+      "Name": "WeekdayV1"
+    }
+  ]
+}

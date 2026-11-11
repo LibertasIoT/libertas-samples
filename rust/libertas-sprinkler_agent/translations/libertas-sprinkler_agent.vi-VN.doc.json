@@ -1,0 +1,2555 @@
+{
+  "Description": "Chỉ tưới từng khu vực trong sân khi khu vực đó cần nước. Chọn loại cây trồng trong từng khu vực, cách tưới và bất kỳ khoảng thời gian nào phải tạm dừng tưới. Tưới nước thông minh sử dụng lượng mưa gần đây, thời tiết hiện tại và dự báo để chọn thời gian và lượng nước tưới an toàn. Ứng dụng cũng tính cả lượng nước tưới thủ công, tiếp tục hoạt động trong các đợt mất kết nối Internet ngắn và nhắc bạn chuẩn bị hệ thống trước thời tiết đóng băng.",
+  "DisplayName": "Tưới nước thông minh",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Smart sprinkler",
+      "Description": "Tưới từng bãi cỏ, khu vườn hoặc khu vực trồng cây dựa trên loại cây, phương pháp tưới, lượng mưa gần đây, dự báo thời tiết và các điều chỉnh do người dùng chọn. Người dùng chọn nguồn thời tiết, nơi cung cấp điều khiển và báo cáo khu vực, người nhận lời nhắc, cũng như van, loại cây và phương pháp tưới cho từng khu vực. Người dùng có thể thay đổi thủ công tỷ lệ tưới và các khoảng thời gian không tưới của từng khu vực bất cứ lúc nào, hoặc chuẩn bị toàn bộ hệ thống cho mùa đông và kích hoạt lại. Hệ thống tưới tự động lập lịch và vận hành từng van dựa trên mưa, lượng mưa dự báo, gió, nhiệt độ đóng băng, nhu cầu của cây và các khoảng thời gian không tưới, đồng thời sử dụng các ước tính đã lưu khi dịch vụ thời tiết bị gián đoạn ngắn. Hệ thống hiển thị trạng thái hiện tại, ước tính nước, trạng thái van và kế hoạch tưới sắp tới của từng khu vực. Hệ thống cung cấp các biểu đồ cân bằng nước, lượng nước sử dụng hằng ngày và thời tiết đã ghi nhận cũng như dự báo, đồng thời gửi lời nhắc cho những người đã chọn trước khi có thời tiết đóng băng.\nNhật ký thay đổi: đã cập nhật các biến thể giao thức.",
+      "DisplayName": "Tưới nước thông minh",
+      "List": [
+        {
+          "Description": "Chọn dịch vụ thời tiết địa phương được sử dụng cho mưa, nhiệt độ, gió và dự báo. Tưới nước thông minh có thể sử dụng các ước tính đã lưu trong những lần gián đoạn ngắn.",
+          "Name": "Dịch vụ thời tiết",
+          "Type": 0
+        },
+        {
+          "Description": "Chọn nơi cung cấp các biểu đồ cân bằng nước, lượng nước sử dụng và thời tiết.",
+          "Name": "Báo cáo tưới nước",
+          "Type": 1
+        },
+        {
+          "Description": "Chọn những người sẽ nhận lời nhắc chuẩn bị hệ thống tưới cho thời tiết đóng băng.",
+          "Name": "Người nhận lời nhắc",
+          "Type": 2
+        },
+        {
+          "Description": "Một người sẽ nhận lời nhắc về hệ thống tưới.",
+          "Name": "Người cần thông báo",
+          "Type": 3
+        },
+        {
+          "Description": "Thêm từng bãi cỏ, khu vườn hoặc khu vực trồng cây cần được tưới độc lập.",
+          "Name": "Các khu vực được tưới",
+          "Type": 4
+        },
+        {
+          "Description": "Một khu vực có van, cây trồng và phương pháp tưới riêng.",
+          "Name": "Khu vực được tưới",
+          "Type": 5
+        }
+      ],
+      "Name": "libertas_sprinkler"
+    }
+  ],
+  "Locale": "vi-VN",
+  "StringResources": {
+    "SPRINKLER_ACTIVITY_CLEANUP_V1": "Watering history cleanup status for {0}.",
+    "SPRINKLER_ACTIVITY_CLEANUP_V2": "Daily failure history cleanup status for {0}.",
+    "SPRINKLER_DAILY_REPORT_V1": "Đã lưu cân bằng nước hằng ngày cho {0}.",
+    "SPRINKLER_INVALID_NO_WATERING_PERIODS": "Sử dụng không quá 64 khoảng thời gian không tưới, mỗi khoảng phải có thời điểm bắt đầu hợp lệ và thời lượng lớn hơn 0.",
+    "SPRINKLER_INVALID_WATERING_PERCENT": "Lượng nước phải nằm trong khoảng từ 20% đến 200% theo bước 10%.",
+    "SPRINKLER_MODELED_WEATHER_GAPS_V1_PERSISTENCE_V2": "Đã lưu các ước tính thời tiết được sử dụng khi dịch vụ bị gián đoạn tại {0}.",
+    "SPRINKLER_REPORT_INVALID_DATE_RANGE": "Ngày đầu tiên không thể muộn hơn ngày cuối cùng.",
+    "SPRINKLER_REPORT_WEATHER_ARCHIVE_STATE_V2": "Đã lưu vị trí được sử dụng bởi các báo cáo thời tiết tưới nước tại {0}.",
+    "SPRINKLER_REPORT_WEATHER_HISTORY_V2_PERSISTENCE_V2": "Đã lưu lịch sử thời tiết chi tiết cho báo cáo tưới nước tại {0}.",
+    "SPRINKLER_REPORT_WEATHER_OBSERVATIONS_V1": "Đã lưu các quan sát thời tiết hiện tại cho báo cáo tưới nước tại {0}.",
+    "SPRINKLER_SITE_LOCATION_V1": "Đã lưu vị trí được sử dụng cho thời tiết tưới nước tại {0}.",
+    "SPRINKLER_UI_CHANGE_DATES": "Change dates",
+    "SPRINKLER_UI_SYSTEM_ACTIVE": "System active",
+    "SPRINKLER_UI_VALVE": "Valve",
+    "SPRINKLER_UI_WATERING_PLAN": "Watering plan",
+    "SPRINKLER_UI_WATER_BALANCE": "Water balance",
+    "SPRINKLER_WATERING_ACTIVITIES_V1": "Đã lưu lịch sử tưới nước cho {0}.",
+    "SPRINKLER_WATERING_ACTIVITY_STATE_V2": "Hoạt động tưới nước hiện tại cho {0}.",
+    "SPRINKLER_WATERING_MODE_V1": "Đã lưu chế độ tưới nước cho {0}.",
+    "SPRINKLER_WATERING_RESTART_V1": "Watering restart accounting for {0}.",
+    "SPRINKLER_WATER_EVENTS_V1": "Đã lưu lượng mưa và hoạt động tưới gần đây cho {0}.",
+    "SPRINKLER_WATER_USAGE_RAIN_LANE": "Mưa",
+    "SPRINKLER_WATER_USAGE_ZONE_LANE": "{0}",
+    "SPRINKLER_WINTERIZATION_REMINDER_V1": "Đã lưu lịch sử nhắc nhở chuẩn bị hệ thống cho mùa đông tại {0}.",
+    "SPRINKLER_WINTERIZATION_SEASON_REMINDER": "Mùa lạnh đang đến gần tại vị trí này. Hãy chuẩn bị hệ thống tưới cho mùa đông, sau đó tắt trạng thái Hoạt động.",
+    "SPRINKLER_WINTERIZATION_WEATHER_REMINDER": "Thời tiết đóng băng ({0}) có thể làm hỏng hệ thống tưới của bạn. Hãy chuẩn bị hệ thống cho mùa đông, sau đó tắt trạng thái Hoạt động.",
+    "SPRINKLER_ZONE_MEMORY_V1": "Đã lưu cân bằng nước và cài đặt cho {0}.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Sử dụng vị trí của Hub này để lấy thông tin thời tiết địa phương phục vụ tưới nước tự động."
+  },
+  "Types": [
+    {
+      "Description": "Một điểm kiểm tra theo ngày UTC và bản tổng hợp hạch toán nước được lưu giữ vô thời hạn. Nó cho phép truy vấn một khoảng cân bằng nước cũ mà không cần phát lại mọi sự kiện kể từ khi cài đặt.",
+      "DisplayName": "Báo cáo tưới nước hằng ngày",
+      "List": [
+        {
+          "Description": "Một điểm kiểm tra theo ngày UTC và bản tổng hợp hạch toán nước được lưu giữ vô thời hạn. Nó cho phép truy vấn một khoảng cân bằng nước cũ mà không cần phát lại mọi sự kiện kể từ khi cài đặt.",
+          "Name": "Báo cáo tưới nước hằng ngày",
+          "Type": 0
+        },
+        {
+          "Description": "Ranh giới ngày theo lịch UTC có tính bao gồm, được sử dụng làm khóa bản ghi được lập chỉ mục.",
+          "Name": "Bắt đầu ngày",
+          "Type": 1
+        },
+        {
+          "Description": "Ranh giới ngày theo lịch UTC không tính thời điểm kết thúc.",
+          "Name": "Kết thúc ngày",
+          "Type": 2
+        },
+        {
+          "Description": "Thời điểm đầu tiên được biểu diễn bởi điểm kiểm tra này. Thời điểm này có thể muộn hơn ranh giới ngày UTC vào ngày cài đặt hoặc ngày chuyển đổi địa điểm.",
+          "Name": "Bắt đầu phạm vi",
+          "Type": 3
+        },
+        {
+          "Description": "Thời điểm cuối cùng không bao gồm được biểu diễn bởi điểm kiểm tra này. Thời điểm này có thể sớm hơn ranh giới ngày đối với ngày hiện tại chưa hoàn tất.",
+          "Name": "Kết thúc phạm vi",
+          "Type": 4
+        },
+        {
+          "Description": "Dung lượng mô phỏng theo hồ sơ cây trồng, tính bằng milimét.",
+          "Name": "Dung lượng vùng rễ",
+          "Type": 5
+        },
+        {
+          "Description": "Mức thiếu hụt vùng rễ được tính toán tại đầu ngày được biểu diễn.",
+          "Name": "Thiếu hụt đầu kỳ",
+          "Type": 6
+        },
+        {
+          "Description": "Mức thiếu hụt vùng rễ được tính toán tại thời điểm kết thúc được biểu diễn hoặc thời điểm mới nhất đã biết.",
+          "Name": "Thiếu hụt cuối kỳ",
+          "Type": 7
+        },
+        {
+          "Description": "Lượng mưa do nhà cung cấp ghi nhận và được phân bổ cho ngày UTC này.",
+          "Name": "Mưa",
+          "Type": 8
+        },
+        {
+          "Description": "ET tham chiếu do nhà cung cấp ghi nhận và được phân bổ cho ngày UTC này trước khi áp dụng hệ số cây trồng dành riêng cho loại cây.",
+          "Name": "Bốc thoát hơi nước tham chiếu",
+          "Type": 9
+        },
+        {
+          "Description": "ET tham chiếu được sử dụng để lấp các khoảng thời gian không được lịch sử của nhà cung cấp bao phủ.",
+          "Name": "Bốc thoát hơi nước tham chiếu mô phỏng",
+          "Type": 10
+        },
+        {
+          "Description": "Nguồn của lượng ET mô phỏng, được bỏ qua khi lịch sử của nhà cung cấp bao phủ toàn bộ khoảng thời gian được biểu diễn.",
+          "Name": "Nguồn nhu cầu mô phỏng",
+          "Type": 11
+        },
+        {
+          "Description": "Số giây trong khoảng thời gian được biểu diễn được bao phủ bởi các chu kỳ thời tiết hợp lệ của nhà cung cấp.",
+          "Name": "Phạm vi thời tiết của nhà cung cấp",
+          "Type": 12
+        },
+        {
+          "Description": "Độ sâu nước ước tính từ các khoảng thời gian van mở đã quan sát và được phân bổ cho ngày UTC này.",
+          "Name": "Tưới",
+          "Type": 13
+        },
+        {
+          "Description": "Cho biết điểm kiểm tra có đại diện cho toàn bộ ngày UTC hay chỉ phần ngày hiện tại chưa hoàn tất.",
+          "Name": "Ngày hoàn chỉnh",
+          "Type": 14
+        },
+        {
+          "Description": "Thời gian UTC khi điểm kiểm tra này được xây dựng lại lần cuối.",
+          "Name": "Tính toán lúc",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerDailyReportV1"
+    },
+    {
+      "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+      "DisplayName": "Daily water use",
+      "List": [
+        {
+          "Description": "Shows rain and watering by date, while keeping dry or idle areas visible.",
+          "Name": "Daily water use",
+          "Type": 0
+        },
+        {
+          "Description": "Recorded and planned water amounts.",
+          "Name": "Rain and watering",
+          "Type": 1
+        },
+        {
+          "Description": "Areas with no rain or watering during the selected dates.",
+          "Name": "Areas with no recorded water",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerDailyWaterUsageChartV1"
+    },
+    {
+      "Description": "Xác định mọi giá trị được ứng dụng tưới ghi lại. Dữ liệu vùng được lưu dưới từng Matter Valve; dữ liệu hệ thống dùng chung sử dụng điểm cuối thời tiết.",
+      "DisplayName": "Dữ liệu lưu bền của hệ thống tưới",
+      "List": [
+        {
+          "Description": "Xác định mọi giá trị được ứng dụng tưới ghi lại. Dữ liệu vùng được lưu dưới từng Matter Valve; dữ liệu hệ thống dùng chung sử dụng điểm cuối thời tiết.",
+          "Name": "Dữ liệu lưu bền của hệ thống tưới",
+          "Type": 0
+        },
+        {
+          "Description": "Lưu bộ điều chỉnh thời gian chạy, các ràng buộc và đường cơ sở đã gộp của một vùng.",
+          "Name": "Bộ nhớ vùng",
+          "Type": 1
+        },
+        {
+          "Description": "Trạng thái hoàn chỉnh an toàn khi khởi động lại cho van đã cấu hình.",
+          "Name": "Bộ nhớ vùng",
+          "Type": 2
+        },
+        {
+          "Description": "Lưu một sự kiện thời tiết hoặc tưới được lập chỉ mục độc lập.",
+          "Name": "Sự kiện nước",
+          "Type": 3
+        },
+        {
+          "Description": "Một chu kỳ thời tiết hoàn tất hoặc khoảng thời gian van mở đã được hạch toán.",
+          "Name": "Sự kiện nước",
+          "Type": 4
+        },
+        {
+          "Description": "Lưu vị trí Hub hợp lệ gần nhất để ước tính theo mùa khi ngoại tuyến.",
+          "Name": "Vị trí địa điểm",
+          "Type": 5
+        },
+        {
+          "Description": "Tọa độ WGS84 được lưu đệm cho địa điểm của hệ thống tưới.",
+          "Name": "Vị trí địa điểm",
+          "Type": 6
+        },
+        {
+          "Description": "Lưu chế độ Hoạt động hoặc Chuẩn bị mùa đông dùng chung cho hệ thống tưới.",
+          "Name": "Chế độ tưới",
+          "Type": 7
+        },
+        {
+          "Description": "Chế độ vận hành an toàn khi khởi động lại được dùng chung cho mọi vùng.",
+          "Name": "Chế độ tưới",
+          "Type": 8
+        },
+        {
+          "Description": "Lưu thời điểm và lý do nhắc nhở gần nhất cho toàn hệ thống.",
+          "Name": "Nhắc nhở chuẩn bị mùa đông",
+          "Type": 9
+        },
+        {
+          "Description": "Trạng thái giới hạn tần suất an toàn khi khởi động lại cho thông báo chuẩn bị mùa đông.",
+          "Name": "Bộ nhớ nhắc nhở",
+          "Type": 10
+        },
+        {
+          "Description": "Lưu trữ vô thời hạn một khoảng ET dự phòng chính xác.",
+          "Name": "Khoảng trống thời tiết mô phỏng",
+          "Type": 11
+        },
+        {
+          "Description": "Khoảng thời gian chính xác với nguồn và xuất xứ tốc độ không thể thay đổi.",
+          "Name": "Khoảng trống mô phỏng",
+          "Type": 12
+        },
+        {
+          "Description": "Lưu trữ vô thời hạn một hoạt động tưới đã lên lịch, đang chạy, hoàn tất, bị bỏ qua, thất bại, bị thay thế, thủ công hoặc kiểu cũ.",
+          "Name": "Hoạt động tưới",
+          "Type": 13
+        },
+        {
+          "Description": "Dữ liệu vòng đời bền vững đầy đủ giữa lịch dự kiến và thực tế.",
+          "Name": "Hoạt động",
+          "Type": 14
+        },
+        {
+          "Description": "Lưu trữ vô thời hạn một điểm kiểm tra hạch toán nước và cân bằng theo ngày UTC để các khoảng thời gian cũ vẫn có thể truy vấn.",
+          "Name": "Báo cáo hằng ngày",
+          "Type": 15
+        },
+        {
+          "Description": "Mưa, ET, lượng tưới ước tính và mức thiếu hụt mô phỏng đầu kỳ/cuối kỳ.",
+          "Name": "Báo cáo hằng ngày",
+          "Type": 16
+        },
+        {
+          "Description": "Its generation is bound only by explicit provider site messages.",
+          "Name": "Report weather archive state V2",
+          "Type": 17
+        },
+        {
+          "Description": "Active indefinitely retained provider-site generation.",
+          "Name": "Archive state",
+          "Type": 18
+        },
+        {
+          "Description": "Lưu trữ vô thời hạn một mẫu điều kiện hiện tại đã được chấp nhận. Mẫu này giữ bằng chứng quyết định theo chu kỳ 15 phút mà không tính trùng mưa hoặc ET đã được biểu diễn trong lịch sử theo giờ hoàn tất.",
+          "Name": "Quan sát thời tiết báo cáo",
+          "Type": 19
+        },
+        {
+          "Description": "Nhiệt độ, độ ẩm, gió, gió giật và các đầu vào nước tức thời tại thời điểm do nhà cung cấp biểu diễn.",
+          "Name": "Quan sát thời tiết",
+          "Type": 20
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 21
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 22
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 23
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 24
+        },
+        {
+          "Description": "Records completion of the one-time duplicate-attempt cleanup for a valve.",
+          "Name": "Watering history cleanup",
+          "Type": 25
+        },
+        {
+          "Description": "True after the archive has been scanned and duplicate removals verified.",
+          "Name": "Completed",
+          "Type": 26
+        },
+        {
+          "Description": "One authoritative checkpoint per valve, cleared after reconciliation has been persisted and verified.",
+          "Name": "Watering restart accounting",
+          "Type": 27
+        },
+        {
+          "Description": "Present while shutdown or restart accounting needs reconciliation.",
+          "Name": "Checkpoint",
+          "Type": 28
+        }
+      ],
+      "Name": "SprinklerData"
+    },
+    {
+      "Description": "Lượng nước mất đã ghi nhận và dự báo do bay hơi và cây sử dụng.",
+      "DisplayName": "Lượng nước mất ước tính",
+      "List": [
+        {
+          "Description": "Lượng nước mất đã ghi nhận và dự báo do bay hơi và cây sử dụng.",
+          "Name": "Lượng nước mất ước tính",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerEtChartV1"
+    },
+    {
+      "Description": "Một lượng nước bị mất đã ghi nhận hoặc dự báo do bay hơi và cây trồng.",
+      "DisplayName": "Lượng nước mất hằng ngày",
+      "List": [
+        {
+          "Description": "Một lượng nước bị mất đã ghi nhận hoặc dự báo do bay hơi và cây trồng.",
+          "Name": "Lượng nước mất hằng ngày",
+          "Type": 0
+        },
+        {
+          "Description": "Thời điểm chu kỳ thời tiết này bắt đầu.",
+          "Name": "Bắt đầu lúc",
+          "Type": 1
+        },
+        {
+          "Description": "Thời điểm chu kỳ thời tiết này kết thúc.",
+          "Name": "Kết thúc lúc",
+          "Type": 2
+        },
+        {
+          "Description": "Nước bị mất do bay hơi và cây sử dụng.",
+          "Name": "Lượng nước mất ước tính",
+          "Type": 3
+        },
+        {
+          "Description": "Cho biết giá trị này đã được ghi nhận hay là dự báo.",
+          "Name": "Nguồn",
+          "Type": 4
+        },
+        {
+          "Description": "Định danh do máy chủ tạo cho khoảng thời gian và nguồn này.",
+          "Name": "Khóa ổn định",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerEtRowV1"
+    },
+    {
+      "Description": "Chọn loại đầu tưới hoặc hệ thống tưới nhỏ giọt được lắp đặt trong khu vực này.",
+      "DisplayName": "Phương pháp tưới",
+      "List": [
+        {
+          "Description": "Chọn loại đầu tưới hoặc hệ thống tưới nhỏ giọt được lắp đặt trong khu vực này.",
+          "Enum": [
+            {
+              "Description": "Cấp nước chậm, có mục tiêu từ các đầu nhỏ giọt trên bề mặt.",
+              "Name": "Tưới nhỏ giọt bề mặt",
+              "Type": 1
+            },
+            {
+              "Description": "Cấp nước tập trung quanh cây, bụi cây hoặc bồn trồng.",
+              "Name": "Đầu tưới sủi",
+              "Type": 2
+            },
+            {
+              "Description": "Cấp nước rộng và tương đối nhanh từ các đầu phun bật lên cố định.",
+              "Name": "Đầu phun bật lên",
+              "Type": 3
+            },
+            {
+              "Description": "Cấp nước chậm trên diện rộng từ các đầu rotor hiệu suất cao hoặc nhiều tia.",
+              "Name": "Đầu rotor lưu lượng thấp",
+              "Type": 4
+            },
+            {
+              "Description": "Cấp nước nhanh hơn trên diện rộng từ các đầu rotor thông thường.",
+              "Name": "Đầu rotor lưu lượng cao",
+              "Type": 5
+            }
+          ],
+          "Name": "Phương pháp tưới",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerHeadTypeV1"
+    },
+    {
+      "Description": "Độ ẩm quan sát và dự báo trên thang riêng từ 0 đến 100 phần trăm.",
+      "DisplayName": "Độ ẩm tương đối",
+      "List": [
+        {
+          "Description": "Độ ẩm quan sát và dự báo trên thang riêng từ 0 đến 100 phần trăm.",
+          "Name": "Độ ẩm tương đối",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerHumidityChartV1"
+    },
+    {
+      "Description": "Một mẫu độ ẩm tương đối quan sát hoặc dự báo.",
+      "DisplayName": "Hàng độ ẩm",
+      "List": [
+        {
+          "Description": "Một mẫu độ ẩm tương đối quan sát hoặc dự báo.",
+          "Name": "Hàng độ ẩm",
+          "Type": 0
+        },
+        {
+          "Description": "Thời điểm bắt đầu chu kỳ của nhà cung cấp.",
+          "Name": "Thời gian",
+          "Type": 1
+        },
+        {
+          "Description": "Tỷ lệ phần trăm độ ẩm tương đối.",
+          "Name": "Độ ẩm tương đối",
+          "Type": 2
+        },
+        {
+          "Description": "Xác định đường này là độ ẩm tương đối trong bảng kết hợp.",
+          "Name": "Phép đo",
+          "Type": 3
+        },
+        {
+          "Description": "Quan sát hoặc dự báo.",
+          "Name": "Nguồn",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerHumidityRowV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Saved sprinkler identities",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Saved sprinkler identities",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "System settings and weather archives",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "endpoint",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "One valve's settings, accounting and reports",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "valve",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "record",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerKey"
+    },
+    {
+      "Description": "Một khoảng thời gian chính xác không được nhà cung cấp bao phủ, trong đó nguồn và tốc độ ET tham chiếu dự phòng được cố định khi khoảng thời gian lần đầu được ghi lại. Một chu kỳ của nhà cung cấp được chấp nhận sau đó có thể cắt ngắn hoặc thay thế khoảng này; các thay đổi ước tính dự phòng sau đó không ghi lại xuất xứ của nó.",
+      "DisplayName": "Khoảng trống thời tiết mô phỏng",
+      "List": [
+        {
+          "Description": "Một khoảng thời gian chính xác không được nhà cung cấp bao phủ, trong đó nguồn và tốc độ ET tham chiếu dự phòng được cố định khi khoảng thời gian lần đầu được ghi lại. Một chu kỳ của nhà cung cấp được chấp nhận sau đó có thể cắt ngắn hoặc thay thế khoảng này; các thay đổi ước tính dự phòng sau đó không ghi lại xuất xứ của nó.",
+          "Name": "Khoảng trống thời tiết mô phỏng",
+          "Type": 0
+        },
+        {
+          "Description": "Thời điểm bắt đầu có tính bao gồm của khoảng không được nhà cung cấp bao phủ.",
+          "Name": "Thời gian bắt đầu",
+          "Type": 1
+        },
+        {
+          "Description": "Thời điểm kết thúc không tính thời điểm cuối của khoảng không được nhà cung cấp bao phủ.",
+          "Name": "Thời gian kết thúc",
+          "Type": 2
+        },
+        {
+          "Description": "Tốc độ ET tham chiếu dự phòng đã cố định, tính bằng milimét mỗi ngày UTC.",
+          "Name": "Tốc độ bốc thoát hơi nước tham chiếu",
+          "Type": 3
+        },
+        {
+          "Description": "Xuất xứ đã cố định từ thời tiết gần đây, vị trí/mùa hoặc ước tính thận trọng.",
+          "Name": "Nguồn nhu cầu",
+          "Type": 4
+        },
+        {
+          "Description": "Thời gian UTC khi khoảng này lần đầu nhận được xuất xứ cố định.",
+          "Name": "Ghi nhận lúc",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerModeledWeatherGapV1"
+    },
+    {
+      "Description": "Chọn loại cây mọc trong khu vực này để việc tưới phù hợp với nhu cầu của chúng.",
+      "DisplayName": "Loại cây",
+      "List": [
+        {
+          "Description": "Chọn loại cây mọc trong khu vực này để việc tưới phù hợp với nhu cầu của chúng.",
+          "Enum": [
+            {
+              "Description": "Cỏ sân trồng dày, rễ nông và có nhu cầu nước thường xuyên.",
+              "Name": "Bãi cỏ",
+              "Type": 1
+            },
+            {
+              "Description": "Cây hoa trang trí có rễ trung bình và nhu cầu nước vừa phải.",
+              "Name": "Hoa",
+              "Type": 2
+            },
+            {
+              "Description": "Cây thực phẩm theo mùa có rễ trung bình và nhu cầu nước tương đối cao.",
+              "Name": "Rau",
+              "Type": 3
+            },
+            {
+              "Description": "Cây ăn quả trưởng thành có rễ sâu hơn và nhu cầu nước vừa phải.",
+              "Name": "Cây ăn quả",
+              "Type": 4
+            },
+            {
+              "Description": "Cây có múi có rễ sâu và nhu cầu nước từ vừa đến cao.",
+              "Name": "Cây có múi",
+              "Type": 5
+            },
+            {
+              "Description": "Cây cảnh thân gỗ trưởng thành có rễ sâu.",
+              "Name": "Cây và bụi cây",
+              "Type": 6
+            },
+            {
+              "Description": "Cây trồng thích nghi với hạn hán, có nhu cầu nước do thời tiết chi phối ở mức thấp.",
+              "Name": "Cảnh quan tiết kiệm nước",
+              "Type": 7
+            }
+          ],
+          "Name": "Loại cây",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerPlantTypeV1"
+    },
+    {
+      "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+      "DisplayName": "Available report range",
+      "List": [
+        {
+          "Description": "The current inclusive date limits for one kind of sprinkler chart. The range is no longer than that chart can return in one response.",
+          "Name": "Available report range",
+          "Type": 0
+        },
+        {
+          "Description": "Earliest currently selectable date after applying this chart's maximum range length.",
+          "Name": "Earliest date",
+          "Type": 1
+        },
+        {
+          "Description": "Latest currently selectable date. This includes forecast dates for charts that support forecasts.",
+          "Name": "Latest date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportAvailableRangeV1"
+    },
+    {
+      "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+      "DisplayName": "Effective report range",
+      "List": [
+        {
+          "Description": "The inclusive calendar dates actually used to generate a sprinkler report.",
+          "Name": "Effective report range",
+          "Type": 0
+        },
+        {
+          "Description": "First calendar date included in the generated report.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Last calendar date included in the generated report.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportEffectiveRangeV1"
+    },
+    {
+      "Description": "Giải thích lý do một khu vực đã cấu hình không có gì để hiển thị cho các ngày đã chọn.",
+      "DisplayName": "Không có dữ liệu báo cáo",
+      "List": [
+        {
+          "Description": "Giải thích lý do một khu vực đã cấu hình không có gì để hiển thị cho các ngày đã chọn.",
+          "Enum": [
+            {
+              "Description": "Không ghi nhận mưa hoặc tưới cho khu vực này trong các ngày đã chọn.",
+              "Name": "Không có lượng nước đầu vào được ghi nhận",
+              "Type": 1
+            }
+          ],
+          "Name": "Không có dữ liệu báo cáo",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerReportEmptyStateV1"
+    },
+    {
+      "Description": "Xem cân bằng nước, lượng nước sử dụng hoặc thời tiết cho mọi khu vực. Để trống ngày để xem khoảng thời gian gần đây. Những ngày nằm ngoài lịch sử khả dụng sẽ tự động được điều chỉnh về ngày sớm nhất hoặc muộn nhất hiện có.",
+      "DisplayName": "Báo cáo tưới nước",
+      "List": [
+        {
+          "Description": "Xem cân bằng nước, lượng nước sử dụng hoặc thời tiết cho mọi khu vực. Để trống ngày để xem khoảng thời gian gần đây. Những ngày nằm ngoài lịch sử khả dụng sẽ tự động được điều chỉnh về ngày sớm nhất hoặc muộn nhất hiện có.",
+          "Name": "Báo cáo tưới nước",
+          "Type": 0
+        },
+        {
+          "Description": "Hiển thị lượng nước ước tính cây có thể sử dụng và các sự kiện tưới cho mọi khu vực. Khoảng thời gian được chọn có thể kéo dài tối đa 365 ngày; nếu chọn dài hơn, hệ thống giữ lại 365 ngày gần nhất.",
+          "Name": "Xem cân bằng nước",
+          "Type": 1
+        },
+        {
+          "Description": "Các ngày có tính bao gồm thực tế được sử dụng để tạo phản hồi này.",
+          "Name": "Phạm vi thực tế",
+          "Type": 2
+        },
+        {
+          "Description": "Water-balance chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 3
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 4
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 5
+        },
+        {
+          "Description": "Giới hạn và giá trị mặc định hiện tại của bộ chọn ngày cho yêu cầu tiếp theo.",
+          "Name": "Phạm vi khả dụng",
+          "Type": 6
+        },
+        {
+          "Description": "Biểu đồ lượng nước sử dụng cho phạm vi báo cáo thực tế.",
+          "Name": "Biểu đồ",
+          "Type": 7
+        },
+        {
+          "Description": "Water-use chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 8
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 9
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 10
+        },
+        {
+          "Description": "Các ngày có tính bao gồm thực tế được sử dụng để tạo phản hồi này.",
+          "Name": "Phạm vi thực tế",
+          "Type": 11
+        },
+        {
+          "Description": "Nhiệt độ, độ ẩm, gió và lượng nước mất ước tính đã ghi nhận và dự báo.",
+          "Name": "Thời tiết",
+          "Type": 12
+        },
+        {
+          "Description": "Weather chart for the effective report range.",
+          "Name": "Chart",
+          "Type": 13
+        },
+        {
+          "Description": "Inclusive dates actually used to generate this response.",
+          "Name": "Effective range",
+          "Type": 14
+        },
+        {
+          "Description": "Current date-picker limits and defaults for the next request.",
+          "Name": "Available range",
+          "Type": 15
+        }
+      ],
+      "Name": "SprinklerReportProtocol"
+    },
+    {
+      "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+      "DisplayName": "Report date range",
+      "List": [
+        {
+          "Description": "Selects the inclusive calendar dates to include in a sprinkler report.",
+          "Name": "Report date range",
+          "Type": 0
+        },
+        {
+          "Description": "Optional. Initially uses the earliest date in the chart's current maximum-size range.",
+          "Name": "First date",
+          "Type": 1
+        },
+        {
+          "Description": "Optional. Initially uses the latest current date supported by the chart, including its forecast horizon when applicable.",
+          "Name": "Last date",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportRequestRangeV1"
+    },
+    {
+      "Description": "Chọn thế hệ địa điểm vật lý đang hoạt động trong khi các thế hệ cũ vẫn được lưu giữ nhưng không được trộn vào báo cáo tưới nước hiện tại. Việc thay thế địa điểm rõ ràng trong luồng thời tiết hoặc đặt lại gắn với địa điểm sẽ liên kết một thế hệ; thao tác xóa phần không bao giờ được coi là xác nhận ranh giới địa điểm.",
+      "DisplayName": "Trạng thái lưu trữ thời tiết báo cáo",
+      "List": [
+        {
+          "Description": "Chọn thế hệ địa điểm vật lý đang hoạt động trong khi các thế hệ cũ vẫn được lưu giữ nhưng không được trộn vào báo cáo tưới nước hiện tại. Việc thay thế địa điểm rõ ràng trong luồng thời tiết hoặc đặt lại gắn với địa điểm sẽ liên kết một thế hệ; thao tác xóa phần không bao giờ được coi là xác nhận ranh giới địa điểm.",
+          "Name": "Trạng thái lưu trữ thời tiết báo cáo",
+          "Type": 0
+        },
+        {
+          "Description": "Tăng đơn điệu cho mỗi lần chuyển đổi được chấp nhận giữa các địa điểm nhà cung cấp khác nhau.",
+          "Name": "Thế hệ",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí của nhà cung cấp được liên kết rõ ràng với thế hệ này, khi biết.",
+          "Name": "Vị trí địa điểm",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerReportWeatherArchiveStateV2"
+    },
+    {
+      "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+      "DisplayName": "Restart accounting checkpoint",
+      "List": [
+        {
+          "Description": "Preserves an observed run and its remaining timed interval across an app shutdown. A valve report reconciles the interval after restart.",
+          "Name": "Restart accounting checkpoint",
+          "Type": 0
+        },
+        {
+          "Description": "Authoritative lifecycle snapshot at the checkpoint.",
+          "Name": "Activity",
+          "Type": 1
+        },
+        {
+          "Description": "Exclusive end of the already accounted valve-open interval.",
+          "Name": "Accounted through",
+          "Type": 2
+        },
+        {
+          "Description": "Last irrigation segment, including any earlier merged prefix. A zero duration reserves its index before the first full second is accounted.",
+          "Name": "Ledger segment",
+          "Type": 3
+        },
+        {
+          "Description": "Expected end of an automatic timed run; manual runs have no known end.",
+          "Name": "Expected finish",
+          "Type": 4
+        },
+        {
+          "Description": "Sprinkler-head delivery rate at shutdown, in millimeters per hour.",
+          "Name": "Delivery rate",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerRestartAccountingV1"
+    },
+    {
+      "Description": "Giải thích hệ thống tưới đang làm gì hoặc lý do việc tưới bị trì hoãn.",
+      "DisplayName": "Trạng thái tưới",
+      "List": [
+        {
+          "Description": "Giải thích hệ thống tưới đang làm gì hoặc lý do việc tưới bị trì hoãn.",
+          "Enum": [
+            {
+              "Description": "Đang chuẩn bị thông tin mới nhất.",
+              "Name": "Đang khởi tạo",
+              "Type": 1
+            },
+            {
+              "Description": "Cây hiện có đủ nước.",
+              "Name": "Không cần tưới",
+              "Type": 2
+            },
+            {
+              "Description": "Lượng mưa dự kiến sẽ cung cấp đủ nước vào lúc này.",
+              "Name": "Dự báo có mưa",
+              "Type": 3
+            },
+            {
+              "Description": "Việc tưới bị trì hoãn vì trời đang mưa, gần đóng băng hoặc quá nhiều gió.",
+              "Name": "Đang chờ thời tiết an toàn",
+              "Type": 4
+            },
+            {
+              "Description": "Cây có thể trở nên quá khô trong khoảng thời gian không tưới, vì vậy một lần tưới an toàn được lên kế hoạch trước khi khoảng đó bắt đầu.",
+              "Name": "Tưới trước thời gian tạm dừng",
+              "Type": 5
+            },
+            {
+              "Description": "Việc tưới đã được chuyển sang sau khoảng thời gian không tưới.",
+              "Name": "Đã trì hoãn",
+              "Type": 6
+            },
+            {
+              "Description": "Thời gian tưới tiếp theo đã được chọn dựa trên nhu cầu của cây và thông tin thời tiết hiện có.",
+              "Name": "Đã lên lịch",
+              "Type": 7
+            },
+            {
+              "Description": "Hệ thống tưới đang chờ van xác nhận thay đổi.",
+              "Name": "Đang bắt đầu hoặc dừng",
+              "Type": 8
+            },
+            {
+              "Description": "Không có trạng thái của van, vì vậy tưới tự động sẽ không bắt đầu.",
+              "Name": "Không có trạng thái van",
+              "Type": 9
+            },
+            {
+              "Description": "Khu vực này đang được tưới.",
+              "Name": "Van đang mở",
+              "Type": 10
+            },
+            {
+              "Description": "Van báo sự cố, vì vậy việc tưới tự động bị tạm dừng.",
+              "Name": "Lỗi van",
+              "Type": 11
+            },
+            {
+              "Description": "Không có thời tiết trực tiếp, vì vậy lịch tưới sử dụng ước tính đã lưu hoặc ước tính theo mùa tốt nhất.",
+              "Name": "Ước tính thời tiết ngoại tuyến",
+              "Type": 12
+            }
+          ],
+          "Name": "Trạng thái tưới",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerScheduleConditionV1"
+    },
+    {
+      "Description": "Nhiệt độ quan sát và dự báo mà không trộn thang đo với ET hoặc gió.",
+      "DisplayName": "Nhiệt độ",
+      "List": [
+        {
+          "Description": "Nhiệt độ quan sát và dự báo mà không trộn thang đo với ET hoặc gió.",
+          "Name": "Nhiệt độ",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerTemperatureChartV1"
+    },
+    {
+      "Description": "Chồng nhiệt độ và độ ẩm theo thời gian trong khi vẫn giữ các trục y trái và phải độc lập cho các đơn vị không tương thích.",
+      "DisplayName": "Nhiệt độ và độ ẩm tương đối",
+      "List": [
+        {
+          "Description": "Chồng nhiệt độ và độ ẩm theo thời gian trong khi vẫn giữ các trục y trái và phải độc lập cho các đơn vị không tương thích.",
+          "Name": "Nhiệt độ và độ ẩm tương đối",
+          "Type": 0
+        },
+        {
+          "Description": "Nhiệt độ sử dụng trục dẫn hướng y tự động thứ nhất.",
+          "Name": "Nhiệt độ",
+          "Type": 1
+        },
+        {
+          "Description": "Độ ẩm tương đối sử dụng trục dẫn hướng y thứ hai độc lập.",
+          "Name": "Độ ẩm tương đối",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityChartV1"
+    },
+    {
+      "Description": "Phân biệt hai đường có thang đo độc lập trong bảng thời tiết kết hợp.",
+      "DisplayName": "Phép đo nhiệt độ và độ ẩm",
+      "List": [
+        {
+          "Description": "Phân biệt hai đường có thang đo độc lập trong bảng thời tiết kết hợp.",
+          "Enum": [
+            {
+              "Description": "Nhiệt độ không khí tính bằng độ C.",
+              "Name": "Nhiệt độ",
+              "Type": 1
+            },
+            {
+              "Description": "Tỷ lệ phần trăm độ ẩm tương đối.",
+              "Name": "Độ ẩm tương đối",
+              "Type": 2
+            }
+          ],
+          "Name": "Phép đo nhiệt độ và độ ẩm",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerTemperatureHumidityMeasurementV1"
+    },
+    {
+      "Description": "Một mẫu nhiệt độ không khí quan sát hoặc dự báo.",
+      "DisplayName": "Hàng nhiệt độ",
+      "List": [
+        {
+          "Description": "Một mẫu nhiệt độ không khí quan sát hoặc dự báo.",
+          "Name": "Hàng nhiệt độ",
+          "Type": 0
+        },
+        {
+          "Description": "Thời điểm bắt đầu chu kỳ của nhà cung cấp.",
+          "Name": "Thời gian",
+          "Type": 1
+        },
+        {
+          "Description": "Nhiệt độ không khí tính bằng độ C.",
+          "Name": "Nhiệt độ",
+          "Type": 2
+        },
+        {
+          "Description": "Xác định đường này là nhiệt độ trong bảng kết hợp.",
+          "Name": "Phép đo",
+          "Type": 3
+        },
+        {
+          "Description": "Quan sát hoặc dự báo.",
+          "Name": "Nguồn",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerTemperatureRowV1"
+    },
+    {
+      "Description": "Thời gian bắt đầu và thời lượng cho việc tưới hoặc tạm dừng tưới.",
+      "DisplayName": "Khoảng thời gian",
+      "List": [
+        {
+          "Description": "Thời gian bắt đầu và thời lượng cho việc tưới hoặc tạm dừng tưới.",
+          "Name": "Khoảng thời gian",
+          "Type": 0
+        },
+        {
+          "Description": "Thời điểm khoảng này bắt đầu.",
+          "Name": "Bắt đầu lúc",
+          "Type": 1
+        },
+        {
+          "Description": "Khoảng này kéo dài bao lâu.",
+          "Name": "Thời lượng",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerTimeSlotV1"
+    },
+    {
+      "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+      "DisplayName": "Valve problems",
+      "List": [
+        {
+          "Description": "Problems that a Matter irrigation valve can report at the same time. An empty selection means the valve reported no problem.",
+          "Enum": [
+            {
+              "Description": "The valve reported a problem without a more specific classification.",
+              "Name": "General problem",
+              "Type": 1
+            },
+            {
+              "Description": "The valve cannot move because it is blocked.",
+              "Name": "Blocked",
+              "Type": 2
+            },
+            {
+              "Description": "The valve detected an unexpected water leak.",
+              "Name": "Leak detected",
+              "Type": 3
+            },
+            {
+              "Description": "The controller cannot detect a connected valve.",
+              "Name": "Not connected",
+              "Type": 4
+            },
+            {
+              "Description": "The valve or its wiring has a short circuit.",
+              "Name": "Short circuit",
+              "Type": 5
+            },
+            {
+              "Description": "The valve exceeded the available electrical current.",
+              "Name": "Too much current",
+              "Type": 6
+            }
+          ],
+          "Name": "Valve problems",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerValveFaultFlagsV1"
+    },
+    {
+      "Description": "Kết hợp mức nước ước tính với các sự kiện tưới cho mọi khu vực.",
+      "DisplayName": "Cân bằng nước",
+      "List": [
+        {
+          "Description": "Kết hợp mức nước ước tính với các sự kiện tưới cho mọi khu vực.",
+          "Name": "Cân bằng nước",
+          "Type": 0
+        },
+        {
+          "Description": "Lượng nước ước tính và các mức tưới quan trọng cho mọi khu vực.",
+          "Name": "Nước khả dụng và các mức",
+          "Type": 1
+        },
+        {
+          "Description": "Các lần tưới đã lên kế hoạch, bị bỏ qua, không thành công, thủ công và đã hoàn tất.",
+          "Name": "Các sự kiện tưới",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterBalanceChartV1"
+    },
+    {
+      "Description": "Lượng nước khả dụng ước tính và các mức tưới quan trọng cho mọi khu vực.",
+      "DisplayName": "Các đường cân bằng nước",
+      "List": [
+        {
+          "Description": "Lượng nước khả dụng ước tính và các mức tưới quan trọng cho mọi khu vực.",
+          "Name": "Các đường cân bằng nước",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterBalanceLinesV1"
+    },
+    {
+      "Description": "Một điểm hiển thị lượng nước ước tính cây có thể sử dụng hoặc một mức tưới quan trọng. Lượng nước khả dụng là ước tính, không phải số đo từ cảm biến đất.",
+      "DisplayName": "Điểm cân bằng nước",
+      "List": [
+        {
+          "Description": "Một điểm hiển thị lượng nước ước tính cây có thể sử dụng hoặc một mức tưới quan trọng. Lượng nước khả dụng là ước tính, không phải số đo từ cảm biến đất.",
+          "Name": "Điểm cân bằng nước",
+          "Type": 0
+        },
+        {
+          "Description": "Thời điểm mức nước này áp dụng.",
+          "Name": "Thời gian",
+          "Type": 1
+        },
+        {
+          "Description": "Lượng nước ước tính cây có thể sử dụng, từ 0 đến 100 phần trăm.",
+          "Name": "Nước khả dụng",
+          "Type": 2
+        },
+        {
+          "Description": "Nước khả dụng hoặc một mức tưới quan trọng.",
+          "Name": "Đường",
+          "Type": 3
+        },
+        {
+          "Description": "Khu vực được tưới được biểu diễn bởi phần này của biểu đồ.",
+          "Name": "Khu vực",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWaterBalancePointV1"
+    },
+    {
+      "Description": "Xác định lượng nước khả dụng và các mức tưới quan trọng.",
+      "DisplayName": "Đường cân bằng nước",
+      "List": [
+        {
+          "Description": "Xác định lượng nước khả dụng và các mức tưới quan trọng.",
+          "Enum": [
+            {
+              "Description": "Lượng nước ước tính cây có thể sử dụng.",
+              "Name": "Nước khả dụng",
+              "Type": 1
+            },
+            {
+              "Description": "Đất được ước tính đang giữ toàn bộ lượng nước mà cây có thể sử dụng.",
+              "Name": "Dung tích đồng ruộng",
+              "Type": 2
+            },
+            {
+              "Description": "Mức mà tại đó thường đến lúc cần tưới.",
+              "Name": "Ngưỡng tưới",
+              "Type": 3
+            },
+            {
+              "Description": "Mức mà tại đó việc tưới trở nên cấp thiết.",
+              "Name": "Ngưỡng tới hạn",
+              "Type": 4
+            }
+          ],
+          "Name": "Đường cân bằng nước",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterBalanceSeriesV1"
+    },
+    {
+      "Description": "Hiển thị thông tin nào đã được sử dụng để ước tính tốc độ cây mất nước.",
+      "DisplayName": "Ước tính lượng nước sử dụng",
+      "List": [
+        {
+          "Description": "Hiển thị thông tin nào đã được sử dụng để ước tính tốc độ cây mất nước.",
+          "Enum": [
+            {
+              "Description": "Dựa trên thời tiết gần đây tại vị trí này.",
+              "Name": "Thời tiết gần đây",
+              "Type": 1
+            },
+            {
+              "Description": "Dựa trên vị trí và thời điểm trong năm.",
+              "Name": "Vị trí và mùa",
+              "Type": 2
+            },
+            {
+              "Description": "Được sử dụng khi không có thông tin thời tiết gần đây và vị trí.",
+              "Name": "Ước tính tích hợp",
+              "Type": 3
+            }
+          ],
+          "Name": "Ước tính lượng nước sử dụng",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterDemandSourceV1"
+    },
+    {
+      "Description": "Lưu một chu kỳ thời tiết hoặc khoảng tưới quan sát được lập chỉ mục độc lập trong lịch sử nước bảy ngày.",
+      "DisplayName": "Sự kiện nước của hệ thống tưới",
+      "List": [
+        {
+          "Description": "Lưu một chu kỳ thời tiết hoặc khoảng tưới quan sát được lập chỉ mục độc lập trong lịch sử nước bảy ngày.",
+          "Name": "Sự kiện nước của hệ thống tưới",
+          "Type": 0
+        },
+        {
+          "Description": "Ghi lượng mưa của nhà cung cấp và bốc thoát hơi nước tham chiếu cho một chu kỳ lịch sử đã hoàn tất.",
+          "Name": "Chu kỳ thời tiết",
+          "Type": 1
+        },
+        {
+          "Description": "Thời điểm bắt đầu có tính bao gồm của chu kỳ thời tiết đã hoàn tất.",
+          "Name": "Thời gian bắt đầu",
+          "Type": 2
+        },
+        {
+          "Description": "Độ dài chu kỳ thời tiết đã hoàn tất, tính bằng giây.",
+          "Name": "Thời lượng",
+          "Type": 3
+        },
+        {
+          "Description": "Lượng mưa của nhà cung cấp tích lũy trong chu kỳ, tính bằng milimét.",
+          "Name": "Lượng mưa",
+          "Type": 4
+        },
+        {
+          "Description": "Bốc thoát hơi nước tham chiếu FAO-56 của nhà cung cấp tích lũy trong chu kỳ, tính bằng milimét.",
+          "Name": "Bốc thoát hơi nước tham chiếu",
+          "Type": 5
+        },
+        {
+          "Description": "Ghi lại lượng nước suy ra từ thời gian mở thực tế của Matter Valve, bao gồm cả việc mở thủ công, cùng với bộ điều chỉnh lượng nước của vùng trong khoảng quan sát đó.",
+          "Name": "Khoảng tưới",
+          "Type": 6
+        },
+        {
+          "Description": "Thời điểm bắt đầu có tính bao gồm của khoảng van mở đã được hạch toán.",
+          "Name": "Thời gian bắt đầu",
+          "Type": 7
+        },
+        {
+          "Description": "Độ dài khoảng van mở quan sát được, tính bằng giây.",
+          "Name": "Thời lượng",
+          "Type": 8
+        },
+        {
+          "Description": "Tỷ lệ tưới được cấu hình cho vùng trong khi quan sát khoảng van mở này. Nếu cài đặt thay đổi khi van đang mở, lịch sử sẽ sử dụng các khoảng liền kề riêng biệt.",
+          "Name": "Bộ điều chỉnh lượng nước",
+          "Type": 9
+        },
+        {
+          "Description": "Độ sâu nước ước tính được tính từ thời gian mở quan sát được và hồ sơ đầu tưới đã cấu hình, tính bằng milimét.",
+          "Name": "Lượng nước đã tưới",
+          "Type": 10
+        }
+      ],
+      "Name": "SprinklerWaterEventV1"
+    },
+    {
+      "Description": "Lưu ảnh chụp vòng đời hoàn chỉnh mới nhất trước khi ghi hàng kiểm toán tương ứng. Cờ hiện tại rõ ràng phân biệt hoạt động chưa kết thúc có thể đối soát sau khi khởi động lại với ảnh chụp kết thúc chỉ cần sửa bản ghi kiểm toán.",
+      "DisplayName": "Trạng thái hoạt động tưới có thẩm quyền",
+      "List": [
+        {
+          "Description": "Lưu ảnh chụp vòng đời hoàn chỉnh mới nhất trước khi ghi hàng kiểm toán tương ứng. Cờ hiện tại rõ ràng phân biệt hoạt động chưa kết thúc có thể đối soát sau khi khởi động lại với ảnh chụp kết thúc chỉ cần sửa bản ghi kiểm toán.",
+          "Name": "Trạng thái hoạt động tưới có thẩm quyền",
+          "Type": 0
+        },
+        {
+          "Description": "Ảnh chụp vòng đời hoàn chỉnh mới nhất, hoặc không có giá trị trước hoạt động đầu tiên. Các ảnh chụp kết thúc vẫn ở đây cho đến khi một hoạt động mới hơn bắt đầu.",
+          "Name": "Hoạt động mới nhất",
+          "Type": 1
+        },
+        {
+          "Description": "Chỉ đúng khi hoạt động mới nhất đang được lên lịch, đang chờ lệnh hoặc đang chạy và phải được đối soát khi khởi động.",
+          "Name": "Hoạt động đang hiện hành",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWateringActivityStateV2"
+    },
+    {
+      "Description": "Giữ thời gian dự kiến và thực tế tách biệt để báo cáo có thể giải thích điều gì đã được lên kế hoạch, điều gì thực sự xảy ra và tại sao một lần tưới bị bỏ qua hoặc thất bại.",
+      "DisplayName": "Hoạt động tưới được lưu",
+      "List": [
+        {
+          "Description": "Giữ thời gian dự kiến và thực tế tách biệt để báo cáo có thể giải thích điều gì đã được lên kế hoạch, điều gì thực sự xảy ra và tại sao một lần tưới bị bỏ qua hoặc thất bại.",
+          "Name": "Hoạt động tưới được lưu",
+          "Type": 0
+        },
+        {
+          "Description": "Chỉ mục cơ sở dữ liệu có dấu ổn định được tái sử dụng cho mọi lần cập nhật vòng đời.",
+          "Name": "Chỉ mục hoạt động",
+          "Type": 1
+        },
+        {
+          "Description": "Thứ tự chống xung đột trong cùng giây neo và nguồn gốc.",
+          "Name": "Thứ tự hoạt động",
+          "Type": 2
+        },
+        {
+          "Description": "Hoạt động tự động, thủ công hoặc kiểu cũ không thể phân loại.",
+          "Name": "Nguồn gốc",
+          "Type": 3
+        },
+        {
+          "Description": "Trạng thái vòng đời bền vững hiện tại hoặc cuối cùng.",
+          "Name": "Kết quả",
+          "Type": 4
+        },
+        {
+          "Description": "Giải thích bền vững cho kết quả hiện tại hoặc cuối cùng.",
+          "Name": "Lý do",
+          "Type": 5
+        },
+        {
+          "Description": "Thời gian bắt đầu tự động đã lên kế hoạch. Hoạt động thủ công và kiểu cũ không có giá trị này.",
+          "Name": "Thời gian bắt đầu dự kiến",
+          "Type": 6
+        },
+        {
+          "Description": "Thời lượng mở van tự động đã lên kế hoạch, tính bằng giây. Giá trị này không bao giờ bị ghi đè bằng thời lượng thực tế quan sát được.",
+          "Name": "Thời lượng dự kiến",
+          "Type": 7
+        },
+        {
+          "Description": "Độ sâu nước tưới tự động đã lên kế hoạch, tính bằng milimét.",
+          "Name": "Lượng nước dự kiến",
+          "Type": 8
+        },
+        {
+          "Description": "Thời gian van mở được quan sát lần đầu, không có cho đến khi quan sát thấy van mở.",
+          "Name": "Thời gian bắt đầu thực tế",
+          "Type": 9
+        },
+        {
+          "Description": "Thời lượng van mở quan sát được đã hạch toán, tính bằng giây.",
+          "Name": "Thời lượng thực tế",
+          "Type": 10
+        },
+        {
+          "Description": "Độ sâu nước được ước tính từ thời gian mở thực tế và hồ sơ đầu tưới, không phải từ đồng hồ đo lưu lượng.",
+          "Name": "Lượng nước đã tưới",
+          "Type": 11
+        },
+        {
+          "Description": "Bộ điều chỉnh vùng có hiệu lực khi hoạt động này được tạo.",
+          "Name": "Bộ điều chỉnh lượng nước",
+          "Type": 12
+        },
+        {
+          "Description": "Thời gian UTC được biểu diễn bởi lần cập nhật vòng đời đã lưu gần nhất.",
+          "Name": "Cập nhật lúc",
+          "Type": 13
+        }
+      ],
+      "Name": "SprinklerWateringActivityV1"
+    },
+    {
+      "Description": "Một lần tưới đã lên kế hoạch, bị bỏ qua, không thành công, thủ công hoặc đã hoàn tất.",
+      "DisplayName": "Sự kiện tưới",
+      "List": [
+        {
+          "Description": "Một lần tưới đã lên kế hoạch, bị bỏ qua, không thành công, thủ công hoặc đã hoàn tất.",
+          "Name": "Sự kiện tưới",
+          "Type": 0
+        },
+        {
+          "Description": "Thời điểm việc tưới bắt đầu hoặc được lên kế hoạch bắt đầu.",
+          "Name": "Thời gian",
+          "Type": 1
+        },
+        {
+          "Description": "Lượng nước ước tính cây có thể sử dụng tại thời điểm đó.",
+          "Name": "Nước khả dụng",
+          "Type": 2
+        },
+        {
+          "Description": "Khu vực được tưới cho sự kiện này.",
+          "Name": "Khu vực",
+          "Type": 3
+        },
+        {
+          "Description": "Điều đã xảy ra với kế hoạch hoặc lần tưới này.",
+          "Name": "Kết quả",
+          "Type": 4
+        },
+        {
+          "Description": "Cho biết việc tưới là tự động, thủ công hay không xác định.",
+          "Name": "Được bắt đầu bởi",
+          "Type": 5
+        },
+        {
+          "Description": "Lý do lần tưới được lên kế hoạch, thay đổi, dừng hoặc không thành công.",
+          "Name": "Lý do",
+          "Type": 6
+        },
+        {
+          "Description": "Khoảng thời gian tưới tự động được lên kế hoạch chạy.",
+          "Name": "Thời lượng dự kiến",
+          "Type": 7
+        },
+        {
+          "Description": "Khoảng thời gian quan sát thấy van mở.",
+          "Name": "Thời lượng thực tế",
+          "Type": 8
+        },
+        {
+          "Description": "Khóa tiêu điểm ổn định, duy nhất trên mọi vùng đã cấu hình.",
+          "Name": "Khóa quyết định",
+          "Type": 9
+        }
+      ],
+      "Name": "SprinklerWateringDecisionRowV1"
+    },
+    {
+      "Description": "Hiển thị hoạt động tưới tự động và thủ công trên biểu đồ cân bằng nước.",
+      "DisplayName": "Các sự kiện tưới",
+      "List": [
+        {
+          "Description": "Hiển thị hoạt động tưới tự động và thủ công trên biểu đồ cân bằng nước.",
+          "Name": "Các sự kiện tưới",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWateringDecisionsV1"
+    },
+    {
+      "Description": "Chọn hệ thống tưới đang hoạt động hay đã được chuẩn bị cho mùa đông.",
+      "DisplayName": "Chế độ tưới",
+      "List": [
+        {
+          "Description": "Chọn hệ thống tưới đang hoạt động hay đã được chuẩn bị cho mùa đông.",
+          "Enum": [
+            {
+              "Description": "Tưới tự động được bật.",
+              "Name": "Hoạt động",
+              "Type": 1
+            },
+            {
+              "Description": "Tưới tự động được tắt trong mùa lạnh.",
+              "Name": "Đã chuẩn bị cho mùa đông",
+              "Type": 2
+            }
+          ],
+          "Name": "Chế độ tưới",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringModeV1"
+    },
+    {
+      "Description": "Hiển thị việc tưới là tự động hay được bắt đầu theo cách khác.",
+      "DisplayName": "Cách việc tưới bắt đầu",
+      "List": [
+        {
+          "Description": "Hiển thị việc tưới là tự động hay được bắt đầu theo cách khác.",
+          "Enum": [
+            {
+              "Description": "Tưới nước thông minh đã bắt đầu lần tưới này.",
+              "Name": "Tự động",
+              "Type": 1
+            },
+            {
+              "Description": "Van được mở bên ngoài Tưới nước thông minh.",
+              "Name": "Thủ công",
+              "Type": 2
+            },
+            {
+              "Description": "Dữ liệu cũ đã lưu không cho biết lần tưới này được bắt đầu như thế nào.",
+              "Name": "Không xác định",
+              "Type": 3
+            }
+          ],
+          "Name": "Cách việc tưới bắt đầu",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOriginV1"
+    },
+    {
+      "Description": "Hiển thị điều đã xảy ra với một kế hoạch hoặc lần tưới.",
+      "DisplayName": "Kết quả tưới",
+      "List": [
+        {
+          "Description": "Hiển thị điều đã xảy ra với một kế hoạch hoặc lần tưới.",
+          "Enum": [
+            {
+              "Description": "Một lần tưới tự động trong tương lai đã được tính toán vẫn đang được lên kế hoạch.",
+              "Name": "Đã lên lịch",
+              "Type": 1
+            },
+            {
+              "Description": "Hệ thống tưới đã yêu cầu van mở và đang chờ xác nhận.",
+              "Name": "Đang chờ lệnh",
+              "Type": 2
+            },
+            {
+              "Description": "Van đang mở và lượng nước tưới đang được tính.",
+              "Name": "Đang chạy",
+              "Type": 3
+            },
+            {
+              "Description": "Việc tưới kết thúc sau khi van đóng.",
+              "Name": "Đã hoàn tất",
+              "Type": 4
+            },
+            {
+              "Description": "Một lần tưới đã lên kế hoạch không bắt đầu vì thời tiết, cài đặt hoặc điều kiện an toàn đã ngăn lại.",
+              "Name": "Đã bỏ qua",
+              "Type": 5
+            },
+            {
+              "Description": "Sự cố van đã khiến lần tưới không thể hoàn tất.",
+              "Name": "Thất bại",
+              "Type": 6
+            },
+            {
+              "Description": "Một kế hoạch tưới mới hơn đã thay thế kế hoạch này trước khi bắt đầu.",
+              "Name": "Đã bị thay thế",
+              "Type": 7
+            }
+          ],
+          "Name": "Kết quả tưới",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringOutcomeV1"
+    },
+    {
+      "Description": "Giải thích lý do một lần tưới được lên kế hoạch, thay đổi, dừng hoặc không thành công.",
+      "DisplayName": "Lý do tưới",
+      "List": [
+        {
+          "Description": "Giải thích lý do một lần tưới được lên kế hoạch, thay đổi, dừng hoặc không thành công.",
+          "Enum": [
+            {
+              "Description": "Tưới nước thông minh đã chọn lần tưới này dựa trên nhu cầu của cây và thời tiết.",
+              "Name": "Lịch thông minh",
+              "Type": 1
+            },
+            {
+              "Description": "Van được mở bên ngoài Tưới nước thông minh.",
+              "Name": "Vận hành thủ công",
+              "Type": 2
+            },
+            {
+              "Description": "Lượng mưa dự kiến đã trì hoãn hoặc thay thế lần tưới dự kiến.",
+              "Name": "Dự báo có mưa",
+              "Type": 3
+            },
+            {
+              "Description": "Lượng mưa được ghi nhận đã dừng hoặc ngăn việc tưới.",
+              "Name": "Mưa quan sát được",
+              "Type": 4
+            },
+            {
+              "Description": "Nhiệt độ quá thấp để tưới an toàn.",
+              "Name": "Thời tiết đóng băng",
+              "Type": 5
+            },
+            {
+              "Description": "Gió quá mạnh đối với phương pháp tưới này.",
+              "Name": "Gió quá mạnh",
+              "Type": 6
+            },
+            {
+              "Description": "Thời tiết không an toàn để tưới.",
+              "Name": "Thời tiết không an toàn khác",
+              "Type": 7
+            },
+            {
+              "Description": "Một khoảng thời gian không tưới đã ngăn lần tưới dự kiến.",
+              "Name": "Tạm hoãn",
+              "Type": 8
+            },
+            {
+              "Description": "Hệ thống đã được chuẩn bị cho mùa đông nên tưới tự động bị tắt.",
+              "Name": "Chuẩn bị mùa đông",
+              "Type": 9
+            },
+            {
+              "Description": "Không có trạng thái của van.",
+              "Name": "Van không khả dụng",
+              "Type": 10
+            },
+            {
+              "Description": "Van đã báo sự cố.",
+              "Name": "Lỗi van",
+              "Type": 11
+            },
+            {
+              "Description": "Van không chấp nhận yêu cầu.",
+              "Name": "Lệnh thất bại",
+              "Type": 12
+            },
+            {
+              "Description": "Van không xác nhận yêu cầu kịp thời.",
+              "Name": "Lệnh hết thời gian chờ",
+              "Type": 13
+            },
+            {
+              "Description": "Van được yêu cầu mở nhưng không phát hiện việc tưới.",
+              "Name": "Không quan sát thấy van mở",
+              "Type": 14
+            },
+            {
+              "Description": "Một phép tính mới hơn đã thay thế lần tưới dự kiến.",
+              "Name": "Đã tính toán lại",
+              "Type": 15
+            },
+            {
+              "Description": "Dữ liệu cũ đã lưu không chứa lý do cụ thể hơn.",
+              "Name": "Không xác định",
+              "Type": 16
+            },
+            {
+              "Description": "The valve was observed closed before its timed run was due to finish.",
+              "Name": "Stopped early",
+              "Type": 17
+            }
+          ],
+          "Name": "Lý do tưới",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWateringReasonV1"
+    },
+    {
+      "Description": "Hiển thị nước đến từ đâu hoặc liệu nước có được dự kiến trong tương lai.",
+      "DisplayName": "Nguồn nước",
+      "List": [
+        {
+          "Description": "Hiển thị nước đến từ đâu hoặc liệu nước có được dự kiến trong tương lai.",
+          "Enum": [
+            {
+              "Description": "Lượng mưa đã được dịch vụ thời tiết ghi nhận.",
+              "Name": "Mưa",
+              "Type": 1
+            },
+            {
+              "Description": "Lượng nước ước tính dựa trên thời gian van mở.",
+              "Name": "Tưới",
+              "Type": 2
+            },
+            {
+              "Description": "Lượng mưa được dự kiến trong dự báo.",
+              "Name": "Mưa dự báo",
+              "Type": 3
+            },
+            {
+              "Description": "Hoạt động tưới tự động đã được lên kế hoạch nhưng chưa bắt đầu.",
+              "Name": "Nước tưới đã lên lịch",
+              "Type": 4
+            }
+          ],
+          "Name": "Nguồn nước",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWaterInputTypeV1"
+    },
+    {
+      "Description": "Kết hợp phần tóm tắt ngắn gọn giữa mưa và tưới với chi tiết hằng ngày.",
+      "DisplayName": "Lượng nước sử dụng",
+      "List": [
+        {
+          "Description": "Kết hợp phần tóm tắt ngắn gọn giữa mưa và tưới với chi tiết hằng ngày.",
+          "Name": "Lượng nước sử dụng",
+          "Type": 0
+        },
+        {
+          "Description": "Shared rain and per-area irrigation during the selected dates.",
+          "Name": "Summary",
+          "Type": 1
+        },
+        {
+          "Description": "Rain and watering amounts by local calendar date.",
+          "Name": "Daily details",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWaterUsageChartV1"
+    },
+    {
+      "Description": "Giữ khu vực hiển thị khi khu vực đó không có mưa hoặc tưới trong các ngày đã chọn.",
+      "DisplayName": "Khu vực không có nước được ghi nhận",
+      "List": [
+        {
+          "Description": "Giữ khu vực hiển thị khi khu vực đó không có mưa hoặc tưới trong các ngày đã chọn.",
+          "Name": "Khu vực không có nước được ghi nhận",
+          "Type": 0
+        },
+        {
+          "Description": "Căn giữa thông báo trong biểu đồ.",
+          "Name": "Vị trí nhãn",
+          "Type": 1
+        },
+        {
+          "Description": "Khu vực được tưới không có lượng nước được ghi nhận.",
+          "Name": "Khu vực",
+          "Type": 2
+        },
+        {
+          "Description": "Giải thích lý do khu vực này không có cột trong biểu đồ.",
+          "Name": "Thông báo",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZoneRowV1"
+    },
+    {
+      "Description": "Thông báo cho các khu vực không có mưa hoặc tưới trong các ngày đã chọn.",
+      "DisplayName": "Các khu vực không có nước được ghi nhận",
+      "List": [
+        {
+          "Description": "Thông báo cho các khu vực không có mưa hoặc tưới trong các ngày đã chọn.",
+          "Name": "Các khu vực không có nước được ghi nhận",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageEmptyZonesV1"
+    },
+    {
+      "Description": "Hiển thị lượng mưa và tưới theo ngày cho mọi khu vực.",
+      "DisplayName": "Lượng nước sử dụng",
+      "List": [
+        {
+          "Description": "Hiển thị lượng mưa và tưới theo ngày cho mọi khu vực.",
+          "Name": "Lượng nước sử dụng",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageMarksV1"
+    },
+    {
+      "Description": "Một lượng mưa hoặc nước tưới được hiển thị cho một khu vực vào một ngày cụ thể.",
+      "DisplayName": "Mục lượng nước sử dụng",
+      "List": [
+        {
+          "Description": "Một lượng mưa hoặc nước tưới được hiển thị cho một khu vực vào một ngày cụ thể.",
+          "Name": "Mục lượng nước sử dụng",
+          "Type": 0
+        },
+        {
+          "Description": "Ngày theo lịch địa phương của lượng mưa hoặc lượng nước tưới này.",
+          "Name": "Ngày",
+          "Type": 1
+        },
+        {
+          "Description": "Vị trí lượng này bắt đầu trong biểu đồ.",
+          "Name": "Bắt đầu cột",
+          "Type": 2
+        },
+        {
+          "Description": "Vị trí lượng này kết thúc trong biểu đồ.",
+          "Name": "Kết thúc cột",
+          "Type": 3
+        },
+        {
+          "Description": "Lượng mưa hoặc tưới được biểu diễn bởi phần này của cột.",
+          "Name": "Lượng nước",
+          "Type": 4
+        },
+        {
+          "Description": "Mưa đã ghi nhận, tưới, mưa dự kiến hoặc tưới đã lên kế hoạch.",
+          "Name": "Nguồn nước",
+          "Type": 5
+        },
+        {
+          "Description": "Khu vực được tưới được biểu diễn bởi hàng này.",
+          "Name": "Khu vực",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageRowV1"
+    },
+    {
+      "Description": "Shows shared rain and irrigation for every area together on one chart.",
+      "DisplayName": "Water-use summary",
+      "List": [
+        {
+          "Description": "Shows shared rain and irrigation for every area together on one chart.",
+          "Name": "Water-use summary",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryChartV1"
+    },
+    {
+      "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+      "DisplayName": "Water-use summary item",
+      "List": [
+        {
+          "Description": "One recorded or planned contribution to the shared rain or one area's irrigation total.",
+          "Name": "Water-use summary item",
+          "Type": 0
+        },
+        {
+          "Description": "Millimeter scale for comparing rain and irrigation.",
+          "Name": "Water amount",
+          "Type": 1
+        },
+        {
+          "Description": "Where this contribution ends in its stacked total.",
+          "Name": "Amount end",
+          "Type": 2
+        },
+        {
+          "Description": "Total rain or irrigation represented by this part of the bar.",
+          "Name": "Amount",
+          "Type": 3
+        },
+        {
+          "Description": "Recorded rain, forecast rain, actual watering, or scheduled watering.",
+          "Name": "Water source",
+          "Type": 4
+        },
+        {
+          "Description": "Keeps shared rain first, followed by every configured area.",
+          "Name": "Lane",
+          "Type": 5
+        },
+        {
+          "Description": "Shows Rain or the configured area's name on the summary axis.",
+          "Name": "Rain or area",
+          "Type": 6
+        }
+      ],
+      "Name": "SprinklerWaterUsageSummaryRowV1"
+    },
+    {
+      "Description": "Hiển thị một giá trị đã được ghi nhận hay là dự báo.",
+      "DisplayName": "Nguồn thời tiết",
+      "List": [
+        {
+          "Description": "Hiển thị một giá trị đã được ghi nhận hay là dự báo.",
+          "Enum": [
+            {
+              "Description": "Một quan sát thời tiết đã hoàn tất.",
+              "Name": "Lịch sử đã ghi nhận",
+              "Type": 1
+            },
+            {
+              "Description": "Một quan sát thời tiết hiện tại gần đây.",
+              "Name": "Điều kiện hiện tại",
+              "Type": 2
+            },
+            {
+              "Description": "Một giá trị trong tương lai từ dự báo mới nhất.",
+              "Name": "Dự báo",
+              "Type": 3
+            }
+          ],
+          "Name": "Nguồn thời tiết",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWeatherChartSourceV1"
+    },
+    {
+      "Description": "Hiển thị lượng nước mất ước tính, nhiệt độ, độ ẩm và gió cùng nhau.",
+      "DisplayName": "Thời tiết",
+      "List": [
+        {
+          "Description": "Hiển thị lượng nước mất ước tính, nhiệt độ, độ ẩm và gió cùng nhau.",
+          "Name": "Thời tiết",
+          "Type": 0
+        },
+        {
+          "Description": "Lượng nước mất đã ghi nhận và dự báo do bay hơi và cây sử dụng.",
+          "Name": "Lượng nước mất ước tính",
+          "Type": 1
+        },
+        {
+          "Description": "Các giá trị quan sát và dự báo với các trục y độc lập.",
+          "Name": "Nhiệt độ và độ ẩm tương đối",
+          "Type": 2
+        },
+        {
+          "Description": "Gió duy trì và gió giật quan sát và dự báo.",
+          "Name": "Gió",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerWeatherEtChartV1"
+    },
+    {
+      "Description": "Gió duy trì và gió giật quan sát và dự báo trên cùng một thang có thể so sánh.",
+      "DisplayName": "Gió và gió giật",
+      "List": [
+        {
+          "Description": "Gió duy trì và gió giật quan sát và dự báo trên cùng một thang có thể so sánh.",
+          "Name": "Gió và gió giật",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWindChartV1"
+    },
+    {
+      "Description": "Một mẫu gió duy trì hoặc gió giật.",
+      "DisplayName": "Hàng gió",
+      "List": [
+        {
+          "Description": "Một mẫu gió duy trì hoặc gió giật.",
+          "Name": "Hàng gió",
+          "Type": 0
+        },
+        {
+          "Description": "Thời điểm bắt đầu chu kỳ của nhà cung cấp.",
+          "Name": "Thời gian",
+          "Type": 1
+        },
+        {
+          "Description": "Tốc độ gió duy trì hoặc gió giật tính bằng mét trên giây.",
+          "Name": "Tốc độ gió",
+          "Type": 2
+        },
+        {
+          "Description": "Gió duy trì hoặc gió giật quan sát hay dự báo.",
+          "Name": "Chuỗi",
+          "Type": 3
+        },
+        {
+          "Description": "Định danh do máy chủ tạo cho thời điểm và chuỗi gió này.",
+          "Name": "Khóa ổn định",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerWindRowV1"
+    },
+    {
+      "Description": "Tách gió duy trì và gió giật cho các chu kỳ quan sát và dự báo.",
+      "DisplayName": "Chuỗi gió",
+      "List": [
+        {
+          "Description": "Tách gió duy trì và gió giật cho các chu kỳ quan sát và dự báo.",
+          "Enum": [
+            {
+              "Description": "Gió duy trì từ một chu kỳ lịch sử đã hoàn tất.",
+              "Name": "Gió duy trì lịch sử",
+              "Type": 1
+            },
+            {
+              "Description": "Gió giật cực đại từ một chu kỳ lịch sử đã hoàn tất.",
+              "Name": "Gió giật lịch sử",
+              "Type": 2
+            },
+            {
+              "Description": "Gió duy trì từ một quan sát hiện tại được lưu giữ.",
+              "Name": "Gió duy trì hiện tại",
+              "Type": 3
+            },
+            {
+              "Description": "Gió giật cực đại từ một quan sát hiện tại được lưu giữ.",
+              "Name": "Gió giật hiện tại",
+              "Type": 4
+            },
+            {
+              "Description": "Gió duy trì được dự đoán.",
+              "Name": "Gió duy trì dự báo",
+              "Type": 5
+            },
+            {
+              "Description": "Gió giật cực đại được dự đoán.",
+              "Name": "Gió giật dự báo",
+              "Type": 6
+            }
+          ],
+          "Name": "Chuỗi gió",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWindSeriesV1"
+    },
+    {
+      "Description": "Ghi nhớ lời nhắc gần nhất để không gửi lại quá sớm.",
+      "DisplayName": "Lời nhắc chuẩn bị mùa đông gần nhất",
+      "List": [
+        {
+          "Description": "Ghi nhớ lời nhắc gần nhất để không gửi lại quá sớm.",
+          "Name": "Lời nhắc chuẩn bị mùa đông gần nhất",
+          "Type": 0
+        },
+        {
+          "Description": "Thời điểm lời nhắc gần nhất được gửi.",
+          "Name": "Đã gửi lúc",
+          "Type": 1
+        },
+        {
+          "Description": "Lý do lời nhắc gần nhất được gửi.",
+          "Name": "Lý do",
+          "Type": 2
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderMemoryV1"
+    },
+    {
+      "Description": "Giải thích lý do lời nhắc thời tiết lạnh gần nhất được gửi.",
+      "DisplayName": "Lý do nhắc chuẩn bị mùa đông",
+      "List": [
+        {
+          "Description": "Giải thích lý do lời nhắc thời tiết lạnh gần nhất được gửi.",
+          "Enum": [
+            {
+              "Description": "Vĩ độ của địa điểm và mùa hiện tại cho thấy thời tiết lạnh đang đến gần.",
+              "Name": "Vị trí và mùa",
+              "Type": 1
+            },
+            {
+              "Description": "Điều kiện hiện tại mới hoặc dữ liệu dự báo cho thấy nhiệt độ bằng hoặc thấp hơn ngưỡng an toàn thời tiết lạnh của hệ thống tưới.",
+              "Name": "Thời tiết đóng băng",
+              "Type": 2
+            }
+          ],
+          "Name": "Lý do nhắc chuẩn bị mùa đông",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerWinterizationReminderReasonV1"
+    },
+    {
+      "Description": "Hiển thị thông tin làm cơ sở cho kế hoạch tưới hiện tại.",
+      "DisplayName": "Chi tiết vùng",
+      "List": [
+        {
+          "Description": "Hiển thị thông tin làm cơ sở cho kế hoạch tưới hiện tại.",
+          "Name": "Chi tiết vùng",
+          "Type": 0
+        },
+        {
+          "Description": "Thông tin được sử dụng để ước tính khi nào cây sẽ cần nước tiếp theo.",
+          "Name": "Ước tính lượng nước sử dụng",
+          "Type": 1
+        },
+        {
+          "Description": "Lượng nước ước tính bị mất mỗi ngày do bay hơi và cây sử dụng.",
+          "Name": "Lượng nước mất ước tính hằng ngày",
+          "Type": 2
+        },
+        {
+          "Description": "Thời điểm kế hoạch tưới này được tính toán.",
+          "Name": "Cập nhật lần cuối",
+          "Type": 3
+        },
+        {
+          "Description": "Quyết định tưới hiện tại hoặc lý do trì hoãn.",
+          "Name": "Trạng thái",
+          "Type": 4
+        },
+        {
+          "Description": "Thời gian bắt đầu và thời lượng đã lên kế hoạch. Thời tiết hoặc tính khả dụng của van vẫn có thể làm thay đổi kế hoạch.",
+          "Name": "Lần tưới tiếp theo",
+          "Type": 5
+        },
+        {
+          "Description": "Lượng nước được lên kế hoạch cho lần tưới tự động tiếp theo.",
+          "Name": "Lượng nước dự kiến",
+          "Type": 6
+        },
+        {
+          "Description": "Lượng nước mà cây được ước tính là cần.",
+          "Name": "Thiếu hụt nước ước tính",
+          "Type": 7
+        },
+        {
+          "Description": "Lượng mưa được tính trong bảy ngày qua.",
+          "Name": "Mưa gần đây",
+          "Type": 8
+        },
+        {
+          "Description": "Lượng tưới được tính trong bảy ngày qua.",
+          "Name": "Tưới gần đây",
+          "Type": 9
+        },
+        {
+          "Description": "Cho biết van hiện có đang mở hay không.",
+          "Name": "Đang tưới",
+          "Type": 10
+        },
+        {
+          "Description": "Tưới tự động chờ cho đến khi trạng thái van khả dụng.",
+          "Name": "Có trạng thái van",
+          "Type": 11
+        },
+        {
+          "Description": "Các sự cố do van báo. Có thể có nhiều sự cố cùng lúc.",
+          "Name": "Sự cố van",
+          "Type": 12
+        }
+      ],
+      "Name": "SprinklerZoneActiveStateV1"
+    },
+    {
+      "Description": "Hiển thị toàn bộ kế hoạch tưới hoặc cho biết hệ thống đã được chuẩn bị cho mùa đông.",
+      "DisplayName": "Trạng thái tưới chi tiết",
+      "List": [
+        {
+          "Description": "Hiển thị toàn bộ kế hoạch tưới hoặc cho biết hệ thống đã được chuẩn bị cho mùa đông.",
+          "Name": "Trạng thái tưới chi tiết",
+          "Type": 0
+        },
+        {
+          "Description": "Tưới tự động được bật và toàn bộ dữ liệu vùng hiện tại đều khả dụng.",
+          "Name": "Hoạt động",
+          "Type": 1
+        },
+        {
+          "Description": "Kế hoạch tưới hiện tại, ước tính nước và trạng thái van.",
+          "Name": "Chi tiết vùng",
+          "Type": 2
+        },
+        {
+          "Description": "Tưới tự động bị tắt cho toàn bộ hệ thống tưới và không có khoảng tưới nào được lên lịch.",
+          "Name": "Đã chuẩn bị cho mùa đông",
+          "Type": 3
+        }
+      ],
+      "Name": "SprinklerZoneAdvancedStateV1"
+    },
+    {
+      "Description": "Explains why a requested sprinkler setting was not changed.",
+      "DisplayName": "Configuration error",
+      "List": [
+        {
+          "Description": "Explains why a requested sprinkler setting was not changed.",
+          "Enum": [
+            {
+              "Description": "The percentage was outside the supported range or step.",
+              "Name": "Invalid water amount",
+              "Type": 1
+            },
+            {
+              "Description": "The replacement contained too many periods or an invalid interval.",
+              "Name": "Invalid no-watering periods",
+              "Type": 2
+            }
+          ],
+          "Name": "Configuration error",
+          "Type": 0
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationErrorV1"
+    },
+    {
+      "Description": "Điều chỉnh lượng nước, các khoảng thời gian không tưới hoặc trạng thái hoạt động của tưới tự động.",
+      "DisplayName": "Cài đặt vùng",
+      "List": [
+        {
+          "Description": "Điều chỉnh lượng nước, các khoảng thời gian không tưới hoặc trạng thái hoạt động của tưới tự động.",
+          "Name": "Cài đặt vùng",
+          "Type": 0
+        },
+        {
+          "Description": "Dùng 100% cho lượng khuyến nghị, giá trị thấp hơn để dùng ít nước hơn hoặc giá trị cao hơn để dùng nhiều nước hơn.",
+          "Name": "Lượng nước",
+          "Type": 1
+        },
+        {
+          "Description": "Times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 2
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 3
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneConfigurationV1"
+    },
+    {
+      "Description": "Lưu bền bộ điều chỉnh lượng nước nhỏ gọn, an toàn khi khởi động lại, các ràng buộc và đường cơ sở cân bằng nước đã gộp cho một van đã cấu hình. Các sự kiện nước được lưu riêng dưới dạng bản ghi chỉ mục tăng dần.",
+      "DisplayName": "Bộ nhớ vùng tưới",
+      "List": [
+        {
+          "Description": "Lưu bền bộ điều chỉnh lượng nước nhỏ gọn, an toàn khi khởi động lại, các ràng buộc và đường cơ sở cân bằng nước đã gộp cho một van đã cấu hình. Các sự kiện nước được lưu riêng dưới dạng bản ghi chỉ mục tăng dần.",
+          "Name": "Bộ nhớ vùng tưới",
+          "Type": 0
+        },
+        {
+          "Description": "Tỷ lệ phần trăm của lượng tưới thích ứng cần áp dụng. Mặc định là 100%.",
+          "Name": "Bộ điều chỉnh lượng nước",
+          "Type": 1
+        },
+        {
+          "Description": "Các ràng buộc lập lịch thời gian chạy đã được chuẩn hóa.",
+          "Name": "Các khoảng tạm hoãn",
+          "Type": 2
+        },
+        {
+          "Description": "Một khoảng nửa mở mà trong đó vùng không được tưới.",
+          "Name": "Khoảng tạm hoãn",
+          "Type": 3
+        },
+        {
+          "Description": "Ngày và giờ mà đến đó các đầu vào nước cũ hơn đã được gộp vào `baseline_deficit_millimeters`.",
+          "Name": "Thời gian đường cơ sở cân bằng",
+          "Type": 4
+        },
+        {
+          "Description": "Mức thiếu hụt nước vùng rễ tại `balance_baseline_at`, tính bằng milimét.",
+          "Name": "Thiếu hụt đường cơ sở",
+          "Type": 5
+        }
+      ],
+      "Name": "SprinklerZoneMemoryV1"
+    },
+    {
+      "Description": "Xem trạng thái và chi tiết của khu vực này hoặc thay đổi cài đặt tưới.",
+      "DisplayName": "Điều khiển tưới",
+      "List": [
+        {
+          "Description": "Xem trạng thái và chi tiết của khu vực này hoặc thay đổi cài đặt tưới.",
+          "Name": "Điều khiển tưới",
+          "Type": 0
+        },
+        {
+          "Description": "Hiển thị khu vực này đang làm gì và khi nào sẽ được tưới tiếp theo.",
+          "Name": "Xem trạng thái",
+          "Type": 1
+        },
+        {
+          "Description": "Trạng thái tưới hiện tại và kế hoạch tưới tiếp theo.",
+          "Name": "Trạng thái hiện tại",
+          "Type": 2
+        },
+        {
+          "Description": "Trạng thái hiện tại của khu vực này hoặc của hệ thống đã chuẩn bị cho mùa đông.",
+          "Name": "Trạng thái tưới",
+          "Type": 3
+        },
+        {
+          "Description": "Hiển thị ước tính nước, kế hoạch tưới và trạng thái van.",
+          "Name": "Xem chi tiết",
+          "Type": 4
+        },
+        {
+          "Description": "Ước tính nước, kế hoạch tưới và trạng thái van.",
+          "Name": "Chi tiết vùng",
+          "Type": 5
+        },
+        {
+          "Description": "Hiển thị lượng nước, các khoảng thời gian không tưới và trạng thái hoạt động.",
+          "Name": "Xem cài đặt",
+          "Type": 6
+        },
+        {
+          "Description": "Lượng nước hiện tại, các khoảng thời gian không tưới và trạng thái hoạt động. Những thay đổi được chấp nhận sau đó được gửi dưới dạng dữ liệu đăng ký trước xác nhận cuối cùng.",
+          "Name": "Cài đặt vùng",
+          "Type": 7
+        },
+        {
+          "Description": "Các cài đặt hiện tại cho khu vực này.",
+          "Name": "Cài đặt",
+          "Type": 8
+        },
+        {
+          "Description": "Dùng nhiều hoặc ít nước hơn lượng được khuyến nghị.",
+          "Name": "Thay đổi lượng nước",
+          "Type": 9
+        },
+        {
+          "Description": "Use more or less water than the recommended amount.",
+          "Name": "Change water amount",
+          "Type": 10
+        },
+        {
+          "Description": "Use 100% for the recommended amount, a lower value for less water, or a higher value for more water.",
+          "Name": "Water amount",
+          "Type": 11
+        },
+        {
+          "Description": "Replace the times when this area must not be watered.",
+          "Name": "Change no-watering periods",
+          "Type": 12
+        },
+        {
+          "Description": "The complete list of times when watering must be paused.",
+          "Name": "No-watering periods",
+          "Type": 13
+        },
+        {
+          "Description": "One period when this area must not be watered.",
+          "Name": "No-watering period",
+          "Type": 14
+        },
+        {
+          "Description": "Turn automatic watering on or off.",
+          "Name": "Change active state",
+          "Type": 15
+        },
+        {
+          "Description": "Turn automatic watering on. Turn it off after winterizing the system.",
+          "Name": "Active",
+          "Type": 16
+        },
+        {
+          "Description": "Confirms that a requested setting was persisted and applied. The current subscribed configuration remains installed.",
+          "Name": "Change accepted",
+          "Type": 17
+        },
+        {
+          "Description": "Explains why a requested setting was not changed while preserving the current subscribed configuration for correction and retry.",
+          "Name": "Change rejected",
+          "Type": 18
+        },
+        {
+          "Description": "A localized explanation of the invalid setting.",
+          "Name": "Error message",
+          "Type": 19
+        },
+        {
+          "Description": "The reason the setting was rejected.",
+          "Name": "Error",
+          "Type": 20
+        }
+      ],
+      "Name": "SprinklerZoneProtocol"
+    },
+    {
+      "Description": "Hiển thị trạng thái hiện tại và kế hoạch tưới tiếp theo.",
+      "DisplayName": "Trạng thái tưới",
+      "List": [
+        {
+          "Description": "Hiển thị trạng thái hiện tại và kế hoạch tưới tiếp theo.",
+          "Name": "Trạng thái tưới",
+          "Type": 0
+        },
+        {
+          "Description": "Tưới tự động được bật.",
+          "Name": "Hoạt động",
+          "Type": 1
+        },
+        {
+          "Description": "Quyết định tưới hiện tại hoặc lý do trì hoãn.",
+          "Name": "Trạng thái",
+          "Type": 2
+        },
+        {
+          "Description": "Thời gian bắt đầu và thời lượng đã lên kế hoạch.",
+          "Name": "Lần tưới tiếp theo",
+          "Type": 3
+        },
+        {
+          "Description": "Tưới tự động bị tắt cho toàn bộ hệ thống tưới và không có khoảng tưới nào được lên lịch.",
+          "Name": "Đã chuẩn bị cho mùa đông",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneStateV1"
+    },
+    {
+      "Description": "Thiết lập một bãi cỏ, khu vườn hoặc khu vực trồng cây được tưới độc lập.",
+      "DisplayName": "Khu vực được tưới",
+      "List": [
+        {
+          "Description": "Thiết lập một bãi cỏ, khu vườn hoặc khu vực trồng cây được tưới độc lập.",
+          "Name": "Khu vực được tưới",
+          "Type": 0
+        },
+        {
+          "Description": "Chọn van điều khiển khu vực này.",
+          "Name": "Van nước",
+          "Type": 1
+        },
+        {
+          "Description": "Chọn loại cây mọc trong khu vực này.",
+          "Name": "Loại cây",
+          "Type": 2
+        },
+        {
+          "Description": "Chọn cách cấp nước trong khu vực này.",
+          "Name": "Phương pháp tưới",
+          "Type": 3
+        },
+        {
+          "Description": "Chọn nơi cung cấp trạng thái, cài đặt và điều khiển của khu vực này.",
+          "Name": "Điều khiển khu vực",
+          "Type": 4
+        }
+      ],
+      "Name": "SprinklerZoneV1"
+    },
+    {
+      "Description": "",
+      "DisplayName": "System record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "System record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "ArchiveState",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "Location",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "WateringMode",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WinterizationReminder",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "WeatherHistory",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "WeatherObservation",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "generation",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 10
+        }
+      ],
+      "Name": "SystemRecord"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Valve record identity",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Valve record identity",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Memory",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "ActivityState",
+          "Type": 2
+        },
+        {
+          "Description": "",
+          "Name": "Restart",
+          "Type": 3
+        },
+        {
+          "Description": "",
+          "Name": "WaterEvent",
+          "Type": 4
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 5
+        },
+        {
+          "Description": "",
+          "Name": "Activity",
+          "Type": 6
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 7
+        },
+        {
+          "Description": "",
+          "Name": "DailyReport",
+          "Type": 8
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 9
+        },
+        {
+          "Description": "",
+          "Name": "ModeledWeatherGap",
+          "Type": 10
+        },
+        {
+          "Description": "",
+          "Name": "index",
+          "Type": 11
+        }
+      ],
+      "Name": "ZoneRecord"
+    }
+  ]
+}

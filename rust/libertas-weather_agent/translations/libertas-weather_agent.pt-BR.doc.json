@@ -1,0 +1,50 @@
+{
+  "Description": "Fornece dados meteorológicos locais a aplicativos de irrigação, como o Smart Sprinkler, para que possam planejar a irrigação considerando chuva, temperatura, umidade e vento. O Clima Local usa a localização do Hub para obter do Open-Meteo as condições atuais, sete dias de dados meteorológicos horários recentes e uma previsão de sete dias. O serviço atualiza os dados meteorológicos automaticamente e mantém os últimos dados válidos após reinicializações e interrupções temporárias da internet. Para obter dados meteorológicos atualizados, é necessário ter acesso à localização e conexão com a internet. Cada Hub pode executar um serviço Clima Local para vários aplicativos de irrigação.",
+  "DisplayName": "Clima Local",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "DefaultText": "Local weather",
+      "Description": "O Clima Local fornece condições atuais, dados meteorológicos recentes e previsões para ajudar os aplicativos de irrigação a planejar quando e quanto irrigar. O serviço cria uma fonte compartilhada de dados meteorológicos para aplicativos como o Smart Sprinkler e usa a localização do Hub para obter dados meteorológicos do Open-Meteo. O Clima Local fornece temperatura, umidade relativa, precipitação, probabilidade de chuva prevista, perda estimada de água do solo e das plantas, velocidade do vento e rajadas de vento. O Clima Local atualiza automaticamente as condições atuais a cada 15 minutos e o histórico horário e as previsões a cada hora. O serviço mantém sete dias de dados meteorológicos horários recentes e uma previsão de sete dias, além de enviar alterações meteorológicas aos aplicativos de irrigação conectados. Os aplicativos conectados podem obter os dados meteorológicos salvos mais recentes ou recuperar atualizações perdidas após uma interrupção. O Clima Local salva separadamente a última localização válida, as condições atuais, o histórico recente e a previsão, mantendo os dados meteorológicos disponíveis após reinicializações e interrupções temporárias da internet ou do serviço de localização. O serviço fornece o horário e o prazo de validade de cada atualização para que os aplicativos de irrigação possam identificar dados meteorológicos mais antigos. O Clima Local apaga os dados meteorológicos do local anterior e obtém dados substitutos quando o Hub informa uma mudança de localização. Para obter dados meteorológicos atualizados, é necessário ter acesso à localização e conexão com a internet. Os dados meteorológicos permanecem indisponíveis até que o serviço conheça a localização do Hub. Apenas um serviço Clima Local pode ser executado em um Hub, e vários aplicativos de irrigação podem compartilhar esse serviço. Desenvolvido pela Smartonlabs Inc. (libertas).",
+      "DisplayName": "Clima Local",
+      "List": [
+        {
+          "Description": "A fonte compartilhada de dados meteorológicos locais que este serviço cria para os aplicativos de irrigação no Hub. Os aplicativos conectados usam as condições atuais, os dados meteorológicos recentes e as previsões deste serviço para planejar a irrigação.",
+          "Name": "Serviço meteorológico para irrigação",
+          "Type": 0
+        }
+      ],
+      "Name": "libertas_weather_server"
+    }
+  ],
+  "Locale": "pt-BR",
+  "StringResources": {
+    "SPRINKLER_CURRENT_WEATHER_V1": "Dados meteorológicos atuais para irrigação salvos para {0}.",
+    "SPRINKLER_WEATHER_FORECAST_V1": "Previsão do tempo para irrigação salva para {0}.",
+    "SPRINKLER_WEATHER_HISTORY_METADATA_V1": "Horário de atualização dos dados meteorológicos para irrigação salvo para {0}.",
+    "SPRINKLER_WEATHER_HISTORY_PERIODS_V2": "Dados meteorológicos recentes para irrigação salvos para {0}.",
+    "SPRINKLER_WEATHER_LOCATION_V1": "Localização usada para os dados meteorológicos de irrigação em {0} salva.",
+    "api.open-meteo.com": "Conectar-se ao Open-Meteo para obter condições atuais, histórico recente e previsões para o planejamento da irrigação.",
+    "libertas.permission.ACCESS_FINE_LOCATION": "Usar a localização do Hub para solicitar a previsão do tempo local correta."
+  },
+  "Types": [
+    {
+      "Description": "Fornece condições atuais, dados meteorológicos horários recentes e previsões para aplicativos de irrigação usando a localização do Hub.",
+      "DisplayName": "Serviço meteorológico para irrigação",
+      "List": [
+        {
+          "Description": "Fornece condições atuais, dados meteorológicos horários recentes e previsões para aplicativos de irrigação usando a localização do Hub.",
+          "Name": "Serviço meteorológico para irrigação",
+          "Type": 0
+        },
+        {
+          "DefaultText": "Serviço meteorológico para irrigação",
+          "Description": "O Clima Local cria este serviço para que os aplicativos de irrigação possam obter dados meteorológicos locais e receber atualizações automáticas para tomar decisões de irrigação.",
+          "Name": "Serviço meteorológico para irrigação",
+          "Type": 1
+        }
+      ],
+      "Name": "SprinklerWeatherEndpointServerV1"
+    }
+  ]
+}

@@ -1,0 +1,1802 @@
+{
+  "Description": "通过模拟样本探索十三个有关空间模式、产品比较和数学曲面的交互式示例。该图表库在 Libertas Hub 上运行，并为支持 Libertas 3D 图表的查看器提供示例。",
+  "DisplayName": "Libertas 3D 图表库",
+  "DocumentVersion": "0.0.2",
+  "List": [
+    {
+      "Description": "3D 图表库帮助用户探索十三个有关空间模式、产品比较和数学曲面的交互式示例。用户在设置期间为图表库命名，随后可以从中打开任意示例。图表库展示空间散点分组；调查、预测和运行限值轨迹；区域销售额柱形图；横向产品比较；以及尺寸各异的长方体。用户可以通过气泡图比较产品的市场覆盖、增长和客户留存情况，气泡大小表示年度价值。图表库还展示地形高度图、马鞍面线框图、曲面上的等高线、故意留有缺口的非均匀采样曲面，以及弯曲的数学曲面。用户可以比较频谱、查看相对于零值测得的正负脉冲、探索由 96 个空间样本组成的点云，还可以同时比较各期间的数量、趋势和观测值。这些示例演示了带有标签、图例、样本详情和不同视角的组合图表及独立视图。用户打开示例时，图表库会计算演示样本。再次选择同一示例会生成相同的模拟值。该图表库在 Libertas Hub 上运行，并且需要支持 Libertas 3D 图表的查看器。由 Smartonlabs Inc. (libertas) 开发。",
+      "DisplayName": "3D 图表库",
+      "List": [
+        {
+          "DefaultText": "3D 图表库",
+          "Description": "用户为此任务创建的图表库命名。用户可以打开该图表库，通过模拟示例探索空间比较和数学曲面。",
+          "Name": "图表库服务",
+          "Type": 0
+        }
+      ],
+      "Name": "chart3d_demo"
+    }
+  ],
+  "Locale": "zh-Hans",
+  "StringResources": {},
+  "Types": [
+    {
+      "Description": "以三个独立示例展示区域销售额柱形图、横向产品比较和长方体。",
+      "DisplayName": "3D 条形图比较",
+      "List": [
+        {
+          "Description": "以三个独立示例展示区域销售额柱形图、横向产品比较和长方体。",
+          "Name": "3D 条形图比较",
+          "Type": 0
+        },
+        {
+          "Description": "按季度和销售区域比较收入。",
+          "Name": "区域销售额",
+          "Type": 1
+        },
+        {
+          "Description": "比较各产品系列的实际结果和计划结果。",
+          "Name": "产品比较",
+          "Type": 2
+        },
+        {
+          "Description": "比较尺寸和位置不同的长方体。",
+          "Name": "长方体",
+          "Type": 3
+        }
+      ],
+      "Name": "BarFormsChartV1"
+    },
+    {
+      "Description": "区分示例中的实际结果与计划结果。",
+      "DisplayName": "销售情景",
+      "List": [
+        {
+          "Description": "区分示例中的实际结果与计划结果。",
+          "Enum": [
+            {
+              "Description": "此模拟比较中作为实际结果显示的结果。",
+              "Name": "实际",
+              "Type": 1
+            },
+            {
+              "Description": "用于与示例实际结果进行比较的计划结果。",
+              "Name": "计划",
+              "Type": 2
+            }
+          ],
+          "Name": "销售情景",
+          "Type": 0
+        }
+      ],
+      "Name": "BarScenarioV1"
+    },
+    {
+      "Description": "比较产品的市场覆盖、增长和客户留存情况，气泡大小表示年度价值。",
+      "DisplayName": "3D 产品气泡图",
+      "List": [
+        {
+          "Description": "比较产品的市场覆盖、增长和客户留存情况，气泡大小表示年度价值。",
+          "Name": "3D 产品气泡图",
+          "Type": 0
+        },
+        {
+          "Description": "一个模拟产品的市场覆盖、增长、客户留存、年度价值、类别和目标受众。",
+          "Name": "产品气泡",
+          "Type": 1
+        }
+      ],
+      "Name": "BubbleChartV1"
+    },
+    {
+      "Description": "标识示例产品面向消费者、工业领域还是科研工作。",
+      "DisplayName": "产品受众",
+      "List": [
+        {
+          "Description": "标识示例产品面向消费者、工业领域还是科研工作。",
+          "Enum": [
+            {
+              "Description": "面向消费者的产品。",
+              "Name": "消费类",
+              "Type": 1
+            },
+            {
+              "Description": "工业产品。",
+              "Name": "工业类",
+              "Type": 2
+            },
+            {
+              "Description": "科研产品。",
+              "Name": "科研类",
+              "Type": 3
+            }
+          ],
+          "Name": "产品受众",
+          "Type": 0
+        }
+      ],
+      "Name": "BubbleClassV1"
+    },
+    {
+      "Description": "一个模拟产品的市场覆盖、增长、客户留存、年度价值、类别和目标受众。",
+      "DisplayName": "产品气泡",
+      "List": [
+        {
+          "Description": "一个模拟产品的市场覆盖、增长、客户留存、年度价值、类别和目标受众。",
+          "Name": "产品气泡",
+          "Type": 0
+        },
+        {
+          "Description": "示例产品的相对市场覆盖程度。",
+          "Name": "市场覆盖",
+          "Type": 1
+        },
+        {
+          "Description": "示例产品的增长情况；负值表示下滑。",
+          "Name": "增长",
+          "Type": 2
+        },
+        {
+          "Description": "示例产品留住的客户比例。",
+          "Name": "客户留存",
+          "Type": 3
+        },
+        {
+          "Description": "示例产品的年度价值；数额越大，显示的气泡越大。",
+          "Name": "年度价值",
+          "Type": 4
+        },
+        {
+          "Description": "此产品属于成熟型、成长型还是实验型类别。",
+          "Name": "类别",
+          "Type": 5
+        },
+        {
+          "Description": "此产品面向消费者、工业领域还是科研工作。",
+          "Name": "产品受众",
+          "Type": 6
+        },
+        {
+          "Description": "用于区分此产品与其他示例产品。",
+          "Name": "产品标识",
+          "Type": 7
+        }
+      ],
+      "Name": "BubblePointV1"
+    },
+    {
+      "Description": "根据示例产品属于成熟型、成长型还是实验型对其分组。",
+      "DisplayName": "产品类别",
+      "List": [
+        {
+          "Description": "根据示例产品属于成熟型、成长型还是实验型对其分组。",
+          "Enum": [
+            {
+              "Description": "已成熟的核心产品。",
+              "Name": "核心",
+              "Type": 1
+            },
+            {
+              "Description": "快速扩张的产品。",
+              "Name": "增长",
+              "Type": 2
+            },
+            {
+              "Description": "实验性产品。",
+              "Name": "研发",
+              "Type": 3
+            }
+          ],
+          "Name": "产品类别",
+          "Type": 0
+        }
+      ],
+      "Name": "BubbleSegmentV1"
+    },
+    {
+      "Description": "用户可以选择示例，探索模拟的空间分布模式、对比结果或数学曲面。",
+      "DisplayName": "3D 图表库",
+      "List": [
+        {
+          "Description": "用户可以选择示例，探索模拟的空间分布模式、对比结果或数学曲面。",
+          "Name": "3D 图表库",
+          "Type": 0
+        },
+        {
+          "Description": "用户可以比较三组模拟位置的分布范围和分离程度。",
+          "Name": "查看空间样本",
+          "Type": 1
+        },
+        {
+          "Description": "图表库显示分布在山脊、盆地和台地周围的模拟位置。",
+          "Name": "空间样本",
+          "Type": 2
+        },
+        {
+          "Description": "用户可以比较模拟的勘测、预测和运行限值轨迹。",
+          "Name": "查看 3D 轨迹",
+          "Type": 3
+        },
+        {
+          "Description": "图表库显示三条穿过空间的轨迹，以供比较。",
+          "Name": "3D 轨迹",
+          "Type": 4
+        },
+        {
+          "Description": "用户可以探索区域销售额柱形图、横向产品对比和长方体。",
+          "Name": "查看 3D 柱形对比",
+          "Type": 5
+        },
+        {
+          "Description": "图表库显示三个独立示例，其中的柱体和方框具有不同的尺寸。",
+          "Name": "3D 柱形对比",
+          "Type": 6
+        },
+        {
+          "Description": "用户可以结合年度价值，比较产品覆盖范围、增长情况和留存情况。",
+          "Name": "查看 3D 产品气泡图",
+          "Type": 7
+        },
+        {
+          "Description": "图表库显示模拟的产品表现，气泡大小表示年度价值。",
+          "Name": "3D 产品气泡图",
+          "Type": 8
+        },
+        {
+          "Description": "用户可以探索模拟地形的起伏变化。",
+          "Name": "查看地形高度图",
+          "Type": 9
+        },
+        {
+          "Description": "图表库显示在等间距位置采样的填充地形曲面。",
+          "Name": "地形高度图",
+          "Type": 10
+        },
+        {
+          "Description": "用户可以通过相互连接的网格线探索马鞍形曲面。",
+          "Name": "查看马鞍面线框图",
+          "Type": 11
+        },
+        {
+          "Description": "图表库以开放式网格显示马鞍面的形状。",
+          "Name": "马鞍面线框图",
+          "Type": 12
+        },
+        {
+          "Description": "用户可以将等高路径与其所描述的曲面进行比较。",
+          "Name": "查看曲面等高线",
+          "Type": 13
+        },
+        {
+          "Description": "图表库同时显示一个曲面及其菱形高程等高线。",
+          "Name": "曲面等高线",
+          "Type": 14
+        },
+        {
+          "Description": "用户可以探索按不等间隔采样的曲面，并查看因缺少一个样本而留下的空缺。",
+          "Name": "查看非等间距曲面",
+          "Type": 15
+        },
+        {
+          "Description": "图表库显示一个样本间距不均匀且特意缺少一个样本的曲面。",
+          "Name": "非等间距曲面",
+          "Type": 16
+        },
+        {
+          "Description": "用户可以比较基准时段和一天中三个时段的频谱。",
+          "Name": "查看瀑布频谱",
+          "Type": 17
+        },
+        {
+          "Description": "图表库显示四个时段内不同频率下的模拟信号强度。",
+          "Name": "瀑布频谱",
+          "Type": 18
+        },
+        {
+          "Description": "用户可以将正、负脉冲与零值进行比较。",
+          "Name": "查看脉冲杆图",
+          "Type": 19
+        },
+        {
+          "Description": "图表库将每个模拟脉冲显示为一根从零值伸出的杆，并用杆端标记其数值。",
+          "Name": "脉冲杆图",
+          "Type": 20
+        },
+        {
+          "Description": "用户可以探索由含两个参数的多项式计算得到的曲面。",
+          "Name": "查看数学曲面",
+          "Type": 21
+        },
+        {
+          "Description": "图表库显示两个数学参数如何在三维空间中塑造曲面。",
+          "Name": "数学曲面",
+          "Type": 22
+        },
+        {
+          "Description": "用户可以探索 96 个模拟空间样本的分布，并比较它们所属的区域和相对权重。",
+          "Name": "查看 3D 点云",
+          "Type": 23
+        },
+        {
+          "Description": "图表库显示按区域分组的空间样本，点的大小表示相对权重。",
+          "Name": "3D 点云",
+          "Type": 24
+        },
+        {
+          "Description": "用户可以探索频谱，以及综合呈现量值、趋势和观测结果的图表。",
+          "Name": "查看多项 3D 对比",
+          "Type": 25
+        },
+        {
+          "Description": "图表库分别显示频谱和时段对比，其中包括在一张图表中呈现三项指标的示例。",
+          "Name": "多项 3D 对比",
+          "Type": 26
+        }
+      ],
+      "Name": "Chart3dDemoProtocol"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved stored values for the function's required data schema.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved stored values for the function's required data schema.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        },
+        {
+          "Description": "",
+          "Name": "value",
+          "Type": 2
+        }
+      ],
+      "Name": "ChartData"
+    },
+    {
+      "Description": "",
+      "DisplayName": "Reserved storage keys; this demonstration currently writes no records.",
+      "List": [
+        {
+          "Description": "",
+          "Name": "Reserved storage keys; this demonstration currently writes no records.",
+          "Type": 0
+        },
+        {
+          "Description": "",
+          "Name": "Reserved",
+          "Type": 1
+        }
+      ],
+      "Name": "ChartDataKey"
+    },
+    {
+      "Description": "根据高程和东西向位置对模拟空间样本进行分组。",
+      "DisplayName": "点云区域",
+      "List": [
+        {
+          "Description": "根据高程和东西方向的位置对模拟空间样本进行分组。",
+          "Enum": [
+            {
+              "Description": "高程大于零且位于原点或原点以东的样本。",
+              "Name": "东部高区",
+              "Type": 1
+            },
+            {
+              "Description": "高程大于零且位于原点以西的样本。",
+              "Name": "西部高区",
+              "Type": 2
+            },
+            {
+              "Description": "高程小于或等于零且位于原点或原点以东的样本。",
+              "Name": "东部低区",
+              "Type": 3
+            },
+            {
+              "Description": "高程小于或等于零且位于原点以西的样本。",
+              "Name": "西部低区",
+              "Type": 4
+            }
+          ],
+          "Name": "点云区域",
+          "Type": 0
+        }
+      ],
+      "Name": "CloudRegionV1"
+    },
+    {
+      "Description": "一条等高线上所有位置共有的高度，用于比较曲面高程。",
+      "DisplayName": "等高线高度",
+      "List": [
+        {
+          "Description": "一条等高线上所有位置共有的高度，用于比较曲面高程。",
+          "Enum": [
+            {
+              "Description": "高度为一个单位的等高线。",
+              "Name": "一个单位",
+              "Type": 1
+            },
+            {
+              "Description": "高度为两个单位的等高线。",
+              "Name": "两个单位",
+              "Type": 2
+            },
+            {
+              "Description": "高度为三个单位的等高线。",
+              "Name": "三个单位",
+              "Type": 3
+            }
+          ],
+          "Name": "等高线高度",
+          "Type": 0
+        }
+      ],
+      "Name": "ContourLevelV1"
+    },
+    {
+      "Description": "连接相同高度位置的线上的一个位置。",
+      "DisplayName": "等高线点",
+      "List": [
+        {
+          "Description": "连接相同高度位置的线上的一个位置。",
+          "Name": "等高线点",
+          "Type": 0
+        },
+        {
+          "Description": "等高线点在曲面 x 方向上的位置。",
+          "Name": "X 坐标",
+          "Type": 1
+        },
+        {
+          "Description": "等高线点在曲面 y 方向上的位置。",
+          "Name": "Y 坐标",
+          "Type": 2
+        },
+        {
+          "Description": "这条等高线上所有位置共有的高程。",
+          "Name": "高度",
+          "Type": 3
+        },
+        {
+          "Description": "这条等高线所表示的高度层级。",
+          "Name": "等高线高度",
+          "Type": 4
+        },
+        {
+          "Description": "等高线沿闭合路径延伸时，此位置在其中的次序。",
+          "Name": "等高线顺序",
+          "Type": 5
+        },
+        {
+          "Description": "用于区分此位置与各条等高线上的其他位置。",
+          "Name": "等高线引用",
+          "Type": 6
+        }
+      ],
+      "Name": "ContourLinePointV1"
+    },
+    {
+      "Description": "连接高度相同的位置，以显示整个曲面的高程变化。",
+      "DisplayName": "等高线路径",
+      "List": [
+        {
+          "Description": "连接高度相同的位置，以显示整个曲面的高程变化。",
+          "Name": "等高线路径",
+          "Type": 0
+        },
+        {
+          "Description": "连接相同高度位置的线上的一个位置。",
+          "Name": "等高线点",
+          "Type": 1
+        }
+      ],
+      "Name": "ContourLinesChartV1"
+    },
+    {
+      "Description": "显示一个曲面，其等高线围绕中心形成菱形。",
+      "DisplayName": "等高曲面样本",
+      "List": [
+        {
+          "Description": "显示一个曲面，其等高线围绕中心形成菱形。",
+          "Name": "等高曲面样本",
+          "Type": 0
+        },
+        {
+          "Description": "曲面上的一个位置及其高度，用于比较等高线高度。",
+          "Name": "等高曲面样本点",
+          "Type": 1
+        }
+      ],
+      "Name": "ContourSurfaceChartV1"
+    },
+    {
+      "Description": "曲面上的一个位置及其高度，用于比较等高线高度。",
+      "DisplayName": "等高曲面样本点",
+      "List": [
+        {
+          "Description": "曲面上的一个位置及其高度，用于比较等高线高度。",
+          "Name": "等高曲面样本点",
+          "Type": 0
+        },
+        {
+          "Description": "曲面及其等高线共有的 x 方向位置。",
+          "Name": "X 坐标",
+          "Type": 1
+        },
+        {
+          "Description": "曲面及其等高线共有的 y 方向位置。",
+          "Name": "Y 坐标",
+          "Type": 2
+        },
+        {
+          "Description": "示例中的菱形曲面在此位置的高程。",
+          "Name": "高度",
+          "Type": 3
+        },
+        {
+          "Description": "用于区分此曲面上不同高度范围的高程。",
+          "Name": "高度区分值",
+          "Type": 4
+        }
+      ],
+      "Name": "ContourSurfacePointV1"
+    },
+    {
+      "Description": "比较位置、宽度、深度和高度各不相同的长方体。",
+      "DisplayName": "长方体",
+      "List": [
+        {
+          "Description": "比较位置、宽度、深度和高度各不相同的长方体。",
+          "Name": "长方体",
+          "Type": 0
+        },
+        {
+          "Description": "示例中一个具有独立位置、宽度、深度和高度的长方体。",
+          "Name": "长方体",
+          "Type": 1
+        }
+      ],
+      "Name": "ExplicitCuboidsChartV1"
+    },
+    {
+      "Description": "示例中一个具有独立位置、宽度、深度和高度的长方体。",
+      "DisplayName": "长方体",
+      "List": [
+        {
+          "Description": "示例中一个具有独立位置、宽度、深度和高度的长方体。",
+          "Name": "长方体",
+          "Type": 0
+        },
+        {
+          "Description": "长方体沿 x 轴方向的起始位置。",
+          "Name": "X 轴起点",
+          "Type": 1
+        },
+        {
+          "Description": "长方体沿 x 轴方向的结束位置。",
+          "Name": "X 轴终点",
+          "Type": 2
+        },
+        {
+          "Description": "长方体沿 y 轴方向的起始位置。",
+          "Name": "Y 轴起点",
+          "Type": 3
+        },
+        {
+          "Description": "长方体沿 y 轴方向的结束位置。",
+          "Name": "Y 轴终点",
+          "Type": 4
+        },
+        {
+          "Description": "长方体顶部的高程。",
+          "Name": "顶部高度",
+          "Type": 5
+        },
+        {
+          "Description": "长方体底部的高程，可以低于零。",
+          "Name": "底部高度",
+          "Type": 6
+        },
+        {
+          "Description": "用于区分此长方体与示例中的其他长方体。",
+          "Name": "长方体标识",
+          "Type": 7
+        }
+      ],
+      "Name": "ExplicitCuboidV1"
+    },
+    {
+      "Description": "显示在等间距位置采样的模拟地形表面的起伏。",
+      "DisplayName": "地形高度采样",
+      "List": [
+        {
+          "Description": "显示在等间距位置采样的模拟地形表面的起伏。",
+          "Name": "地形高度采样",
+          "Type": 0
+        },
+        {
+          "Description": "示例模拟地形中的一个位置及其高度。",
+          "Name": "表面采样点",
+          "Type": 1
+        }
+      ],
+      "Name": "HeightMapChartV1"
+    },
+    {
+      "Description": "示例模拟地形中的一个位置及其高度。",
+      "DisplayName": "表面采样点",
+      "List": [
+        {
+          "Description": "示例模拟地形中的一个位置及其高度。",
+          "Name": "表面采样点",
+          "Type": 0
+        },
+        {
+          "Description": "采样点在地形 x 轴方向上的位置。",
+          "Name": "X 坐标",
+          "Type": 1
+        },
+        {
+          "Description": "采样点在地形 y 轴方向上的位置。",
+          "Name": "Y 坐标",
+          "Type": 2
+        },
+        {
+          "Description": "此位置的模拟地形高程。",
+          "Name": "高度",
+          "Type": 3
+        },
+        {
+          "Description": "用于区分整个表面上不同高度范围的地形高程。",
+          "Name": "高度区分值",
+          "Type": 4
+        }
+      ],
+      "Name": "HeightMapPointV1"
+    },
+    {
+      "Description": "在一张图表中比较各周期的数量、平滑趋势和单项观测结果。",
+      "DisplayName": "综合周期比较",
+      "List": [
+        {
+          "Description": "在一张图表中比较各周期的数量、平滑趋势和单项观测结果。",
+          "Name": "综合周期比较",
+          "Type": 0
+        },
+        {
+          "Description": "示例中跨周期比较的数量。",
+          "Name": "各周期数量",
+          "Type": 1
+        },
+        {
+          "Description": "在相同周期内比较的平滑结果。",
+          "Name": "趋势采样",
+          "Type": 2
+        },
+        {
+          "Description": "在相同周期内比较的各项模拟结果。",
+          "Name": "各周期观测结果",
+          "Type": 3
+        }
+      ],
+      "Name": "HeterogeneousSeriesChartV1"
+    },
+    {
+      "Description": "使用水平条形图比较三个示例产品系列的实际结果与计划结果。",
+      "DisplayName": "产品比较条形图",
+      "List": [
+        {
+          "Description": "使用水平条形图比较三个示例产品系列的实际结果与计划结果。",
+          "Name": "产品比较条形图",
+          "Type": 0
+        },
+        {
+          "Description": "从同一基准值开始度量的一个示例产品实际结果或计划结果。",
+          "Name": "产品比较条",
+          "Type": 1
+        }
+      ],
+      "Name": "HorizontalLegacyBarsChartV1"
+    },
+    {
+      "Description": "从同一基准值开始度量的一个示例产品实际结果或计划结果。",
+      "DisplayName": "产品比较条",
+      "List": [
+        {
+          "Description": "从同一基准值开始度量的一个示例产品实际结果或计划结果。",
+          "Name": "产品比较条",
+          "Type": 0
+        },
+        {
+          "Description": "示例中此产品系列的实际结果或计划结果。",
+          "Name": "结果",
+          "Type": 1
+        },
+        {
+          "Description": "比较此结果时使用的起始值；示例中使用零。",
+          "Name": "基准值",
+          "Type": 2
+        },
+        {
+          "Description": "此项比较所代表的产品系列。",
+          "Name": "产品",
+          "Type": 3
+        },
+        {
+          "Description": "此条形表示示例中的实际结果还是计划值。",
+          "Name": "情景",
+          "Type": 4
+        },
+        {
+          "Description": "用于将此产品和情景与其他比较项区分开来。",
+          "Name": "比较标识",
+          "Type": 5
+        }
+      ],
+      "Name": "HorizontalLegacyBarV1"
+    },
+    {
+      "Description": "显示从零值起测量的正负脉冲，并用端点标示每个脉冲的最终值。",
+      "DisplayName": "脉冲和杆状图",
+      "List": [
+        {
+          "Description": "显示从零值起测量的正负脉冲，并用端点标示每个脉冲的最终值。",
+          "Name": "脉冲和杆状图",
+          "Type": 0
+        },
+        {
+          "Description": "零值与每个模拟脉冲值之间的差值。",
+          "Name": "脉冲杆",
+          "Type": 1
+        },
+        {
+          "Description": "相应模拟脉冲的最终值。",
+          "Name": "脉冲端点",
+          "Type": 2
+        }
+      ],
+      "Name": "ImpulseChartV1"
+    },
+    {
+      "Description": "指示示例脉冲是小于零，还是等于零或大于零。",
+      "DisplayName": "脉冲符号",
+      "List": [
+        {
+          "Description": "指示示例脉冲是小于零，还是等于零或大于零。",
+          "Enum": [
+            {
+              "Description": "值小于零的脉冲。",
+              "Name": "负值",
+              "Type": 1
+            },
+            {
+              "Description": "值等于或大于零的脉冲。",
+              "Name": "零或正值",
+              "Type": 2
+            }
+          ],
+          "Name": "脉冲符号",
+          "Type": 0
+        }
+      ],
+      "Name": "ImpulseSignV1"
+    },
+    {
+      "Description": "显示每个模拟脉冲从零值向上或向下延伸的距离。",
+      "DisplayName": "脉冲杆",
+      "List": [
+        {
+          "Description": "显示每个模拟脉冲从零值向上或向下延伸的距离。",
+          "Name": "脉冲杆",
+          "Type": 0
+        },
+        {
+          "Description": "一个从零值延伸至其正值或负值的模拟脉冲。",
+          "Name": "脉冲杆",
+          "Type": 1
+        }
+      ],
+      "Name": "ImpulseStemsV1"
+    },
+    {
+      "Description": "一个从零值延伸至其正值或负值的模拟脉冲。",
+      "DisplayName": "脉冲杆",
+      "List": [
+        {
+          "Description": "一个从零值延伸至其正值或负值的模拟脉冲。",
+          "Name": "脉冲杆",
+          "Type": 0
+        },
+        {
+          "Description": "脉冲在示例 X 方向上的位置。",
+          "Name": "X 坐标",
+          "Type": 1
+        },
+        {
+          "Description": "脉冲在示例 Y 方向上的位置。",
+          "Name": "Y 坐标",
+          "Type": 2
+        },
+        {
+          "Description": "模拟脉冲的正值、负值或零值。",
+          "Name": "脉冲值",
+          "Type": 3
+        },
+        {
+          "Description": "测量此脉冲时所依据的零值。",
+          "Name": "零值基准",
+          "Type": 4
+        },
+        {
+          "Description": "脉冲是负值，还是零或正值。",
+          "Name": "符号",
+          "Type": 5
+        },
+        {
+          "Description": "用于区分此脉冲，并将其与对应的端点关联起来。",
+          "Name": "脉冲标识",
+          "Type": 6
+        }
+      ],
+      "Name": "ImpulseStemV1"
+    },
+    {
+      "Description": "标示每个模拟脉冲的最终值。",
+      "DisplayName": "脉冲端点",
+      "List": [
+        {
+          "Description": "标示每个模拟脉冲的最终值。",
+          "Name": "脉冲端点",
+          "Type": 0
+        },
+        {
+          "Description": "表示一个模拟脉冲最终值的位置。",
+          "Name": "脉冲端点",
+          "Type": 1
+        }
+      ],
+      "Name": "ImpulseTipsV1"
+    },
+    {
+      "Description": "表示一个模拟脉冲最终值的位置。",
+      "DisplayName": "脉冲端点",
+      "List": [
+        {
+          "Description": "表示一个模拟脉冲最终值的位置。",
+          "Name": "脉冲端点",
+          "Type": 0
+        },
+        {
+          "Description": "脉冲端点在示例 X 方向上的位置。",
+          "Name": "X 坐标",
+          "Type": 1
+        },
+        {
+          "Description": "脉冲端点在示例 Y 方向上的位置。",
+          "Name": "Y 坐标",
+          "Type": 2
+        },
+        {
+          "Description": "模拟脉冲的正值、负值或零值。",
+          "Name": "脉冲值",
+          "Type": 3
+        },
+        {
+          "Description": "用于使各脉冲端点易于区分的相对大小。",
+          "Name": "端点强调程度",
+          "Type": 4
+        },
+        {
+          "Description": "脉冲是负值，还是零或正值。",
+          "Name": "符号",
+          "Type": 5
+        },
+        {
+          "Description": "将此端点与其脉冲杆所显示的同一脉冲关联起来。",
+          "Name": "脉冲标识",
+          "Type": 6
+        }
+      ],
+      "Name": "ImpulseTipV1"
+    },
+    {
+      "Description": "显示根据包含两个参数的多项式计算出的曲面。",
+      "DisplayName": "数学曲面采样数据",
+      "List": [
+        {
+          "Description": "显示根据包含两个参数的多项式计算出的曲面。",
+          "Name": "数学曲面采样数据",
+          "Type": 0
+        },
+        {
+          "Description": "根据两个数学参数计算出的曲面上的一个位置。",
+          "Name": "数学曲面采样点",
+          "Type": 1
+        }
+      ],
+      "Name": "MathematicalSurfaceChartV1"
+    },
+    {
+      "Description": "根据两个数学参数计算出的曲面上的一个位置。",
+      "DisplayName": "数学曲面采样点",
+      "List": [
+        {
+          "Description": "根据两个数学参数计算出的曲面上的一个位置。",
+          "Name": "数学曲面采样点",
+          "Type": 0
+        },
+        {
+          "Description": "此参数对所对应曲面位置的 X 坐标。",
+          "Name": "X 坐标",
+          "Type": 1
+        },
+        {
+          "Description": "此参数对所对应曲面位置的 Y 坐标。",
+          "Name": "Y 坐标",
+          "Type": 2
+        },
+        {
+          "Description": "此参数对所对应曲面位置的高度。",
+          "Name": "Z 坐标",
+          "Type": 3
+        },
+        {
+          "Description": "用于确定此曲面位置及其相邻采样点的第一个数学输入值。",
+          "Name": "第一个参数",
+          "Type": 4
+        },
+        {
+          "Description": "用于确定此曲面位置及其相邻采样点的第二个数学输入值。",
+          "Name": "第二个参数",
+          "Type": 5
+        },
+        {
+          "Description": "用于区分数学曲面不同区域的第一个参数。",
+          "Name": "参数区分值",
+          "Type": 6
+        }
+      ],
+      "Name": "MathematicalSurfacePointV1"
+    },
+    {
+      "Description": "显示示例在各个周期的数据量，并同时呈现趋势和观测值。",
+      "DisplayName": "各周期数据量",
+      "List": [
+        {
+          "Description": "显示示例在各个周期的数据量，并同时呈现趋势和观测值。",
+          "Name": "各周期数据量",
+          "Type": 0
+        },
+        {
+          "Description": "某一周期的一个模拟数据量，用于与趋势和观测值进行比较。",
+          "Name": "周期数据量",
+          "Type": 1
+        }
+      ],
+      "Name": "MultipleSeriesBarsV1"
+    },
+    {
+      "Description": "某一周期的一个模拟数据量，用于与趋势和观测值进行比较。",
+      "DisplayName": "周期数据量",
+      "List": [
+        {
+          "Description": "某一周期的一个模拟数据量，用于与趋势和观测值进行比较。",
+          "Name": "周期数据量",
+          "Type": 0
+        },
+        {
+          "Description": "所比较的数据量、趋势和观测值共同对应的周期。",
+          "Name": "周期",
+          "Type": 1
+        },
+        {
+          "Description": "此示例中三个指标所属的共同分组。",
+          "Name": "比较组",
+          "Type": 2
+        },
+        {
+          "Description": "示例在此周期的数据量。",
+          "Name": "数据量",
+          "Type": 3
+        },
+        {
+          "Description": "指明示例显示的是数据量、趋势还是观测值。",
+          "Name": "比较指标",
+          "Type": 4
+        },
+        {
+          "Description": "用于区分此周期的数据量与其他周期的数据量。",
+          "Name": "数据量标识",
+          "Type": 5
+        }
+      ],
+      "Name": "MultipleSeriesBarV1"
+    },
+    {
+      "Description": "以不同示例分别显示频谱，以及数据量、趋势和观测值的综合比较。",
+      "DisplayName": "多组 3D 比较",
+      "List": [
+        {
+          "Description": "以不同示例分别显示频谱，以及数据量、趋势和观测值的综合比较。",
+          "Name": "多组 3D 比较",
+          "Type": 0
+        },
+        {
+          "Description": "比较基准时段和一天中三个时段在各个频率上的信号强度。",
+          "Name": "频谱",
+          "Type": 1
+        },
+        {
+          "Description": "在一张图表中比较相同周期的数据量、趋势和观测值。",
+          "Name": "综合周期比较",
+          "Type": 2
+        }
+      ],
+      "Name": "MultipleSeriesChartV1"
+    },
+    {
+      "Description": "标识用于比较数据量、趋势和观测值的共同分组。",
+      "DisplayName": "比较组",
+      "List": [
+        {
+          "Description": "标识用于比较数据量、趋势和观测值的共同分组。",
+          "Enum": [
+            {
+              "Description": "此示例中三个指标所属的共同分组。",
+              "Name": "主组",
+              "Type": 1
+            }
+          ],
+          "Name": "比较组",
+          "Type": 0
+        }
+      ],
+      "Name": "MultipleSeriesLaneV1"
+    },
+    {
+      "Description": "示例中各周期平滑变化趋势上的一个点。",
+      "DisplayName": "趋势采样点",
+      "List": [
+        {
+          "Description": "示例中各周期平滑变化趋势上的一个点。",
+          "Name": "趋势采样点",
+          "Type": 0
+        },
+        {
+          "Description": "所比较的趋势、数据量和观测值共同对应的周期。",
+          "Name": "周期",
+          "Type": 1
+        },
+        {
+          "Description": "此示例中三个指标所属的共同分组。",
+          "Name": "比较组",
+          "Type": 2
+        },
+        {
+          "Description": "示例在此周期的平滑结果。",
+          "Name": "趋势",
+          "Type": 3
+        },
+        {
+          "Description": "标识示例显示的是数量、趋势还是观测值。",
+          "Name": "对比指标",
+          "Type": 4
+        },
+        {
+          "Description": "该采样点在趋势各周期序列中的位置。",
+          "Name": "趋势顺序",
+          "Type": 5
+        },
+        {
+          "Description": "用于区分此周期的趋势采样点与其他趋势采样点。",
+          "Name": "趋势引用",
+          "Type": 6
+        }
+      ],
+      "Name": "MultipleSeriesLinePointV1"
+    },
+    {
+      "Description": "显示示例的平滑结果在各周期内如何变化。",
+      "DisplayName": "趋势采样点",
+      "List": [
+        {
+          "Description": "显示示例的平滑结果在各周期内如何变化。",
+          "Name": "趋势采样点",
+          "Type": 0
+        },
+        {
+          "Description": "示例在各周期内平滑变化的一个数据点。",
+          "Name": "趋势采样点",
+          "Type": 1
+        }
+      ],
+      "Name": "MultipleSeriesLineV1"
+    },
+    {
+      "Description": "显示各个模拟结果，以及相同周期的数量和趋势。",
+      "DisplayName": "周期观测值",
+      "List": [
+        {
+          "Description": "显示各个模拟结果，以及相同周期的数量和趋势。",
+          "Name": "周期观测值",
+          "Type": 0
+        },
+        {
+          "Description": "将一个模拟结果与相同周期的数量和趋势进行比较。",
+          "Name": "周期观测值",
+          "Type": 1
+        }
+      ],
+      "Name": "MultipleSeriesPointsV1"
+    },
+    {
+      "Description": "将一个模拟结果与相同周期的数量和趋势进行比较。",
+      "DisplayName": "周期观测值",
+      "List": [
+        {
+          "Description": "将一个模拟结果与相同周期的数量和趋势进行比较。",
+          "Name": "周期观测值",
+          "Type": 0
+        },
+        {
+          "Description": "所比较的观测值、数量和趋势共有的周期。",
+          "Name": "周期",
+          "Type": 1
+        },
+        {
+          "Description": "此示例中三个指标共有的组。",
+          "Name": "对比组",
+          "Type": 2
+        },
+        {
+          "Description": "示例在此周期的单个结果。",
+          "Name": "观测值",
+          "Type": 3
+        },
+        {
+          "Description": "用于使各观测值易于区分的相对大小。",
+          "Name": "观测值突出程度",
+          "Type": 4
+        },
+        {
+          "Description": "标识示例显示的是数量、趋势还是观测值。",
+          "Name": "对比指标",
+          "Type": 5
+        },
+        {
+          "Description": "用于区分此周期的观测值与其他观测值。",
+          "Name": "观测值引用",
+          "Type": 6
+        }
+      ],
+      "Name": "MultipleSeriesPointV1"
+    },
+    {
+      "Description": "用于区分同一对比中的数量、趋势和各个观测值。",
+      "DisplayName": "对比指标",
+      "List": [
+        {
+          "Description": "用于区分同一对比中的数量、趋势和各个观测值。",
+          "Enum": [
+            {
+              "Description": "示例在一个周期内的数量。",
+              "Name": "数量",
+              "Type": 1
+            },
+            {
+              "Description": "示例在各周期内的平滑变化。",
+              "Name": "趋势",
+              "Type": 2
+            },
+            {
+              "Description": "一个周期内的一个模拟结果。",
+              "Name": "观测值",
+              "Type": 3
+            }
+          ],
+          "Name": "对比指标",
+          "Type": 0
+        }
+      ],
+      "Name": "MultipleSeriesRoleV1"
+    },
+    {
+      "Description": "显示以非均匀间隔采样的曲面，其中一个缺失的采样点会留下空缺。",
+      "DisplayName": "非均匀间隔的曲面采样点",
+      "List": [
+        {
+          "Description": "显示以非均匀间隔采样的曲面，其中一个缺失的采样点会留下空缺。",
+          "Name": "非均匀间隔的曲面采样点",
+          "Type": 0
+        },
+        {
+          "Description": "以非均匀间隔采样的曲面上的一个位置及其高度。",
+          "Name": "非均匀间隔的曲面采样点",
+          "Type": 1
+        }
+      ],
+      "Name": "NonuniformSurfaceChartV1"
+    },
+    {
+      "Description": "以非均匀间隔采样的曲面上的一个位置及其高度。",
+      "DisplayName": "非均匀间隔的曲面采样点",
+      "List": [
+        {
+          "Description": "以非均匀间隔采样的曲面上的一个位置及其高度。",
+          "Name": "非均匀间隔的曲面采样点",
+          "Type": 0
+        },
+        {
+          "Description": "该采样点在 X 方向非均匀间隔位置中的坐标。",
+          "Name": "X 坐标",
+          "Type": 1
+        },
+        {
+          "Description": "该采样点在 Y 方向非均匀间隔位置中的坐标。",
+          "Name": "Y 坐标",
+          "Type": 2
+        },
+        {
+          "Description": "示例曲面在此采样位置的高度。",
+          "Name": "高度",
+          "Type": 3
+        },
+        {
+          "Description": "用于区分此曲面上不同高度范围的高程值。",
+          "Name": "高度区分值",
+          "Type": 4
+        }
+      ],
+      "Name": "NonuniformSurfacePointV1"
+    },
+    {
+      "Description": "显示 96 个模拟空间样本的分布情况；样本按区域分组，并按相对量级赋予权重。",
+      "DisplayName": "点云样本",
+      "List": [
+        {
+          "Description": "显示 96 个模拟空间样本的分布情况；样本按区域分组，并按相对量级赋予权重。",
+          "Name": "点云样本",
+          "Type": 0
+        },
+        {
+          "Description": "一个模拟空间样本，包含位置、相对权重和所属区域。",
+          "Name": "点云样本",
+          "Type": 1
+        }
+      ],
+      "Name": "PointCloudChartV1"
+    },
+    {
+      "Description": "一个模拟空间样本，包含位置、相对权重和所属区域。",
+      "DisplayName": "点云样本",
+      "List": [
+        {
+          "Description": "一个模拟空间样本，包含位置、相对权重和所属区域。",
+          "Name": "点云样本",
+          "Type": 0
+        },
+        {
+          "Description": "样本位于原点以东或以西的位置。",
+          "Name": "东西向位置",
+          "Type": 1
+        },
+        {
+          "Description": "样本位于原点以北或以南的位置。",
+          "Name": "南北向位置",
+          "Type": 2
+        },
+        {
+          "Description": "样本高于或低于零点的高度。",
+          "Name": "高程",
+          "Type": 3
+        },
+        {
+          "Description": "样本的相对量级；权重越大，显示的点越大。",
+          "Name": "相对权重",
+          "Type": 4
+        },
+        {
+          "Description": "根据样本的高程和东西向位置确定的所属区域。",
+          "Name": "区域",
+          "Type": 5
+        },
+        {
+          "Description": "标识用于将此样本与其他区域中的样本区分开的区域。",
+          "Name": "区域区分标识",
+          "Type": 6
+        },
+        {
+          "Description": "样本的所属区域，并以不同符号加以区分，便于比较。",
+          "Name": "区域符号",
+          "Type": 7
+        },
+        {
+          "Description": "用于将此空间样本与点云中的其他样本区分开来。",
+          "Name": "样本标识",
+          "Type": 8
+        }
+      ],
+      "Name": "PointCloudPointV1"
+    },
+    {
+      "Description": "标识将实际结果与计划进行比较的产品种类。",
+      "DisplayName": "产品系列",
+      "List": [
+        {
+          "Description": "标识将实际结果与计划进行比较的产品种类。",
+          "Enum": [
+            {
+              "Description": "消费类产品。",
+              "Name": "家用",
+              "Type": 1
+            },
+            {
+              "Description": "面向专业团队的产品。",
+              "Name": "商用",
+              "Type": 2
+            },
+            {
+              "Description": "共享平台服务。",
+              "Name": "平台",
+              "Type": 3
+            }
+          ],
+          "Name": "产品系列",
+          "Type": 0
+        }
+      ],
+      "Name": "ProductFamilyV1"
+    },
+    {
+      "Description": "标识用于比较各地区收入的三个月销售期。",
+      "DisplayName": "季度",
+      "List": [
+        {
+          "Description": "标识用于比较各地区收入的三个月销售期。",
+          "Enum": [
+            {
+              "Description": "一月至三月。",
+              "Name": "第一季度",
+              "Type": 1
+            },
+            {
+              "Description": "四月至六月。",
+              "Name": "第二季度",
+              "Type": 2
+            },
+            {
+              "Description": "七月至九月。",
+              "Name": "第三季度",
+              "Type": 3
+            }
+          ],
+          "Name": "季度",
+          "Type": 0
+        }
+      ],
+      "Name": "QuarterV1"
+    },
+    {
+      "Description": "标识销售对比中显示其季度收入的市场。",
+      "DisplayName": "销售区域",
+      "List": [
+        {
+          "Description": "标识销售对比中显示其季度收入的市场。",
+          "Enum": [
+            {
+              "Description": "北美洲和南美洲的销售额。",
+              "Name": "美洲",
+              "Type": 1
+            },
+            {
+              "Description": "欧洲的销售额。",
+              "Name": "欧洲",
+              "Type": 2
+            }
+          ],
+          "Name": "销售区域",
+          "Type": 0
+        }
+      ],
+      "Name": "SalesRegionV1"
+    },
+    {
+      "Description": "显示三组模拟位置，以便比较它们的分布范围和分离程度。",
+      "DisplayName": "空间样本",
+      "List": [
+        {
+          "Description": "显示三组模拟位置，以便比较它们的分布范围和分离程度。",
+          "Name": "空间样本",
+          "Type": 0
+        },
+        {
+          "Description": "一个模拟位置及其所属聚类，用于比较空间分布模式。",
+          "Name": "空间样本",
+          "Type": 1
+        }
+      ],
+      "Name": "ScatterChartV1"
+    },
+    {
+      "Description": "标识一组模拟空间样本所代表的山脊、盆地或陆架。",
+      "DisplayName": "样本聚类",
+      "List": [
+        {
+          "Description": "标识一组模拟空间样本所代表的山脊、盆地或陆架。",
+          "Enum": [
+            {
+              "Description": "集中在北部山脊周围的样本。",
+              "Name": "北部山脊",
+              "Type": 1
+            },
+            {
+              "Description": "集中在中央盆地周围的样本。",
+              "Name": "中央盆地",
+              "Type": 2
+            },
+            {
+              "Description": "集中在南部陆架周围的样本。",
+              "Name": "南部陆架",
+              "Type": 3
+            }
+          ],
+          "Name": "样本聚类",
+          "Type": 0
+        }
+      ],
+      "Name": "ScatterClusterV1"
+    },
+    {
+      "Description": "一个模拟位置及其所属聚类，用于比较空间分布模式。",
+      "DisplayName": "空间样本",
+      "List": [
+        {
+          "Description": "一个模拟位置及其所属聚类，用于比较空间分布模式。",
+          "Name": "空间样本",
+          "Type": 0
+        },
+        {
+          "Description": "东西方向的水平位置。",
+          "Name": "东向坐标",
+          "Type": 1
+        },
+        {
+          "Description": "南北方向的水平位置。",
+          "Name": "北向坐标",
+          "Type": 2
+        },
+        {
+          "Description": "垂直位置。",
+          "Name": "高程",
+          "Type": 3
+        },
+        {
+          "Description": "此样本所属的山脊、盆地或陆架。",
+          "Name": "聚类",
+          "Type": 4
+        },
+        {
+          "Description": "用于将此位置与示例中的其他样本区分开来。",
+          "Name": "样本引用",
+          "Type": 5
+        }
+      ],
+      "Name": "ScatterPointV1"
+    },
+    {
+      "Description": "比较美洲和欧洲各季度的模拟收入。",
+      "DisplayName": "区域销售柱状图",
+      "List": [
+        {
+          "Description": "比较美洲和欧洲各季度的模拟收入。",
+          "Name": "区域销售柱状图",
+          "Type": 0
+        },
+        {
+          "Description": "某一季度和销售区域的一项模拟收入总额。",
+          "Name": "区域销售结果",
+          "Type": 1
+        }
+      ],
+      "Name": "SparseColumnsChartV1"
+    },
+    {
+      "Description": "某一季度和销售区域的一项模拟收入总额。",
+      "DisplayName": "区域销售结果",
+      "List": [
+        {
+          "Description": "某一季度和销售区域的一项模拟收入总额。",
+          "Name": "区域销售结果",
+          "Type": 0
+        },
+        {
+          "Description": "此收入总额所代表的三个月期间。",
+          "Name": "季度",
+          "Type": 1
+        },
+        {
+          "Description": "此收入总额所代表的销售区域。",
+          "Name": "区域",
+          "Type": 2
+        },
+        {
+          "Description": "示例中此季度和销售区域的收入。",
+          "Name": "收入",
+          "Type": 3
+        },
+        {
+          "Description": "用于将此季度和区域与其他销售结果区分开来。",
+          "Name": "销售引用",
+          "Type": 4
+        }
+      ],
+      "Name": "SparseColumnV1"
+    },
+    {
+      "Description": "基准或某一时段在特定频率下的一项模拟信号强度。",
+      "DisplayName": "频谱样本",
+      "List": [
+        {
+          "Description": "基准或某一时段在特定频率下的一项模拟信号强度。",
+          "Name": "频谱样本",
+          "Type": 0
+        },
+        {
+          "Description": "此信号强度样本所代表的频率。",
+          "Name": "频率",
+          "Type": 1
+        },
+        {
+          "Description": "此频谱与其他频谱之间用于比较的间距。",
+          "Name": "频谱间距",
+          "Type": 2
+        },
+        {
+          "Description": "此频率下从零开始测量的模拟信号强度。",
+          "Name": "振幅",
+          "Type": 3
+        },
+        {
+          "Description": "此样本所代表的基准或时段。",
+          "Name": "频谱时段",
+          "Type": 4
+        },
+        {
+          "Description": "标识频谱时段，用于将此曲线与其他曲线区分开来。",
+          "Name": "时段标识",
+          "Type": 5
+        },
+        {
+          "Description": "此样本在其频谱中按频率升序排列的位置。",
+          "Name": "频率顺序",
+          "Type": 6
+        },
+        {
+          "Description": "用于将此频率和时段与其他频谱样本区分开来。",
+          "Name": "频谱引用",
+          "Type": 7
+        }
+      ],
+      "Name": "SpectrumPointV1"
+    },
+    {
+      "Description": "标识频谱所代表的基准或时段。",
+      "DisplayName": "频谱时段",
+      "List": [
+        {
+          "Description": "标识频谱所代表的基准或时段。",
+          "Enum": [
+            {
+              "Description": "用于比较示例中每日变化的参考频谱。",
+              "Name": "基准",
+              "Type": 1
+            },
+            {
+              "Description": "模拟的上午频谱。",
+              "Name": "上午",
+              "Type": 2
+            },
+            {
+              "Description": "模拟的下午频谱。",
+              "Name": "下午",
+              "Type": 3
+            },
+            {
+              "Description": "模拟的晚间频谱。",
+              "Name": "晚间",
+              "Type": 4
+            }
+          ],
+          "Name": "频谱时段",
+          "Type": 0
+        }
+      ],
+      "Name": "SpectrumTraceV1"
+    },
+    {
+      "Description": "比较基准、早晨、下午和晚间信号在不同频率下的强度。",
+      "DisplayName": "瀑布频谱",
+      "List": [
+        {
+          "Description": "比较基准、早晨、下午和晚间信号在不同频率下的强度。",
+          "Name": "瀑布频谱",
+          "Type": 0
+        },
+        {
+          "Description": "基准或某一时段在特定频率下的一个模拟信号强度值。",
+          "Name": "频谱样本",
+          "Type": 1
+        }
+      ],
+      "Name": "SpectrumWaterfallChartV1"
+    },
+    {
+      "Description": "同时显示等高线及其所描述的曲面。",
+      "DisplayName": "曲面上的等高线",
+      "List": [
+        {
+          "Description": "同时显示等高线及其所描述的曲面。",
+          "Name": "曲面上的等高线",
+          "Type": 0
+        },
+        {
+          "Description": "等高线所描述高程的示例曲面。",
+          "Name": "曲面样本",
+          "Type": 1
+        },
+        {
+          "Description": "用于比较曲面高程的等高线路径。",
+          "Name": "等高线路径",
+          "Type": 2
+        }
+      ],
+      "Name": "SurfaceContoursChartV1"
+    },
+    {
+      "Description": "比较三维空间中的模拟勘测路径、预测路径和运行限值路径。",
+      "DisplayName": "三维轨迹",
+      "List": [
+        {
+          "Description": "比较三维空间中的模拟勘测路径、预测路径和运行限值路径。",
+          "Name": "三维轨迹",
+          "Type": 0
+        },
+        {
+          "Description": "示例勘测路径、预测路径或运行限值路径上的一个位置。",
+          "Name": "轨迹点",
+          "Type": 1
+        }
+      ],
+      "Name": "TrajectoryChartV1"
+    },
+    {
+      "Description": "示例勘测路径、预测路径或运行限值路径上的一个位置。",
+      "DisplayName": "轨迹点",
+      "List": [
+        {
+          "Description": "示例勘测路径、预测路径或运行限值路径上的一个位置。",
+          "Name": "轨迹点",
+          "Type": 0
+        },
+        {
+          "Description": "路径的水平进度。",
+          "Name": "进度",
+          "Type": 1
+        },
+        {
+          "Description": "路径的横向位置。",
+          "Name": "横向位置",
+          "Type": 2
+        },
+        {
+          "Description": "路径的垂直位置。",
+          "Name": "高度",
+          "Type": 3
+        },
+        {
+          "Description": "包含此位置的勘测路径、预测路径或运行限值路径。",
+          "Name": "轨迹",
+          "Type": 4
+        },
+        {
+          "Description": "标识此位置所属的路径；该路径的外观可将此位置与其他路径上的位置区分开来。",
+          "Name": "路径标识",
+          "Type": 5
+        },
+        {
+          "Description": "此位置在所属路径序列中的次序。",
+          "Name": "路径顺序",
+          "Type": 6
+        },
+        {
+          "Description": "将此位置与示例路径上的其他位置区分开来。",
+          "Name": "位置标识",
+          "Type": 7
+        }
+      ],
+      "Name": "TrajectoryPointV1"
+    },
+    {
+      "Description": "标识三维空间中的一条有序路径。",
+      "DisplayName": "轨迹",
+      "List": [
+        {
+          "Description": "标识三维空间中的一条有序路径。",
+          "Enum": [
+            {
+              "Description": "示例中的模拟勘测路径。",
+              "Name": "勘测",
+              "Type": 1
+            },
+            {
+              "Description": "示例中的预测路径，用于与模拟勘测路径进行比较。",
+              "Name": "预测",
+              "Type": 2
+            },
+            {
+              "Description": "示例中表示运行限值的参考路径。",
+              "Name": "限值",
+              "Type": 3
+            }
+          ],
+          "Name": "轨迹",
+          "Type": 0
+        }
+      ],
+      "Name": "TrajectoryV1"
+    },
+    {
+      "Description": "以相互连接的线条构成的开放网格显示马鞍面的形状。",
+      "DisplayName": "马鞍面线框样本",
+      "List": [
+        {
+          "Description": "以相互连接的线条构成的开放网格显示马鞍面的形状。",
+          "Name": "马鞍面线框样本",
+          "Type": 0
+        },
+        {
+          "Description": "示例马鞍面上的一个位置及其高度。",
+          "Name": "马鞍面样本",
+          "Type": 1
+        }
+      ],
+      "Name": "WireframeChartV1"
+    },
+    {
+      "Description": "示例马鞍面上的一个位置及其高度。",
+      "DisplayName": "马鞍面样本",
+      "List": [
+        {
+          "Description": "示例马鞍面上的一个位置及其高度。",
+          "Name": "马鞍面样本",
+          "Type": 0
+        },
+        {
+          "Description": "样本在马鞍面 x 方向上的位置。",
+          "Name": "X 坐标",
+          "Type": 1
+        },
+        {
+          "Description": "采样点在马鞍面 Y 方向上的位置。",
+          "Name": "Y 坐标",
+          "Type": 2
+        },
+        {
+          "Description": "马鞍面在此位置的高度。",
+          "Name": "高度",
+          "Type": 3
+        },
+        {
+          "Description": "用于区分马鞍面上不同高度范围的高度值。",
+          "Name": "高度区分值",
+          "Type": 4
+        }
+      ],
+      "Name": "WireframePointV1"
+    }
+  ]
+}
