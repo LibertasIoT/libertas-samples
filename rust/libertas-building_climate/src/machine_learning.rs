@@ -217,10 +217,10 @@ pub struct BuildingHvacMachineLearningFeaturesV1 {
     /// Complete building-specific column set sorted by feature name. A source
     /// that is absent or stale retains its column with an absent value so every
     /// sample for one configuration has the same manifest.
+    #[libertas_size(min = 1, max = 8192)]
     /// ----
     /// Named feature
     /// One finite value or an explicit XGBoost missing value.
-    #[libertas_size(min = 1, max = 8192)]
     pub values: Vec<BuildingHvacMachineLearningFeatureV1>,
 }
 
@@ -324,10 +324,10 @@ pub struct BuildingHvacMachineLearningFeatureVectorV1 {
     /// Present values
     /// Sorted sparse values. A missing column has no entry; a meaningful zero
     /// has an entry whose value is zero.
+    #[libertas_size(max = 8192)]
     /// ----
     /// Indexed feature
     /// One present finite value at its manifest column.
-    #[libertas_size(max = 8192)]
     pub values: Vec<BuildingHvacMachineLearningIndexedFeatureV1>,
 }
 
@@ -537,10 +537,10 @@ pub struct BuildingHvacMachineLearningModelV1 {
     /// Ordered feature names
     /// Human- and AI-readable manifest matching both the XGBoost model metadata
     /// and numeric column order. Trees split on indexes after training.
+    #[libertas_size(min = 1, max = 8192)]
     /// ----
     /// Feature name
     /// One stable feature identifier in model-column order.
-    #[libertas_size(min = 1, max = 8192)]
     pub feature_names: Vec<String>,
     /// XGBoost version
     /// Bundled native XGBoost version that produced the UBJSON artifact.
@@ -625,10 +625,10 @@ pub struct BuildingHvacMachineLearningModelSetV1 {
     pub room_endpoint: LibertasEndpoint,
     /// Model slots
     /// At most one active and one rollback model for each horizon.
+    #[libertas_size(max = 3)]
     /// ----
     /// Model slot
     /// One independently validated thermal horizon.
-    #[libertas_size(max = 3)]
     pub models: Vec<BuildingHvacMachineLearningModelSlotV1>,
 }
 
@@ -744,11 +744,11 @@ pub struct BuildingHvacThermalPredictionV1 {
 pub struct BuildingHvacRoomMachineLearningV1 {
     /// Latest predictions
     /// At most one current prediction for each supported horizon.
+    #[libertas_size(max = 3)]
+    #[libertas_read_only]
     /// ----
     /// Thermal prediction
     /// One bounded XGBoost result or explicit deterministic fallback.
-    #[libertas_size(max = 3)]
-    #[libertas_read_only]
     pub predictions: Vec<BuildingHvacThermalPredictionV1>,
 }
 

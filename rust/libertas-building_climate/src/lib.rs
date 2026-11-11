@@ -19,7 +19,7 @@ use libertas::{
     libertas_shutdown_complete, libertas_wake_up,
 };
 use libertas_macros::{
-    LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema,
+    LibertasAvroDecode, LibertasAvroEncode, LibertasExport, libertas_data_schema, libertas_export,
     libertas_permissions,
 };
 
@@ -997,11 +997,11 @@ pub struct BuildingHvacAirQualityReadingV1 {
     /// Current values from supported standard Matter concentration clusters,
     /// ordered by measurement kind with at most one value per kind. Missing
     /// kinds are unsupported, unavailable, or stale and are never inferred safe.
+    #[libertas_size(max = 10)]
+    #[libertas_read_only]
     /// ----
     /// Concentration measurement
     /// One typed value including its sensor-reported unit.
-    #[libertas_size(max = 10)]
-    #[libertas_read_only]
     pub measurements: Vec<BuildingHvacAirMeasurementV1>,
 }
 
@@ -1208,12 +1208,12 @@ pub struct BuildingHvacRoomObservedStateV1 {
     /// Current independently available readings for every configured sensor
     /// station in this room. This is the runtime query surface for station-level
     /// PM2.5, carbon dioxide, and other supported air measurements.
+    #[libertas_size(min = 1, max = 8)]
+    #[libertas_read_only]
     /// ----
     /// Indoor sensor state
     /// One required temperature sensor and its optional humidity and air-quality
     /// capabilities.
-    #[libertas_size(min = 1, max = 8)]
-    #[libertas_read_only]
     pub sensor_states: Vec<BuildingHvacIndoorSensorStateV1>,
     /// Fresh temperature sensors
     /// The number of configured room temperature sensors currently contributing
@@ -1472,11 +1472,11 @@ pub struct BuildingHvacRoomPlanV1 {
     pub valid_until: LibertasDateTime,
     /// Plan periods
     /// Ordered, non-overlapping future periods covering no more than 24 hours.
+    #[libertas_size(max = 96)]
+    #[libertas_read_only]
     /// ----
     /// Plan period
     /// One calculated room target period and its reason.
-    #[libertas_size(max = 96)]
-    #[libertas_read_only]
     pub periods: Vec<BuildingHvacRoomPlanPeriodV1>,
 }
 
@@ -1628,11 +1628,11 @@ pub enum BuildingHvacRoomProtocol {
         /// list remains authoritative even though activation, reminders, and
         /// recovery are also delivered as localized notifications. These are
         /// supervisory HVAC warnings, not life-safety alarms.
+        #[libertas_size(max = 5)]
+        #[libertas_read_only]
         /// ----
         /// Active urgent condition
         /// One confirmed condition and its latest evidence and delivery time.
-        #[libertas_size(max = 5)]
-        #[libertas_read_only]
         active_urgent_conditions: Vec<BuildingHvacActiveUrgentConditionV1>,
         /// Local outdoor sensor state
         /// Independently available current readings from the optional local
@@ -1669,11 +1669,11 @@ pub enum BuildingHvacRoomProtocol {
         /// Learned effects from other thermostat-zones on this room while its
         /// own zone is inactive. The controller uses these estimates to avoid
         /// over-conditioning an ostensibly off room.
+        #[libertas_size(max = 16)]
+        #[libertas_read_only]
         /// ----
         /// Cross-zone influence
         /// One directional source-thermostat to affected-room estimate.
-        #[libertas_size(max = 16)]
-        #[libertas_read_only]
         cross_zone_influences: Vec<BuildingHvacCrossZoneInfluenceV1>,
         /// Machine-learning predictions
         /// Read-only bounded near-term room temperature changes. Each result
@@ -1817,10 +1817,10 @@ pub struct BuildingHvacThermostatRoomV1 {
     /// Indoor sensor groups
     /// Add at least one place in this room where temperature is measured. You
     /// can also add humidity and air quality sensors at each place.
+    #[libertas_size(min = 1, max = 8)]
     /// ----
     /// Indoor sensor group
     /// Sensors located together at one place in this room.
-    #[libertas_size(min = 1, max = 8)]
     pub sensors: Vec<BuildingHvacIndoorSensorV1>,
 }
 
@@ -1836,10 +1836,10 @@ pub struct BuildingHvacThermostatV1 {
     /// Rooms served
     /// Add every room controlled by this thermostat. Each room must be assigned
     /// to exactly one thermostat.
+    #[libertas_size(min = 1, max = 64)]
     /// ----
     /// Room
     /// One room and the sensors used for it.
-    #[libertas_size(min = 1, max = 64)]
     pub rooms: Vec<BuildingHvacThermostatRoomV1>,
 }
 
@@ -1849,17 +1849,17 @@ pub struct BuildingHvacThermostatV1 {
 pub struct BuildingHvacBuildingV1 {
     /// Rooms
     /// Add every room that should have its own climate controls.
+    #[libertas_size(min = 1, max = 64)]
     /// ----
     /// Room
     /// One named room with its own controls.
-    #[libertas_size(min = 1, max = 64)]
     pub rooms: Vec<BuildingHvacRoomV1>,
     /// Thermostats
     /// Add the thermostats and choose the rooms and sensors served by each one.
+    #[libertas_size(min = 1, max = 16)]
     /// ----
     /// Thermostat
     /// One thermostat and the rooms it serves.
-    #[libertas_size(min = 1, max = 16)]
     pub thermostats: Vec<BuildingHvacThermostatV1>,
     /// Outdoor sensors
     /// Optionally choose local outdoor temperature, humidity, and air quality
@@ -1873,11 +1873,11 @@ pub struct BuildingHvacBuildingV1 {
     /// People to notify
     /// Choose who should receive important heating and cooling warnings,
     /// reminders, and recovery messages. These are not life-safety alarms.
+    #[libertas_size(min = 1, max = 16)]
+    #[libertas_unordered]
     /// ----
     /// Person to notify
     /// One person who should receive building climate warnings.
-    #[libertas_size(min = 1, max = 16)]
-    #[libertas_unordered]
     pub urgent_notification_recipients: Vec<LibertasUser>,
 }
 
@@ -1957,10 +1957,10 @@ pub struct BuildingHvacExternalFeatureSnapshotV1 {
     pub retrieved_at: LibertasDateTime,
     /// Inputs
     /// Complete sorted set of optional numeric inputs.
+    #[libertas_size(max = 2048)]
     /// ----
     /// External feature input
     /// One time-bounded value for an existing machine-learning column.
-    #[libertas_size(max = 2048)]
     pub inputs: Vec<BuildingHvacExternalFeatureInputV1>,
 }
 
@@ -2301,10 +2301,10 @@ pub struct BuildingHvacRoomLearningStateV1 {
     /// Cross-zone learners
     /// One learner for each other configured thermostat-zone. At most one edge
     /// exists for a source thermostat.
+    #[libertas_size(max = 16)]
     /// ----
     /// Cross-zone learner
     /// Separate heating and cooling online regression state for one source.
-    #[libertas_size(max = 16)]
     pub cross_zone_learners: Vec<BuildingHvacPersistedCrossZoneLearnerV1>,
 }
 
@@ -2509,11 +2509,11 @@ pub enum BuildingHvacPersistentData {
         /// Ordered, non-overlapping periods covering at most the most recent
         /// day. Missing sensor or weather coverage remains explicit inside each
         /// period.
+        #[libertas_size(max = 96)]
         /// ----
         /// Room condition period
         /// One aggregated indoor, setpoint, activity, and outdoor condition
         /// period.
-        #[libertas_size(max = 96)]
         recent_conditions: Vec<BuildingHvacPersistedRoomConditionPeriodV1>,
     },
     /// Room learning
@@ -2533,11 +2533,11 @@ pub enum BuildingHvacPersistentData {
         /// Indoor sensor states
         /// The bounded sensor-station list in configuration order. A missing
         /// optional reading does not erase another valid station capability.
+        #[libertas_size(min = 1, max = 8)]
         /// ----
         /// Indoor sensor state
         /// Last accepted temperature, humidity, and air-quality sections for
         /// one station.
-        #[libertas_size(min = 1, max = 8)]
         sensors: Vec<BuildingHvacIndoorSensorStateV1>,
     },
     /// Local outdoor temperature
@@ -2620,10 +2620,10 @@ pub enum BuildingHvacPersistentData {
         /// Urgent-condition trackers
         /// At most one tracker exists for each condition. An absent tracker
         /// means that condition is inactive with no pending transition.
+        #[libertas_size(max = 5)]
         /// ----
         /// Urgent-condition tracker
         /// One condition's persisted debounce and last-notification state.
-        #[libertas_size(max = 5)]
         conditions: Vec<BuildingHvacPersistedUrgentConditionV1>,
     },
     /// Machine-learning models
@@ -4328,6 +4328,7 @@ fn restore_machine_learning_models(
 /// Smart building climate
 #[libertas_data_schema(key = ClimateKey, value = BuildingHvacPersistentData)]
 #[libertas_permissions(BUILDING_CLIMATE_PERMISSIONS)]
+#[libertas_export]
 pub fn libertas_building_climate(
     /*
      * Building
@@ -4352,8 +4353,7 @@ pub fn libertas_building_climate(
      * [SetText]
      * Use the service
      */
-    #[libertas_default($null)]
-    external_features: Option<BuildingHvacExternalFeatureClientV1>,
+    #[libertas_default($null)] external_features: Option<BuildingHvacExternalFeatureClientV1>,
 ) {
     if validate_building_configuration(&building).is_err()
         || external_features.is_some_and(|external| {

@@ -12,6 +12,112 @@
     {
       "select": "^<SprinklerZoneV1>.valve",
       "promote": true
+    },
+    {
+      "select": "^<SprinklerZoneStateV1>",
+      "flatten": true
+    },
+    {
+      "select": "^<SprinklerZoneAdvancedStateV1>",
+      "flatten": true
+    },
+    {
+      "select": "^<SprinklerZoneActiveStateV1>",
+      "when": {
+        "mode": "view"
+      },
+      "flatten": {
+        "name_row": false
+      },
+      "layout": "tabs",
+      "sections": [
+        {
+          "title": "SPRINKLER_UI_WATERING_PLAN",
+          "fields": [
+            "condition",
+            "next_watering",
+            "planned_water_millimeters",
+            "calculated_at"
+          ]
+        },
+        {
+          "title": "SPRINKLER_UI_WATER_BALANCE",
+          "fields": [
+            "water_demand_source",
+            "estimated_reference_evapotranspiration_millimeters_per_day",
+            "estimated_deficit_millimeters",
+            "recent_precipitation_millimeters",
+            "recent_irrigation_millimeters"
+          ]
+        },
+        {
+          "title": "SPRINKLER_UI_VALVE",
+          "fields": [
+            "valve_fault_bitmap",
+            "valve_state_known",
+            "valve_is_open"
+          ]
+        }
+      ]
+    },
+    {
+      "select": "^<SprinklerZoneConfigurationV1>",
+      "flatten": {
+        "name_row": false
+      }
+    },
+    {
+      "select": "^<SprinklerZoneConfigurationV1>.no_watering_periods",
+      "layout": "table",
+      "columns": [
+        "starts_at",
+        "duration_seconds"
+      ]
+    },
+    {
+      "select": "^<ReplaceNoWateringPeriodsV1.no_watering_periods>",
+      "layout": "table",
+      "columns": [
+        "starts_at",
+        "duration_seconds"
+      ]
+    },
+    {
+      "select": "^<SprinklerZoneConfigurationV1>.active",
+      "label": "SPRINKLER_UI_SYSTEM_ACTIVE"
+    },
+    {
+      "select": "^<SetActiveV1.active>",
+      "label": "SPRINKLER_UI_SYSTEM_ACTIVE"
+    },
+    {
+      "select": "^<SprinklerReportRequestRangeV1>",
+      "layout": "form-grid",
+      "columns": 2
+    },
+    {
+      "select": "^<WaterBalanceV1>",
+      "action_controls": {
+        "Actions": {
+          "label": "SPRINKLER_UI_CHANGE_DATES"
+        }
+      }
+    },
+    {
+      "select": "^<WaterUsageV1>",
+      "action_controls": {
+        "Actions": {
+          "label": "SPRINKLER_UI_CHANGE_DATES"
+        }
+      }
+    },
+    {
+      "select": "^<WeatherEtV1>",
+      "action_controls": {
+        "Actions": {
+          "label": "SPRINKLER_UI_CHANGE_DATES"
+        }
+      }
     }
   ]
 }

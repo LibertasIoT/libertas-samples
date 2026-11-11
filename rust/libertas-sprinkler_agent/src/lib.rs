@@ -173,7 +173,7 @@ const SOUTHERN_WINTERIZATION_SEASON_END_DAY: u16 = 273;
 
 /// Sprinkler text
 /// Names and descriptions for saved information, notifications, and chart labels.
-pub const APP_STRINGS: [(&str, &str); 23] = [
+pub const APP_STRINGS: [(&str, &str); 28] = [
     (
         "SPRINKLER_ZONE_MEMORY_V1",
         "Saved water balance and settings for {0}.",
@@ -258,6 +258,11 @@ pub const APP_STRINGS: [(&str, &str); 23] = [
         "SPRINKLER_WATERING_RESTART_V1",
         "Watering restart accounting for {0}.",
     ),
+    ("SPRINKLER_UI_WATERING_PLAN", "Watering plan"),
+    ("SPRINKLER_UI_WATER_BALANCE", "Water balance"),
+    ("SPRINKLER_UI_VALVE", "Valve"),
+    ("SPRINKLER_UI_CHANGE_DATES", "Change dates"),
+    ("SPRINKLER_UI_SYSTEM_ACTIVE", "System active"),
 ];
 const WINTERIZATION_WEATHER_NOTIFICATION_RESOURCE: &str = APP_STRINGS[10].0;
 const WINTERIZATION_SEASON_NOTIFICATION_RESOURCE: &str = APP_STRINGS[11].0;
@@ -451,12 +456,12 @@ pub struct SprinklerZoneConfigurationV1 {
     pub watering_percent: u16,
     /// No-watering periods
     /// Times when watering must be paused.
-    /// ----
-    /// No-watering period
-    /// One period when this area must not be watered.
     #[libertas_size(max = 64)]
     #[libertas_ui_include_description]
     #[libertas_link("ReplaceNoWateringPeriodsV1")]
+    /// ----
+    /// No-watering period
+    /// One period when this area must not be watered.
     pub no_watering_periods: Vec<SprinklerTimeSlotV1>,
     /// Active
     /// Turn automatic watering on. Turn it off after winterizing the system.
@@ -697,12 +702,12 @@ pub enum SprinklerZoneProtocol {
     ReplaceNoWateringPeriodsV1 {
         /// No-watering periods
         /// The complete list of times when watering must be paused.
-        /// ----
-        /// No-watering period
-        /// One period when this area must not be watered.
         #[libertas_size(max = 64)]
         #[libertas_copy_from("$.configuration.no_watering_periods")]
         #[libertas_ui_include_description]
+        /// ----
+        /// No-watering period
+        /// One period when this area must not be watered.
         no_watering_periods: Vec<SprinklerTimeSlotV1>,
     },
     /// Change active state
@@ -1877,10 +1882,10 @@ pub struct SprinklerZoneMemoryV1 {
     pub watering_percent: u16,
     /// Hold-off periods
     /// The normalized runtime scheduling constraints.
+    #[libertas_size(max = 64)]
     /// ----
     /// Hold-off period
     /// A half-open interval during which the zone cannot water.
-    #[libertas_size(max = 64)]
     pub hold_off_periods: Vec<SprinklerTimeSlotV1>,
     /// Balance baseline time
     /// The date and time through which older water inputs have been folded into
